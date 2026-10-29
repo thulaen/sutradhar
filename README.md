@@ -1,2 +1,2 @@
-# zen-g
+# veda
 XenForo internal linking suggestion add-on
