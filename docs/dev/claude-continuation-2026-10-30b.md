@@ -1,7 +1,9 @@
 # Claude continuation record, 30 October 2026 (second session)
 
-Owner: the Claude Git coordinator. Status: designs approved; local
-milestones committed; nothing published to GitHub yet.
+Owner: the Claude Git coordinator. Status: history; the
+[third session's record](claude-continuation-2026-10-30c.md) replaces
+it. Designs approved; local milestones committed; nothing published to
+GitHub yet.
 
 ## Exact state
 

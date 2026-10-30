@@ -80,6 +80,18 @@ The owner's answers recorded in the
 - The [owner actions](../../dev/owner-actions-2026-10-30.md), sections 1
   to 6: carried out by agents, adapted to ADR-0005 (R113).
 
+### Third round: all work on Dell
+
+- R117 (files edited on the Windows computer and copied to Dell):
+  replaced by R119. All work happens in a Claude session on Dell; the
+  Windows computer only runs the app.
+- R072 (the editing computer for source and Git synchronisation only):
+  that role ends (R119). Its bans on builds, tests, dependency
+  installs, caches, installers and backup or evidence stores remain.
+- The publication update's open note on copying commits back to the
+  Windows checkout, the matching AGENTS.md, CLAUDE.md and governance
+  sentences and ADR-0005's account of R117: replaced by R119.
+
 ## Reviews
 
 - R057 (required GitHub AI review): the AI review remains mandatory. Without
@@ -144,11 +156,13 @@ These parts are replaced, not dropped:
 ## Not changed
 
 R001–R006, R008–R012, R014–R017, R019–R020, R022–R026, R029–R049,
-R051–R054, R058–R067, R072–R075, R077–R079, R081–R082 and every
+R051–R054, R058–R067, R073–R075, R077–R079, R081–R082 and every
 requirement not named above remain as recorded. R007 is strengthened
 by R087; R013, R018, R021, R027, R028, R050, R055–R057, R068–R071, R076,
 R080 and R092 are changed or restated only as listed above, as are R083,
-R084 and R086 from this update. SPEC-001, SPEC-002 and SPEC-003 keep
-their approval except for the sections listed in the
+R084 and R086 from this update and R072 and R117 from the publication
+update.
+SPEC-001, SPEC-002 and SPEC-003 keep their approval except for the
+sections listed in the
 [approval delta](../../specifications/approval-delta-2026-10-30.md);
 SPEC-004 is replaced in part by ADR-0005.

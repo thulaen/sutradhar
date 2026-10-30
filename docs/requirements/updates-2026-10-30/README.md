@@ -170,10 +170,10 @@ All checks run in authorised environments; nothing runs on Windows (R072).
 The full product scope (R001–R082) is unchanged, including at least 6,000
 qualified methods. Later the same day the owner added R098–R108 in the
 [models update](models.md), which also amends R021, R050 and R092, and
-R109–R111 in the [platform update](platform.md), then R112–R118 in the
+R109–R111 in the [platform update](platform.md), then R112–R119 in the
 [publication update](publication.md), which replaces the GitHub App
 publisher with a gated repository on Dell and amends R070, R083, R084
-and R086. Signal Controller and
+and R086; R119 moves all work onto Dell and replaces R117. Signal Controller and
 Buganizer are behavioural inspiration only; nothing is copied from their
 implementations, databases, private configuration, credentials, approvals
 or branding (R067).

@@ -1,6 +1,6 @@
 # ADR-0005: Publication through a gated repository on Dell
 
-Status: accepted by the owner, 30 October 2026. Requirements: R112–R118.
+Status: accepted by the owner, 30 October 2026. Requirements: R112–R119.
 The owner's exact words are in the publication
 [decisions](../requirements/sources/publication-decisions-2026-10-30.md).
 
@@ -64,9 +64,12 @@ GitHub and Dell setup (R113); agents review contributors' pull requests
 Follow-up round: the editing computer's GitHub sign-in is used once for
 setup and then reduced to read-only (R113); the owner approves changes
 to the gate itself by answering a question in the session (R116); files
-are edited on the Windows computer and every commit, test and push
-happens on Dell (R117); the linking specifications are drafted now
-(R118).
+were to be edited on the Windows computer with every commit, test and
+push on Dell (R117, since replaced); the linking specifications are
+drafted now (R118). Third round: all work happens in a Claude session on
+Dell, with no copying; commits on Dell run the full checks; once this
+repository exists, pushes go through it straight on to GitHub, GitHub
+CI checks again and failures become AutoIssues (R119).
 
 ## Recorder's notes
 

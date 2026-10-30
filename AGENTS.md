@@ -8,9 +8,11 @@ that enforcement tooling is already installed.
 
 Talk to the owner in plain English. Use British spelling. Explain an unfamiliar
 technical term when it is necessary. State what changed, what was checked, what
-the evidence proves, and what remains unfinished. Never make the owner learn Git
-commands to approve work. Never claim a specification, source file or green
-focused check proves the complete product works.
+the evidence proves, and what remains unfinished. When a step fails
+unexpectedly, tell the owner first, before doing anything else (R119's
+notes). Never make the owner learn Git commands to approve work. Never
+claim a specification, source file or green focused check proves the
+complete product works.
 
 ## Start from the current state
 
@@ -70,15 +72,16 @@ foundation versions locked; create new versions for authorised work. Neither
 age, disk pressure, test cleanup nor a failed run grants deletion permission.
 Read [storage preservation](docs/dev/storage-preservation.md) before using it.
 
-The Windows editing machine is for source editing and for copying files to
-and from Dell; commits are made in Dell agent clones
-([ADR-0005](docs/adr/0005-local-publication.md)). Do not build, run tests,
-install dependencies, create caches, run containers, store test evidence or
-make backups there. Dell runs private-data and final
+All work happens in a Claude session running on Dell, in the Dell working
+copy; nothing is edited on the Windows computer or copied between the two
+(R119, [ADR-0005](docs/adr/0005-local-publication.md)). The Windows computer
+only runs the app that connects to Dell. Do not build, run tests, install
+dependencies, create caches, run containers, store test evidence or make
+backups there. Dell runs private-data and final
 performance tests. Isolated cloud workers may check public source and synthetic
 fixtures.
 Cloud containers are allowed; starting the development container on the Windows
-editing machine is not.
+computer is not.
 
 Do not put the owner's forum name, domain, real posts, member data, private
 paths, host addresses, drive identifiers, licensed archive names or secrets in
@@ -117,7 +120,7 @@ on Dell. Its pre-receive hook runs the complete gate on every new commit and
 refuses anything else; only its publisher account holds the GitHub deploy key
 and pushes `main` to GitHub
 ([ADR-0005](docs/adr/0005-local-publication.md)). Coding sessions never receive
-the deploy key. The editing computer's GitHub sign-in is used once, for the
+the deploy key. The Windows computer's GitHub sign-in is used once, for the
 setup the owner authorised, and then reduced to read-only (R113); it is never
 used to publish. Never push to GitHub yourself, force-push, delete `main`,
 bypass checks or create release tags from a coding-agent session. Until the
@@ -167,12 +170,13 @@ gated Dell repository as the first response, then fix forward.
   insert or remove post text to make an anchor. Recheck content and permissions
   at application time. Preserve subsequent edits during undo.
 - Keep the production Python service and every worker belonging to it within the
-  agreed combined 2 GB limit. Separately admitted extension services require
-  explicit declared allowances and inclusion in published resource accounting;
-  moving a service worker elsewhere cannot evade its shared cap. The separate
-  Dell lab profile has an 8 GB combined limit.
-  PHP contributes at most 8 MB additional peak memory per request; this is not a
-  2 GB limit for an entire forum deployment.
+  agreed combined 6 GB limit (R021 as amended in the
+  [models update](docs/requirements/updates-2026-10-30/models.md)). Separately
+  admitted extension services require explicit declared allowances and
+  inclusion in published resource accounting; moving a service worker
+  elsewhere cannot evade its shared cap. The separate Dell lab profile has a
+  9 GB combined limit. PHP contributes at most 8 MB additional peak memory per
+  request; this is not a 6 GB limit for an entire forum deployment.
 - Use bounded work, durable checkpoints, safe retries and real recovery tests.
   Never treat a process memory limit as proof of graceful recovery.
 - Use only admitted dependencies, models, datasets and independently implemented

@@ -118,11 +118,11 @@ Public documents use logical storage roles, not identifying
 hardware details. Before destructive storage work, recheck the authorised
 device, current mounts, dependencies and the user's preservation decision.
 
-The Windows editing machine holds source and Git synchronisation material only.
-The development container runs on Dell or an approved isolated cloud worker, not
-on that editing machine. Private test corpora can be rebuilt from an authorised
-forum export after storage loss; rebuilding creates a new dataset version and
-requires qualification again.
+The Windows computer only runs the app that connects to Dell; all work happens
+in a Claude session on Dell (R119). The development container runs on Dell or
+an approved isolated cloud worker, not on the Windows computer. Private test
+corpora can be rebuilt from an authorised forum export after storage loss;
+rebuilding creates a new dataset version and requires qualification again.
 
 ## Evidence
 

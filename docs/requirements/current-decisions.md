@@ -36,7 +36,8 @@ contributors' pull requests from forks, one commit per step, owner
 approval of gate changes by a question, editing on Windows with work on
 Dell, linking specifications now) are in the
 [publication update](updates-2026-10-30/publication.md); they amend
-R070, R083, R084 and R086.
+R070, R083, R084 and R086. Its third round, R119, moves all work into a
+Claude session on Dell and replaces R117's editing on Windows.
 
 ## Qualification still required
 

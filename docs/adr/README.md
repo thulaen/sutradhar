@@ -12,4 +12,4 @@ context and its consequences, and links to the owner's exact words.
 - [ADR-0004](0004-progress.md): one progress system for everything over
   two seconds (R110).
 - [ADR-0005](0005-local-publication.md): publication through a gated
-  repository on Dell (R112–R118).
+  repository on Dell (R112–R119).

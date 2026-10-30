@@ -43,6 +43,11 @@ The full product is not complete. Zero methods are qualified.
   branch coverage, mutation testing, real-sandbox qualification and
   performance result B; see the [milestone record](test-first.md).
   Committed in the Dell agent clone after its Dell checks.
+- Publication decision R119 (all work in a Claude session on Dell;
+  once the route is built, pushes through the gated Dell repository
+  straight on to GitHub; CI checks again; failures to AutoIssues;
+  failures reported to the owner first), replacing R117. Committed on
+  Dell after the documentation profile and the parent's runner.
 - Owner approval, 30 October 2026, of the trust boundaries, SPEC-004 to
   SPEC-007, the mapped rulebook, the SPEC-002 and SPEC-003 revisions and
   live-data storage, with recorded choices (approval record).

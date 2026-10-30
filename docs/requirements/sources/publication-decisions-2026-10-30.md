@@ -1,8 +1,9 @@
 # Owner decisions on publication and pace, 30 October 2026
 
 Status: historical source record. The owner asked for these questions
-and answered them through the Claude session's question form. The
-owner's request:
+and answered them through the Claude session's question form; the
+third round also includes messages the owner typed. The owner's
+request:
 
 ```text
 ask me these questions so we settle them with the decision tool, also i want frequent commits and pushes not one big bang commits and pushes.
@@ -112,3 +113,79 @@ open. The owner chose these options in a second round.
    ```text
    Right now
    ```
+
+## Third round: where the work happens
+
+After the test-first gate was built, the owner asked about the editing
+and copying step. These are the exact words, in order. Some were
+answers in the question form and some were typed as messages; the
+headings say what was asked where there was a question. "msi" in the
+first question is the owner's Windows computer.
+
+### 9. The owner's question
+
+```text
+wouldnt it makes sense to just dell for testing and lab, then we commit and push from msi is this what we are doing?
+```
+
+### 10. How commits flow
+
+Asked how commits should flow. Offered: "Commit on MSI, push to Dell
+(Recommended)", "Keep committing on Dell", "Push straight to GitHub".
+The owner chose "Other":
+
+```text
+would it be better to move the repo to dell and then ssh from there, then no more copying and everything is just straight to github, commits on dell check everything, push checks everything and then gh checks everything too via ci and failed things because autoissues?
+```
+
+### 11. Which connection
+
+Asked whether an existing app connection was the Dell:
+
+```text
+setup dell connection via cable
+```
+
+### 12. When to move
+
+Asked when to move the work to Dell:
+
+```text
+After this commit (Recommended)
+```
+
+### 13. Failures
+
+The owner added:
+
+```text
+if it fails let me know first before doing anything
+```
+
+### 14. Reaching Dell
+
+Asked how to reach Dell from the app:
+
+```text
+try Dell Ubuntu
+```
+
+After the first attempt to start the Dell session failed:
+
+```text
+Try again
+```
+
+After the second attempt failed:
+
+```text
+solve it make dell ubuntu work
+```
+
+### 15. Handing over
+
+Once the Dell connection worked, the owner asked:
+
+```text
+give me a prompt in this chat i will create a new session with dell ubuntu and ou will takeover from there?
+```
