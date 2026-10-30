@@ -33,5 +33,8 @@ unchanged designs or infer approval of other features.
 
 Inspect current Git changes and the private task ledger before writing. Work
 requires the authorised Dell host to be available. The editing computer is for
-source editing and Git synchronisation only. Cloud access to GitHub does not
-give Claude access to uncommitted local files or private Dell services.
+source editing and copying files to and from Dell only. Publication follows
+[ADR-0005](docs/adr/0005-local-publication.md): commits are made in Dell agent
+clones and reach GitHub only through the gated Dell repository. Cloud access
+to GitHub does not give Claude access to uncommitted local files or private
+Dell services.

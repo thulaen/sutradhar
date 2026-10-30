@@ -1,6 +1,6 @@
 # Claude continuation record, 30 October 2026 (second session)
 
-Owner: the Claude Git coordinator. Status: designs approved; five local
+Owner: the Claude Git coordinator. Status: designs approved; local
 milestones committed; nothing published to GitHub yet.
 
 ## Exact state
@@ -8,12 +8,15 @@ milestones committed; nothing published to GitHub yet.
 - Working folder: the renamed Windows checkout `Sutradhar`. No second
   checkout, branch or worktree was created. `docs/project-foundation` is
   kept at `691559a` as history.
-- Local `main`: the check runner commit on `d960dd7` (model and platform
-  decisions), on `f74e466` (source-limit checker, tree `b621a8e5`) on
-  `8114c3c` (requirements update, approval record and approved designs,
-  tree `9578ac1f`), `ecbd232` (source-limit compliance, tree `857c0391`)
-  and `691559a` (foundation, tree `3ce87786`). Each passed its checks on
-  Dell before it was committed.
+- Local `main`: `cd245a6` (check runner, tree `e72805f1`) on `d960dd7`
+  (model and platform decisions), `f74e466` (source-limit checker, tree
+  `b621a8e5`), `8114c3c` (requirements update, approval record and
+  approved designs, tree `9578ac1f`), `ecbd232` (source-limit compliance,
+  tree `857c0391`) and `691559a` (foundation, tree `3ce87786`). Each
+  passed its checks on Dell before it was committed. The publication
+  decisions (R112–R118, ADR-0005) are a documentation commit made in a
+  Dell clone (R117) and copied back here. The test-first gate is written
+  and passing its tests but not committed.
 - GitHub `main` = `093b001`; no other branch, no pull request.
 - Evidence, saved copies and exact host figures are in new locked Dell
   directories named in the private operator note on Dell.
@@ -34,27 +37,41 @@ milestones committed; nothing published to GitHub yet.
 - Check runner, sandbox and signing, activation step 2, built test-first,
   reviewed three times and qualified in the real sandbox; see the
   [milestone record](runner.md).
+- The owner's publication decisions (R112–R118,
+  [ADR-0005](../adr/0005-local-publication.md)): a gated bare repository
+  on Dell replaces the GitHub App publisher, agents do the setup (except
+  sign-ins only the owner can complete), each
+  step is one commit pushed after its milestone, the owner approves gate
+  changes by a question, files are edited on Windows and committed on
+  Dell, and the linking specifications are drafted now.
 - Primary-source research on GitHub rules, NASA/JPL and Meta practice and
   tool versions, each independently re-checked.
 
 ## Why nothing is pushed
 
 GitHub's current rules require pull requests on `main`, and the owner
-forbade using their login, disabling protection or force-pushing. The
-approved main-only publisher must be built and qualified, and the owner
-must apply the SPEC-004 GitHub changes first.
+forbade using their login to publish, disabling protection or
+force-pushing. The gated Dell repository of ADR-0005, its publisher
+account, deploy key and GitHub rulesets must be built first; agents do
+this work (R113).
 
 ## Next steps
 
-1. Owner actions listed in the decision summary (GitHub rulesets, Apps,
-   pull requests off, read-only editing credential, test repository, Dell
-   accounts and directories, Claude Code reviewer sign-in).
-2. Build, test-first, the rest of the activation sequence: the
-   test-first gate, the performance harness, then the publisher; qualify
-   on the test repository.
-3. Publish the local commits in one fast-forward; verify GitHub; update
-   the ledger.
-4. AutoIssues milestones 1 to 5, which activate the quota gate.
+1. Draft the linking specifications (R098–R111) for the owner's approval,
+   as the owner chose (R118).
+2. Finish the test-first gate (coverage, mutation, review, qualification)
+   and commit it; it waits for the specifications by the coordinator's
+   sequencing, not an owner decision.
+3. Build the gated Dell repository: publisher and agent accounts, bare
+   repository, pre-receive gate, post-receive push with retry, `just
+   check`, `just fast` and `just publish`, agent clone hooks, CI safety
+   net; set the deploy key and rulesets on GitHub, then reduce the
+   editing computer's GitHub sign-in to read-only. Gate changes are put to
+   the owner as a question first (R116).
+4. Move the history into the bare repository and push the waiting
+   commits one at a time; verify GitHub; update the ledger.
+5. The performance harness, AutoIssues milestones 1 to 5, then the
+   product towards version 1.
 
 ## Independent work allowed meanwhile
 

@@ -58,6 +58,28 @@ Read with the [requirements update](README.md),
   "Repository admission" and its auto-merge acceptance example: replaced by
   SPEC-004 once approved. The rest of SPEC-003 keeps its approval.
 
+### Later the same day: publication through Dell
+
+The owner's answers recorded in the
+[publication update](publication.md) replace parts of the rules above:
+
+- R084 and SPEC-004 with its GitHub settings: the GitHub Apps, inbox,
+  attester, approval verifier, owner approval comments and turning pull
+  requests off are replaced by the gated Dell repository and deploy key of
+  R112 and [ADR-0005](../../adr/0005-local-publication.md).
+- R083's ban on pull requests: agents still create none; contributors'
+  pull requests from forks are imported as single commits (R114).
+- R070's remaining owner approval of outside contributions: replaced by
+  the agents' review (R114); owner approval of changes to the gate itself
+  is given through a question in the session (R116).
+- R086 and the "publish each milestone" step: one commit per step,
+  pushed after each milestone (R115).
+- The approval record's answer 3: approval by GitHub comment is replaced
+  by R116, and the editing computer's GitHub sign-in is used once for
+  setup and then reduced to read-only (R113).
+- The [owner actions](../../dev/owner-actions-2026-10-30.md), sections 1
+  to 6: carried out by agents, adapted to ADR-0005 (R113).
+
 ## Reviews
 
 - R057 (required GitHub AI review): the AI review remains mandatory. Without
@@ -125,7 +147,8 @@ R001–R006, R008–R012, R014–R017, R019–R020, R022–R026, R029–R049,
 R051–R054, R058–R067, R072–R075, R077–R079, R081–R082 and every
 requirement not named above remain as recorded. R007 is strengthened
 by R087; R013, R018, R021, R027, R028, R050, R055–R057, R068–R071, R076,
-R080 and R092 are changed or restated only as listed above. SPEC-001,
-SPEC-002 and SPEC-003 keep their approval except for the sections listed
-in the
-[approval delta](../../specifications/approval-delta-2026-10-30.md).
+R080 and R092 are changed or restated only as listed above, as are R083,
+R084 and R086 from this update. SPEC-001, SPEC-002 and SPEC-003 keep
+their approval except for the sections listed in the
+[approval delta](../../specifications/approval-delta-2026-10-30.md);
+SPEC-004 is replaced in part by ADR-0005.

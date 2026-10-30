@@ -30,8 +30,14 @@ The full product is not complete. Zero methods are qualified.
 - Check runner, sandbox and signing (activation step 2, interim):
   test-first, three independent review passes, real-sandbox
   qualification on Dell; see the [milestone record](runner.md). Signed
-  with a qualification key and started as root until the owner creates the
-  runner account.
+  with a qualification key and started as root until the runner account
+  exists. Local commit `cd245a6`, tree `e72805f1`.
+- Publication decisions R112–R118 with ADR-0005 (a gated repository on
+  Dell replaces the GitHub App publisher; agents do the setup; one commit
+  per step; the owner approves gate changes by a question; linking
+  specifications now), recorded from the owner's answers with an
+  independent fidelity review. Committed with this update in a Dell
+  clone, after the Dell documentation profile.
 - Owner approval, 30 October 2026, of the trust boundaries, SPEC-004 to
   SPEC-007, the mapped rulebook, the SPEC-002 and SPEC-003 revisions and
   live-data storage, with recorded choices (approval record).
@@ -40,10 +46,15 @@ The full product is not complete. Zero methods are qualified.
 
 ## Implemented, awaiting checks
 
+- The test-first gate (activation step 3): written test-first, its 403
+  tests pass on Dell; coverage, mutation, review and real-sandbox
+  qualification follow after the linking specifications (the
+  coordinator's sequencing, as the owner chose to draft them now). Not
+  yet committed.
 - Earlier publisher modules (policy, candidate reader, transport): 130
   focused test methods and full statement and branch coverage for three
   modules. Their branch-and-pull-request policy is retired; the reader and
-  transport are inputs to the main-only publisher. The launcher and
+  transport are possible inputs to the publication route. The launcher and
   deliberate-fault testing remain untested.
 
 ## Awaiting design approval
@@ -51,7 +62,7 @@ The full product is not complete. Zero methods are qualified.
 - The linking feature specification implementing R098–R108 (models,
   reading every post in full, matching, anchors, retraining, model files)
   and the specifications for R109–R111 (community models, progress, the
-  visual layer), with ADR-0001 to ADR-0004.
+  visual layer), with ADR-0001 to ADR-0004: being drafted now (R118).
 - Features F001–F023 specifications (not yet drafted, except research).
 - The `just` command interface details beyond SPEC-001.
 - The four clarifications listed in the approval record, and the
@@ -59,19 +70,16 @@ The full product is not complete. Zero methods are qualified.
 
 ## Blocked by a specific external dependency
 
-- Any push to GitHub: needs the owner's GitHub changes from SPEC-004
-  (rulesets, Apps, pull requests off), the test repository decision, the
-  read-only editing credential, then publisher implementation and
-  qualification. GitHub's current rules accept only pull requests, so no
-  compliant push route exists yet.
-- Dell accounts and live-data directories: owner action or explicit
-  step-by-step instruction (they change host security settings).
-- Required AI review: Claude Code sign-in on Dell under a reviewer account.
-- Older registered App key retirement: owner action on GitHub.
+- Any push to GitHub: needs the gated Dell repository, its publisher
+  account and deploy key, and the GitHub rulesets of ADR-0005, which
+  agents set up (R113). GitHub's current rules accept only pull requests,
+  so no compliant push route exists yet.
+- Required AI review: Claude Code sign-in on Dell under a reviewer
+  account, which only the owner can complete.
 
 ## Not started
 
-- The test-first gate; the performance harness; the publisher rebuild.
+- The gated Dell repository and its hooks; the performance harness.
 - AutoIssues milestones 1–8 and the QA stack.
 - Method research completion toward 6,000 qualified methods, the PHP
   add-on, the Python service and every product feature.

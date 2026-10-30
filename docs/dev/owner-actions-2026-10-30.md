@@ -2,7 +2,14 @@
 
 Audience: the project owner. Outcome: GitHub and Dell are ready for the
 approved main-only publisher (SPEC-004), without anyone using Git
-commands. Status: instructions; none of these steps has been done yet.
+commands. Status: superseded in part later on 30 October 2026. The owner
+chose publication through a gated repository on Dell
+([ADR-0005](../adr/0005-local-publication.md)) and asked agents to carry
+out the setup (R113). Sections 1 to 6 are kept as history and are not
+asked of the owner: agents do the work, adapted to the ADR (there are no
+attester or approval-verifier Apps or accounts, and no test repository).
+Section 7, the reviewer sign-in, can only be completed by the owner and
+stays open.
 
 Do the steps in order. Each step says what to click and why. Nothing
 here asks you to type a Git command. Settings wording on GitHub may

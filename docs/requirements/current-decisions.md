@@ -30,7 +30,13 @@ service memory cap in R021 and R092 from 2 GB to 6 GB, raises the lab
 ceiling from 8 GB to 9 GB, and makes uninstall
 delete embeddings, the index and model files (R050 as amended). R109–R111
 (community models, one progress system, the visual layer) are in the
-[platform update](updates-2026-10-30/platform.md).
+[platform update](updates-2026-10-30/platform.md). R112–R118
+(publication through a gated repository on Dell, agents doing setup,
+contributors' pull requests from forks, one commit per step, owner
+approval of gate changes by a question, editing on Windows with work on
+Dell, linking specifications now) are in the
+[publication update](updates-2026-10-30/publication.md); they amend
+R070, R083, R084 and R086.
 
 ## Qualification still required
 
