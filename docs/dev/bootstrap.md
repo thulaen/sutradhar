@@ -25,6 +25,12 @@ rule, not a waiver of checks or evidence that a particular candidate has passed.
 8. Pass current-change GitHub checks and the owner's protected-rule approval
    before that foundational governance change can merge.
 
+Superseded on 30 October 2026: steps 7 and 8 are replaced by publication
+through the main-only publisher
+([SPEC-004](../specifications/main-only-publication.md)); there is no
+branch or pull request. See the
+[supersession table](../requirements/updates-2026-10-30/supersession.md).
+
 The method research catalogue is the first research milestone. Infrastructure
 and checking tools needed to qualify it are dependencies, not permission to
 skip that milestone or substitute a small linking product for the full

@@ -1,6 +1,7 @@
 # Current decisions: R053–R082
 
-Part of [current decisions](current-decisions.md); read its status first.
+Part of [current decisions](current-decisions.md); read its status and the
+[30 October 2026 update](current-decisions.md#30-october-2026-update) first.
 
 ## Quality evaluation and release evidence
 

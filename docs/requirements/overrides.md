@@ -105,6 +105,13 @@ page.
   - Effect: Important groups and opportunity coverage matter; fixed and
     fresh assessments remain distinct.
 
+## 30 October 2026 owner update
+
+The owner's handover instruction and trunk-based follow-up replace
+branch, pull-request, source-limit, review-route and bot-exception rules.
+Each replaced rule is linked in the
+[supersession table](updates-2026-10-30/supersession.md).
+
 ## Lists that remain proposals rather than facts
 
 The owner's direct storage instruction on 30 October 2026 replaces the earlier

@@ -16,6 +16,14 @@ The requirements are kept in three linked parts:
 - [R053–R082](current-decisions-operations.md): Quality evaluation and
   release evidence; Repository, privacy and operations; Toolchain and manual.
 
+## 30 October 2026 update
+
+R083–R097 were added in the
+[requirements update](updates-2026-10-30/README.md). They replace parts of
+R055–R057 and R068–R071 and R080, as listed in the
+[supersession table](updates-2026-10-30/supersession.md). The rows above
+are kept as written; where they conflict, the update applies.
+
 ## Qualification still required
 
 The interview settled intent. It did not prove PHP/XenForo compatibility,

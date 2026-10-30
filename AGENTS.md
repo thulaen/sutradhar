@@ -19,8 +19,11 @@ focused check proves the complete product works.
    reservations.
 3. Check that the authorised Dell development host is available. If it is not,
    pause all project work, including cloud work, and report the pause.
-4. Identify the approved specification and acceptance criteria for the task.
-5. Reserve a non-overlapping writing scope before editing shared files.
+4. Inspect the AutoIssues queue once it is installed. An open P0 blocks
+   unrelated work; work needed to fix it remains allowed. Handle blocking
+   P1/P2 issues in the affected component under the approved policy.
+5. Identify the approved specification and acceptance criteria for the task.
+6. Reserve a non-overlapping writing scope before editing shared files.
 
 Never reset, clean, overwrite or discard another person's work. Use one writer
 per file. An agent stopping does not silently transfer ownership. Record a safe
@@ -37,8 +40,8 @@ writers.
 
 The owner approves each feature specification before coding begins. Protected
 requirements, privacy rules, required checks, release rules and trusted-agent
-admission also need the owner's explicit approval before they change. Automatic
-merging of ordinary implementation work does not remove these requirements.
+admission also need the owner's explicit approval before they change.
+Unattended publication of ordinary work does not remove these requirements.
 
 Preserve requirements and their history. Mark an earlier decision as superseded
 and link its replacement; do not quietly delete a difficult requirement. Keep
@@ -47,10 +50,10 @@ details without dropping the substantive requirement.
 
 The complete first release requires at least 6,000 independently qualified,
 distinct methods and all agreed release scope. Parameter changes, renamed
-copies, empty placeholders, untested research entries and rearranged presets do
-not count. Incremental work may be committed, but must remain labelled
-incomplete until the full release conditions pass. Do not replace the target
-with a smaller product.
+copies, empty placeholders, untested research entries and rearranged presets
+do not count.
+Incremental work may be committed, but must remain labelled incomplete until the
+full release conditions pass. Do not replace the target with a smaller product.
 
 ## Where work runs
 
@@ -68,8 +71,9 @@ The Windows editing machine is for source editing and Git synchronisation only.
 Do not build, run tests, install dependencies, create caches, run containers,
 store test evidence or make backups there. Dell runs private-data and final
 performance tests. Isolated cloud workers may check public source and synthetic
-fixtures. Cloud containers are allowed; starting the development container on
-the Windows editing machine is not.
+fixtures.
+Cloud containers are allowed; starting the development container on the Windows
+editing machine is not.
 
 Do not put the owner's forum name, domain, real posts, member data, private
 paths, host addresses, drive identifiers, licensed archive names or secrets in
@@ -79,43 +83,66 @@ private datasets remain on Dell. The specifically approved redacted AI judging
 packs are a separate exception; provider terms and account controls must be
 verified first.
 
-## Commit, push and review
+## Trunk-based development on main
 
-Use the dedicated GitHub App proposal interface, separate from the owner's
-personal approval authority. Submit bounded branch/PR operations or patches to
-the trusted Dell publisher; coding sessions never receive App signing keys or
-write tokens. A contents-write token can also operate release APIs, so tag rules
-alone do not create a safe coding-only token. The proposal interface exposes no
-product-release operation. Create working branches and pull requests through
-that interface. Never push directly to `main`, force-push or delete `main`,
-merge by bypassing checks, change protection settings, or create release tags
-from a coding-agent session. Check reporting, owner-approval verification and
-release publication use separate protected identities. Until that interface is
-qualified, do not fall back to raw write credentials or the owner's identity to
-submit source.
+Use trunk-based development in its strict form: `main` is the only branch.
+Integrate small, complete, checked changes into `main` often. Do not create
+feature, fix, release, temporary or personal branches, extra Git worktrees,
+pull requests or a second branch named `master`. Keep unfinished user-visible
+behaviour unavailable, and labelled as such, instead of holding it on a branch.
+This rule and its history are recorded in the [30 October requirements
+update](docs/requirements/updates-2026-10-30/README.md).
+
+Commit at meaningful turning points: a verified gate, a working lifecycle, a
+tested adapter group, a complete capability with its documentation, or an
+approved specification. A small critical fix may be a milestone. Do not commit
+single sentences, empty scaffolding, repeated status notes or unfinished
+fragments. Publish each checked milestone promptly. Never rewrite published
+history to tidy it.
+
+With several agents, one Git coordinator alone commits and moves Git state.
+Other agents own non-overlapping files and hand their checked work to it.
+
+Only the protected Dell publisher may advance `main`, under its own GitHub App
+identity, after the commit and push gates pass for the exact candidate. Coding
+sessions never receive App signing keys or write tokens. Never push to `main`
+yourself, force-push, delete `main`, bypass checks, change protection settings
+or create release tags from a coding-agent session. Check reporting,
+owner-approval verification and release publication keep separate protected
+identities. The main-only publisher is a new design awaiting approval and
+qualification. Until then nothing is published: do not fall back to raw write
+credentials, the owner's personal login or temporarily disabled protection.
 
 Before an ordinary agent commit, run the full applicable pre-commit profile
 through the planned single entry point, `just check`. This command is a required
 future interface, not permission to claim a pass before the justfile exists.
-Follow the explicit [documentation bootstrap](docs/dev/bootstrap.md) until then.
-Before a push, verify evidence matches the unchanged proposed content and rerun
-the fast suite. Missing, stale, skipped or incomplete evidence is not a pass.
+Until then follow the documentation profile in the
+[documentation bootstrap](docs/dev/bootstrap.md); its branch and pull
+request steps are replaced by the main-only publisher
+([SPEC-004](docs/specifications/main-only-publication.md)). Before a push,
+verify evidence matches the unchanged proposed content and rerun the fast
+suite. Missing, stale, skipped or incomplete evidence is not a pass.
 
-Only recognised Dependabot and Release Please proposal commits may be created
-before project checks finish. Their changes still require the full applicable
-checks before merging. This exception does not apply to ordinary agent commits.
+Dependabot and Release Please normally work through branches and pull
+requests, which main-only development forbids. Their earlier pre-check
+exception is suspended until the owner approves a main-only replacement.
+No bot, including AutoIssues, gets an unchecked commit exception.
+
+Every commit and push also requires: test-driven development evidence for new
+behaviour and fixes; the source limits of 300 physical lines per first-party
+text file, 60 lines per function and 80 characters per line; the 20×
+performance gate result; and the AutoIssues queue and quota checks. These are
+agreed requirements; their enforcement is not yet installed or qualified.
 
 Code, performance and security reviews are mandatory. Self-review is allowed
 only when honestly identified, supported by evidence and reviewed for quality.
-The additional required GitHub AI review must be complete for the current
-change; silence, an old review or a reaction is not approval. See
-[gates](docs/dev/gates.md).
+The additional required AI review must be complete for the exact current
+candidate; silence, an old review or a reaction is not approval. See
+[gates](docs/dev/gates.md); its merge stage is replaced by the publish
+stage in SPEC-004.
 
-Open eligible trusted pull requests with auto-merge enabled and keep fixing them
-until required checks pass. Do not enable automatic merging for an untrusted
-contributor or an unapproved protected decision. If a merged change breaks
-`main`, open a revert pull request immediately instead of a fix-forward pull
-request.
+If a published change breaks `main`, publish a revert commit through the
+protected publisher as the first response instead of a fix-forward change.
 
 ## Implementation boundaries
 
@@ -139,8 +166,10 @@ request.
   Never treat a process memory limit as proof of graceful recovery.
 - Use only admitted dependencies, models, datasets and independently implemented
   methods. Unresolved rights or patent concerns block admission.
-- First-party PHP and Python use at most 80 columns and 300 lines of code per
-  file. Keep code simple, avoid duplication and follow the approved rulebook.
+- First-party text files, including documentation, tests, tooling and
+  generated source, have at most 300 physical lines and 80 characters per
+  line; functions, methods and closures have at most 60 lines. Keep code
+  simple, avoid duplication and follow the approved rulebook.
 - Do not introduce Fossil, Sapling, Buck2, Bazel, Pants or Nix.
 
 ## Names and documentation
@@ -156,9 +185,9 @@ The approved names are `sutradhar`, `sutra`, `vinyas`, `mandali`, `sanyojan`,
 `pariksha`, `sampark`, `shodhan`, `namaste`, `setu`, `sanket`, `panchayat`,
 `shikhar`, `karma`, `uttar` and `kavach` (spam protection; "armor"). A system
 module class may use its approved name, such as `Setu(Module)`; this does not
-rename internal domain classes. User interfaces lead with English and show the
-glossary name alongside. Package, module and command help explains the name's
-meaning at first use.
+rename internal domain classes.
+User interfaces lead with English and show the glossary name alongside.
+Package, module and command help explains the name's meaning at first use.
 
 Use G3Doc-style Markdown with clear ownership, status, purpose and links. Keep
 one home for each explanation. Method notebooks own method-level explanations

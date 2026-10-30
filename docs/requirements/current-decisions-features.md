@@ -1,6 +1,7 @@
 # Current decisions: R029–R052
 
-Part of [current decisions](current-decisions.md); read its status first.
+Part of [current decisions](current-decisions.md); read its status and the
+[30 October 2026 update](current-decisions.md#30-october-2026-update) first.
 
 ## Analytics, SEO and related features
 

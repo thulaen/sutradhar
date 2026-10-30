@@ -9,6 +9,13 @@ specification.
 
 ## Stages
 
+Superseded in part on 30 October 2026: the "Merge" stage and the
+proposal-bot stage below are replaced by the publish stage of
+[SPEC-004](../specifications/main-only-publication.md), and the
+"Engineering checks" limits paragraph by R089. See the
+[supersession table](../requirements/updates-2026-10-30/supersession.md).
+The text below is kept as written.
+
 - Stage: Ordinary agent commit
   - Requirement: Full applicable pre-commit profile, including engineering
     reviews

@@ -27,6 +27,18 @@ scope. Approval of one feature does not approve every later implementation.
     protected decisions, ownership ledger and release sequence.
   - Status: APPROVED FOR IMPLEMENTATION
 
+## Proposed on 30 October 2026
+
+Awaiting the owner's approval as one grouped decision; see the
+[approval delta](approval-delta-2026-10-30.md) for changed sections.
+
+- SPEC-004: [main-only publication](main-only-publication.md) and its
+  [GitHub settings](main-only-github-settings.md).
+- SPEC-005: [AutoIssues and QA integrations](autoissues/README.md).
+- SPEC-006: [AutoIssues queue and quota gate](autoissues/quota.md).
+- SPEC-007: [20× performance gate](performance-gate.md) and
+  [engineering gates](engineering-gates.md).
+
 These approvals permit only the respective bounded implementations and their
 tests. They do not approve production linking, analytics collection, paid cloud
 provisioning, sending real content to AI providers, or a product release. Those

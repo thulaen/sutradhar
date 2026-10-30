@@ -3,18 +3,26 @@
 Read [AGENTS.md](AGENTS.md) first. Its rules apply to Claude in every
 environment. Speak to the owner in plain English and explain unfamiliar terms.
 
+For the latest saved work, read the
+[Claude continuation record](docs/dev/claude-continuation-2026-10-30b.md),
+then the
+[30 October requirements update](docs/requirements/updates-2026-10-30/README.md)
+and the [completion ledger](docs/dev/completion-ledger.md). The earlier
+[30 October continuation handoff](docs/dev/claude-handoff-2026-10-30.md)
+remains history; its draft pull request step is superseded.
+
 The owner replaced the failed project drive with a dedicated protected directory
-on Dell's existing data SSD. Read [storage
-preservation](docs/dev/storage-preservation.md) and the [incident
-record](docs/dev/storage-recovery.md). Preserve locked foundation versions; do
-not delete or weaken their protection without the owner's explicit instruction.
-Runtime services and the private ledger still need migration and verification
-before normal execution resumes.
+on Dell's existing data SSD.
+Read [storage preservation](docs/dev/storage-preservation.md) and the
+[incident record](docs/dev/storage-recovery.md). Preserve locked foundation
+versions; do not delete or weaken their protection without the owner's explicit
+instruction. Runtime services and the private ledger still need migration and
+verification before normal execution resumes.
 
 Then read the [handoff](docs/dev/handoff.md), which records the current
 checkpoint, the remaining setup work and the order for continuing safely.
-Preserve the full scope in [current
-decisions](docs/requirements/current-decisions.md).
+Preserve the full scope in
+[current decisions](docs/requirements/current-decisions.md).
 
 The repository contains a documentation foundation and a research catalogue.
 It does not yet contain an installable product or qualified enforcement tooling.
