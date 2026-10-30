@@ -1,0 +1,289 @@
+# Part 6 of 47; assembled by index.yaml.
+
+- source_item: "Q092-L001"
+  question: "Q092"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q092"
+  answer_line: "1"
+  label:
+    "undo only zen g change, but also if zen g is removed as an addon, \
+    the links should remain."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L001"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "1"
+  label:
+    "option 1 and learn from the removed suggestion, also threads and \
+    resources should have an a pagerank score based not ..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L005"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "5"
+  label:
+    "mcp should also be use to have chatgpt or claude or gemini to judge \
+    borderline candidates or reword an anchor so it r..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L009"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "9"
+  label:
+    "Legend: ★ core (needed for v1); ◆ recommended once v1 works; ○ optional, \
+    or an alternative where you pick one per group."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L011"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "11"
+  label: "Reading XenForo data"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L012"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "12"
+  label:
+    "SQLAlchemy ★: query xf_thread, xf_post, xf_node and xf_tag_content, \
+    and write suggestion rows."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L013"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "13"
+  label: "PyMySQL ★: pure-Python MySQL/MariaDB driver for the XF database."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L014"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "14"
+  label:
+    "mysqlclient ○: faster C driver for big bulk imports (instead of PyMySQL)."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L015"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "15"
+  label: "aiomysql ○: async driver, if the service is async."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L016"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "16"
+  label:
+    "alembic ◆: database migrations for the service’s own tables. Tables \
+    inside the XF database belong in the add-on’s Set..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L017"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "17"
+  label:
+    "httpx ★: call the XF REST API (XF-Api-Key header) and fetch your \
+    own pages."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L018"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "18"
+  label: "tenacity ◆: retry with backoff around database, API and model calls."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L019"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "19"
+  label: "orjson ◆: fast JSON for API payloads."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L020"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "20"
+  label: "Cleaning post content"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L021"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "21"
+  label:
+    "bbcode ★: parse xf_post.message, with handlers for [QUOTE], [CODE], \
+    [USER], [ATTACH] and [MEDIA] so quoted or code te..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L022"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "22"
+  label:
+    "beautifulsoup4 ★: read rendered HTML and find the links already in \
+    it."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L023"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "23"
+  label: "lxml ★: fast HTML parser for bs4."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L024"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "24"
+  label:
+    "selectolax ○: much faster HTML parsing when processing the whole \
+    forum at once."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L025"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "25"
+  label: "ftfy ◆: fix garbled text from old vBulletin/phpBB imports."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L026"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "26"
+  label:
+    "regex ◆: Unicode-aware regex (\\p{L}) for word boundaries in any \
+    language."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L027"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "27"
+  label: "Unidecode ◆: accent-insensitive matching (café ↔ cafe)."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L028"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "28"
+  label: "URLs and existing links"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."

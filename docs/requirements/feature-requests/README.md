@@ -1,6 +1,7 @@
 # Feature-request records
 
-Status: the initial backlog is the [feature register](../../specifications/README.md).
+Status: the initial backlog is the
+[feature register](../../specifications/README.md).
 
 Create a numbered FR record here when the owner requests a new capability or a
 change to approved requirements. Each record contains:
@@ -17,8 +18,8 @@ change to approved requirements. Each record contains:
 Valid working states are requested, researching, specification drafted,
 awaiting approval, approved, implementing, awaiting verification, verified,
 released, rejected and superseded. A record moves to verified or released only
-with evidence for that exact state. Do not mark a request done because a document,
-stub, registry entry or narrow test exists.
+with evidence for that exact state. Do not mark a request done because a
+document, stub, registry entry or narrow test exists.
 
 Do not create duplicate requests to inflate progress counts. Preserve rejected
 and superseded history. Follow the [milestone policy](../milestones.md) for

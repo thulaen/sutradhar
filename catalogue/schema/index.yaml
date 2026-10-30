@@ -1,0 +1,9 @@
+assembly:
+  "For each listed part file in order, walk its path of keys from the \
+  schema root, creating empty mappings as needed, and add its merge mapping's \
+  keys there in order. The result is one JSON Schema object."
+schema_parts:
+  - "schema-01.yaml"
+  - "schema-02.yaml"
+  - "schema-03.yaml"
+  - "schema-04.yaml"

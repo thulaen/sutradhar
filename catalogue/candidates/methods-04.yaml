@@ -1,0 +1,238 @@
+# Part 4 of 12; assembled by index.yaml.
+
+- id: "M-000010"
+  name: "TextTiling"
+  aliases: []
+  family: "text_structure"
+  kind: "algorithm"
+  stage: "candidate"
+  counts_toward_release: false
+  source_ids:
+    - "SRC-0010"
+  summary:
+    "Find topic boundaries from changes in lexical cohesion across a passage."
+  proposed_use: "Keep phrase and destination analysis within coherent contexts."
+  applicability:
+    "Research only until admitted. The approved specification must define \
+    available evidence, public-content permissions and missing-data behaviour\
+    ."
+  input_contract_draft:
+    "Tokenised public text with original offsets and paragraph boundaries."
+  output_contract_draft:
+    "Segment boundaries and supporting cohesion measurements."
+  distinctness:
+    review_status: "pending"
+    hypothesis:
+      "Create an original two-topic passage with a controlled transition; \
+      compare detected boundaries against equal-sized splitting."
+    not_separate_methods:
+      "Window sizes, smoothing settings or boundary thresholds."
+    duplicate_of: null
+  test_ideas:
+    distinguishing_example:
+      "Create an original two-topic passage with a controlled transition; \
+      compare detected boundaries against equal-sized splitting."
+    edge_cases:
+      "Very short text; repeated vocabulary; no topic change; all stop \
+      words."
+    missing_evidence:
+      "Return a visible pending state when required inputs are absent; \
+      do not fabricate data."
+    usefulness:
+      "Predeclare a task-specific comparator and acceptance threshold, \
+      then evaluate on held-out data with relevant subgroups."
+    recovery:
+      "Interrupt at each committed work boundary and confirm deterministic \
+      replay or declared stochastic equivalence without losing completed \
+      work."
+  resource_plan:
+    work_unit: "One bounded neighbouring-window comparison."
+    checkpoint_contents:
+      "Token cursor, window statistics, boundary candidates and text version."
+    peak_memory_bytes: null
+    qualified_workload: null
+    measurement_status: "unrun"
+    constraint:
+      "Production analysis shares the combined Python-worker limit; lab \
+      research uses its separate approved profile. A resource plan is \
+      not proof that this method fits."
+  rights:
+    status: "not_reviewed"
+    jurisdictions:
+      - "UK"
+      - "EU"
+      - "US"
+    copied_implementation: false
+    dependency_admission: "none"
+    model_and_dataset_admission: "none"
+    patent_evidence: []
+    decision_receipt: null
+  approval:
+    specification_path: null
+    owner_approval_receipt: null
+  evidence:
+    implementation_paths: []
+    test_receipts: []
+    usefulness_receipts: []
+    resource_receipts: []
+    review_receipts: []
+    release_receipt: null
+  exclusion: null
+- id: "M-000011"
+  name: "C99 text segmentation"
+  aliases: []
+  family: "text_structure"
+  kind: "algorithm"
+  stage: "candidate"
+  counts_toward_release: false
+  source_ids:
+    - "SRC-0011"
+  summary:
+    "Use local ranks of sentence similarities and divisive clustering \
+    to propose text boundaries."
+  proposed_use: "Compare an alternative topic-segmentation procedure."
+  applicability:
+    "Research only until admitted. The approved specification must define \
+    available evidence, public-content permissions and missing-data behaviour\
+    ."
+  input_contract_draft:
+    "Tokenised sentences with an approved similarity definition."
+  output_contract_draft: "Segment boundaries and ranking evidence."
+  distinctness:
+    review_status: "pending"
+    hypothesis:
+      "Construct a sentence-similarity example where local ranks change \
+      a boundary decision relative to raw-similarity segmentation."
+    not_separate_methods: "Rank-window sizes and target segment counts."
+    duplicate_of: null
+  test_ideas:
+    distinguishing_example:
+      "Construct a sentence-similarity example where local ranks change \
+      a boundary decision relative to raw-similarity segmentation."
+    edge_cases:
+      "One sentence; tied similarities; all-zero vectors; oversized similarity \
+      matrices."
+    missing_evidence:
+      "Return a visible pending state when required inputs are absent; \
+      do not fabricate data."
+    usefulness:
+      "Predeclare a task-specific comparator and acceptance threshold, \
+      then evaluate on held-out data with relevant subgroups."
+    recovery:
+      "Interrupt at each committed work boundary and confirm deterministic \
+      replay or declared stochastic equivalence without losing completed \
+      work."
+  resource_plan:
+    work_unit: "A bounded similarity tile or partition operation."
+    checkpoint_contents:
+      "Tile identity, local ranks, partition state and source version."
+    peak_memory_bytes: null
+    qualified_workload: null
+    measurement_status: "unrun"
+    constraint:
+      "Production analysis shares the combined Python-worker limit; lab \
+      research uses its separate approved profile. A resource plan is \
+      not proof that this method fits."
+  rights:
+    status: "not_reviewed"
+    jurisdictions:
+      - "UK"
+      - "EU"
+      - "US"
+    copied_implementation: false
+    dependency_admission: "none"
+    model_and_dataset_admission: "none"
+    patent_evidence: []
+    decision_receipt: null
+  approval:
+    specification_path: null
+    owner_approval_receipt: null
+  evidence:
+    implementation_paths: []
+    test_receipts: []
+    usefulness_receipts: []
+    resource_receipts: []
+    review_receipts: []
+    release_receipt: null
+  exclusion: null
+- id: "M-000012"
+  name: "Sentence-BERT representation"
+  aliases: []
+  family: "text_structure"
+  kind: "statistical_model"
+  stage: "candidate"
+  counts_toward_release: false
+  source_ids:
+    - "SRC-0012"
+  summary:
+    "Represent sentences independently so their learned meanings can be \
+    compared."
+  proposed_use: "Research semantic destination relevance beyond shared words."
+  applicability:
+    "Research only until admitted. The approved specification must define \
+    available evidence, public-content permissions and missing-data behaviour\
+    ."
+  input_contract_draft:
+    "Approved encoder architecture, separately admitted weights and bounded \
+    text chunks."
+  output_contract_draft: "Versioned embedding vectors and comparison results."
+  distinctness:
+    review_status: "pending"
+    hypothesis:
+      "Use paraphrases and misleading shared-word pairs from a held-out \
+      synthetic set; distinguish semantic behaviour from a lexical baseline."
+    not_separate_methods:
+      "Different checkpoints, vector sizes, languages or quantisation \
+      settings alone."
+    duplicate_of: null
+  test_ideas:
+    distinguishing_example:
+      "Use paraphrases and misleading shared-word pairs from a held-out \
+      synthetic set; distinguish semantic behaviour from a lexical baseline."
+    edge_cases:
+      "Empty input; long inputs; mismatched model versions; missing model \
+      files."
+    missing_evidence:
+      "Return a visible pending state when required inputs are absent; \
+      do not fabricate data."
+    usefulness:
+      "Predeclare a task-specific comparator and acceptance threshold, \
+      then evaluate on held-out data with relevant subgroups."
+    recovery:
+      "Interrupt at each committed work boundary and confirm deterministic \
+      replay or declared stochastic equivalence without losing completed \
+      work."
+  resource_plan:
+    work_unit: "One bounded encoder batch."
+    checkpoint_contents:
+      "Model identity, preprocessing version, text cursor and completed \
+      vector IDs."
+    peak_memory_bytes: null
+    qualified_workload: null
+    measurement_status: "unrun"
+    constraint:
+      "Production analysis shares the combined Python-worker limit; lab \
+      research uses its separate approved profile. A resource plan is \
+      not proof that this method fits."
+  rights:
+    status: "not_reviewed"
+    jurisdictions:
+      - "UK"
+      - "EU"
+      - "US"
+    copied_implementation: false
+    dependency_admission: "none"
+    model_and_dataset_admission: "none"
+    patent_evidence: []
+    decision_receipt: null
+  approval:
+    specification_path: null
+    owner_approval_receipt: null
+  evidence:
+    implementation_paths: []
+    test_receipts: []
+    usefulness_receipts: []
+    resource_receipts: []
+    review_receipts: []
+    release_receipt: null
+  exclusion: null

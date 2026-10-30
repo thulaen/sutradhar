@@ -1,0 +1,240 @@
+# Part 10 of 12; assembled by index.yaml.
+
+- id: "M-000028"
+  name: "Recursive feature elimination"
+  aliases: []
+  family: "wrappers"
+  kind: "wrapper"
+  stage: "candidate"
+  counts_toward_release: false
+  source_ids:
+    - "SRC-0024"
+  summary:
+    "Repeatedly fit a model and remove lower-ranked features for a controlled \
+    comparison."
+  proposed_use:
+    "Investigate compact model inputs in the lab without bypassing required \
+    methods."
+  applicability:
+    "Lab research when its declared training or trial evidence is available; \
+    it must not skip mandatory production methods or promote unapproved \
+    code or models."
+  input_contract_draft:
+    "A reviewed estimator, feature table and independent comparison split."
+  output_contract_draft: "A feature ordering and evaluation trace."
+  distinctness:
+    review_status: "pending"
+    hypothesis:
+      "Use interacting and redundant inputs; compare the elimination path \
+      with a one-off importance ranking."
+    not_separate_methods:
+      "Removal fractions, target sizes or cross-validation wrappers alone."
+    duplicate_of: null
+  test_ideas:
+    distinguishing_example:
+      "Use interacting and redundant inputs; compare the elimination path \
+      with a one-off importance ranking."
+    edge_cases:
+      "Tied importance; no useful features; missing values; correlated \
+      inputs."
+    missing_evidence:
+      "Return a visible pending state when required inputs are absent; \
+      do not fabricate data."
+    usefulness:
+      "Predeclare a task-specific comparator and acceptance threshold, \
+      then evaluate on held-out data with relevant subgroups."
+    recovery:
+      "Interrupt at each committed work boundary and confirm deterministic \
+      replay or declared stochastic equivalence without losing completed \
+      work."
+  resource_plan:
+    work_unit: "One bounded fit/elimination round."
+    checkpoint_contents:
+      "Remaining feature IDs, estimator state and split identity."
+    peak_memory_bytes: null
+    qualified_workload: null
+    measurement_status: "unrun"
+    constraint:
+      "Production analysis shares the combined Python-worker limit; lab \
+      research uses its separate approved profile. A resource plan is \
+      not proof that this method fits."
+  rights:
+    status: "not_reviewed"
+    jurisdictions:
+      - "UK"
+      - "EU"
+      - "US"
+    copied_implementation: false
+    dependency_admission: "none"
+    model_and_dataset_admission: "none"
+    patent_evidence: []
+    decision_receipt: null
+  approval:
+    specification_path: null
+    owner_approval_receipt: null
+  evidence:
+    implementation_paths: []
+    test_receipts: []
+    usefulness_receipts: []
+    resource_receipts: []
+    review_receipts: []
+    release_receipt: null
+  exclusion: null
+- id: "M-000029"
+  name: "Sequential feature selection"
+  aliases: []
+  family: "wrappers"
+  kind: "wrapper"
+  stage: "candidate"
+  counts_toward_release: false
+  source_ids:
+    - "SRC-0024"
+  summary:
+    "Evaluate stepwise additions or removals of inputs using a fixed compariso\
+    n rule."
+  proposed_use: "Research diagnostic feature subsets."
+  applicability:
+    "Lab research when its declared training or trial evidence is available; \
+    it must not skip mandatory production methods or promote unapproved \
+    code or models."
+  input_contract_draft:
+    "An approved estimator, feature set and validation rule."
+  output_contract_draft: "A selection path and held-out comparison results."
+  distinctness:
+    review_status: "pending"
+    hypothesis:
+      "Use a feature pair whose combined contribution differs from individual \
+      importance; inspect each permitted step against independent scores."
+    not_separate_methods:
+      "Forward/backward mode, subset size or score thresholds alone."
+    duplicate_of: null
+  test_ideas:
+    distinguishing_example:
+      "Use a feature pair whose combined contribution differs from individual \
+      importance; inspect each permitted step against independent scores."
+    edge_cases:
+      "Ties; feature interactions; small samples; exhausted comparison \
+      budget."
+    missing_evidence:
+      "Return a visible pending state when required inputs are absent; \
+      do not fabricate data."
+    usefulness:
+      "Predeclare a task-specific comparator and acceptance threshold, \
+      then evaluate on held-out data with relevant subgroups."
+    recovery:
+      "Interrupt at each committed work boundary and confirm deterministic \
+      replay or declared stochastic equivalence without losing completed \
+      work."
+  resource_plan:
+    work_unit: "One bounded candidate-subset comparison."
+    checkpoint_contents:
+      "Selected feature IDs, remaining candidates and evaluation receipts."
+    peak_memory_bytes: null
+    qualified_workload: null
+    measurement_status: "unrun"
+    constraint:
+      "Production analysis shares the combined Python-worker limit; lab \
+      research uses its separate approved profile. A resource plan is \
+      not proof that this method fits."
+  rights:
+    status: "not_reviewed"
+    jurisdictions:
+      - "UK"
+      - "EU"
+      - "US"
+    copied_implementation: false
+    dependency_admission: "none"
+    model_and_dataset_admission: "none"
+    patent_evidence: []
+    decision_receipt: null
+  approval:
+    specification_path: null
+    owner_approval_receipt: null
+  evidence:
+    implementation_paths: []
+    test_receipts: []
+    usefulness_receipts: []
+    resource_receipts: []
+    review_receipts: []
+    release_receipt: null
+  exclusion: null
+- id: "M-000030"
+  name: "DBSCAN"
+  aliases: []
+  family: "clustering_anomaly"
+  kind: "algorithm"
+  stage: "candidate"
+  counts_toward_release: false
+  source_ids:
+    - "SRC-0025"
+  summary:
+    "Find density-connected groups and mark points that do not fit those \
+    groups."
+  proposed_use: "Study topic clusters or unusual patterns for human review."
+  applicability:
+    "Research only until admitted. The approved specification must define \
+    available evidence, public-content permissions and missing-data behaviour\
+    ."
+  input_contract_draft:
+    "Approved vectors, distance definition and neighbourhood policy."
+  output_contract_draft:
+    "Groups and noise labels with an explanation of their limits."
+  distinctness:
+    review_status: "pending"
+    hypothesis:
+      "Use non-spherical synthetic groups and isolated points; distinguish \
+      density connectivity from a fixed-centre clustering baseline."
+    not_separate_methods:
+      "Distance thresholds, minimum-neighbour counts or vector dimensions \
+      alone."
+    duplicate_of: null
+  test_ideas:
+    distinguishing_example:
+      "Use non-spherical synthetic groups and isolated points; distinguish \
+      density connectivity from a fixed-centre clustering baseline."
+    edge_cases:
+      "Duplicate points; all noise; one connected group; expensive neighbourho\
+      ods."
+    missing_evidence:
+      "Return a visible pending state when required inputs are absent; \
+      do not fabricate data."
+    usefulness:
+      "Predeclare a task-specific comparator and acceptance threshold, \
+      then evaluate on held-out data with relevant subgroups."
+    recovery:
+      "Interrupt at each committed work boundary and confirm deterministic \
+      replay or declared stochastic equivalence without losing completed \
+      work."
+  resource_plan:
+    work_unit: "One bounded neighbourhood expansion."
+    checkpoint_contents:
+      "Visited IDs, current expansion queue and data version."
+    peak_memory_bytes: null
+    qualified_workload: null
+    measurement_status: "unrun"
+    constraint:
+      "Production analysis shares the combined Python-worker limit; lab \
+      research uses its separate approved profile. A resource plan is \
+      not proof that this method fits."
+  rights:
+    status: "not_reviewed"
+    jurisdictions:
+      - "UK"
+      - "EU"
+      - "US"
+    copied_implementation: false
+    dependency_admission: "none"
+    model_and_dataset_admission: "none"
+    patent_evidence: []
+    decision_receipt: null
+  approval:
+    specification_path: null
+    owner_approval_receipt: null
+  evidence:
+    implementation_paths: []
+    test_receipts: []
+    usefulness_receipts: []
+    resource_receipts: []
+    review_receipts: []
+    release_receipt: null
+  exclusion: null

@@ -1,0 +1,291 @@
+# Part 32 of 47; assembled by index.yaml.
+
+- source_item: "Q148-L093"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "93"
+  label: "Links to the forum under an old domain, a CDN host, or a mirror"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L094"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "94"
+  label: "URL shorteners that resolve to internal threads"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L095"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "95"
+  label: "Percent-encoded slugs for non-Latin titles"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L096"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "96"
+  label: "Tracking parameters on internal links"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L097"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "97"
+  label:
+    "Internal links to attachments and member profiles (internal, but \
+    not threads)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L098"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "98"
+  label: "[URL] values with trailing punctuation"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L099"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "99"
+  label: "Relative URLs"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L100"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "100"
+  label: "Internal hosts inside [MEDIA] or [IMG]"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L101"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "101"
+  label: "5. XenForo content state and visibility"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L102"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "102"
+  label: "★ discussion_state and message_state must both be visible"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L103"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "103"
+  label: "★ Node permissions differ per user group: only the guest view counts"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L104"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "104"
+  label: "★ Nodes where guests can see the forum but not the threads"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L105"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "105"
+  label: "★ Private conversations: never indexed under any configuration"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L106"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "106"
+  label: "Profile posts are out of scope unless a module asks for them"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L107"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "107"
+  label:
+    "★ Word censoring: raw text contains words that render as ****, so \
+    never make them anchors, and never leak them in sug..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L108"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "108"
+  label:
+    "★ The spam cleaner deletes all of a user’s content at once: handle \
+    mass deletions"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L109"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "109"
+  label: "Batch moderation producing thousands of events in seconds"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L110"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "110"
+  label:
+    "Thread types (discussion, question, suggestion, article, poll) give \
+    the first post different meanings"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L111"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "111"
+  label:
+    "Article threads: the first post is the article, and replies are comments"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L112"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "112"
+  label: "A thread moved to a node with different visibility"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L113"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "113"
+  label:
+    "★ The post was edited between suggestion and acceptance: re-validate \
+    positions before applying"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L114"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "114"
+  label:
+    "A moderator removes an inserted link: don’t re-suggest it (suppression \
+    list with a cooldown)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L115"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "115"
+  label: "A member removes an inserted link: treat it as a rejection"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."

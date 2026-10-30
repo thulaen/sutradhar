@@ -1,0 +1,298 @@
+# Part 19 of 47; assembled by index.yaml.
+
+- source_item: "Q115-L125"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "125"
+  label: "Page number in the titles of pages 2+"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L126"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "126"
+  label: "Site name in titles, in a consistent format"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L127"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "127"
+  label: "★ Meta description present"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L128"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "128"
+  label: "Meta description length"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L129"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "129"
+  label: "Duplicate meta descriptions"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L130"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "130"
+  label: "Meta description taken from the first post, not boilerplate"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L131"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "131"
+  label: "★ One H1 per page, matching the thread title"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L132"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "132"
+  label: "Logical heading structure (no skipped levels)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L133"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "133"
+  label: "Open Graph tags (og:title, og:description, og:image, og:url)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L134"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "134"
+  label: "og:image set per thread (first image attachment)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L135"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "135"
+  label: "X/Twitter card tags"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L136"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "136"
+  label: "<html lang> matching the content language"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L137"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "137"
+  label: "8. Page layout and HTML (crawler)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L138"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "138"
+  label: "★ Viewport meta tag (mobile-friendly)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L139"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "139"
+  label: "How much navigation and widget HTML comes before the main content"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L140"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "140"
+  label:
+    "Share of the page taken by sidebars, widgets, and signatures vs. \
+    posts"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L141"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "141"
+  label:
+    "Identical widget content repeated on every page (latest posts, online \
+    users)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L142"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "142"
+  label: "Visible breadcrumbs"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L143"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "143"
+  label: "Visible post dates"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L144"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "144"
+  label: "Visible author names linking to profiles"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L145"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "145"
+  label:
+    "★ Intrusive pop-ups (cookie walls or sign-up prompts covering content \
+    for search visitors)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L146"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "146"
+  label: "Ads above the main content"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L147"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "147"
+  label: "Favicon present and valid (it shows in search results)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L148"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "148"
+  label:
+    "Invalid elements in <head> that make Google stop reading it early, \
+    so later tags are missed"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."

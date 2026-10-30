@@ -1,0 +1,288 @@
+# Part 30 of 47; assembled by index.yaml.
+
+- source_item: "Q148-L047"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "47"
+  label: "The same phrase appearing several times: link one occurrence only"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L048"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "48"
+  label:
+    "Overlapping candidates (“power supply” vs. “supply unit”): choose \
+    a non-overlapping set"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L049"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "49"
+  label: "Generic phrases (“this”, “here”, “the thread”) rejected as anchors"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L050"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "50"
+  label: "Numbers and dates as anchors (“2018”, “5.1”)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L051"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "51"
+  label: "Product names that are also usernames"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L052"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "52"
+  label: "Anchors in headings or list items keep the tag structure intact"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L053"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "53"
+  label: "Anchors in greeting lines (“Hi all”) are low quality"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L054"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "54"
+  label: "Matching is case-insensitive, but the post’s own case is preserved"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L055"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "55"
+  label: "An anchor spanning a line break"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L056"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "56"
+  label: "An anchor whose language differs from the target thread"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L057"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "57"
+  label:
+    "Links in a first post change the thread’s meaning more than links \
+    in replies: weigh them differently"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L058"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "58"
+  label: "★ The per-post link limit counts links that are already there"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L059"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "59"
+  label: "An anchor inside text that’s itself a URL"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L060"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "60"
+  label: "An anchor in a quote attribution line"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L061"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "61"
+  label: "★ The target is the current thread"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L062"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "62"
+  label:
+    "★ The target is the thread being quoted (XenForo quote attribution \
+    already links to it)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L063"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "63"
+  label: "Candidate phrases from generic thread titles (“Help!”) are discarded"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L064"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "64"
+  label: "3. Target selection"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L065"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "65"
+  label: "★ The target is in a node guests can’t view"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L066"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "66"
+  label:
+    "★ The node becomes private after the link was inserted: flag existing \
+    links, but never edit posts automatically"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L067"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "67"
+  label: "The target is soft-deleted or awaiting moderation"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L068"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "68"
+  label:
+    "The target is a redirect left by a moved thread: resolve it to the \
+    real thread"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L069"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "69"
+  label: "The target was merged into another thread: follow the merge"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."

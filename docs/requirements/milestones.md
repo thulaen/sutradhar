@@ -5,17 +5,56 @@ until the full scope and release conditions are met.
 
 ## Delivery order
 
-| Stage | Outcome | Exit evidence |
-| --- | --- | --- |
-| M00: requirements | Capture all interview decisions, large source requests, privacy redactions and explicit overrides. | A reviewed source register with no missing question numbers and no identifying material; each active requirement has an acceptance owner. |
-| M01: protected foundation | Prepare the authorised validation environment; establish documented repository protections, dedicated automation identities and the documentation checkpoint. | Host/storage records held privately; checked documentation; actual protection settings; no claims that unimplemented checks pass. |
-| M02: approved checking and publishing | Build the approved check runner, manual workflow and protected coordination/release services. | Owner-approved specifications, tests of failure paths, trustworthy status reporting and a deployed current-state manual. |
-| M03: research catalogue | Research and distinguish the full method catalogue before concentrating on the complete linking flow. | Source/rights records, duplicate analysis, mathematical specifications and a defensible path to at least 6,000 qualified methods; researched entries are not yet counted as implementations. |
-| M04: framework and methods | Implement approved core contracts and methods with live notebooks, bounded workers, checkpoints and feedback handling. | Per-feature approvals, correctness and usefulness evidence, resource measurements and registry counts derived from qualified entries. |
-| M05: forum linking and review | Complete public-content ingestion, suggestions, staff review, permanent insertion, suppression, undo and recovery. | End-to-end XenForo evidence for hard rules, stale/permission cases, million-post workload and resource budgets. |
-| M06: complete feature scope | Complete analytics, SEO, knowledge graph, optional hubs/tag descriptions, ranking/karma, summaries, moderation hints, drafts, integrations and optional cloud/search/storage features. | A completed capability matrix and feature acceptance packets, without quietly dropping optional-but-required-to-ship modules. |
-| M07: full release qualification | Qualify the complete candidate, at least 6,000 distinct methods and more than 10,000 meaningful playbook cases. | All ordinary gates, fixed/fresh judging, coverage, accessibility, browser evidence, 72-hour soak and clean installation using only the manual. |
-| M08: release and operation | Publish the qualified code and matching frozen manual, monitor operation and run the agreed ongoing jobs. | Final artifact hashes match the candidate; release/manual publication evidence; verified recovery, alerts and privacy handling. |
+- **M00: requirements**
+  - Outcome: Capture all interview decisions, large source requests, privacy
+    redactions and explicit overrides.
+  - Exit evidence: A reviewed source register with no missing question numbers
+    and no identifying material; each active requirement has an acceptance
+    owner.
+- **M01: protected foundation**
+  - Outcome: Prepare the authorised validation environment; establish
+    documented repository protections, dedicated automation identities and the
+    documentation checkpoint.
+  - Exit evidence: Host/storage records held privately; checked documentation;
+    actual protection settings; no claims that unimplemented checks pass.
+- **M02: approved checking and publishing**
+  - Outcome: Build the approved check runner, manual workflow and protected
+    coordination/release services.
+  - Exit evidence: Owner-approved specifications, tests of failure paths,
+    trustworthy status reporting and a deployed current-state manual.
+- **M03: research catalogue**
+  - Outcome: Research and distinguish the full method catalogue before
+    concentrating on the complete linking flow.
+  - Exit evidence: Source/rights records, duplicate analysis, mathematical
+    specifications and a defensible path to at least 6,000 qualified methods;
+    researched entries are not yet counted as implementations.
+- **M04: framework and methods**
+  - Outcome: Implement approved core contracts and methods with live
+    notebooks, bounded workers, checkpoints and feedback handling.
+  - Exit evidence: Per-feature approvals, correctness and usefulness evidence,
+    resource measurements and registry counts derived from qualified entries.
+- **M05: forum linking and review**
+  - Outcome: Complete public-content ingestion, suggestions, staff review,
+    permanent insertion, suppression, undo and recovery.
+  - Exit evidence: End-to-end XenForo evidence for hard rules,
+    stale/permission cases, million-post workload and resource budgets.
+- **M06: complete feature scope**
+  - Outcome: Complete analytics, SEO, knowledge graph, optional hubs/tag
+    descriptions, ranking/karma, summaries, moderation hints, drafts,
+    integrations and optional cloud/search/storage features.
+  - Exit evidence: A completed capability matrix and feature acceptance
+    packets, without quietly dropping optional-but-required-to-ship modules.
+- **M07: full release qualification**
+  - Outcome: Qualify the complete candidate, at least 6,000 distinct methods
+    and more than 10,000 meaningful playbook cases.
+  - Exit evidence: All ordinary gates, fixed/fresh judging, coverage,
+    accessibility, browser evidence, 72-hour soak and clean installation using
+    only the manual.
+- **M08: release and operation**
+  - Outcome: Publish the qualified code and matching frozen manual, monitor
+    operation and run the agreed ongoing jobs.
+  - Exit evidence: Final artifact hashes match the candidate; release/manual
+    publication evidence; verified recovery, alerts and privacy handling.
 
 Stages may overlap only where their dependencies and ownership allow it.
 Documentation, research and internal milestones do not authorise an incomplete
@@ -27,7 +66,7 @@ catalogue milestone; it does not replace that milestone with a smaller product.
 Maintain a feature record for each capability in the
 [specification index](../specifications/README.md), every active requirement in
 [current decisions](current-decisions.md) and every applicable item from the
-[source inventory](source-items.csv). Distinguish:
+[source inventory](source-items/index.yaml). Distinguish:
 
 - requirement recorded;
 - specification drafted and separately approved;

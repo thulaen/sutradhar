@@ -1,0 +1,21 @@
+schema_version: 1
+updated_on: "2026-10-30"
+scope: "Research candidates only. No entry is admitted or release-qualified."
+assembly:
+  "Read this index, then concatenate the lists in the listed part files, \
+  in order, as the value of the named list key. All other index fields \
+  except assembly and the parts list are top-level fields of the original \
+  record."
+methods_parts:
+  - "methods-01.yaml"
+  - "methods-02.yaml"
+  - "methods-03.yaml"
+  - "methods-04.yaml"
+  - "methods-05.yaml"
+  - "methods-06.yaml"
+  - "methods-07.yaml"
+  - "methods-08.yaml"
+  - "methods-09.yaml"
+  - "methods-10.yaml"
+  - "methods-11.yaml"
+  - "methods-12.yaml"

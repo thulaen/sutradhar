@@ -1,0 +1,294 @@
+# Part 38 of 47; assembled by index.yaml.
+
+- source_item: "Q148-L232"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "232"
+  label:
+    "Long transactions or table locks blocking XenForo’s own writes: read \
+    in small chunks"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L233"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "233"
+  label:
+    "XenForo stores Unix timestamps as integers: never assume datetime \
+    columns"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L234"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "234"
+  label: "Connection-pool exhaustion during event storms"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L235"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "235"
+  label: "★ Migrations run by two instances at once"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L236"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "236"
+  label:
+    "Sutradhar’s database and the XenForo database on different servers \
+    with different charsets"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L237"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "237"
+  label: "max_allowed_packet limits on long messages"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L238"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "238"
+  label: "15. Embeddings and vector index"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L239"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "239"
+  label:
+    "★ A model change invalidates every vector: version the index, and \
+    never mix versions"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L240"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "240"
+  label:
+    "Text longer than the model’s limit: chunking, and which chunk represents \
+    the thread"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L241"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "241"
+  label: "Embeddings of empty or tiny texts produce meaningless similarity"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L242"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "242"
+  label: "Near-duplicate posts crowding out other neighbours"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L243"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "243"
+  label:
+    "★ The index out of sync with the database: post-filter results by \
+    current visibility"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L244"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "244"
+  label: "Cosine similarity requires normalised vectors"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L245"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "245"
+  label: "Memory for 10M vectors: quantisation"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L246"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "246"
+  label: "No GPU in production: CPU fallback and latency"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L247"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "247"
+  label:
+    "Embeddings differing slightly across hardware and library versions: \
+    tolerances in tests"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L248"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "248"
+  label: "Model download failures at startup: offline mode and pinned caches"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L249"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "249"
+  label: "16. Eval and lab (pariksha)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L250"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "250"
+  label:
+    "Link reconstruction rewards whatever members already linked to, which \
+    favours popular threads"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L251"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "251"
+  label: "★ Leakage: eval posts in tuning data, so split by thread and by time"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L252"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "252"
+  label: "The judge jury sharing a provider or a blind spot"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L253"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "253"
+  label: "Judge drift across model updates: pin versions and record them"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L254"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "254"
+  label: "Judge cost blowups: caps and caching"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."

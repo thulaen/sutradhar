@@ -18,13 +18,16 @@ For context, the US Copyright Office distinguishes methods and ideas from
 their protected written or visual expression. The UK guidance identifies
 copyright, patents, designs and trade marks as separate types of protection.
 These are starting points for review, not a clearance for a particular
-implementation. [US Copyright Office, Circular 33](https://www.copyright.gov/circs/circ33.pdf),
-[UK Intellectual Property Office overview](https://www.gov.uk/intellectual-property-an-overview).
+implementation.
+[US Copyright Office, Circular 33](https://www.copyright.gov/circs/circ33.pdf),
+[UK Intellectual Property Office
+overview](https://www.gov.uk/intellectual-property-an-overview).
 
 The review covers the intended UK, EU and US distribution. Do not infer a
 blanket software exception from a short summary of patent law. Record the
 actual claims, applicable territories and current legal status for a
-relevant patent family. [European Patent Convention, Article 52](https://www.epo.org/en/legal/epc/2020/a52.html),
+relevant patent family. [European Patent Convention,
+Article 52](https://www.epo.org/en/legal/epc/2020/a52.html),
 [USPTO patent management guidance](https://www.uspto.gov/patents/basics/manage).
 
 ## Required process
@@ -63,8 +66,8 @@ abstract is not a full algorithm review.
 Some older papers in the ACL Anthology display non-commercial and
 share-alike publication terms, while newer papers display different terms.
 This catalogue links to those papers and uses independently written short
-research descriptions. It does not relicense or redistribute the papers.
-See the notices on the [TextTiling source page](https://aclanthology.org/J97-1003/)
+research descriptions. It does not relicense or redistribute the papers. See
+the notices on the [TextTiling source page](https://aclanthology.org/J97-1003/)
 and [Sentence-BERT source page](https://aclanthology.org/D19-1410/).
 
 Pixie and other named systems are research candidates, not claims to reuse

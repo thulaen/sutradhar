@@ -1,0 +1,289 @@
+# Part 45 of 47; assembled by index.yaml.
+
+- source_item: "Q192-L069"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "69"
+  label:
+    "- Every release tag deploys a frozen version (X.Y) and moves the \
+    `latest` alias to it. The version switcher shows eve..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L070"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "70"
+  label:
+    "- A pull request that changes a setting, a CLI command, an error \
+    code, a module, or anything a user sees on the revie..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L071"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "71"
+  label:
+    "- A weekly agent task (docs/dev/manual-gardener.md, written so it \
+    can be pasted into Codex or Claude Code) reads the ..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L072"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "72"
+  label:
+    "- Every page has front matter with `audience` and `reviewed` (the \
+    git SHA it was last checked against). The gardener ..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L073"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "73"
+  label:
+    "- The whole build, including screenshots, must finish in under four \
+    minutes, so it can run on every push."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L075"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "75"
+  label: "## Design"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L076"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "76"
+  label:
+    "The manual uses Kraken's colour palette, BBC GEL's typography and \
+    spacing rules, and GOV.UK Design System patterns. A..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L077"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "77"
+  label:
+    "- Colours: take the current palette from kraken.com's public stylesheets \
+    (primary purple, dark surfaces, light surfac..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L078"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "78"
+  label:
+    "- Typography and spacing (BBC GEL): a type scale with a clear hierarchy \
+    (one display size for page titles, two headin..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L079"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "79"
+  label:
+    "- Patterns (GOV.UK Design System): left-aligned content, underlined \
+    links, the distinctive yellow focus state with a ..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L080"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "80"
+  label:
+    "- Implement all of it as a mkdocs-material customisation: a custom \
+    palette via CSS variables, manual/stylesheets/toke..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L081"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "81"
+  label:
+    "- Accessibility: WCAG 2.2 AA throughout. Run an automated accessibility \
+    check (axe through Playwright) over every pag..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L082"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "82"
+  label:
+    "- Record the design decisions and the source of each palette value \
+    in docs/dev/manual-design.md."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L084"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "84"
+  label: "## Writing rules"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L085"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "85"
+  label:
+    "- Plain English. Short sentences. Numbered steps for anything the \
+    reader does. One way to do each thing, not three."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L086"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "86"
+  label:
+    "- Say what to click, type, or expect; never why the code is designed \
+    that way."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L087"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "87"
+  label:
+    "- Every command in a `bash` fenced block, one command per block, \
+    no leading `$`, with the expected output after it wh..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L088"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "88"
+  label:
+    "- Every setting named exactly as in the config file, in code formatting."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L089"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "89"
+  label:
+    "- First use of a Sutradhar name on a page gives its meaning in brackets, \
+    e.g. the review page (sujhav, \"suggestion\")."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L090"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "90"
+  label: "- No marketing language, no \"simply\", no \"just\"."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L091"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "91"
+  label:
+    "- Use \"you\" for the reader and name the role when it matters (\"as \
+    a moderator, you...\")."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."

@@ -16,8 +16,8 @@ Start with:
 - [Research families](taxonomy.md).
 - [Rights and clean-room review](rights-review.md).
 - [Catalogue format](../../catalogue/README.md).
-- [Candidate data](../../catalogue/candidates.json).
-- [Sources actually consulted](../../catalogue/sources.json).
+- [Candidate data](../../catalogue/candidates/index.yaml).
+- [Sources actually consulted](../../catalogue/sources/index.yaml).
 
 The catalogue is deliberately incomplete. Its entries are real research
 candidates, not generated names used to reach a target. Each proposed use
@@ -26,15 +26,17 @@ establish Sutradhar's usefulness, memory use or completion time.
 
 ## Evidence labels
 
-| Label | What it establishes |
-| --- | --- |
-| Metadata read | The source exists and identifies its subject. |
-| Abstract read | The authors' summary was read. |
-| Selected sections read | Named sections of the paper or official documentation were read. |
-| Specification approved | The owner approved a versioned, independently written specification. |
-| Implemented | First-party production code exists for that specification. |
-| Verified | Required tests and reviews passed for an identified version and environment. |
-| Release-qualified | The method meets the distinctness, usefulness, rights, resource and release requirements. |
+- Metadata read: The source exists and identifies its subject.
+- Abstract read: The authors' summary was read.
+- Selected sections read: Named sections of the paper or official
+  documentation were read.
+- Specification approved: The owner approved a versioned, independently
+  written specification.
+- Implemented: First-party production code exists for that specification.
+- Verified: Required tests and reviews passed for an identified version and
+  environment.
+- Release-qualified: The method meets the distinctness, usefulness, rights,
+  resource and release requirements.
 
 These labels cannot substitute for one another. Bibliographic details may
 point to a useful method while implementation remains blocked.

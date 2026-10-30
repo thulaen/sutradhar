@@ -1,0 +1,289 @@
+# Part 33 of 47; assembled by index.yaml.
+
+- source_item: "Q148-L116"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "116"
+  label: "A first post that becomes a reply after a thread merge"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L117"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "117"
+  label:
+    "A thread split: posts move to a new thread, so pending suggestions \
+    change “current thread”"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L118"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "118"
+  label: "A single post moved to another thread"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L119"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "119"
+  label: "A thread undeleted"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L120"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "120"
+  label: "A node deleted with its threads moved elsewhere"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L121"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "121"
+  label:
+    "★ Permission changes with no thread events: VisibleNodesChanged must \
+    fire"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L122"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "122"
+  label: "Sticky threads"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L123"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "123"
+  label: "Hidden content behind [SPOILER]"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L124"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "124"
+  label: "Drafts and previews: never indexed"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L125"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "125"
+  label: "6. Users and privacy"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L126"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "126"
+  label: "A user deleted while their posts remain"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L127"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "127"
+  label: "A user renamed: mentions and quote attributions change"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L128"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "128"
+  label: "Two user accounts merged"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L129"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "129"
+  label:
+    "★ Erasure requests: purge embeddings, caches, snapshots, and suggestions \
+    tied to the deleted content"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L130"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "130"
+  label: "A member preference to opt out of automatic linking on their posts"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L131"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "131"
+  label: "A moderator decision attributed to a since-deleted moderator"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L132"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "132"
+  label:
+    "★ Staff-only threads never reach the LLM judge, lab snapshots, or \
+    logs"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L133"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "133"
+  label:
+    "★ Personal data in post text (emails, phone numbers) sent to third-party \
+    models: redact, and restrict providers by re..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L134"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "134"
+  label:
+    "★ Lab snapshots are purged or regenerated when their posts are deleted"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L135"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "135"
+  label: "Members under a minimum age, where local law restricts processing"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L136"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "136"
+  label: "7. Languages and Unicode"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L137"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "137"
+  label: "Mixed languages in one post"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L138"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "138"
+  label: "Language detection on posts under 20 characters is unreliable"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."

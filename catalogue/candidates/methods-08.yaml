@@ -1,0 +1,234 @@
+# Part 8 of 12; assembled by index.yaml.
+
+- id: "M-000022"
+  name: "Gaussian-process expected-improvement search"
+  aliases: []
+  family: "optimisation"
+  kind: "meta_algorithm"
+  stage: "candidate"
+  counts_toward_release: false
+  source_ids:
+    - "SRC-0018"
+  summary:
+    "Use a probabilistic response model and an improvement criterion to \
+    choose experiments."
+  proposed_use:
+    "Compare model-guided tuning against Parzen and random-search baselines."
+  applicability:
+    "Lab research when its declared training or trial evidence is available; \
+    it must not skip mandatory production methods or promote unapproved \
+    code or models."
+  input_contract_draft:
+    "Approved numeric search space and observed trial results."
+  output_contract_draft: "A surrogate and proposed configuration."
+  distinctness:
+    review_status: "pending"
+    hypothesis:
+      "On an independently defined small objective, distinguish uncertain \
+      promising areas from only exploiting the current best point."
+    not_separate_methods: "Kernel settings, search bounds or restarts alone."
+    duplicate_of: null
+  test_ideas:
+    distinguishing_example:
+      "On an independently defined small objective, distinguish uncertain \
+      promising areas from only exploiting the current best point."
+    edge_cases:
+      "Duplicate inputs; singular covariance; noisy results; too many \
+      observations."
+    missing_evidence:
+      "Return a visible pending state when required inputs are absent; \
+      do not fabricate data."
+    usefulness:
+      "Predeclare a task-specific comparator and acceptance threshold, \
+      then evaluate on held-out data with relevant subgroups."
+    recovery:
+      "Interrupt at each committed work boundary and confirm deterministic \
+      replay or declared stochastic equivalence without losing completed \
+      work."
+  resource_plan:
+    work_unit: "One bounded surrogate fit or acquisition search."
+    checkpoint_contents:
+      "Observation identities, model state and acquisition-search state."
+    peak_memory_bytes: null
+    qualified_workload: null
+    measurement_status: "unrun"
+    constraint:
+      "Production analysis shares the combined Python-worker limit; lab \
+      research uses its separate approved profile. A resource plan is \
+      not proof that this method fits."
+  rights:
+    status: "not_reviewed"
+    jurisdictions:
+      - "UK"
+      - "EU"
+      - "US"
+    copied_implementation: false
+    dependency_admission: "none"
+    model_and_dataset_admission: "none"
+    patent_evidence: []
+    decision_receipt: null
+  approval:
+    specification_path: null
+    owner_approval_receipt: null
+  evidence:
+    implementation_paths: []
+    test_receipts: []
+    usefulness_receipts: []
+    resource_receipts: []
+    review_receipts: []
+    release_receipt: null
+  exclusion: null
+- id: "M-000023"
+  name: "Hyperband"
+  aliases: []
+  family: "optimisation"
+  kind: "meta_algorithm"
+  stage: "candidate"
+  counts_toward_release: false
+  source_ids:
+    - "SRC-0019"
+  summary:
+    "Allocate increasing resources to configuration trials using successive \
+    rounds."
+  proposed_use: "Research lab-only tuning resource allocation."
+  applicability:
+    "Lab research when its declared training or trial evidence is available; \
+    it must not skip mandatory production methods or promote unapproved \
+    code or models."
+  input_contract_draft:
+    "Candidate trial space, resource units and eligible intermediate outcomes."
+  output_contract_draft: "Trial allocations and completed comparison results."
+  distinctness:
+    review_status: "pending"
+    hypothesis:
+      "Use synthetic learning curves with a late improver; measure the \
+      effect of early stopping and verify the declared budget accounting."
+    not_separate_methods:
+      "Reduction factors, bracket counts or budget settings alone."
+    duplicate_of: null
+  test_ideas:
+    distinguishing_example:
+      "Use synthetic learning curves with a late improver; measure the \
+      effect of early stopping and verify the declared budget accounting."
+    edge_cases:
+      "No intermediate signal; late improvement; failed trials; mixed \
+      resource units."
+    missing_evidence:
+      "Return a visible pending state when required inputs are absent; \
+      do not fabricate data."
+    usefulness:
+      "Predeclare a task-specific comparator and acceptance threshold, \
+      then evaluate on held-out data with relevant subgroups."
+    recovery:
+      "Interrupt at each committed work boundary and confirm deterministic \
+      replay or declared stochastic equivalence without losing completed \
+      work."
+  resource_plan:
+    work_unit: "One bounded allocation round."
+    checkpoint_contents:
+      "Bracket, trial state, allocations and committed outcomes."
+    peak_memory_bytes: null
+    qualified_workload: null
+    measurement_status: "unrun"
+    constraint:
+      "Production analysis shares the combined Python-worker limit; lab \
+      research uses its separate approved profile. A resource plan is \
+      not proof that this method fits."
+  rights:
+    status: "not_reviewed"
+    jurisdictions:
+      - "UK"
+      - "EU"
+      - "US"
+    copied_implementation: false
+    dependency_admission: "none"
+    model_and_dataset_admission: "none"
+    patent_evidence: []
+    decision_receipt: null
+  approval:
+    specification_path: null
+    owner_approval_receipt: null
+  evidence:
+    implementation_paths: []
+    test_receipts: []
+    usefulness_receipts: []
+    resource_receipts: []
+    review_receipts: []
+    release_receipt: null
+  exclusion: null
+- id: "M-000024"
+  name: "Differential evolution"
+  aliases: []
+  family: "optimisation"
+  kind: "metaheuristic"
+  stage: "candidate"
+  counts_toward_release: false
+  source_ids:
+    - "SRC-0020"
+  summary:
+    "Search bounded numeric settings through population differences and \
+    selection."
+  proposed_use: "Compare a derivative-free tuning method."
+  applicability:
+    "Lab research when its declared training or trial evidence is available; \
+    it must not skip mandatory production methods or promote unapproved \
+    code or models."
+  input_contract_draft: "Approved bounds, objective and population state."
+  output_contract_draft: "Evaluated population and best eligible configuration."
+  distinctness:
+    review_status: "pending"
+    hypothesis:
+      "Use a multimodal objective and fixed random state; verify trial \
+      construction and selection independently and check all bounds."
+    not_separate_methods:
+      "Mutation factors, population sizes, seeds or strategy aliases alone."
+    duplicate_of: null
+  test_ideas:
+    distinguishing_example:
+      "Use a multimodal objective and fixed random state; verify trial \
+      construction and selection independently and check all bounds."
+    edge_cases:
+      "Fixed dimensions; invalid bounds; flat objective; failed evaluations."
+    missing_evidence:
+      "Return a visible pending state when required inputs are absent; \
+      do not fabricate data."
+    usefulness:
+      "Predeclare a task-specific comparator and acceptance threshold, \
+      then evaluate on held-out data with relevant subgroups."
+    recovery:
+      "Interrupt at each committed work boundary and confirm deterministic \
+      replay or declared stochastic equivalence without losing completed \
+      work."
+  resource_plan:
+    work_unit: "One bounded population segment."
+    checkpoint_contents:
+      "Population, objective results, generation and random state."
+    peak_memory_bytes: null
+    qualified_workload: null
+    measurement_status: "unrun"
+    constraint:
+      "Production analysis shares the combined Python-worker limit; lab \
+      research uses its separate approved profile. A resource plan is \
+      not proof that this method fits."
+  rights:
+    status: "not_reviewed"
+    jurisdictions:
+      - "UK"
+      - "EU"
+      - "US"
+    copied_implementation: false
+    dependency_admission: "none"
+    model_and_dataset_admission: "none"
+    patent_evidence: []
+    decision_receipt: null
+  approval:
+    specification_path: null
+    owner_approval_receipt: null
+  evidence:
+    implementation_paths: []
+    test_receipts: []
+    usefulness_receipts: []
+    resource_receipts: []
+    review_receipts: []
+    release_receipt: null
+  exclusion: null

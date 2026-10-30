@@ -1,6 +1,7 @@
 # SPEC-001: toolchain and check runner
 
-Status: APPROVED for bounded implementation. See [approval record](approvals.md).
+Status: APPROVED for bounded implementation. See [approval
+record](approvals.md).
 
 Audience: owner, maintainers and implementation agents.
 Outcome: one trustworthy way to run applicable checks and explain why a change
@@ -10,11 +11,11 @@ Requirements: R007, R053–R058, R067, R069–R077 and R081.
 
 ## Behaviour
 
-The justfile provides check, test, lint, typecheck, eval, run and db entry points.
-The normal check entry point runs the complete applicable pre-commit profile.
-Individual development commands help diagnose failures but do not substitute for
-that profile. The runner reports the selected profile and every required check,
-including explicit reasons for anything not applicable.
+The justfile provides check, test, lint, typecheck, eval, run and db entry
+points. The normal check entry point runs the complete applicable pre-commit
+profile. Individual development commands help diagnose failures but do not
+substitute for that profile. The runner reports the selected profile and every
+required check, including explicit reasons for anything not applicable.
 
 The initial documentation-only profile is narrowly limited to a change with no
 product or executable tooling implementation. It still checks source capture,
@@ -92,7 +93,8 @@ modify tracked source are not allowed to change the candidate under review.
 ## Acceptance examples
 
 - Given an initial documentation-only candidate, code-only checks may report
-  NOT_APPLICABLE with proof; secrets, privacy, consistency and reviews still run.
+  NOT_APPLICABLE with proof; secrets, privacy, consistency and reviews still
+  run.
 - Given an executable file added to that candidate, the runner refuses the
   documentation-only profile and selects the applicable code profile.
 - Given source changed after checks, commit/push admission rejects the stale

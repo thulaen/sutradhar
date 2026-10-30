@@ -1,0 +1,298 @@
+# Part 27 of 47; assembled by index.yaml.
+
+- source_item: "Q131-L005"
+  question: "Q131"
+  source_file: "sources/interview-q131-q140.md"
+  anchor: "q131"
+  answer_line: "5"
+  label:
+    "there should also be a hard blocking gates that covers edge cases, \
+    memory issues, race conditions, databases issues, ..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q132-L001"
+  question: "Q132"
+  source_file: "sources/interview-q131-q140.md"
+  anchor: "q132"
+  answer_line: "1"
+  label: "Light and dark, follow preference (Recommended)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q133-L001"
+  question: "Q133"
+  source_file: "sources/interview-q131-q140.md"
+  anchor: "q133"
+  answer_line: "1"
+  label: "Review changes, then apply together (Recommended)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q134-L001"
+  question: "Q134"
+  source_file: "sources/interview-q131-q140.md"
+  anchor: "q134"
+  answer_line: "1"
+  label: "Allow an explicit owner override"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q135-L001"
+  question: "Q135"
+  source_file: "sources/interview-q131-q140.md"
+  anchor: "q135"
+  answer_line: "1"
+  label: "Pause immediately after approval"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q136-L001"
+  question: "Q136"
+  source_file: "sources/interview-q131-q140.md"
+  anchor: "q136"
+  answer_line: "1"
+  label: "Offer export and an explicit choice (Recommended)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q137-L001"
+  question: "Q137"
+  source_file: "sources/interview-q131-q140.md"
+  anchor: "q137"
+  answer_line: "1"
+  label: "Dashboard and XenForo staff alerts (Recommended)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q138-L001"
+  question: "Q138"
+  source_file: "sources/interview-q131-q140.md"
+  anchor: "q138"
+  answer_line: "1"
+  label: "Yes, previewed and scrubbed (Recommended)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q139-L001"
+  question: "Q139"
+  source_file: "sources/interview-q131-q140.md"
+  anchor: "q139"
+  answer_line: "1"
+  label: "You approve each feature specification (Recommended)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q140-L001"
+  question: "Q140"
+  source_file: "sources/interview-q131-q140.md"
+  anchor: "q140"
+  answer_line: "1"
+  label:
+    "we should allow commits to happen and pushes to github to happen \
+    but actual addon release should be marked as incompl..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q140-L003"
+  question: "Q140"
+  source_file: "sources/interview-q131-q140.md"
+  anchor: "q140"
+  answer_line: "3"
+  label:
+    "these doesn't mean skipping our hard blocking gates like quality \
+    checks, every quality check should run."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q141-L001"
+  question: "Q141"
+  source_file: "sources/interview-q141-q147.md"
+  anchor: "q141"
+  answer_line: "1"
+  label: "Separate evidence-backed stages (Recommended)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q142-L001"
+  question: "Q142"
+  source_file: "sources/interview-q141-q147.md"
+  anchor: "q142"
+  answer_line: "1"
+  label: "Synthetic data only"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q143-L001"
+  question: "Q143"
+  source_file: "sources/interview-q141-q147.md"
+  anchor: "q143"
+  answer_line: "1"
+  label:
+    "agents should judge linking quality and improve it to follow google \
+    seo guidelines. they should test relentlessly unt..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q143-L003"
+  question: "Q143"
+  source_file: "sources/interview-q141-q147.md"
+  anchor: "q143"
+  answer_line: "3"
+  label:
+    "also the source should be highly relevant to the destination it's \
+    linking to we don't want junk and garbage internal ..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q143-L005"
+  question: "Q143"
+  source_file: "sources/interview-q141-q147.md"
+  anchor: "q143"
+  answer_line: "5"
+  label:
+    "there should also be good versioning of everything so that we can \
+    keep track of things."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q144-L001"
+  question: "Q144"
+  source_file: "sources/interview-q141-q147.md"
+  anchor: "q144"
+  answer_line: "1"
+  label: "Yes, show a useful contribution (Recommended)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q145-L001"
+  question: "Q145"
+  source_file: "sources/interview-q141-q147.md"
+  anchor: "q145"
+  answer_line: "1"
+  label: "Option 2, with these changes:"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q145-L002"
+  question: "Q145"
+  source_file: "sources/interview-q141-q147.md"
+  anchor: "q145"
+  answer_line: "2"
+  label:
+    "- Test at least 500 suggestions from real posts on my forum. Keep \
+    the same test set across releases. Pass if at least..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q145-L003"
+  question: "Q145"
+  source_file: "sources/interview-q141-q147.md"
+  anchor: "q145"
+  answer_line: "3"
+  label:
+    "- Split the requirements into hard rules and quality. Hard rules \
+    (never link inside QUOTE/CODE/URL/USER tags, never l..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q145-L004"
+  question: "Q145"
+  source_file: "sources/interview-q141-q147.md"
+  anchor: "q145"
+  answer_line: "4"
+  label: "- No human rating step"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q145-L005"
+  question: "Q145"
+  source_file: "sources/interview-q141-q147.md"
+  anchor: "q145"
+  answer_line: "5"
+  label:
+    "- Add a coverage requirement so 95% can't be reached by suggesting \
+    almost nothing. Propose the number and I'll confir..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q145-L009"
+  question: "Q145"
+  source_file: "sources/interview-q141-q147.md"
+  anchor: "q145"
+  answer_line: "9"
+  label:
+    "the repo should have clearly defined milestones and they should be \
+    tracked so that agents don't drift and have a clea..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."

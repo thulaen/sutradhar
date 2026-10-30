@@ -1,0 +1,295 @@
+# Part 43 of 47; assembled by index.yaml.
+
+- source_item: "Q192-L023"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "23"
+  label:
+    "1. Home: what Sutradhar does in five sentences, who it is for, what \
+    it needs (XenForo 2.3, a Linux machine, MariaDB o..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L024"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "24"
+  label:
+    "2. Getting started, presented as a GOV.UK-style step-by-step navigation \
+    (numbered steps with expandable detail):"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L025"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "25"
+  label:
+    "- Requirements (hardware, software, XenForo version, permissions \
+    needed)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L026"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "26"
+  label:
+    "- Install (one path, copy-paste commands, verified at the end with \
+    `sutra doctor`)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L027"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "27"
+  label:
+    "- Connect to your forum (creating the XenForo API keys, what each \
+    key can do, where to paste them)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L028"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "28"
+  label:
+    "- First run (build the index, see the first suggestions, open the \
+    review page)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L029"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "29"
+  label: "- Uninstall (what is removed, what is kept, how to export first)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L030"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "30"
+  label: "3. Using Sutradhar"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L031"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "31"
+  label:
+    "- The review page (every button and column explained, what accept \
+    does to the post, what reject does, undo, filters, ..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L032"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "32"
+  label:
+    "- Understanding suggestions (why a link was suggested, what the score \
+    means, why some posts get none)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L033"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "33"
+  label:
+    "- Modes: shadow, review, auto (what each means, which is the default, \
+    how a module moves between them, how to lock a ..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L034"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "34"
+  label:
+    "- The dashboard (every panel in plain words: what the number is, \
+    what good looks like, what to do if it is bad)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L035"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "35"
+  label:
+    "4. Modules: one page per module, same layout every time: what it \
+    does, what it changes on the forum, how to enable it..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L036"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "36"
+  label: "5. Configuration"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L037"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "37"
+  label:
+    "- How configuration works (the file, profiles, environment variables, \
+    which wins)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L038"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "38"
+  label: "- Settings reference (generated, see below)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L039"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "39"
+  label:
+    "- Example configurations (small forum, large forum, multilingual \
+    forum, multiple sites)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L040"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "40"
+  label: "6. Operations"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L041"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "41"
+  label: "- Running as a service (systemd unit, logs, restart)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L042"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "42"
+  label:
+    "- Backups and restore (what to back up, how to restore, how to verify)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L043"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "43"
+  label: "- Upgrading (step by step, how to roll back)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L044"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "44"
+  label:
+    "- Scheduled jobs (what runs when, how to run one by hand, how to \
+    pause them)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."

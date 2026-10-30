@@ -1,0 +1,236 @@
+# Part 7 of 12; assembled by index.yaml.
+
+- id: "M-000019"
+  name: "LambdaMART"
+  aliases: []
+  family: "learning_to_rank"
+  kind: "ensemble"
+  stage: "candidate"
+  counts_toward_release: false
+  source_ids:
+    - "SRC-0016"
+  summary: "Combine ranking updates with boosted regression trees."
+  proposed_use: "Research a tree-based ranker for mixed relevance signals."
+  applicability:
+    "Research only until admitted. The approved specification must define \
+    available evidence, public-content permissions and missing-data behaviour\
+    ."
+  input_contract_draft: "Versioned query groups, features and relevance labels."
+  output_contract_draft: "A versioned tree ensemble for ranking."
+  distinctness:
+    review_status: "pending"
+    hypothesis:
+      "Use nonlinear feature interactions that a chosen simple ranker \
+      cannot represent; verify each fitted stage against the approved \
+      ranking objective."
+    not_separate_methods:
+      "Tree count, depth, rate or alternate package implementations."
+    duplicate_of: null
+  test_ideas:
+    distinguishing_example:
+      "Use nonlinear feature interactions that a chosen simple ranker \
+      cannot represent; verify each fitted stage against the approved \
+      ranking objective."
+    edge_cases:
+      "Constant features; tied labels; missing values; excessive tree \
+      growth."
+    missing_evidence:
+      "Return a visible pending state when required inputs are absent; \
+      do not fabricate data."
+    usefulness:
+      "Predeclare a task-specific comparator and acceptance threshold, \
+      then evaluate on held-out data with relevant subgroups."
+    recovery:
+      "Interrupt at each committed work boundary and confirm deterministic \
+      replay or declared stochastic equivalence without losing completed \
+      work."
+  resource_plan:
+    work_unit: "One bounded tree-building segment."
+    checkpoint_contents:
+      "Ensemble state, training partition, histograms and random state."
+    peak_memory_bytes: null
+    qualified_workload: null
+    measurement_status: "unrun"
+    constraint:
+      "Production analysis shares the combined Python-worker limit; lab \
+      research uses its separate approved profile. A resource plan is \
+      not proof that this method fits."
+  rights:
+    status: "not_reviewed"
+    jurisdictions:
+      - "UK"
+      - "EU"
+      - "US"
+    copied_implementation: false
+    dependency_admission: "none"
+    model_and_dataset_admission: "none"
+    patent_evidence: []
+    decision_receipt: null
+  approval:
+    specification_path: null
+    owner_approval_receipt: null
+  evidence:
+    implementation_paths: []
+    test_receipts: []
+    usefulness_receipts: []
+    resource_receipts: []
+    review_receipts: []
+    release_receipt: null
+  exclusion: null
+- id: "M-000020"
+  name: "Random search"
+  aliases: []
+  family: "optimisation"
+  kind: "metaheuristic"
+  stage: "candidate"
+  counts_toward_release: false
+  source_ids:
+    - "SRC-0017"
+  summary:
+    "Sample configurations from an approved search space without fitting \
+    a surrogate."
+  proposed_use: "Provide a measured tuning baseline."
+  applicability:
+    "Lab research when its declared training or trial evidence is available; \
+    it must not skip mandatory production methods or promote unapproved \
+    code or models."
+  input_contract_draft:
+    "Approved parameter space, objective and evaluation budget."
+  output_contract_draft: "Trials and best observed eligible configuration."
+  distinctness:
+    review_status: "pending"
+    hypothesis:
+      "Use a fixed random stream and a conditional search space; verify \
+      every proposal is valid and evaluation allocation differs from \
+      a grid."
+    not_separate_methods: "Different ranges, seeds or trial counts."
+    duplicate_of: null
+  test_ideas:
+    distinguishing_example:
+      "Use a fixed random stream and a conditional search space; verify \
+      every proposal is valid and evaluation allocation differs from \
+      a grid."
+    edge_cases:
+      "Empty space; infeasible constraints; failed trials; budget exhaustion."
+    missing_evidence:
+      "Return a visible pending state when required inputs are absent; \
+      do not fabricate data."
+    usefulness:
+      "Predeclare a task-specific comparator and acceptance threshold, \
+      then evaluate on held-out data with relevant subgroups."
+    recovery:
+      "Interrupt at each committed work boundary and confirm deterministic \
+      replay or declared stochastic equivalence without losing completed \
+      work."
+  resource_plan:
+    work_unit: "One trial or bounded trial batch."
+    checkpoint_contents:
+      "Search-space version, random state and committed trial results."
+    peak_memory_bytes: null
+    qualified_workload: null
+    measurement_status: "unrun"
+    constraint:
+      "Production analysis shares the combined Python-worker limit; lab \
+      research uses its separate approved profile. A resource plan is \
+      not proof that this method fits."
+  rights:
+    status: "not_reviewed"
+    jurisdictions:
+      - "UK"
+      - "EU"
+      - "US"
+    copied_implementation: false
+    dependency_admission: "none"
+    model_and_dataset_admission: "none"
+    patent_evidence: []
+    decision_receipt: null
+  approval:
+    specification_path: null
+    owner_approval_receipt: null
+  evidence:
+    implementation_paths: []
+    test_receipts: []
+    usefulness_receipts: []
+    resource_receipts: []
+    review_receipts: []
+    release_receipt: null
+  exclusion: null
+- id: "M-000021"
+  name: "Tree-structured Parzen estimator search"
+  aliases: []
+  family: "optimisation"
+  kind: "meta_algorithm"
+  stage: "candidate"
+  counts_toward_release: false
+  source_ids:
+    - "SRC-0018"
+  summary:
+    "Use observed trial outcomes to guide proposals in a conditional parameter \
+    space."
+  proposed_use: "Research bounded automatic tuning."
+  applicability:
+    "Lab research when its declared training or trial evidence is available; \
+    it must not skip mandatory production methods or promote unapproved \
+    code or models."
+  input_contract_draft:
+    "Versioned search space and past eligible trial results."
+  output_contract_draft: "A sequence of proposed configurations."
+  distinctness:
+    review_status: "pending"
+    hypothesis:
+      "Use an objective with a useful conditional branch; compare proposal \
+      concentration with random search without reusing the final assessment \
+      set."
+    not_separate_methods: "Density bandwidths, quantiles or random seeds alone."
+    duplicate_of: null
+  test_ideas:
+    distinguishing_example:
+      "Use an objective with a useful conditional branch; compare proposal \
+      concentration with random search without reusing the final assessment \
+      set."
+    edge_cases:
+      "Few observations; equal outcomes; failed trials; inactive conditional \
+      variables."
+    missing_evidence:
+      "Return a visible pending state when required inputs are absent; \
+      do not fabricate data."
+    usefulness:
+      "Predeclare a task-specific comparator and acceptance threshold, \
+      then evaluate on held-out data with relevant subgroups."
+    recovery:
+      "Interrupt at each committed work boundary and confirm deterministic \
+      replay or declared stochastic equivalence without losing completed \
+      work."
+  resource_plan:
+    work_unit: "One surrogate update and bounded proposal batch."
+    checkpoint_contents:
+      "Trial history identity, density state and random state."
+    peak_memory_bytes: null
+    qualified_workload: null
+    measurement_status: "unrun"
+    constraint:
+      "Production analysis shares the combined Python-worker limit; lab \
+      research uses its separate approved profile. A resource plan is \
+      not proof that this method fits."
+  rights:
+    status: "not_reviewed"
+    jurisdictions:
+      - "UK"
+      - "EU"
+      - "US"
+    copied_implementation: false
+    dependency_admission: "none"
+    model_and_dataset_admission: "none"
+    patent_evidence: []
+    decision_receipt: null
+  approval:
+    specification_path: null
+    owner_approval_receipt: null
+  evidence:
+    implementation_paths: []
+    test_receipts: []
+    usefulness_receipts: []
+    resource_receipts: []
+    review_receipts: []
+    release_receipt: null
+  exclusion: null

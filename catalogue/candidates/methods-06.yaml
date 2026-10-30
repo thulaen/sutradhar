@@ -1,0 +1,233 @@
+# Part 6 of 12; assembled by index.yaml.
+
+- id: "M-000016"
+  name: "Isotonic probability calibration"
+  aliases: []
+  family: "statistical_confidence"
+  kind: "statistical_model"
+  stage: "candidate"
+  counts_toward_release: false
+  source_ids:
+    - "SRC-0015"
+  summary:
+    "Fit a non-decreasing stepwise mapping without imposing a sigmoid \
+    shape."
+  proposed_use:
+    "Compare confidence calibration when sigmoid shape assumptions fail."
+  applicability:
+    "Research only until admitted. The approved specification must define \
+    available evidence, public-content permissions and missing-data behaviour\
+    ."
+  input_contract_draft: "Frozen scores and a separate labelled calibration set."
+  output_contract_draft: "A monotone calibration mapping."
+  distinctness:
+    review_status: "pending"
+    hypothesis:
+      "Use ordered labels with a non-sigmoid pattern; verify monotonicity, \
+      pooling and ties against independently worked examples."
+    not_separate_methods:
+      "Alternative clipping rules or interpolation settings alone."
+    duplicate_of: null
+  test_ideas:
+    distinguishing_example:
+      "Use ordered labels with a non-sigmoid pattern; verify monotonicity, \
+      pooling and ties against independently worked examples."
+    edge_cases:
+      "Tied scores; one class; tiny samples; extrapolation; introduced \
+      ranking ties."
+    missing_evidence:
+      "Return a visible pending state when required inputs are absent; \
+      do not fabricate data."
+    usefulness:
+      "Predeclare a task-specific comparator and acceptance threshold, \
+      then evaluate on held-out data with relevant subgroups."
+    recovery:
+      "Interrupt at each committed work boundary and confirm deterministic \
+      replay or declared stochastic equivalence without losing completed \
+      work."
+  resource_plan:
+    work_unit: "A bounded sorted block or pooling step."
+    checkpoint_contents:
+      "Ordered input version, pool boundaries and fitted levels."
+    peak_memory_bytes: null
+    qualified_workload: null
+    measurement_status: "unrun"
+    constraint:
+      "Production analysis shares the combined Python-worker limit; lab \
+      research uses its separate approved profile. A resource plan is \
+      not proof that this method fits."
+  rights:
+    status: "not_reviewed"
+    jurisdictions:
+      - "UK"
+      - "EU"
+      - "US"
+    copied_implementation: false
+    dependency_admission: "none"
+    model_and_dataset_admission: "none"
+    patent_evidence: []
+    decision_receipt: null
+  approval:
+    specification_path: null
+    owner_approval_receipt: null
+  evidence:
+    implementation_paths: []
+    test_receipts: []
+    usefulness_receipts: []
+    resource_receipts: []
+    review_receipts: []
+    release_receipt: null
+  exclusion: null
+- id: "M-000017"
+  name: "RankNet"
+  aliases: []
+  family: "learning_to_rank"
+  kind: "statistical_model"
+  stage: "candidate"
+  counts_toward_release: false
+  source_ids:
+    - "SRC-0030"
+  summary: "Learn rankings from pairwise preference evidence."
+  proposed_use: "Research learned destination ordering."
+  applicability:
+    "Research only until admitted. The approved specification must define \
+    available evidence, public-content permissions and missing-data behaviour\
+    ."
+  input_contract_draft:
+    "Versioned features and permitted pairwise relevance labels."
+  output_contract_draft: "A rank-scoring model."
+  distinctness:
+    review_status: "pending"
+    hypothesis:
+      "Use a tiny pairwise preference set and verify that the approved \
+      loss responds correctly when the pair order is reversed."
+    not_separate_methods:
+      "Network width, learning rate, epochs or repeated seeds."
+    duplicate_of: null
+  test_ideas:
+    distinguishing_example:
+      "Use a tiny pairwise preference set and verify that the approved \
+      loss responds correctly when the pair order is reversed."
+    edge_cases:
+      "Tied preferences; contradictory labels; missing features; leakage \
+      between splits."
+    missing_evidence:
+      "Return a visible pending state when required inputs are absent; \
+      do not fabricate data."
+    usefulness:
+      "Predeclare a task-specific comparator and acceptance threshold, \
+      then evaluate on held-out data with relevant subgroups."
+    recovery:
+      "Interrupt at each committed work boundary and confirm deterministic \
+      replay or declared stochastic equivalence without losing completed \
+      work."
+  resource_plan:
+    work_unit: "One bounded preference batch."
+    checkpoint_contents:
+      "Model parameters, optimiser state, label split and random state."
+    peak_memory_bytes: null
+    qualified_workload: null
+    measurement_status: "unrun"
+    constraint:
+      "Production analysis shares the combined Python-worker limit; lab \
+      research uses its separate approved profile. A resource plan is \
+      not proof that this method fits."
+  rights:
+    status: "not_reviewed"
+    jurisdictions:
+      - "UK"
+      - "EU"
+      - "US"
+    copied_implementation: false
+    dependency_admission: "none"
+    model_and_dataset_admission: "none"
+    patent_evidence: []
+    decision_receipt: null
+  approval:
+    specification_path: null
+    owner_approval_receipt: null
+  evidence:
+    implementation_paths: []
+    test_receipts: []
+    usefulness_receipts: []
+    resource_receipts: []
+    review_receipts: []
+    release_receipt: null
+  exclusion: null
+- id: "M-000018"
+  name: "LambdaRank"
+  aliases: []
+  family: "learning_to_rank"
+  kind: "statistical_model"
+  stage: "candidate"
+  counts_toward_release: false
+  source_ids:
+    - "SRC-0031"
+  summary:
+    "Investigate rank-training updates that account for the impact of \
+    changing item positions."
+  proposed_use: "Compare an objective-aware rank-learning procedure."
+  applicability:
+    "Research only until admitted. The approved specification must define \
+    available evidence, public-content permissions and missing-data behaviour\
+    ."
+  input_contract_draft: "Versioned feature groups and graded relevance labels."
+  output_contract_draft: "Rank-model updates and scored candidates."
+  distinctness:
+    review_status: "pending"
+    hypothesis:
+      "Construct pairs with similar score gaps but different rank-metric \
+      impact; verify different specified update magnitudes."
+    not_separate_methods:
+      "Learning rates, model sizes or metric cut-offs alone."
+    duplicate_of: null
+  test_ideas:
+    distinguishing_example:
+      "Construct pairs with similar score gaps but different rank-metric \
+      impact; verify different specified update magnitudes."
+    edge_cases:
+      "All equal relevance; singleton groups; ties; undefined metric normalisa\
+      tion."
+    missing_evidence:
+      "Return a visible pending state when required inputs are absent; \
+      do not fabricate data."
+    usefulness:
+      "Predeclare a task-specific comparator and acceptance threshold, \
+      then evaluate on held-out data with relevant subgroups."
+    recovery:
+      "Interrupt at each committed work boundary and confirm deterministic \
+      replay or declared stochastic equivalence without losing completed \
+      work."
+  resource_plan:
+    work_unit: "One bounded query group."
+    checkpoint_contents:
+      "Model state, group cursor, metric definition and random state."
+    peak_memory_bytes: null
+    qualified_workload: null
+    measurement_status: "unrun"
+    constraint:
+      "Production analysis shares the combined Python-worker limit; lab \
+      research uses its separate approved profile. A resource plan is \
+      not proof that this method fits."
+  rights:
+    status: "not_reviewed"
+    jurisdictions:
+      - "UK"
+      - "EU"
+      - "US"
+    copied_implementation: false
+    dependency_admission: "none"
+    model_and_dataset_admission: "none"
+    patent_evidence: []
+    decision_receipt: null
+  approval:
+    specification_path: null
+    owner_approval_receipt: null
+  evidence:
+    implementation_paths: []
+    test_receipts: []
+    usefulness_receipts: []
+    resource_receipts: []
+    review_receipts: []
+    release_receipt: null
+  exclusion: null

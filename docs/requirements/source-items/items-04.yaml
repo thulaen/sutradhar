@@ -1,0 +1,290 @@
+# Part 4 of 47; assembled by index.yaml.
+
+- source_item: "Q060-L016"
+  question: "Q060"
+  source_file: "sources/interview-q058-q060.md"
+  anchor: "q060"
+  answer_line: "16"
+  label: "chaos testing"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q060-L017"
+  question: "Q060"
+  source_file: "sources/interview-q058-q060.md"
+  anchor: "q060"
+  answer_line: "17"
+  label: "soaking tests (this should be done before release only)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q060-L018"
+  question: "Q060"
+  source_file: "sources/interview-q058-q060.md"
+  anchor: "q060"
+  answer_line: "18"
+  label: "stress tests"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q060-L019"
+  question: "Q060"
+  source_file: "sources/interview-q058-q060.md"
+  anchor: "q060"
+  answer_line: "19"
+  label: "security tests"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q060-L020"
+  question: "Q060"
+  source_file: "sources/interview-q058-q060.md"
+  anchor: "q060"
+  answer_line: "20"
+  label: "dependency test"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q060-L021"
+  question: "Q060"
+  source_file: "sources/interview-q058-q060.md"
+  anchor: "q060"
+  answer_line: "21"
+  label: "fault injection"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q060-L022"
+  question: "Q060"
+  source_file: "sources/interview-q058-q060.md"
+  anchor: "q060"
+  answer_line: "22"
+  label: "anti duplication (there must be zero code duplication in the repo)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q060-L023"
+  question: "Q060"
+  source_file: "sources/interview-q058-q060.md"
+  anchor: "q060"
+  answer_line: "23"
+  label: "nasa plus facebook coding guidelines"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q060-L024"
+  question: "Q060"
+  source_file: "sources/interview-q058-q060.md"
+  anchor: "q060"
+  answer_line: "24"
+  label: "proof of tdd, solid, dry, kiss coding practises"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q060-L025"
+  question: "Q060"
+  source_file: "sources/interview-q058-q060.md"
+  anchor: "q060"
+  answer_line: "25"
+  label: "proof of specs, docs and g3doc"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q060-L026"
+  question: "Q060"
+  source_file: "sources/interview-q058-q060.md"
+  anchor: "q060"
+  answer_line: "26"
+  label: "proof of clean room implementation"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q060-L027"
+  question: "Q060"
+  source_file: "sources/interview-q058-q060.md"
+  anchor: "q060"
+  answer_line: "27"
+  label:
+    "code review, performance review and security review (all use the \
+    skills for each when writing code)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q060-L028"
+  question: "Q060"
+  source_file: "sources/interview-q058-q060.md"
+  anchor: "q060"
+  answer_line: "28"
+  label:
+    "any test failure should be fixed upon commit and push, the repo also \
+    should not exceed github public repo limits,"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q060-L032"
+  question: "Q060"
+  source_file: "sources/interview-q058-q060.md"
+  anchor: "q060"
+  answer_line: "32"
+  label:
+    "search for xenforo coding skills that should be in the repo and add \
+    them, search for them on xenforo official site."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q061-L001"
+  question: "Q061"
+  source_file: "sources/interview-q061-q070.md"
+  anchor: "q061"
+  answer_line: "1"
+  label: "XenForo at its boundary (Recommended)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q062-L001"
+  question: "Q062"
+  source_file: "sources/interview-q061-q070.md"
+  anchor: "q062"
+  answer_line: "1"
+  label:
+    "every check, line, decision, function, branches too, this is for \
+    our own shipped code not 3rd party packages or libra..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q062-L003"
+  question: "Q062"
+  source_file: "sources/interview-q061-q070.md"
+  anchor: "q062"
+  answer_line: "3"
+  label:
+    "also there should be a hard blocking gate upon commit and push that \
+    checks for code smells and maintainability."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q063-L001"
+  question: "Q063"
+  source_file: "sources/interview-q061-q070.md"
+  anchor: "q063"
+  answer_line: "1"
+  label: "Dell controls both (Recommended)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q064-L001"
+  question: "Q064"
+  source_file: "sources/interview-q061-q070.md"
+  anchor: "q064"
+  answer_line: "1"
+  label: "Approve one mapped rulebook (Recommended)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q065-L001"
+  question: "Q065"
+  source_file: "sources/interview-q061-q070.md"
+  anchor: "q065"
+  answer_line: "1"
+  label: "Rewrite until none remain"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q066-L001"
+  question: "Q066"
+  source_file: "sources/interview-q061-q070.md"
+  anchor: "q066"
+  answer_line: "1"
+  label: "Repeated controlled comparisons (Recommended)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q067-L001"
+  question: "Q067"
+  source_file: "sources/interview-q061-q070.md"
+  anchor: "q067"
+  answer_line: "1"
+  label: "both, cloud and local"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q068-L001"
+  question: "Q068"
+  source_file: "sources/interview-q061-q070.md"
+  anchor: "q068"
+  answer_line: "1"
+  label:
+    "you should set up a2a protocol so that i can use claude and codex \
+    at the same time and they should be able to talk to..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."

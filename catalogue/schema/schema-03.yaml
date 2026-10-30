@@ -1,0 +1,290 @@
+# Part 3 of 4 of the catalogue JSON Schema.
+
+path:
+  - "$defs"
+  - "method"
+merge:
+  properties:
+    id:
+      type: "string"
+      pattern: "^M-[0-9]{6}$"
+    name:
+      type: "string"
+      minLength: 1
+    aliases:
+      type: "array"
+      items:
+        type: "string"
+        minLength: 1
+      uniqueItems: true
+    family:
+      enum:
+        - "text_retrieval"
+        - "text_structure"
+        - "graph_analysis"
+        - "statistical_confidence"
+        - "learning_to_rank"
+        - "ensembles"
+        - "optimisation"
+        - "wrappers"
+        - "meta_learning"
+        - "clustering_anomaly"
+    kind:
+      enum:
+        - "algorithm"
+        - "statistical_model"
+        - "meta_algorithm"
+        - "metaheuristic"
+        - "ensemble"
+        - "wrapper"
+    stage:
+      enum:
+        - "candidate"
+        - "research_ready"
+        - "spec_approved"
+        - "implemented"
+        - "verified"
+        - "release_qualified"
+        - "excluded"
+    counts_toward_release:
+      type: "boolean"
+    source_ids:
+      type: "array"
+      minItems: 1
+      uniqueItems: true
+      items:
+        type: "string"
+        pattern: "^SRC-[0-9]{4}$"
+    summary:
+      type: "string"
+      minLength: 1
+    proposed_use:
+      type: "string"
+      minLength: 1
+    applicability:
+      type: "string"
+      minLength: 1
+    input_contract_draft:
+      type: "string"
+      minLength: 1
+    output_contract_draft:
+      type: "string"
+      minLength: 1
+    distinctness:
+      type: "object"
+      additionalProperties: false
+      required:
+        - "review_status"
+        - "hypothesis"
+        - "not_separate_methods"
+        - "duplicate_of"
+      properties:
+        review_status:
+          enum:
+            - "pending"
+            - "approved"
+            - "duplicate"
+            - "rejected"
+        hypothesis:
+          type: "string"
+          minLength: 1
+        not_separate_methods:
+          type: "string"
+          minLength: 1
+        duplicate_of:
+          anyOf:
+            - type: "string"
+              pattern: "^M-[0-9]{6}$"
+            - type: "null"
+    test_ideas:
+      type: "object"
+      additionalProperties: false
+      required:
+        - "distinguishing_example"
+        - "edge_cases"
+        - "missing_evidence"
+        - "usefulness"
+        - "recovery"
+      properties:
+        distinguishing_example:
+          type: "string"
+          minLength: 1
+        edge_cases:
+          type: "string"
+          minLength: 1
+        missing_evidence:
+          type: "string"
+          minLength: 1
+        usefulness:
+          type: "string"
+          minLength: 1
+        recovery:
+          type: "string"
+          minLength: 1
+    resource_plan:
+      type: "object"
+      additionalProperties: false
+      required:
+        - "work_unit"
+        - "checkpoint_contents"
+        - "peak_memory_bytes"
+        - "qualified_workload"
+        - "measurement_status"
+        - "constraint"
+      properties:
+        work_unit:
+          type: "string"
+          minLength: 1
+        checkpoint_contents:
+          type: "string"
+          minLength: 1
+        peak_memory_bytes:
+          type:
+            - "integer"
+            - "null"
+          minimum: 0
+        qualified_workload:
+          anyOf:
+            - type: "string"
+              minLength: 1
+            - type: "null"
+        measurement_status:
+          enum:
+            - "unrun"
+            - "failed"
+            - "passed"
+        constraint:
+          type: "string"
+          minLength: 1
+    rights:
+      type: "object"
+      additionalProperties: false
+      required:
+        - "status"
+        - "jurisdictions"
+        - "copied_implementation"
+        - "dependency_admission"
+        - "model_and_dataset_admission"
+        - "patent_evidence"
+        - "decision_receipt"
+      properties:
+        status:
+          enum:
+            - "not_reviewed"
+            - "admitted"
+            - "excluded"
+        jurisdictions:
+          type: "array"
+          items:
+            enum:
+              - "UK"
+              - "EU"
+              - "US"
+          minItems: 3
+          maxItems: 3
+          uniqueItems: true
+        copied_implementation:
+          const: false
+        dependency_admission:
+          type: "string"
+          minLength: 1
+        model_and_dataset_admission:
+          type: "string"
+          minLength: 1
+        patent_evidence:
+          type: "array"
+          items:
+            type: "string"
+            minLength: 1
+          uniqueItems: true
+        decision_receipt:
+          anyOf:
+            - type: "string"
+              minLength: 1
+            - type: "null"
+    approval:
+      type: "object"
+      additionalProperties: false
+      required:
+        - "specification_path"
+        - "owner_approval_receipt"
+      properties:
+        specification_path:
+          anyOf:
+            - type: "string"
+              minLength: 1
+            - type: "null"
+        owner_approval_receipt:
+          anyOf:
+            - type: "string"
+              minLength: 1
+            - type: "null"
+    evidence:
+      type: "object"
+      additionalProperties: false
+      required:
+        - "implementation_paths"
+        - "test_receipts"
+        - "usefulness_receipts"
+        - "resource_receipts"
+        - "review_receipts"
+        - "release_receipt"
+      properties:
+        implementation_paths:
+          type: "array"
+          items:
+            type: "string"
+            minLength: 1
+          uniqueItems: true
+        test_receipts:
+          type: "array"
+          items:
+            type: "string"
+            minLength: 1
+          uniqueItems: true
+        usefulness_receipts:
+          type: "array"
+          items:
+            type: "string"
+            minLength: 1
+          uniqueItems: true
+        resource_receipts:
+          type: "array"
+          items:
+            type: "string"
+            minLength: 1
+          uniqueItems: true
+        review_receipts:
+          type: "array"
+          items:
+            type: "string"
+            minLength: 1
+          uniqueItems: true
+        release_receipt:
+          anyOf:
+            - type: "string"
+              minLength: 1
+            - type: "null"
+    exclusion:
+      anyOf:
+        - type: "null"
+        - type: "object"
+          additionalProperties: false
+          required:
+            - "category"
+            - "reason"
+            - "decision_receipt"
+          properties:
+            category:
+              enum:
+                - "duplicate"
+                - "rights"
+                - "unsupported"
+                - "not_useful"
+                - "other"
+            reason:
+              type: "string"
+              minLength: 1
+            decision_receipt:
+              type: "string"
+              minLength: 1

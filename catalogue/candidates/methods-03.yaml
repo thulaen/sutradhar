@@ -1,0 +1,249 @@
+# Part 3 of 12; assembled by index.yaml.
+
+- id: "M-000007"
+  name: "Leiden community detection"
+  aliases: []
+  family: "graph_analysis"
+  kind: "metaheuristic"
+  stage: "candidate"
+  counts_toward_release: false
+  source_ids:
+    - "SRC-0007"
+  summary:
+    "Refine graph communities using a procedure designed to address connectivi\
+    ty weaknesses in Louvain."
+  proposed_use: "Investigate more coherent topic-hub groups."
+  applicability:
+    "Research only until admitted. The approved specification must define \
+    available evidence, public-content permissions and missing-data behaviour\
+    ."
+  input_contract_draft: "A versioned graph and documented objective."
+  output_contract_draft:
+    "A partition with connectivity and convergence evidence."
+  distinctness:
+    review_status: "pending"
+    hypothesis:
+      "Reproduce a valid counterexample where the compared Louvain procedure \
+      can retain a disconnected group; check the precise connectivity \
+      guarantee under the approved assumptions."
+    not_separate_methods: "Resolution settings, seeds and iteration counts."
+    duplicate_of: null
+  test_ideas:
+    distinguishing_example:
+      "Reproduce a valid counterexample where the compared Louvain procedure \
+      can retain a disconnected group; check the precise connectivity \
+      guarantee under the approved assumptions."
+    edge_cases:
+      "Empty graph; isolates; disconnected components; ties; unsupported \
+      edge assumptions."
+    missing_evidence:
+      "Return a visible pending state when required inputs are absent; \
+      do not fabricate data."
+    usefulness:
+      "Predeclare a task-specific comparator and acceptance threshold, \
+      then evaluate on held-out data with relevant subgroups."
+    recovery:
+      "Interrupt at each committed work boundary and confirm deterministic \
+      replay or declared stochastic equivalence without losing completed \
+      work."
+  resource_plan:
+    work_unit: "A bounded local-move or refinement segment."
+    checkpoint_contents:
+      "Partition, refinement state, aggregation level and random state."
+    peak_memory_bytes: null
+    qualified_workload: null
+    measurement_status: "unrun"
+    constraint:
+      "Production analysis shares the combined Python-worker limit; lab \
+      research uses its separate approved profile. A resource plan is \
+      not proof that this method fits."
+  rights:
+    status: "not_reviewed"
+    jurisdictions:
+      - "UK"
+      - "EU"
+      - "US"
+    copied_implementation: false
+    dependency_admission: "none"
+    model_and_dataset_admission: "none"
+    patent_evidence: []
+    decision_receipt: null
+  approval:
+    specification_path: null
+    owner_approval_receipt: null
+  evidence:
+    implementation_paths: []
+    test_receipts: []
+    usefulness_receipts: []
+    resource_receipts: []
+    review_receipts: []
+    release_receipt: null
+  exclusion: null
+- id: "M-000008"
+  name: "Pixie random-walk recommendation"
+  aliases: []
+  family: "graph_analysis"
+  kind: "algorithm"
+  stage: "candidate"
+  counts_toward_release: false
+  source_ids:
+    - "SRC-0008"
+  summary:
+    "Investigate the published graph-walk recommendation procedure and \
+    its eligibility for a bounded local adaptation."
+  proposed_use: "Research graph-based candidate discovery."
+  applicability:
+    "Research only until admitted. The approved specification must define \
+    available evidence, public-content permissions and missing-data behaviour\
+    ."
+  input_contract_draft:
+    "An approved graph representation and query seeds; detailed input \
+    contract pending."
+  output_contract_draft: "Ranked graph candidates with walk evidence."
+  distinctness:
+    review_status: "pending"
+    hypothesis:
+      "First derive the actual walk and aggregation specification from \
+      the full paper; then distinguish its result from uniform neighbour \
+      sampling on a small graph."
+    not_separate_methods: "Walk budgets, seed weights or renamed adaptations."
+    duplicate_of: null
+  test_ideas:
+    distinguishing_example:
+      "First derive the actual walk and aggregation specification from \
+      the full paper; then distinguish its result from uniform neighbour \
+      sampling on a small graph."
+    edge_cases:
+      "Missing seeds; disconnected graph; high-degree nodes; duplicate \
+      targets."
+    missing_evidence:
+      "Return a visible pending state when required inputs are absent; \
+      do not fabricate data."
+    usefulness:
+      "Predeclare a task-specific comparator and acceptance threshold, \
+      then evaluate on held-out data with relevant subgroups."
+    recovery:
+      "Interrupt at each committed work boundary and confirm deterministic \
+      replay or declared stochastic equivalence without losing completed \
+      work."
+  resource_plan:
+    work_unit: "A bounded number of walk transitions."
+    checkpoint_contents:
+      "Graph version, walks, visit counters, seeds and random state."
+    peak_memory_bytes: null
+    qualified_workload: null
+    measurement_status: "unrun"
+    constraint:
+      "Production analysis shares the combined Python-worker limit; lab \
+      research uses its separate approved profile. A resource plan is \
+      not proof that this method fits."
+  rights:
+    status: "not_reviewed"
+    jurisdictions:
+      - "UK"
+      - "EU"
+      - "US"
+    copied_implementation: false
+    dependency_admission: "none"
+    model_and_dataset_admission: "none"
+    patent_evidence: []
+    decision_receipt: null
+  approval:
+    specification_path: null
+    owner_approval_receipt: null
+  evidence:
+    implementation_paths: []
+    test_receipts: []
+    usefulness_receipts: []
+    resource_receipts: []
+    review_receipts: []
+    release_receipt: null
+  exclusion: null
+- id: "M-000009"
+  name: "TextRank"
+  aliases: []
+  family: "text_structure"
+  kind: "algorithm"
+  stage: "candidate"
+  counts_toward_release: false
+  source_ids:
+    - "SRC-0009"
+  summary:
+    "Rank text elements through a graph built from relationships within \
+    text."
+  proposed_use:
+    "Study existing phrase candidates and extractive summary signals."
+  applicability:
+    "Research only until admitted. The approved specification must define \
+    available evidence, public-content permissions and missing-data behaviour\
+    ."
+  input_contract_draft:
+    "Extracted public text with stable source-offset mapping."
+  output_contract_draft: "Ranked existing text elements; no rewritten text."
+  distinctness:
+    review_status: "pending"
+    hypothesis:
+      "Compare with PageRank M-000004. A new text input alone earns no \
+      additional identity. Only a source-backed complete extraction procedure\
+      , including graph construction and phrase reconstruction, could \
+      justify separate admission; that distinction and its useful contributio\
+      n remain unproved."
+    not_separate_methods:
+      "PageRank merely renamed for text, separate keyword/sentence command \
+      names, graph-window settings or damping values."
+    duplicate_of: null
+  test_ideas:
+    distinguishing_example:
+      "On the same fixed graph, compare the ranking step with M-000004 \
+      and acknowledge shared behaviour. Then use an independently worked \
+      text example to test graph construction and adjacent-word phrase \
+      reconstruction. If the full procedure adds no qualifying distinct \
+      behaviour, mark this record as a duplicate instead of counting \
+      it."
+    edge_cases:
+      "Empty text; repeated tokens; disconnected components; markup-crossing \
+      phrases."
+    missing_evidence:
+      "Return a visible pending state when required inputs are absent; \
+      do not fabricate data."
+    usefulness:
+      "Predeclare a task-specific comparator and acceptance threshold, \
+      then evaluate on held-out data with relevant subgroups."
+    recovery:
+      "Interrupt at each committed work boundary and confirm deterministic \
+      replay or declared stochastic equivalence without losing completed \
+      work."
+  resource_plan:
+    work_unit: "One bounded text graph update."
+    checkpoint_contents:
+      "Text version, graph definition, candidate offsets and iteration \
+      state."
+    peak_memory_bytes: null
+    qualified_workload: null
+    measurement_status: "unrun"
+    constraint:
+      "Production analysis shares the combined Python-worker limit; lab \
+      research uses its separate approved profile. A resource plan is \
+      not proof that this method fits."
+  rights:
+    status: "not_reviewed"
+    jurisdictions:
+      - "UK"
+      - "EU"
+      - "US"
+    copied_implementation: false
+    dependency_admission: "none"
+    model_and_dataset_admission: "none"
+    patent_evidence: []
+    decision_receipt: null
+  approval:
+    specification_path: null
+    owner_approval_receipt: null
+  evidence:
+    implementation_paths: []
+    test_receipts: []
+    usefulness_receipts: []
+    resource_receipts: []
+    review_receipts: []
+    release_receipt: null
+  exclusion: null

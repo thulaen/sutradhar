@@ -1,6 +1,7 @@
 # SPEC-002: public user manual and publishing
 
-Status: APPROVED for bounded implementation. See [approval record](approvals.md).
+Status: APPROVED for bounded implementation. See [approval
+record](approvals.md).
 
 Audience: owner, documentation writers and implementation agents.
 Outcome: a beginner can understand the product and, once implemented, install
@@ -32,9 +33,9 @@ passed. Automatic link insertion is unavailable in v1.
 ## Generation and design
 
 Use MkDocs Material, Mike, mkdocs-click,
-mkdocs-git-revision-date-localized-plugin, mkdocs-llmstxt, codespell,
-Playwright and axe, with pinned reviewed dependencies. Do not add an API reference
-or mkdocstrings to this user manual.
+mkdocs-git-revision-date-localized-plugin, mkdocs-llmstxt, codespell, Playwright
+and axe, with pinned reviewed dependencies. Do not add an API reference or
+mkdocstrings to this user manual.
 
 Generate settings from the approved Pydantic settings models, commands from
 the Typer command structure and user errors from a central SUT-NNN catalogue.
@@ -44,9 +45,9 @@ link. Generate release notes from the maintained changelog.
 
 Capture real implemented UI using synthetic fixture data in light and dark
 themes. Never open private datasets to create manual screenshots. Before the
-screens exist, report the product gap instead of substituting a mock-up presented
-as a capture. Generation imports only admitted safe definitions and must not
-start production services or access live forum credentials.
+screens exist, report the product gap instead of substituting a mock-up
+presented as a capture. Generation imports only admitted safe definitions and
+must not start production services or access live forum credentials.
 
 Apply the requested palette research and BBC/GOV.UK patterns through CSS tokens
 and minimal template overrides. Record palette sources and design decisions in
@@ -61,12 +62,13 @@ scrubbed build artifact. A protected publishing job writes a preview under a
 safe unique branch-derived path, preventing path collisions or overwriting dev,
 latest or a release version. Remove that preview after the PR closes.
 
-Every merged main update builds and publishes dev. Store a frozen manual for each
-full approved version, including patch numbers. Candidate tags may produce a
-clearly labelled candidate preview but cannot advance latest. After all release
-gates pass, publish the matching full release version and update latest. Retain
-older frozen manuals and the version switcher. Before the first release, make
-the absence of a stable release explicit rather than creating a fake latest.
+Every merged main update builds and publishes dev. Store a frozen manual for
+each full approved version, including patch numbers. Candidate tags may produce
+a clearly labelled candidate preview but cannot advance latest. After all
+release gates pass, publish the matching full release version and update latest.
+Retain older frozen manuals and the version switcher. Before the first release,
+make the absence of a stable release explicit rather than creating a fake
+latest.
 
 Use the gh-pages branch as the Pages publishing source, with generated content
 and appropriate aliases compatible with branch-based Pages deployment. The
@@ -87,11 +89,11 @@ contrast checks, per-page axe checks and keyboard navigation coverage. Execute
 real Python examples with mktestdocs and enforce the requested bash-block style.
 Historic quoted source documents are not runnable user-manual examples.
 
-A user-visible change to settings, commands, errors, modules, review or dashboard
-behaviour must update an affected manual page; the failure identifies the change.
-Changes which have no user-visible effect need an explicit checked reason, not
-an arbitrary touched-file workaround. Generated content is checked against its
-source, not manually duplicated to satisfy the rule.
+A user-visible change to settings, commands, errors, modules, review or
+dashboard behaviour must update an affected manual page; the failure identifies
+the change. Changes which have no user-visible effect need an explicit checked
+reason, not an arbitrary touched-file workaround. Generated content is checked
+against its source, not manually duplicated to satisfy the rule.
 
 The manual build itself, every generator and screenshot capture must have no
 access to private corpora, data directories or raw lab results. Do not mount
@@ -106,18 +108,20 @@ pages, screenshots, logs or artifacts.
 The weekly gardener reviews changes since the last gardening commit, updates
 affected pages and opens the requested manual update PR. Front matter records
 audience and reviewed source commit; git supplies the last-updated display.
-Warn, without failing, about pages not reviewed for 60 days. The gardener follows
-the same protected PR and validation-host availability rules as other agents.
+Warn, without failing, about pages not reviewed for 60 days. The gardener
+follows the same protected PR and validation-host availability rules as other
+agents.
 
 ## Acceptance examples
 
 - A PR changes a setting or visible button but not its manual explanation: the
   manual-change check fails and identifies the affected feature.
-- A private path or real post appears in a capture or generated page: publication
-  is blocked, and the unsafe artifact is not uploaded.
-- A generator or screenshot job attempts to read a private corpus, data directory
-  or raw lab-result file: access is refused even if it would not have printed the
-  content. Only the admitted metrics export and synthetic fixtures are available.
+- A private path or real post appears in a capture or generated page:
+  publication is blocked, and the unsafe artifact is not uploaded.
+- A generator or screenshot job attempts to read a private corpus, data
+  directory or raw lab-result file: access is refused even if it would not have
+  printed the content. Only the admitted metrics export and synthetic fixtures
+  are available.
 - A PR from an untrusted fork cannot run with publishing credentials or write to
   a stable manual path.
 - A preview appears for the intended PR, remains isolated from other previews

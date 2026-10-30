@@ -1,0 +1,83 @@
+# Part 12 of 12; assembled by index.yaml.
+
+- id: "M-000034"
+  name: "Reptile meta-learning"
+  aliases: []
+  family: "meta_learning"
+  kind: "meta_algorithm"
+  stage: "candidate"
+  counts_toward_release: false
+  source_ids:
+    - "SRC-0029"
+  summary:
+    "Move an initialisation towards weights learned on sampled tasks using \
+    a first-order procedure."
+  proposed_use:
+    "Compare a distinct adaptation procedure with model-agnostic meta-learning\
+    ."
+  applicability:
+    "Lab research when its declared training or trial evidence is available; \
+    it must not skip mandatory production methods or promote unapproved \
+    code or models."
+  input_contract_draft:
+    "Approved task groups and a separately specified base learner."
+  output_contract_draft:
+    "A versioned initialisation and held-out adaptation results."
+  distinctness:
+    review_status: "pending"
+    hypothesis:
+      "On a small approved task family, independently derive the update \
+      and show how it differs from the chosen MAML procedure."
+    not_separate_methods:
+      "Step sizes, task ordering or inner-loop counts alone."
+    duplicate_of: null
+  test_ideas:
+    distinguishing_example:
+      "On a small approved task family, independently derive the update \
+      and show how it differs from the chosen MAML procedure."
+    edge_cases:
+      "No adaptation data; task leakage; unstable updates; resource exhaustion\
+      ."
+    missing_evidence:
+      "Return a visible pending state when required inputs are absent; \
+      do not fabricate data."
+    usefulness:
+      "Predeclare a task-specific comparator and acceptance threshold, \
+      then evaluate on held-out data with relevant subgroups."
+    recovery:
+      "Interrupt at each committed work boundary and confirm deterministic \
+      replay or declared stochastic equivalence without losing completed \
+      work."
+  resource_plan:
+    work_unit: "One bounded task-training segment."
+    checkpoint_contents:
+      "Initialisation, within-task learner state and random state."
+    peak_memory_bytes: null
+    qualified_workload: null
+    measurement_status: "unrun"
+    constraint:
+      "Production analysis shares the combined Python-worker limit; lab \
+      research uses its separate approved profile. A resource plan is \
+      not proof that this method fits."
+  rights:
+    status: "not_reviewed"
+    jurisdictions:
+      - "UK"
+      - "EU"
+      - "US"
+    copied_implementation: false
+    dependency_admission: "none"
+    model_and_dataset_admission: "none"
+    patent_evidence: []
+    decision_receipt: null
+  approval:
+    specification_path: null
+    owner_approval_receipt: null
+  evidence:
+    implementation_paths: []
+    test_receipts: []
+    usefulness_receipts: []
+    resource_receipts: []
+    review_receipts: []
+    release_receipt: null
+  exclusion: null

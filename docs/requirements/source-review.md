@@ -11,9 +11,9 @@ the required validation-host checks remain separate.
 The author recovered all 209 numbered prompts, options and answers from the
 original private conversation. The capture operation refuses a missing prompt
 or answer. Seven range-based appendices hold the numbered interview; the initial
-request is separate. Direct follow-up messages are retained separately, including
-the packaged-Python option selected after Q031. The index contains every question
-from Q001 to Q209.
+request is separate. Direct follow-up messages are retained separately,
+including the packaged-Python option selected after Q031. The index contains
+every question from Q001 to Q209.
 
 Large answer bodies remain in the sources: Q093's library proposals, Q115's
 SEO-signal request, Q148's edge cases, Q192's toolchain/manual brief and Q193's
@@ -39,8 +39,9 @@ Private paths, forum identity and device/licence identifiers found in the source
 were replaced by explicit redaction markers before writing public source files.
 The source files contain no copied private transcript file or private session
 identifier. A bounded text inspection found no occurrence of the known private
-forum/user, host/address, licence or device identifiers in the owned directories.
-This does not replace the full candidate/Git-history/artifact privacy review.
+forum/user, host/address, licence or device identifiers in the owned
+directories. This does not replace the full candidate/Git-history/artifact
+privacy review.
 
 Interview text is retained as owner-provided source material. Offered choices
 and historical excerpts are labelled as data, not active commands or imported
@@ -63,7 +64,8 @@ reading, writing and bounded inspection do not establish a check-run receipt.
 
 Before this documentation candidate is committed, complete the required
 validation-host documentation, privacy, secrets, rights, consistency and current
-review checks. Inspect links and source capture against the exact final candidate.
+review checks. Inspect links and source capture against the exact final
+candidate.
 Keep the three feature implementation designs marked awaiting owner approval
 until their specific versions are approved. The full acceptance ledger remains
 open; no requested product feature is declared complete by this review.

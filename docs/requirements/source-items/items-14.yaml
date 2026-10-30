@@ -1,0 +1,292 @@
+# Part 14 of 47; assembled by index.yaml.
+
+- source_item: "Q115-L005"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "5"
+  label:
+    ". Here are 250 signals for it to measure or check. Google doesn’t \
+    publish a list of ranking factors, so treat these a..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L007"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "7"
+  label: "1. Crawling and indexing (zen-g crawler)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L008"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "8"
+  label: "★ HTTP status code of every URL"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L009"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "9"
+  label: "★ Redirect chains with more than one hop"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L010"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "10"
+  label: "Redirect loops"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L011"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "11"
+  label: "Temporary (302) redirects that should be permanent (301)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L012"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "12"
+  label:
+    "★ Error and no-permission pages that return 200 instead of 403/404 \
+    (soft 404s)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L013"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "13"
+  label: "URLs blocked by robots.txt"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L014"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "14"
+  label: "robots.txt reachable, valid, and under Google’s 500 KiB limit"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L015"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "15"
+  label: "★ noindex in meta robots tags or X-Robots-Tag headers"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L016"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "16"
+  label:
+    "Pages that are noindexed but also blocked in robots.txt, so Google \
+    never sees the noindex"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L017"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "17"
+  label: "★ Canonical tag on every indexable page"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L018"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "18"
+  label: "Canonical pointing to itself or to another URL"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L019"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "19"
+  label: "Canonical target returns 200 and is indexable"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L020"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "20"
+  label: "http/https and www/non-www variants that don’t redirect"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L021"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "21"
+  label: "Trailing-slash and uppercase URL variants"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L022"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "22"
+  label:
+    "★ Sort and filter parameters (?order=, ?prefix_id=) creating duplicate \
+    listing pages"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L023"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "23"
+  label: "Tracking parameters (utm_*) in internal URLs"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L024"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "24"
+  label:
+    "★ Thread pages 2+ (/page-2) indexable and self-canonical, not canonicaliz\
+    ed to page 1"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L025"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "25"
+  label: "★ Click depth from the homepage"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L026"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "26"
+  label:
+    "Utility URLs (log in, register, reply, report) linked from every \
+    page and crawled"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L027"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "27"
+  label:
+    "Infinite crawl spaces (search results, member lists, “What’s new” \
+    feeds)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L028"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "28"
+  label: "Valid, reciprocal hreflang tags (multilingual forums only)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."

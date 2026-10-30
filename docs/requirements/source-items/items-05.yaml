@@ -1,0 +1,292 @@
+# Part 5 of 47; assembled by index.yaml.
+
+- source_item: "Q069-L001"
+  question: "Q069"
+  source_file: "sources/interview-q061-q070.md"
+  anchor: "q069"
+  answer_line: "1"
+  label:
+    "agents should be able to review their own work because suppose the \
+    other agent runs out of limits the project can't m..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q070-L001"
+  question: "Q070"
+  source_file: "sources/interview-q061-q070.md"
+  anchor: "q070"
+  answer_line: "1"
+  label: "i will use claude local then"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q071-L001"
+  question: "Q071"
+  source_file: "sources/interview-q071-q080.md"
+  anchor: "q071"
+  answer_line: "1"
+  label:
+    "commit and releases, some people may not have multiple agents, so \
+    this workflow might not support people who only use..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q072-L001"
+  question: "Q072"
+  source_file: "sources/interview-q071-q080.md"
+  anchor: "q072"
+  answer_line: "1"
+  label:
+    "the collaboration system should be manual like right now you are \
+    working if i open gemini desktop or claude desktop a..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q073-L001"
+  question: "Q073"
+  source_file: "sources/interview-q071-q080.md"
+  anchor: "q073"
+  answer_line: "1"
+  label: "One writer per file (Recommended)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q074-L001"
+  question: "Q074"
+  source_file: "sources/interview-q071-q080.md"
+  anchor: "q074"
+  answer_line: "1"
+  label: "You approve governing changes (Recommended)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q075-L001"
+  question: "Q075"
+  source_file: "sources/interview-q071-q080.md"
+  anchor: "q075"
+  answer_line: "1"
+  label: "Pause development completely"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q076-L001"
+  question: "Q076"
+  source_file: "sources/interview-q071-q080.md"
+  anchor: "q076"
+  answer_line: "1"
+  label:
+    "option 1, all things should be anonymized just like ga4, but ours \
+    we be based on adobe analytics, we should collect a..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q077-L001"
+  question: "Q077"
+  source_file: "sources/interview-q071-q080.md"
+  anchor: "q077"
+  answer_line: "1"
+  label:
+    "we should have detailed tracking buddy also this tracking should \
+    be compressed with lza or compressing that can happe..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q078-L001"
+  question: "Q078"
+  source_file: "sources/interview-q071-q080.md"
+  anchor: "q078"
+  answer_line: "1"
+  label: "90 days (Recommended)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q079-L001"
+  question: "Q079"
+  source_file: "sources/interview-q071-q080.md"
+  anchor: "q079"
+  answer_line: "1"
+  label: "Yes, detailed histories with consent (Recommended)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q080-L001"
+  question: "Q080"
+  source_file: "sources/interview-q071-q080.md"
+  anchor: "q080"
+  answer_line: "1"
+  label: "Keep one visit per session"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q081-L001"
+  question: "Q081"
+  source_file: "sources/interview-q081-q090.md"
+  anchor: "q081"
+  answer_line: "1"
+  label:
+    "balance speed and storage, zen g should also support offloading storage \
+    to amazon s3 on setup or later, but once the ..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q082-L001"
+  question: "Q082"
+  source_file: "sources/interview-q081-q090.md"
+  anchor: "q082"
+  answer_line: "1"
+  label: "Yes, keep operational data (Recommended)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q083-L001"
+  question: "Q083"
+  source_file: "sources/interview-q081-q090.md"
+  anchor: "q083"
+  answer_line: "1"
+  label: "Use a capped temporary queue (Recommended)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q084-L001"
+  question: "Q084"
+  source_file: "sources/interview-q081-q090.md"
+  anchor: "q084"
+  answer_line: "1"
+  label: "Two years (Recommended)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q085-L001"
+  question: "Q085"
+  source_file: "sources/interview-q081-q090.md"
+  anchor: "q085"
+  answer_line: "1"
+  label: "different reasoning procedure plus documented research variants too."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q086-L001"
+  question: "Q086"
+  source_file: "sources/interview-q081-q090.md"
+  anchor: "q086"
+  answer_line: "1"
+  label: "Wait visibly for its evidence (Recommended)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q087-L001"
+  question: "Q087"
+  source_file: "sources/interview-q081-q090.md"
+  anchor: "q087"
+  answer_line: "1"
+  label:
+    "all methods and all things should support checkpoint even when the \
+    server is rebooted they should support resiliance ..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q088-L001"
+  question: "Q088"
+  source_file: "sources/interview-q081-q090.md"
+  anchor: "q088"
+  answer_line: "1"
+  label: "Reserve steady analysis capacity"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q089-L001"
+  question: "Q089"
+  source_file: "sources/interview-q081-q090.md"
+  anchor: "q089"
+  answer_line: "1"
+  label: "First useful suggestion (Recommended)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q090-L001"
+  question: "Q090"
+  source_file: "sources/interview-q081-q090.md"
+  anchor: "q090"
+  answer_line: "1"
+  label: "Wait for the complete analysis"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q091-L001"
+  question: "Q091"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q091"
+  answer_line: "1"
+  label: "Refresh and ask for approval again (Recommended)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."

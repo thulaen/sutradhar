@@ -1,0 +1,294 @@
+# Part 8 of 47; assembled by index.yaml.
+
+- source_item: "Q093-L052"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "52"
+  label:
+    "sentence-transformers ★: turn threads and posts into embeddings; \
+    its CrossEncoder re-sorts the top candidates."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L053"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "53"
+  label: "torch ★: runs the models; the CPU-only version is enough."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L054"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "54"
+  label: "transformers ◆: the underlying models."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L055"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "55"
+  label: "huggingface-hub ◆: download and pin models for offline servers."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L056"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "56"
+  label: "onnxruntime ◆: faster model inference on CPU."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L057"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "57"
+  label:
+    "fastembed ○: embeddings without PyTorch; use it instead of 35–36 \
+    on a small server."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L058"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "58"
+  label:
+    "model2vec ○: very fast CPU embeddings for processing millions of \
+    existing posts."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L059"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "59"
+  label:
+    "FlagEmbedding ○: BGE models (BGE-M3 for multilingual forums) and \
+    re-rankers."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L060"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "60"
+  label: "Keyword search"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L061"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "61"
+  label:
+    "scikit-learn ★: TF-IDF, cosine similarity, clustering, logistic regressio\
+    n and metrics."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L062"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "62"
+  label: "bm25s ★: fast BM25 keyword search."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L063"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "63"
+  label: "tantivy ○: built-in full-text search index with phrase queries."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L064"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "64"
+  label:
+    "elasticsearch ◆: if the forum runs XenForo Enhanced Search, reuse \
+    its index with more_like_this queries."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L065"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "65"
+  label: "Vector index (pick one)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L066"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "66"
+  label: "faiss-cpu ★: find the closest threads by embedding."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L067"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "67"
+  label: "usearch ○: small, fast alternative."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L068"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "68"
+  label: "hnswlib ○: simple option, but no release since 2023."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L069"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "69"
+  label:
+    "qdrant-client ○: Qdrant server with filters (forum, language, visibility)\
+    ."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L070"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "70"
+  label: "lancedb ○: vector store that lives on disk inside the service."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L071"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "71"
+  label:
+    "mariadb ○: MariaDB 11.7+ has built-in vector search, so embeddings \
+    can sit right next to XenForo’s own data."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L072"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "72"
+  label: "Data handling"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L073"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "73"
+  label: "numpy ★: arrays for embeddings and scores."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L074"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "74"
+  label: "scipy ◆: sparse matrices for TF-IDF, BM25 and co-reading data."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."

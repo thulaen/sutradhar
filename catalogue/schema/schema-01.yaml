@@ -1,0 +1,30 @@
+# Part 1 of 4 of the catalogue JSON Schema.
+
+path: []
+merge:
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+  "$id": "urn:sutradhar:catalogue:candidates:1"
+  title: "Sutradhar research candidate catalogue"
+  description:
+    "Data contract only. Schema validity does not prove rights, correctness \
+    or release qualification."
+  type: "object"
+  additionalProperties: false
+  required:
+    - "schema_version"
+    - "updated_on"
+    - "scope"
+    - "methods"
+  properties:
+    schema_version:
+      const: 1
+    updated_on:
+      type: "string"
+      format: "date"
+    scope:
+      type: "string"
+      minLength: 1
+    methods:
+      type: "array"
+      items:
+        "$ref": "#/$defs/method"

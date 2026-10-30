@@ -1,0 +1,238 @@
+# Part 2 of 12; assembled by index.yaml.
+
+- id: "M-000004"
+  name: "PageRank"
+  aliases: []
+  family: "graph_analysis"
+  kind: "algorithm"
+  stage: "candidate"
+  counts_toward_release: false
+  source_ids:
+    - "SRC-0004"
+  summary:
+    "Estimate graph importance from repeated movement along links with \
+    restart handling."
+  proposed_use: "Supply an explained internal-link graph signal."
+  applicability:
+    "Research only until admitted. The approved specification must define \
+    available evidence, public-content permissions and missing-data behaviour\
+    ."
+  input_contract_draft: "A versioned public-content graph and restart settings."
+  output_contract_draft: "A node score with convergence status."
+  distinctness:
+    review_status: "pending"
+    hypothesis:
+      "Use a graph where equal incoming-link counts receive different \
+      authority contributions; check probability conservation under the \
+      approved dangling-node rule."
+    not_separate_methods:
+      "Different damping values, restart vectors or convergence tolerances."
+    duplicate_of: null
+  test_ideas:
+    distinguishing_example:
+      "Use a graph where equal incoming-link counts receive different \
+      authority contributions; check probability conservation under the \
+      approved dangling-node rule."
+    edge_cases:
+      "No nodes; isolates; dangling nodes; disconnected components; no \
+      convergence."
+    missing_evidence:
+      "Return a visible pending state when required inputs are absent; \
+      do not fabricate data."
+    usefulness:
+      "Predeclare a task-specific comparator and acceptance threshold, \
+      then evaluate on held-out data with relevant subgroups."
+    recovery:
+      "Interrupt at each committed work boundary and confirm deterministic \
+      replay or declared stochastic equivalence without losing completed \
+      work."
+  resource_plan:
+    work_unit: "One bounded edge chunk within an iteration."
+    checkpoint_contents:
+      "Graph version, iteration, dangling mass and current/next score \
+      storage."
+    peak_memory_bytes: null
+    qualified_workload: null
+    measurement_status: "unrun"
+    constraint:
+      "Production analysis shares the combined Python-worker limit; lab \
+      research uses its separate approved profile. A resource plan is \
+      not proof that this method fits."
+  rights:
+    status: "not_reviewed"
+    jurisdictions:
+      - "UK"
+      - "EU"
+      - "US"
+    copied_implementation: false
+    dependency_admission: "none"
+    model_and_dataset_admission: "none"
+    patent_evidence: []
+    decision_receipt: null
+  approval:
+    specification_path: null
+    owner_approval_receipt: null
+  evidence:
+    implementation_paths: []
+    test_receipts: []
+    usefulness_receipts: []
+    resource_receipts: []
+    review_receipts: []
+    release_receipt: null
+  exclusion: null
+- id: "M-000005"
+  name: "HITS"
+  aliases: []
+  family: "graph_analysis"
+  kind: "algorithm"
+  stage: "candidate"
+  counts_toward_release: false
+  source_ids:
+    - "SRC-0005"
+  summary:
+    "Estimate separate hub and authority roles through their mutual reinforcem\
+    ent."
+  proposed_use:
+    "Distinguish pages that organise useful destinations from pages receiving \
+    useful links."
+  applicability:
+    "Research only until admitted. The approved specification must define \
+    available evidence, public-content permissions and missing-data behaviour\
+    ."
+  input_contract_draft: "A versioned public-content graph."
+  output_contract_draft: "Hub and authority scores with convergence status."
+  distinctness:
+    review_status: "pending"
+    hypothesis:
+      "Build a graph whose best hub differs from its best authority; require \
+      two explained score outputs rather than one popularity count."
+    not_separate_methods:
+      "Different normalisation choices or iteration tolerances."
+    duplicate_of: null
+  test_ideas:
+    distinguishing_example:
+      "Build a graph whose best hub differs from its best authority; require \
+      two explained score outputs rather than one popularity count."
+    edge_cases:
+      "Empty graph; isolated nodes; disconnected components; degenerate \
+      normalisation."
+    missing_evidence:
+      "Return a visible pending state when required inputs are absent; \
+      do not fabricate data."
+    usefulness:
+      "Predeclare a task-specific comparator and acceptance threshold, \
+      then evaluate on held-out data with relevant subgroups."
+    recovery:
+      "Interrupt at each committed work boundary and confirm deterministic \
+      replay or declared stochastic equivalence without losing completed \
+      work."
+  resource_plan:
+    work_unit: "One bounded edge chunk within an update."
+    checkpoint_contents: "Graph version, iteration and both score vectors."
+    peak_memory_bytes: null
+    qualified_workload: null
+    measurement_status: "unrun"
+    constraint:
+      "Production analysis shares the combined Python-worker limit; lab \
+      research uses its separate approved profile. A resource plan is \
+      not proof that this method fits."
+  rights:
+    status: "not_reviewed"
+    jurisdictions:
+      - "UK"
+      - "EU"
+      - "US"
+    copied_implementation: false
+    dependency_admission: "none"
+    model_and_dataset_admission: "none"
+    patent_evidence: []
+    decision_receipt: null
+  approval:
+    specification_path: null
+    owner_approval_receipt: null
+  evidence:
+    implementation_paths: []
+    test_receipts: []
+    usefulness_receipts: []
+    resource_receipts: []
+    review_receipts: []
+    release_receipt: null
+  exclusion: null
+- id: "M-000006"
+  name: "Louvain community detection"
+  aliases: []
+  family: "graph_analysis"
+  kind: "metaheuristic"
+  stage: "candidate"
+  counts_toward_release: false
+  source_ids:
+    - "SRC-0006"
+  summary:
+    "Search for graph communities through local modularity improvements \
+    and aggregation."
+  proposed_use: "Investigate topic-hub group proposals."
+  applicability:
+    "Research only until admitted. The approved specification must define \
+    available evidence, public-content permissions and missing-data behaviour\
+    ."
+  input_contract_draft: "A versioned graph and documented objective."
+  output_contract_draft: "A partition, objective value and search trace."
+  distinctness:
+    review_status: "pending"
+    hypothesis:
+      "Use planted groups with a sparse bridge; measure the objective \
+      and verify that the claimed partition matches the implementation's \
+      declared graph assumptions."
+    not_separate_methods:
+      "Resolution settings, node-order seeds and repeat counts."
+    duplicate_of: null
+  test_ideas:
+    distinguishing_example:
+      "Use planted groups with a sparse bridge; measure the objective \
+      and verify that the claimed partition matches the implementation's \
+      declared graph assumptions."
+    edge_cases:
+      "Empty graph; all isolated nodes; ties; disconnected output communities."
+    missing_evidence:
+      "Return a visible pending state when required inputs are absent; \
+      do not fabricate data."
+    usefulness:
+      "Predeclare a task-specific comparator and acceptance threshold, \
+      then evaluate on held-out data with relevant subgroups."
+    recovery:
+      "Interrupt at each committed work boundary and confirm deterministic \
+      replay or declared stochastic equivalence without losing completed \
+      work."
+  resource_plan:
+    work_unit: "A bounded local-move segment."
+    checkpoint_contents:
+      "Graph level, partition, objective totals, ordering and random state."
+    peak_memory_bytes: null
+    qualified_workload: null
+    measurement_status: "unrun"
+    constraint:
+      "Production analysis shares the combined Python-worker limit; lab \
+      research uses its separate approved profile. A resource plan is \
+      not proof that this method fits."
+  rights:
+    status: "not_reviewed"
+    jurisdictions:
+      - "UK"
+      - "EU"
+      - "US"
+    copied_implementation: false
+    dependency_admission: "none"
+    model_and_dataset_admission: "none"
+    patent_evidence: []
+    decision_receipt: null
+  approval:
+    specification_path: null
+    owner_approval_receipt: null
+  evidence:
+    implementation_paths: []
+    test_receipts: []
+    usefulness_receipts: []
+    resource_receipts: []
+    review_receipts: []
+    release_receipt: null
+  exclusion: null

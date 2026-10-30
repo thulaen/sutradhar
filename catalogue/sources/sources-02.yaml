@@ -1,0 +1,240 @@
+# Part 2 of 2; assembled by index.yaml.
+
+- id: "SRC-0018"
+  title: "Algorithms for Hyper-Parameter Optimization"
+  authors: "James Bergstra; Remi Bardenet; Yoshua Bengio; Balazs Kegl"
+  publication_year: 2011
+  url:
+    "https://papers.nips.cc/paper_files/paper/2011/file/86e8f7ab32cfd12577bc26\
+    19bc635690-Paper.pdf"
+  source_type: "publisher_paper"
+  accessed_on: "2026-10-30"
+  evidence_level: "selected_sections_read"
+  sections_read:
+    "Introduction and section 2, including distinct Gaussian-process and \
+    Parzen-window approaches."
+  version_observed: "NeurIPS 24"
+  publication_reuse_status: "not_admitted"
+  rights_note:
+    "Citation and independently written research notes only. No paper, \
+    code, model or dataset redistribution is authorised by this record."
+- id: "SRC-0019"
+  title:
+    "Hyperband: A Novel Bandit-Based Approach to Hyperparameter Optimization"
+  authors:
+    "Lisha Li; Kevin Jamieson; Giulia DeSalvo; Afshin Rostamizadeh; Ameet \
+    Talwalkar"
+  publication_year: 2018
+  url: "https://jmlr.org/papers/v18/16-558.html"
+  source_type: "publisher_paper"
+  accessed_on: "2026-10-30"
+  evidence_level: "abstract_read"
+  sections_read:
+    "Resource allocation among configuration trials; no production-method \
+    skipping is authorised."
+  version_observed: "JMLR 18(185), publication shown as 2018"
+  publication_reuse_status: "not_admitted"
+  rights_note:
+    "Citation and independently written research notes only. No paper, \
+    code, model or dataset redistribution is authorised by this record."
+- id: "SRC-0020"
+  title: "Differential evolution"
+  authors: "SciPy contributors"
+  publication_year: null
+  url:
+    "https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.diffe\
+    rential_evolution.html"
+  source_type: "official_documentation"
+  accessed_on: "2026-10-30"
+  evidence_level: "selected_sections_read"
+  sections_read:
+    "Bounded population search, evaluation budget, random state and parameter \
+    effects."
+  version_observed: "SciPy 1.18.0"
+  publication_reuse_status: "not_admitted"
+  rights_note:
+    "Citation and independently written research notes only. No paper, \
+    code, model or dataset redistribution is authorised by this record."
+- id: "SRC-0021"
+  title: "Dual annealing"
+  authors: "SciPy contributors"
+  publication_year: null
+  url:
+    "https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.dual_\
+    annealing.html"
+  source_type: "official_documentation"
+  accessed_on: "2026-10-30"
+  evidence_level: "selected_sections_read"
+  sections_read:
+    "Notes, generalised annealing with local search, soft evaluation limits \
+    and references."
+  version_observed: "SciPy 1.18.0"
+  publication_reuse_status: "not_admitted"
+  rights_note:
+    "Citation and independently written research notes only. No paper, \
+    code, model or dataset redistribution is authorised by this record."
+- id: "SRC-0022"
+  title: "Nelder-Mead minimisation"
+  authors: "SciPy contributors"
+  publication_year: null
+  url:
+    "https://docs.scipy.org/doc/scipy/reference/optimize.minimize-neldermead.h\
+    tml"
+  source_type: "official_documentation"
+  accessed_on: "2026-10-30"
+  evidence_level: "selected_sections_read"
+  sections_read:
+    "Simplex input, evaluation limits, adaptive option and bound-clipping \
+    caveat."
+  version_observed: "SciPy 1.18.0"
+  publication_reuse_status: "not_admitted"
+  rights_note:
+    "Citation and independently written research notes only. No paper, \
+    code, model or dataset redistribution is authorised by this record."
+- id: "SRC-0023"
+  title: "Feature Selection with the Boruta Package"
+  authors: "Miron B. Kursa; Witold R. Rudnicki"
+  publication_year: 2010
+  url: "https://www.jstatsoft.org/article/view/v036i11"
+  source_type: "publisher_paper"
+  accessed_on: "2026-10-30"
+  evidence_level: "abstract_read"
+  sections_read: "Random-probe comparison and all-relevant wrapper objective."
+  version_observed: "JSS 36(11)"
+  publication_reuse_status: "not_admitted"
+  rights_note:
+    "Citation and independently written research notes only. No paper, \
+    code, model or dataset redistribution is authorised by this record."
+- id: "SRC-0024"
+  title: "Feature selection"
+  authors: "scikit-learn contributors"
+  publication_year: null
+  url: "https://scikit-learn.org/stable/modules/feature_selection.html"
+  source_type: "official_documentation"
+  accessed_on: "2026-10-30"
+  evidence_level: "selected_sections_read"
+  sections_read:
+    "Recursive feature elimination and sequential feature selection."
+  version_observed: "scikit-learn 1.9.1"
+  publication_reuse_status: "not_admitted"
+  rights_note:
+    "Citation and independently written research notes only. No paper, \
+    code, model or dataset redistribution is authorised by this record."
+- id: "SRC-0025"
+  title:
+    "A Density-Based Algorithm for Discovering Clusters in Large Spatial \
+    Databases with Noise"
+  authors: "Martin Ester; Hans-Peter Kriegel; Joerg Sander; Xiaowei Xu"
+  publication_year: 1996
+  url: "https://cdn.aaai.org/KDD/1996/KDD96-037.pdf"
+  source_type: "publisher_paper"
+  accessed_on: "2026-10-30"
+  evidence_level: "selected_sections_read"
+  sections_read:
+    "Abstract and introduction to density-connected clusters and noise."
+  version_observed: "KDD 1996"
+  publication_reuse_status: "not_admitted"
+  rights_note:
+    "Citation and independently written research notes only. No paper, \
+    code, model or dataset redistribution is authorised by this record."
+- id: "SRC-0026"
+  title: "IsolationForest"
+  authors: "scikit-learn contributors"
+  publication_year: null
+  url:
+    "https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.Isolat\
+    ionForest.html"
+  source_type: "official_documentation"
+  accessed_on: "2026-10-30"
+  evidence_level: "selected_sections_read"
+  sections_read: "Random splits and average isolation-path length."
+  version_observed: "scikit-learn 1.9.1"
+  publication_reuse_status: "not_admitted"
+  rights_note:
+    "Citation and independently written research notes only. No paper, \
+    code, model or dataset redistribution is authorised by this record."
+- id: "SRC-0027"
+  title: "LocalOutlierFactor"
+  authors: "scikit-learn contributors"
+  publication_year: null
+  url:
+    "https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.Local\
+    OutlierFactor.html"
+  source_type: "official_documentation"
+  accessed_on: "2026-10-30"
+  evidence_level: "selected_sections_read"
+  sections_read: "Local density compared with neighbouring observations."
+  version_observed: "scikit-learn 1.9.1"
+  publication_reuse_status: "not_admitted"
+  rights_note:
+    "Citation and independently written research notes only. No paper, \
+    code, model or dataset redistribution is authorised by this record."
+- id: "SRC-0028"
+  title: "Model-Agnostic Meta-Learning for Fast Adaptation of Deep Networks"
+  authors: "Chelsea Finn; Pieter Abbeel; Sergey Levine"
+  publication_year: 2017
+  url: "https://proceedings.mlr.press/v70/finn17a.html"
+  source_type: "publisher_paper"
+  accessed_on: "2026-10-30"
+  evidence_level: "abstract_read"
+  sections_read: "Learning an initialisation for adaptation to new tasks."
+  version_observed: "PMLR 70"
+  publication_reuse_status: "not_admitted"
+  rights_note:
+    "Citation and independently written research notes only. No paper, \
+    code, model or dataset redistribution is authorised by this record."
+- id: "SRC-0029"
+  title: "On First-Order Meta-Learning Algorithms"
+  authors: "Alex Nichol; Joshua Achiam; John Schulman"
+  publication_year: 2018
+  url: "https://arxiv.org/abs/1803.02999v3"
+  source_type: "author_preprint"
+  accessed_on: "2026-10-30"
+  evidence_level: "abstract_read"
+  sections_read:
+    "First-order family and Reptile initialisation updates; full derivation \
+    review remains pending."
+  version_observed: "arXiv v3"
+  publication_reuse_status: "not_admitted"
+  rights_note:
+    "Citation and independently written research notes only. No paper, \
+    code, model or dataset redistribution is authorised by this record."
+- id: "SRC-0030"
+  title: "Learning to Rank using Gradient Descent"
+  authors:
+    "Chris Burges; Tal Shaked; Erin Renshaw; Ari Lazier; Matt Deeds; Nicole \
+    Hamilton; Greg Hullender"
+  publication_year: 2005
+  url:
+    "https://www.microsoft.com/en-us/research/wp-content/uploads/2005/08/icml_\
+    ranking.pdf"
+  source_type: "author_paper"
+  accessed_on: "2026-10-30"
+  evidence_level: "selected_sections_read"
+  sections_read:
+    "Abstract, introduction and section 3 pairwise probabilistic ranking \
+    cost. Full derivation, training and benchmark review remain pending."
+  version_observed: "ICML 2005 author PDF"
+  publication_reuse_status: "not_admitted"
+  rights_note:
+    "Citation and independently written research notes only. No paper, \
+    code, model or dataset redistribution is authorised by this record."
+- id: "SRC-0031"
+  title: "Learning to Rank with Nonsmooth Cost Functions"
+  authors: "Christopher J. Burges; Robert Ragno; Quoc V. Le"
+  publication_year: 2006
+  url:
+    "https://proceedings.neurips.cc/paper_files/paper/2006/file/af44c4c56f385c\
+    43f2529f9b1b018f6a-Paper.pdf"
+  source_type: "publisher_paper"
+  accessed_on: "2026-10-30"
+  evidence_level: "selected_sections_read"
+  sections_read:
+    "Abstract and selected experimental-method sections on implicit ranking \
+    updates and position-sensitive pair weighting. Complete derivation \
+    review remains pending."
+  version_observed: "NeurIPS 19 paper"
+  publication_reuse_status: "not_admitted"
+  rights_note:
+    "Citation and independently written research notes only. No paper, \
+    code, model or dataset redistribution is authorised by this record."

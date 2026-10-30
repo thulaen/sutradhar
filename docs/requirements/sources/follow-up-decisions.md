@@ -1,7 +1,7 @@
 # Follow-up decisions outside the numbered answers
 
-Status: historical source, subject to [current decisions](../current-decisions.md)
-and [overrides](../overrides.md).
+Status: historical source, subject to
+[current decisions](../current-decisions.md) and [overrides](../overrides.md).
 
 ## Python arrangement after Q031
 
@@ -17,7 +17,8 @@ settles the Q031 selection; it is not a fourth runtime option or a new question.
 
 Later decisions still control the details: Q034 removes a control-panel
 dependency, Q038 installs approved packs, Q094 establishes the PHP-supplied-data
-boundary, Q174 changes memory accounting, and Q207 confirms point-and-click setup.
+boundary, Q174 changes memory accounting, and Q207 confirms point-and-click
+setup.
 
 ## Interview continuation
 
@@ -37,7 +38,8 @@ answered their bounded implementation approval question:
 
 This authorises SPEC-001, SPEC-002 and SPEC-003 at the exact revisions in the
 [approval record](../../specifications/approvals.md). It does not change the
-numbered interview count or authorise a product release/private-data transmission.
+numbered interview count or authorise a product release/private-data
+transmission.
 
 ## Storage replacement and preservation on 30 October 2026
 

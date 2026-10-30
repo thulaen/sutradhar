@@ -1,0 +1,299 @@
+# Part 7 of 47; assembled by index.yaml.
+
+- source_item: "Q093-L029"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "29"
+  label: "yarl ◆: parse and build URLs."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L030"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "30"
+  label:
+    "tldextract ◆: tell internal links from external ones, including subdomain\
+    s."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L031"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "31"
+  label:
+    "url-normalize ◆: clean up URLs before mapping them to a thread ID, \
+    so you never suggest a link the post already has."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L032"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "32"
+  label: "urlextract ◆: find plain URLs pasted into posts without [URL] tags."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L033"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "33"
+  label: "Core NLP"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L034"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "34"
+  label:
+    "spacy ★: split text into words, reduce them to base forms, and pull \
+    out noun phrases and names as candidate anchor text."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L035"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "35"
+  label: "nltk ◆: stopword lists and WordNet synonyms."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L036"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "36"
+  label:
+    "lingua-language-detector ◆: accurate language detection on short \
+    posts, so you only link same-language content."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L037"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "37"
+  label:
+    "simplemma ○: lightweight word-base-form tool for languages that spaCy \
+    has no model for."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L038"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "38"
+  label: "PyStemmer ◆: Snowball word stemmers (bm25s uses them too)."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L039"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "39"
+  label:
+    "inflect ◆: singular/plural handling (GPU ↔ GPUs) when matching anchors."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L040"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "40"
+  label:
+    "wordfreq ◆: reject anchors made of very common words (“this thing”, \
+    “click here”). Its author has stopped updating it..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L041"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "41"
+  label:
+    "gliner ○: recognizes names specific to your niche (product models, \
+    game titles) without any training."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L042"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "42"
+  label:
+    "gensim ◆: its Phrases model learns your forum’s common word pairs \
+    (“power supply”, “head gasket”)."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L043"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "43"
+  label: "Keyphrase extraction (each thread’s “linkable phrases”)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L044"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "44"
+  label: "yake ◆: fast keyphrase extraction with no training needed."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L045"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "45"
+  label: "keybert ◆: embedding-based keyphrases; better quality, but slower."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L046"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "46"
+  label: "pytextrank ○: TextRank keyphrases as a spaCy step."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L047"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "47"
+  label: "Anchor matching"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L048"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "48"
+  label:
+    "pyahocorasick ★: scan a post for thousands of target phrases in one \
+    pass."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L049"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "49"
+  label: "rapidfuzz ★: fuzzy matching between post phrases and thread titles."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L050"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "50"
+  label:
+    "datasketch ◆: spot near-duplicate threads, so you link to the original \
+    one."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L051"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "51"
+  label: "Embeddings"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."

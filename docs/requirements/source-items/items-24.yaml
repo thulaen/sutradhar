@@ -1,0 +1,286 @@
+# Part 24 of 47; assembled by index.yaml.
+
+- source_item: "Q115-L245"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "245"
+  label: "Uptime and downtime minutes"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L246"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "246"
+  label: "15. Security and trust (crawler, Safe Browsing, XenForo)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L247"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "247"
+  label: "★ HTTPS everywhere, with no mixed content"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L248"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "248"
+  label: "HSTS header"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L249"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "249"
+  label: "TLS certificate expiry"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L250"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "250"
+  label: "Safe Browsing status of your own site"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L251"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "251"
+  label: "★ Spam posts left up for more than an hour"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L252"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "252"
+  label: "Hacked content or injected links"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L253"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "253"
+  label: "Privacy policy, terms, and contact pages"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L254"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "254"
+  label: "About page naming who runs the forum"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L255"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "255"
+  label: "Time taken to act on reported posts"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L256"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "256"
+  label: "Ad density"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q116-L001"
+  question: "Q116"
+  source_file: "sources/interview-q116-q120.md"
+  anchor: "q116"
+  answer_line: "1"
+  label:
+    "option 1, also i change the repo name to Sutradhar, so going forward \
+    it should be named Sutradhar."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q116-L005"
+  question: "Q116"
+  source_file: "sources/interview-q116-q120.md"
+  anchor: "q116"
+  answer_line: "5"
+  label: "## Naming"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q116-L006"
+  question: "Q116"
+  source_file: "sources/interview-q116-q120.md"
+  anchor: "q116"
+  answer_line: "6"
+  label:
+    "Indian names are for the parts of the system. English is for the \
+    code inside them."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q116-L008"
+  question: "Q116"
+  source_file: "sources/interview-q116-q120.md"
+  anchor: "q116"
+  answer_line: "8"
+  label: "Use glossary names for:"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q116-L009"
+  question: "Q116"
+  source_file: "sources/interview-q116-q120.md"
+  anchor: "q116"
+  answer_line: "9"
+  label: "- packages and subpackages (`sutradhar.vinyas`, `sutradhar.sanchar`)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q116-L010"
+  question: "Q116"
+  source_file: "sources/interview-q116-q120.md"
+  anchor: "q116"
+  answer_line: "10"
+  label:
+    "- feature modules: their pip package, registered name, config section, \
+    and router prefix (`sutradhar-setu`, `sutradha..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q116-L011"
+  question: "Q116"
+  source_file: "sources/interview-q116-q120.md"
+  anchor: "q116"
+  answer_line: "11"
+  label: "- the class that defines each feature module (`class Setu(Module)`)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q116-L012"
+  question: "Q116"
+  source_file: "sources/interview-q116-q120.md"
+  anchor: "q116"
+  answer_line: "12"
+  label: "- CLI command groups (`sutra mandali list`, `sutra karya run`)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q116-L014"
+  question: "Q116"
+  source_file: "sources/interview-q116-q120.md"
+  anchor: "q116"
+  answer_line: "14"
+  label: "Use plain English for everything else:"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q116-L015"
+  question: "Q116"
+  source_file: "sources/interview-q116-q120.md"
+  anchor: "q116"
+  answer_line: "15"
+  label:
+    "- functions, methods, variables, and parameters (`suggest_links`, \
+    `max_links_per_post`)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q116-L016"
+  question: "Q116"
+  source_file: "sources/interview-q116-q120.md"
+  anchor: "q116"
+  answer_line: "16"
+  label: "- domain classes (`Suggestion`, `Thread`, `Post`, `PostSaved`)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."

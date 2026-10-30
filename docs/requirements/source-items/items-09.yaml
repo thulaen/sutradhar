@@ -1,0 +1,298 @@
+# Part 9 of 47; assembled by index.yaml.
+
+- source_item: "Q093-L075"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "75"
+  label: "pandas ◆: reports and exports for admins."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L076"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "76"
+  label: "polars ○: faster dataframes for large forums."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L077"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "77"
+  label: "pyarrow ◆: Parquet snapshots of embeddings and scoring features."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L078"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "78"
+  label: "duckdb ○: SQL over those Parquet files for reports on link coverage."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L079"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "79"
+  label: "Ranking and learning"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L080"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "80"
+  label: "lightgbm ◆: learns how to rank suggestions from signals like:"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L081"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "81"
+  label: "semantic and keyword similarity;"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L082"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "82"
+  label: "same forum and shared tags;"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L083"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "83"
+  label: "how many links already point to the target thread;"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L084"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "84"
+  label: "views and recency;"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L085"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "85"
+  label: "past accepts and rejects."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L086"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "86"
+  label: "xgboost ○: alternative to LightGBM."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L087"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "87"
+  label: "optuna ○: tune the scoring weights and thresholds."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L088"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "88"
+  label:
+    "implicit ◆: “people who read X also read Y” from xf_thread_read. \
+    Snapshot that table regularly, since XenForo prunes ..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L089"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "89"
+  label: "bertopic ○: group threads into topics to find main “hub” threads."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L090"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "90"
+  label: "umap-learn ○: needed by BERTopic and for topic maps."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L091"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "91"
+  label: "Link graph"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L092"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "92"
+  label:
+    "networkx ★: map which threads link to which, find orphan threads \
+    (no inbound links), and rank threads by PageRank."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L093"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "93"
+  label: "igraph ○: same analysis for forums with millions of links."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L094"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "94"
+  label: "Evaluation"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L095"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "95"
+  label:
+    "ranx ◆: offline quality metrics (nDCG/MRR), plus merging the keyword \
+    and vector result lists into one ranking."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L096"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "96"
+  label: "SEO signals and crawl checks"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L097"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "97"
+  label:
+    "google-api-python-client ◆: Search Console data. Real search queries \
+    for each page become anchor phrases, and pages r..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q093-L098"
+  question: "Q093"
+  source_file: "sources/interview-q091-q095.md"
+  anchor: "q093"
+  answer_line: "98"
+  label: "google-auth ◆: authentication for the Google APIs."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."

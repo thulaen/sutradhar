@@ -1,0 +1,289 @@
+# Part 44 of 47; assembled by index.yaml.
+
+- source_item: "Q192-L045"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "45"
+  label: "- Monitoring (health endpoints, what to alert on)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L046"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "46"
+  label:
+    "- Privacy and data (exactly what Sutradhar stores, where, for how \
+    long, what leaves the machine and under what settin..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L047"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "47"
+  label:
+    "- Security (API keys, the shared secret, rotating keys, network exposure)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L048"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "48"
+  label: "7. Troubleshooting"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L049"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "49"
+  label:
+    "- Symptom → likely cause → fix tables, grouped by area (install, \
+    connection to XenForo, no suggestions, review page, ..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L050"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "50"
+  label: "- Error codes: one entry per code (generated, see below)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L051"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "51"
+  label:
+    "- Getting help (what to include in a report, how to produce a scrubbed \
+    diagnostic bundle with `sutra doctor --bundle`)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L052"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "52"
+  label: "8. Reference"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L053"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "53"
+  label: "- Command line (generated)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L054"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "54"
+  label: "- Settings (generated)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L055"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "55"
+  label:
+    "- Glossary: every Sutradhar name (sutradhar, setu, sanket, panchayat, \
+    vinyas, mandali, sanchar, karya, bhandar, sujha..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L056"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "56"
+  label: "- Release notes (generated from release-please)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L058"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "58"
+  label: "## Generated pages"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L059"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "59"
+  label:
+    "Produced at build time so they cannot go stale, and written for users, \
+    not developers:"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L060"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "60"
+  label:
+    "- Settings reference from the pydantic settings models: one table \
+    per module and per core section, with key, type, de..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L061"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "61"
+  label:
+    "- Command line reference from the typer app, via mkdocs-click, with \
+    a one-line \"when you would use this\" per command ..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L062"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "62"
+  label:
+    "- Error codes: every user-facing error raised by the service or CLI \
+    carries a code (format SUT-NNN) with a short expl..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L063"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "63"
+  label: "- Release notes from the CHANGELOG that release-please maintains."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L064"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "64"
+  label:
+    "- Screenshots of the review page and dashboard, captured in CI with \
+    Playwright from the synthetic fixture data, so th..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L066"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "66"
+  label: "## Publishing cadence: the manual is never behind the product"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L067"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "67"
+  label:
+    "- Every push to main rebuilds and redeploys the manual as the `dev` \
+    version within five minutes. No manual step, no w..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L068"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "68"
+  label:
+    "- Every pull request builds the manual, runs all checks, uploads \
+    the built site as a downloadable artifact, and publi..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."

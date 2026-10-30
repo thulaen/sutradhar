@@ -1,0 +1,292 @@
+# Part 40 of 47; assembled by index.yaml.
+
+- source_item: "Q148-L279"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "279"
+  label: "Sock puppets reacting to each other"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L280"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "280"
+  label: "Reactions removed or changed: recalculate"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L281"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "281"
+  label: "★ Karma from content later deleted as spam is clawed back"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L282"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "282"
+  label: "Admins changing a reaction type’s score retroactively"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L283"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "283"
+  label: "Incremental recalculation instead of rescoring every thread"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L284"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "284"
+  label:
+    "Add this line to AGENTS.md so Codex works from the list instead of \
+    rediscovering it:"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q148-L288"
+  question: "Q148"
+  source_file: "sources/interview-q148-part1.md"
+  anchor: "q148"
+  answer_line: "288"
+  label:
+    "please document all these decisions i am making so that i run out \
+    of usage limits, claude can pick up the work with t..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q149-L001"
+  question: "Q149"
+  source_file: "sources/interview-q149-q150.md"
+  anchor: "q149"
+  answer_line: "1"
+  label: "Keep both (Recommended)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q150-L001"
+  question: "Q150"
+  source_file: "sources/interview-q149-q150.md"
+  anchor: "q150"
+  answer_line: "1"
+  label: "Development lab on Dell (Recommended)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q151-L001"
+  question: "Q151"
+  source_file: "sources/interview-q151-q160.md"
+  anchor: "q151"
+  answer_line: "1"
+  label:
+    "Link insertion only wraps words already in the post. The add-on never \
+    inserts, removes, or rewords text. If a good an..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q152-L001"
+  question: "Q152"
+  source_file: "sources/interview-q151-q160.md"
+  anchor: "q152"
+  answer_line: "1"
+  label: "Apply between jobs (Recommended)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q153-L001"
+  question: "Q153"
+  source_file: "sources/interview-q151-q160.md"
+  anchor: "q153"
+  answer_line: "1"
+  label: "Suppress until staff reset it (Recommended)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q154-L001"
+  question: "Q154"
+  source_file: "sources/interview-q151-q160.md"
+  anchor: "q154"
+  answer_line: "1"
+  label: "settings within approved bounds."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q154-L003"
+  question: "Q154"
+  source_file: "sources/interview-q151-q160.md"
+  anchor: "q154"
+  answer_line: "3"
+  label: "also:"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q154-L005"
+  question: "Q154"
+  source_file: "sources/interview-q151-q160.md"
+  anchor: "q154"
+  answer_line: "5"
+  label:
+    "Internal linking works like this: the system finds links and stores \
+    them as suggestions. They appear on a review page..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q154-L007"
+  question: "Q154"
+  source_file: "sources/interview-q151-q160.md"
+  anchor: "q154"
+  answer_line: "7"
+  label:
+    "- Every module has `promotion` settings: minimum accept rate, minimum \
+    decisions, and observation period. A scheduled ..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q154-L009"
+  question: "Q154"
+  source_file: "sources/interview-q151-q160.md"
+  anchor: "q154"
+  answer_line: "9"
+  label:
+    "Change the module modes. The default mode for every module is review: \
+    suggestions are shown, and a link is only inser..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q155-L001"
+  question: "Q155"
+  source_file: "sources/interview-q151-q160.md"
+  anchor: "q155"
+  answer_line: "1"
+  label: "private storage on dell,"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q155-L006"
+  question: "Q155"
+  source_file: "sources/interview-q151-q160.md"
+  anchor: "q155"
+  answer_line: "6"
+  label:
+    "Test data is tiered. Unit tests use no corpus. Property tests generate \
+    posts. A committed synthetic fixture of about ..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q156-L001"
+  question: "Q156"
+  source_file: "sources/interview-q151-q160.md"
+  anchor: "q156"
+  answer_line: "1"
+  label: "Require multiple providers for release"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q157-L001"
+  question: "Q157"
+  source_file: "sources/interview-q151-q160.md"
+  anchor: "q157"
+  answer_line: "1"
+  label: "Moderator queue only (Recommended)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q158-L001"
+  question: "Q158"
+  source_file: "sources/interview-q151-q160.md"
+  anchor: "q158"
+  answer_line: "1"
+  label: "Full checks first; fast push verification (Recommended)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q159-L001"
+  question: "Q159"
+  source_file: "sources/interview-q151-q160.md"
+  anchor: "q159"
+  answer_line: "1"
+  label: "Keep all text on Dell (Recommended)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."

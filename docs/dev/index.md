@@ -1,27 +1,37 @@
 # Developer documentation
 
-Audience: contributors and agents. Outcome: find the rules, setup plan and evidence
-needed before changing Sutradhar.
+Audience: contributors and agents. Outcome: find the rules, setup plan and
+evidence needed before changing Sutradhar.
 
-Status: documentation foundation. Product implementation and automated enforcement
-must be verified separately. This index does not assert that any proposed command,
-workflow, GitHub setting, test suite or release pipeline already exists.
+Status: documentation foundation. Product implementation and automated
+enforcement must be verified separately. This index does not assert that any
+proposed command, workflow, GitHub setting, test suite or release pipeline
+already exists.
 
 ## Start here
 
-| Document | Purpose |
-| --- | --- |
-| [Agent rules](../../AGENTS.md) | Rules that every coding agent follows |
-| [Contribution guide](../../CONTRIBUTING.md) | How contributors propose and submit work |
-| [Governance](governance.md) | Decisions, approvals, ownership and evidence |
-| [Documentation bootstrap](bootstrap.md) | The first checked documentation checkpoint |
-| [Gate contract](gates.md) | What blocks a commit, push, merge and release |
-| [Repository setup](repository-setup.md) | GitHub setup and acceptance evidence |
-| [Toolchain](toolchain.md) | Requested tools, responsibilities and qualification |
-| [Release process](releasing.md) | Candidate tests, publication and manual versions |
-| [Mapped coding rulebook](rulebook.md) | Proposed PHP/Python adaptations for owner review |
-| [Governance source review](governance-source-review.md) | Author review with explicit evidence limits |
-| [Security](../../SECURITY.md) | Reporting and privacy boundaries |
+- Document: [Agent rules](../../AGENTS.md)
+  - Purpose: Rules that every coding agent follows
+- Document: [Contribution guide](../../CONTRIBUTING.md)
+  - Purpose: How contributors propose and submit work
+- Document: [Governance](governance.md)
+  - Purpose: Decisions, approvals, ownership and evidence
+- Document: [Documentation bootstrap](bootstrap.md)
+  - Purpose: The first checked documentation checkpoint
+- Document: [Gate contract](gates.md)
+  - Purpose: What blocks a commit, push, merge and release
+- Document: [Repository setup](repository-setup.md)
+  - Purpose: GitHub setup and acceptance evidence
+- Document: [Toolchain](toolchain.md)
+  - Purpose: Requested tools, responsibilities and qualification
+- Document: [Release process](releasing.md)
+  - Purpose: Candidate tests, publication and manual versions
+- Document: [Mapped coding rulebook](rulebook.md)
+  - Purpose: Proposed PHP/Python adaptations for owner review
+- Document: [Governance source review](governance-source-review.md)
+  - Purpose: Author review with explicit evidence limits
+- Document: [Security](../../SECURITY.md)
+  - Purpose: Reporting and privacy boundaries
 
 The requirements directory records the 209-question interview and superseded
 decisions. Feature specifications live in the specifications directory. Those
@@ -32,11 +42,13 @@ replace unknown results with promises.
 
 Developer documents explain architecture, rules and implementation contracts.
 Method notebooks explain individual methods and import production functions.
-The public manual explains installation and day-to-day operation to forum owners,
-administrators and moderators. Do not publish this developer tree as the manual.
+The public manual explains installation and day-to-day operation to forum
+owners, administrators and moderators. Do not publish this developer tree as
+the manual.
 
-Each explanation has one authoritative home. Use short summaries and links rather
-than duplicate copies. Follow the public [Google documentation guide](https://google.github.io/styleguide/docguide/)
+Each explanation has one authoritative home. Use short summaries and links
+rather than duplicate copies. Follow the public
+[Google documentation guide](https://google.github.io/styleguide/docguide/)
 for G3Doc-style Markdown, organisation and maintenance. This is a project
 documentation convention, not an external certification.
 

@@ -33,19 +33,27 @@ history is retained without counting it twice.
 
 ## Admission record
 
-Every method must have:
+Every method must have the following evidence, by area. Each item is the
+evidence needed before release qualification:
 
-| Area | Evidence needed before release qualification |
-| --- | --- |
-| Source | Primary paper or official documentation, version, sections read and access date. |
-| Distinctness | Comparison with the nearest existing entries and a distinguishing example. |
-| Specification | Inputs, outputs, mathematics, assumptions, missing-data behaviour and owner approval. |
-| Rights | Source-expression, implementation, dependency, model, dataset and patent review for the intended distribution. |
-| Correctness | Independent expected results, boundary cases, property tests and the applicable coverage and mutation evidence. |
-| Usefulness | A predeclared comparison showing a useful contribution on held-out examples or an approved diagnostic purpose. |
-| Resources | Measured peak memory, work size, time, cancellation and restart behaviour in the qualified environment. |
-| Integration | Public-content permissions, stale-data handling, source offsets, output provenance and failure isolation. |
-| Reviews | Recorded code, performance and security review of the relevant version. |
+- Source: Primary paper or official documentation, version, sections read
+  and access date.
+- Distinctness: Comparison with the nearest existing entries and a
+  distinguishing example.
+- Specification: Inputs, outputs, mathematics, assumptions, missing-data
+  behaviour and owner approval.
+- Rights: Source-expression, implementation, dependency, model, dataset and
+  patent review for the intended distribution.
+- Correctness: Independent expected results, boundary cases, property tests
+  and the applicable coverage and mutation evidence.
+- Usefulness: A predeclared comparison showing a useful contribution on
+  held-out examples or an approved diagnostic purpose.
+- Resources: Measured peak memory, work size, time, cancellation and restart
+  behaviour in the qualified environment.
+- Integration: Public-content permissions, stale-data handling, source
+  offsets, output provenance and failure isolation.
+- Reviews: Recorded code, performance and security review of the relevant
+  version.
 
 The record must identify the exact code, input, model, settings and test
 versions. A receipt from an older version is reusable only when its declared

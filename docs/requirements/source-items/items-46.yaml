@@ -1,0 +1,296 @@
+# Part 46 of 47; assembled by index.yaml.
+
+- source_item: "Q192-L092"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "92"
+  label: "- British spelling throughout."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L094"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "94"
+  label: "## Tooling"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L095"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "95"
+  label:
+    "mkdocs-material, mike (versions and aliases), mkdocs-click, mkdocs-git-re\
+    vision-date-localized-plugin, mkdocs-llmstxt..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L097"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "97"
+  label: "## Checks in CI (every pull request and every push to main)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L098"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "98"
+  label:
+    "- `mkdocs build --strict`: broken links, missing pages, and bad reference\
+    s fail the build."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L099"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "99"
+  label:
+    "- A link checker over the built site, including links to XenForo \
+    documentation."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L100"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "100"
+  label:
+    "- mktestdocs runs every Python block; bash blocks are checked for \
+    the `bash` tag and a single command each."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L101"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "101"
+  label: "- codespell."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L102"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "102"
+  label: "- The manual-touched check described above."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L103"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "103"
+  label:
+    "- The contrast test over the design tokens and the axe accessibility \
+    check over every built page."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L104"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "104"
+  label:
+    "- A privacy check: the build reads nothing from lab/results except \
+    metrics JSON and nothing from any data directory; ..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L106"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "106"
+  label: "## Deployment"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L107"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "107"
+  label:
+    "- GitHub Pages serves the gh-pages branch (Deploy from branch, gh-pages, \
+    root). Document those clicks in docs/dev/rel..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L108"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "108"
+  label:
+    "- If the repository is private, GitHub Pages needs a paid plan: document \
+    the free alternative, Cloudflare Pages point..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L109"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "109"
+  label:
+    "- Point README.md at the manual in its first line and keep the README \
+    to a short description plus that link."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L111"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "111"
+  label: "## Done when"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L112"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "112"
+  label:
+    "- The manual builds with `--strict`, every CI check passes, it deploys \
+    to https://thulaen.github.io/sutradhar/ on a p..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L113"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "113"
+  label:
+    "- Every page in the structure above exists and is complete, not a \
+    stub; where the product does not yet do something, ..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L114"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "114"
+  label:
+    "- The light and dark themes both pass the contrast test and the axe \
+    check, and the design matches the Design section ..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L115"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "115"
+  label:
+    "- A new forum owner can go from nothing to the first accepted link \
+    using only the Getting started section, with no re..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q192-L116"
+  question: "Q192"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q192"
+  answer_line: "116"
+  label:
+    "- In your summary, list every page, every generated reference, every \
+    error code added, the palette values and their s..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q193-L001"
+  question: "Q193"
+  source_file: "sources/interview-q191-q196.md"
+  anchor: "q193"
+  answer_line: "1"
+  label:
+    "Option 1, restated so it's about who decides rather than which machine. \
+    Agents (Codex, Claude Code, and Gemini CLI, w..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."

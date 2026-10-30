@@ -1,0 +1,242 @@
+# Part 9 of 12; assembled by index.yaml.
+
+- id: "M-000025"
+  name: "Dual annealing"
+  aliases: []
+  family: "optimisation"
+  kind: "metaheuristic"
+  stage: "candidate"
+  counts_toward_release: false
+  source_ids:
+    - "SRC-0021"
+  summary:
+    "Combine generalised annealing proposals with a defined local-search \
+    stage."
+  proposed_use: "Research exploration that can leave local optima."
+  applicability:
+    "Lab research when its declared training or trial evidence is available; \
+    it must not skip mandatory production methods or promote unapproved \
+    code or models."
+  input_contract_draft: "Approved bounded objective and search state."
+  output_contract_draft: "Visited proposals and best eligible configuration."
+  distinctness:
+    review_status: "pending"
+    hypothesis:
+      "Use a small landscape with separated basins; verify acceptance \
+      and local-search rules independently, including the cost of a local-sea\
+      rch overrun."
+    not_separate_methods:
+      "Temperatures, seeds, visit parameters or restart ratios alone."
+    duplicate_of: null
+  test_ideas:
+    distinguishing_example:
+      "Use a small landscape with separated basins; verify acceptance \
+      and local-search rules independently, including the cost of a local-sea\
+      rch overrun."
+    edge_cases:
+      "Invalid objective values; fixed bounds; exhausted budget; local-search \
+      overruns."
+    missing_evidence:
+      "Return a visible pending state when required inputs are absent; \
+      do not fabricate data."
+    usefulness:
+      "Predeclare a task-specific comparator and acceptance threshold, \
+      then evaluate on held-out data with relevant subgroups."
+    recovery:
+      "Interrupt at each committed work boundary and confirm deterministic \
+      replay or declared stochastic equivalence without losing completed \
+      work."
+  resource_plan:
+    work_unit: "One bounded proposal or local-search segment."
+    checkpoint_contents:
+      "Temperature, current state, best result and random state."
+    peak_memory_bytes: null
+    qualified_workload: null
+    measurement_status: "unrun"
+    constraint:
+      "Production analysis shares the combined Python-worker limit; lab \
+      research uses its separate approved profile. A resource plan is \
+      not proof that this method fits."
+  rights:
+    status: "not_reviewed"
+    jurisdictions:
+      - "UK"
+      - "EU"
+      - "US"
+    copied_implementation: false
+    dependency_admission: "none"
+    model_and_dataset_admission: "none"
+    patent_evidence: []
+    decision_receipt: null
+  approval:
+    specification_path: null
+    owner_approval_receipt: null
+  evidence:
+    implementation_paths: []
+    test_receipts: []
+    usefulness_receipts: []
+    resource_receipts: []
+    review_receipts: []
+    release_receipt: null
+  exclusion: null
+- id: "M-000026"
+  name: "Nelder-Mead simplex search"
+  aliases: []
+  family: "optimisation"
+  kind: "algorithm"
+  stage: "candidate"
+  counts_toward_release: false
+  source_ids:
+    - "SRC-0022"
+  summary:
+    "Improve a numeric configuration through simplex operations without \
+    gradients."
+  proposed_use: "Provide an interpretable local-tuning comparator."
+  applicability:
+    "Lab research when its declared training or trial evidence is available; \
+    it must not skip mandatory production methods or promote unapproved \
+    code or models."
+  input_contract_draft: "An approved objective and initial simplex."
+  output_contract_draft: "A candidate setting and termination reason."
+  distinctness:
+    review_status: "pending"
+    hypothesis:
+      "Work through reflection, contraction and shrink cases on a small \
+      independent objective; compare with random search under the same \
+      budget."
+    not_separate_methods:
+      "Initial-simplex size, tolerances or iteration limits alone."
+    duplicate_of: null
+  test_ideas:
+    distinguishing_example:
+      "Work through reflection, contraction and shrink cases on a small \
+      independent objective; compare with random search under the same \
+      budget."
+    edge_cases:
+      "Degenerate simplex; flat objective; clipped bounds; evaluation \
+      failure."
+    missing_evidence:
+      "Return a visible pending state when required inputs are absent; \
+      do not fabricate data."
+    usefulness:
+      "Predeclare a task-specific comparator and acceptance threshold, \
+      then evaluate on held-out data with relevant subgroups."
+    recovery:
+      "Interrupt at each committed work boundary and confirm deterministic \
+      replay or declared stochastic equivalence without losing completed \
+      work."
+  resource_plan:
+    work_unit: "One simplex operation."
+    checkpoint_contents:
+      "Simplex vertices, evaluated values and operation state."
+    peak_memory_bytes: null
+    qualified_workload: null
+    measurement_status: "unrun"
+    constraint:
+      "Production analysis shares the combined Python-worker limit; lab \
+      research uses its separate approved profile. A resource plan is \
+      not proof that this method fits."
+  rights:
+    status: "not_reviewed"
+    jurisdictions:
+      - "UK"
+      - "EU"
+      - "US"
+    copied_implementation: false
+    dependency_admission: "none"
+    model_and_dataset_admission: "none"
+    patent_evidence: []
+    decision_receipt: null
+  approval:
+    specification_path: null
+    owner_approval_receipt: null
+  evidence:
+    implementation_paths: []
+    test_receipts: []
+    usefulness_receipts: []
+    resource_receipts: []
+    review_receipts: []
+    release_receipt: null
+  exclusion: null
+- id: "M-000027"
+  name: "Boruta feature assessment"
+  aliases: []
+  family: "wrappers"
+  kind: "wrapper"
+  stage: "candidate"
+  counts_toward_release: false
+  source_ids:
+    - "SRC-0023"
+  summary:
+    "Compare original features against random shadow features to study \
+    relevant inputs."
+  proposed_use:
+    "Research diagnostic input usefulness; do not disable mandatory production \
+    methods."
+  applicability:
+    "Lab research when its declared training or trial evidence is available; \
+    it must not skip mandatory production methods or promote unapproved \
+    code or models."
+  input_contract_draft:
+    "An approved feature table, labels and reviewed base estimator."
+  output_contract_draft:
+    "Accepted, rejected or unresolved feature-assessment results."
+  distinctness:
+    review_status: "pending"
+    hypothesis:
+      "Use synthetic relevant, redundant and random features; verify the \
+      declared random-probe comparison and its uncertainty."
+    not_separate_methods:
+      "Shadow seeds, iteration counts or base-estimator settings alone."
+    duplicate_of: null
+  test_ideas:
+    distinguishing_example:
+      "Use synthetic relevant, redundant and random features; verify the \
+      declared random-probe comparison and its uncertainty."
+    edge_cases:
+      "All irrelevant features; correlated relevant features; tiny samples; \
+      unresolved tests."
+    missing_evidence:
+      "Return a visible pending state when required inputs are absent; \
+      do not fabricate data."
+    usefulness:
+      "Predeclare a task-specific comparator and acceptance threshold, \
+      then evaluate on held-out data with relevant subgroups."
+    recovery:
+      "Interrupt at each committed work boundary and confirm deterministic \
+      replay or declared stochastic equivalence without losing completed \
+      work."
+  resource_plan:
+    work_unit: "One bounded assessment iteration."
+    checkpoint_contents:
+      "Feature states, test history, base-estimator identity and random \
+      state."
+    peak_memory_bytes: null
+    qualified_workload: null
+    measurement_status: "unrun"
+    constraint:
+      "Production analysis shares the combined Python-worker limit; lab \
+      research uses its separate approved profile. A resource plan is \
+      not proof that this method fits."
+  rights:
+    status: "not_reviewed"
+    jurisdictions:
+      - "UK"
+      - "EU"
+      - "US"
+    copied_implementation: false
+    dependency_admission: "none"
+    model_and_dataset_admission: "none"
+    patent_evidence: []
+    decision_receipt: null
+  approval:
+    specification_path: null
+    owner_approval_receipt: null
+  evidence:
+    implementation_paths: []
+    test_receipts: []
+    usefulness_receipts: []
+    resource_receipts: []
+    review_receipts: []
+    release_receipt: null
+  exclusion: null

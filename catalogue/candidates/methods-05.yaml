@@ -1,0 +1,235 @@
+# Part 5 of 12; assembled by index.yaml.
+
+- id: "M-000013"
+  name: "Latent Dirichlet allocation"
+  aliases: []
+  family: "text_structure"
+  kind: "statistical_model"
+  stage: "candidate"
+  counts_toward_release: false
+  source_ids:
+    - "SRC-0013"
+  summary:
+    "Model documents as mixtures of latent topics and topics as distributions \
+    over terms."
+  proposed_use: "Study topic context for hubs and candidate relevance."
+  applicability:
+    "Research only until admitted. The approved specification must define \
+    available evidence, public-content permissions and missing-data behaviour\
+    ."
+  input_contract_draft:
+    "Admitted document-term counts and a specified inference procedure."
+  output_contract_draft: "Versioned topic and document-mixture estimates."
+  distinctness:
+    review_status: "pending"
+    hypothesis:
+      "Generate documents mixing two known vocabularies; test mixture \
+      recovery and distinguish it from assigning exactly one topic per \
+      document."
+    not_separate_methods:
+      "Topic counts, prior values, seeds or training epochs."
+    duplicate_of: null
+  test_ideas:
+    distinguishing_example:
+      "Generate documents mixing two known vocabularies; test mixture \
+      recovery and distinguish it from assigning exactly one topic per \
+      document."
+    edge_cases:
+      "Empty documents; unused vocabulary; collapsed topics; non-convergence."
+    missing_evidence:
+      "Return a visible pending state when required inputs are absent; \
+      do not fabricate data."
+    usefulness:
+      "Predeclare a task-specific comparator and acceptance threshold, \
+      then evaluate on held-out data with relevant subgroups."
+    recovery:
+      "Interrupt at each committed work boundary and confirm deterministic \
+      replay or declared stochastic equivalence without losing completed \
+      work."
+  resource_plan:
+    work_unit: "A bounded inference or training batch."
+    checkpoint_contents:
+      "Model statistics, iteration, vocabulary and random state."
+    peak_memory_bytes: null
+    qualified_workload: null
+    measurement_status: "unrun"
+    constraint:
+      "Production analysis shares the combined Python-worker limit; lab \
+      research uses its separate approved profile. A resource plan is \
+      not proof that this method fits."
+  rights:
+    status: "not_reviewed"
+    jurisdictions:
+      - "UK"
+      - "EU"
+      - "US"
+    copied_implementation: false
+    dependency_admission: "none"
+    model_and_dataset_admission: "none"
+    patent_evidence: []
+    decision_receipt: null
+  approval:
+    specification_path: null
+    owner_approval_receipt: null
+  evidence:
+    implementation_paths: []
+    test_receipts: []
+    usefulness_receipts: []
+    resource_receipts: []
+    review_receipts: []
+    release_receipt: null
+  exclusion: null
+- id: "M-000014"
+  name: "Wilson score interval"
+  aliases: []
+  family: "statistical_confidence"
+  kind: "statistical_model"
+  stage: "candidate"
+  counts_toward_release: false
+  source_ids:
+    - "SRC-0014"
+  summary:
+    "Estimate a bounded uncertainty interval for a binomial proportion \
+    under declared sampling assumptions."
+  proposed_use:
+    "Support feedback ranking and confidence reporting where those assumptions \
+    hold."
+  applicability:
+    "Research only until admitted. The approved specification must define \
+    available evidence, public-content permissions and missing-data behaviour\
+    ."
+  input_contract_draft:
+    "Success count, trial count and a declared confidence level."
+  output_contract_draft: "Lower and upper bounds with the sample definition."
+  distinctness:
+    review_status: "pending"
+    hypothesis:
+      "Compare equal observed success proportions at small and large sample \
+      sizes; the intervals must reflect differing evidence. Check independent\
+      ly derived boundary cases."
+    not_separate_methods: "Other confidence levels or display rounding."
+    duplicate_of: null
+  test_ideas:
+    distinguishing_example:
+      "Compare equal observed success proportions at small and large sample \
+      sizes; the intervals must reflect differing evidence. Check independent\
+      ly derived boundary cases."
+    edge_cases:
+      "Zero trials; no successes; all successes; invalid counts; correlated \
+      samples."
+    missing_evidence:
+      "Return a visible pending state when required inputs are absent; \
+      do not fabricate data."
+    usefulness:
+      "Predeclare a task-specific comparator and acceptance threshold, \
+      then evaluate on held-out data with relevant subgroups."
+    recovery:
+      "Interrupt at each committed work boundary and confirm deterministic \
+      replay or declared stochastic equivalence without losing completed \
+      work."
+  resource_plan:
+    work_unit: "One count pair."
+    checkpoint_contents:
+      "Input counts, confidence definition and result version."
+    peak_memory_bytes: null
+    qualified_workload: null
+    measurement_status: "unrun"
+    constraint:
+      "Production analysis shares the combined Python-worker limit; lab \
+      research uses its separate approved profile. A resource plan is \
+      not proof that this method fits."
+  rights:
+    status: "not_reviewed"
+    jurisdictions:
+      - "UK"
+      - "EU"
+      - "US"
+    copied_implementation: false
+    dependency_admission: "none"
+    model_and_dataset_admission: "none"
+    patent_evidence: []
+    decision_receipt: null
+  approval:
+    specification_path: null
+    owner_approval_receipt: null
+  evidence:
+    implementation_paths: []
+    test_receipts: []
+    usefulness_receipts: []
+    resource_receipts: []
+    review_receipts: []
+    release_receipt: null
+  exclusion: null
+- id: "M-000015"
+  name: "Sigmoid probability calibration"
+  aliases: []
+  family: "statistical_confidence"
+  kind: "statistical_model"
+  stage: "candidate"
+  counts_toward_release: false
+  source_ids:
+    - "SRC-0015"
+  summary: "Fit a sigmoid mapping from model scores to estimated probabilities."
+  proposed_use: "Research interpretable relevance confidence."
+  applicability:
+    "Research only until admitted. The approved specification must define \
+    available evidence, public-content permissions and missing-data behaviour\
+    ."
+  input_contract_draft: "Frozen model scores and separate calibration labels."
+  output_contract_draft: "A fitted mapping and calibrated values."
+  distinctness:
+    review_status: "pending"
+    hypothesis:
+      "Use a held-out calibration set; compare reliability before and \
+      after calibration and verify the declared monotonic relationship."
+    not_separate_methods: "Alternative solver tolerances or display thresholds."
+    duplicate_of: null
+  test_ideas:
+    distinguishing_example:
+      "Use a held-out calibration set; compare reliability before and \
+      after calibration and verify the declared monotonic relationship."
+    edge_cases:
+      "One-class labels; extreme scores; too little data; non-finite values."
+    missing_evidence:
+      "Return a visible pending state when required inputs are absent; \
+      do not fabricate data."
+    usefulness:
+      "Predeclare a task-specific comparator and acceptance threshold, \
+      then evaluate on held-out data with relevant subgroups."
+    recovery:
+      "Interrupt at each committed work boundary and confirm deterministic \
+      replay or declared stochastic equivalence without losing completed \
+      work."
+  resource_plan:
+    work_unit: "One bounded calibration optimisation batch."
+    checkpoint_contents:
+      "Score/model versions, split identity and optimiser state."
+    peak_memory_bytes: null
+    qualified_workload: null
+    measurement_status: "unrun"
+    constraint:
+      "Production analysis shares the combined Python-worker limit; lab \
+      research uses its separate approved profile. A resource plan is \
+      not proof that this method fits."
+  rights:
+    status: "not_reviewed"
+    jurisdictions:
+      - "UK"
+      - "EU"
+      - "US"
+    copied_implementation: false
+    dependency_admission: "none"
+    model_and_dataset_admission: "none"
+    patent_evidence: []
+    decision_receipt: null
+  approval:
+    specification_path: null
+    owner_approval_receipt: null
+  evidence:
+    implementation_paths: []
+    test_receipts: []
+    usefulness_receipts: []
+    resource_receipts: []
+    review_receipts: []
+    release_receipt: null
+  exclusion: null

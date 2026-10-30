@@ -1,0 +1,153 @@
+# Part 4 of 4 of the catalogue JSON Schema.
+
+path:
+  - "$defs"
+  - "method"
+merge:
+  allOf:
+    - if:
+        properties:
+          stage:
+            const: "release_qualified"
+        required:
+          - "stage"
+      then:
+        properties:
+          counts_toward_release:
+            const: true
+          distinctness:
+            properties:
+              review_status:
+                const: "approved"
+              duplicate_of:
+                type: "null"
+          rights:
+            properties:
+              status:
+                const: "admitted"
+              decision_receipt:
+                type: "string"
+                minLength: 1
+              patent_evidence:
+                type: "array"
+                items:
+                  type: "string"
+                  minLength: 1
+                uniqueItems: true
+                minItems: 1
+          approval:
+            properties:
+              specification_path:
+                type: "string"
+                minLength: 1
+              owner_approval_receipt:
+                type: "string"
+                minLength: 1
+          resource_plan:
+            properties:
+              measurement_status:
+                const: "passed"
+              peak_memory_bytes:
+                type: "integer"
+                minimum: 0
+              qualified_workload:
+                type: "string"
+                minLength: 1
+          evidence:
+            properties:
+              implementation_paths:
+                type: "array"
+                items:
+                  type: "string"
+                  minLength: 1
+                uniqueItems: true
+                minItems: 1
+              test_receipts:
+                type: "array"
+                items:
+                  type: "string"
+                  minLength: 1
+                uniqueItems: true
+                minItems: 1
+              usefulness_receipts:
+                type: "array"
+                items:
+                  type: "string"
+                  minLength: 1
+                uniqueItems: true
+                minItems: 1
+              resource_receipts:
+                type: "array"
+                items:
+                  type: "string"
+                  minLength: 1
+                uniqueItems: true
+                minItems: 1
+              review_receipts:
+                type: "array"
+                items:
+                  type: "string"
+                  minLength: 1
+                uniqueItems: true
+                minItems: 1
+              release_receipt:
+                type: "string"
+                minLength: 1
+      else:
+        properties:
+          counts_toward_release:
+            const: false
+    - if:
+        properties:
+          stage:
+            enum:
+              - "spec_approved"
+              - "implemented"
+              - "verified"
+              - "release_qualified"
+        required:
+          - "stage"
+      then:
+        properties:
+          approval:
+            properties:
+              specification_path:
+                type: "string"
+                minLength: 1
+              owner_approval_receipt:
+                type: "string"
+                minLength: 1
+    - if:
+        properties:
+          stage:
+            const: "excluded"
+        required:
+          - "stage"
+      then:
+        properties:
+          exclusion:
+            type: "object"
+      else:
+        properties:
+          exclusion:
+            type: "null"
+    - if:
+        properties:
+          exclusion:
+            type: "object"
+            properties:
+              category:
+                const: "duplicate"
+            required:
+              - "category"
+        required:
+          - "exclusion"
+      then:
+        properties:
+          distinctness:
+            properties:
+              duplicate_of:
+                type: "string"
+                pattern: "^M-[0-9]{6}$"
+              review_status:
+                const: "duplicate"

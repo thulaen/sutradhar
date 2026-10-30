@@ -2,10 +2,17 @@
 
 Status: data-only research seed. No production implementation is present.
 
-- `candidates.json` contains proposed method identities and test ideas.
-- `sources.json` records the primary papers and official documentation
+- `candidates/` contains proposed method identities and test ideas.
+- `sources/` records the primary papers and official documentation
   actually consulted, including how much was read.
-- `schema.json` describes the candidate data format.
+- `schema/` describes the candidate data format as a JSON Schema.
+
+Each directory's `index.yaml` explains how its part files join into one
+record. The data was converted on 30 October 2026 from the earlier
+`candidates.json`, `sources.json` and `schema.json` under the owner's
+source-limit decision, so that no file exceeds 300 lines or 80 characters
+per line. A round-trip check on Dell proved the joined YAML equals the
+original JSON exactly; the earlier files remain in Git history.
 
 All initial entries are `candidate`, with `counts_toward_release: false`.
 The qualified method count is **zero**. The required count for the complete

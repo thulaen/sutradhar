@@ -1,10 +1,11 @@
 # SPEC-003: agent, repository and release coordination
 
-Status: APPROVED for bounded implementation. See [approval record](approvals.md).
+Status: APPROVED for bounded implementation. See [approval
+record](approvals.md).
 
-Audience: owner, maintainers and implementation agents.
-Outcome: agents can collaborate unattended inside approved specifications while
-the owner's protected decisions, private data and release authority stay enforced.
+Audience: owner, maintainers and implementation agents. Outcome: agents can
+collaborate unattended inside approved specifications while the owner's
+protected decisions, private data and release authority stay enforced.
 
 Requirements: R045–R046, R057–R066 and R068–R075.
 
@@ -20,9 +21,10 @@ credentials.
 Workers submit bounded patch/branch/PR requests to that publisher. The publisher
 validates the worker identity, reservation, approved scope, content manifest and
 required evidence before a write. It exposes no generic GitHub API proxy, shell
-execution or arbitrary ref-update operation. Proposal access must not permit
-tag creation, main writes, workflow weakening or publication through an existing
-tag. Contents-write permission alone is not a sufficiently narrow worker boundary.
+execution or arbitrary ref-update operation. Proposal access must not permit tag
+creation, main writes, workflow weakening or publication through an existing
+tag. Contents-write permission alone is not a sufficiently narrow worker
+boundary.
 
 The check publisher accepts results only from qualified runners and current
 policy. The owner-approval publisher verifies a real owner decision against the
@@ -62,11 +64,11 @@ pretend an unapproved specification is already approved. Protected rules,
 privacy, checks, release policy, trust admission and feature specifications need
 the owner's explicit decision. No bypass identity may waive those checks.
 
-Forks use isolated, read-only public/synthetic checks without private credentials
-or private corpus access. The owner approves the exact outside candidate before
-its code executes on the validation host and makes its merge decision, unless
-the contributor was explicitly admitted to the protected trusted list. A
-read-only fork token alone does not enforce the merge policy.
+Forks use isolated, read-only public/synthetic checks without private
+credentials or private corpus access. The owner approves the exact outside
+candidate before its code executes on the validation host and makes its merge
+decision, unless the contributor was explicitly admitted to the protected
+trusted list. A read-only fork token alone does not enforce the merge policy.
 
 Recognised Dependabot and Release Please proposal branches have only their
 documented pre-commit timing exception. They still receive the full applicable
@@ -124,7 +126,8 @@ phrase same code. Keep failed candidates and their scrubbed failure summaries.
 ## Acceptance examples
 
 - Two agents request the same file: only one receives a valid write lease.
-- A stopped agent returns after handover: its stale lease cannot publish changes.
+- A stopped agent returns after handover: its stale lease cannot publish
+  changes.
 - A worker requests a main update, tag, release or arbitrary GitHub endpoint:
   the publisher refuses it without exposing credentials.
 - A worker fabricates a passing check or owner approval: trusted publication
@@ -142,8 +145,8 @@ phrase same code. Keep failed candidates and their scrubbed failure summaries.
 
 ## Approval and rollout
 
-Approval covers the coordination/broker implementation and its enforcement tests.
-It does not establish that the currently configured repository settings already
-provide these runtime guarantees. Qualify the identities and refusal paths
-before handing any write capability to coding workers. Enable unattended
+Approval covers the coordination/broker implementation and its enforcement
+tests. It does not establish that the currently configured repository settings
+already provide these runtime guarantees. Qualify the identities and refusal
+paths before handing any write capability to coding workers. Enable unattended
 admission only after the end-to-end rejection and recovery examples pass.

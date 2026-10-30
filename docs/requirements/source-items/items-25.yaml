@@ -1,0 +1,291 @@
+# Part 25 of 47; assembled by index.yaml.
+
+- source_item: "Q116-L017"
+  question: "Q116"
+  source_file: "sources/interview-q116-q120.md"
+  anchor: "q116"
+  answer_line: "17"
+  label:
+    "- config keys inside a section, log messages, error messages, metric \
+    names, database tables and columns, and HTTP pat..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q116-L018"
+  question: "Q116"
+  source_file: "sources/interview-q116-q120.md"
+  anchor: "q116"
+  answer_line: "18"
+  label:
+    "- anything defined by a library or standard (FastAPI, SQLAlchemy, \
+    HTTP, Prometheus)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q116-L020"
+  question: "Q116"
+  source_file: "sources/interview-q116-q120.md"
+  anchor: "q116"
+  answer_line: "20"
+  label: "Rules:"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q116-L021"
+  question: "Q116"
+  source_file: "sources/interview-q116-q120.md"
+  anchor: "q116"
+  answer_line: "21"
+  label:
+    "- Only use names from the glossary. If you need a new one, use an \
+    English placeholder, and propose an Indian name wit..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q116-L022"
+  question: "Q116"
+  source_file: "sources/interview-q116-q120.md"
+  anchor: "q116"
+  answer_line: "22"
+  label:
+    "- Spell names exactly as in the glossary: lowercase ASCII, no diacritics."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q116-L023"
+  question: "Q116"
+  source_file: "sources/interview-q116-q120.md"
+  anchor: "q116"
+  answer_line: "23"
+  label:
+    "- The docstring or help text of each Indian-named package, module \
+    class, and CLI group starts with its meaning, e.g. ..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q116-L024"
+  question: "Q116"
+  source_file: "sources/interview-q116-q120.md"
+  anchor: "q116"
+  answer_line: "24"
+  label:
+    "- Don't propose names of deities, religious texts, political parties, \
+    or government programs."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q116-L026"
+  question: "Q116"
+  source_file: "sources/interview-q116-q120.md"
+  anchor: "q116"
+  answer_line: "26"
+  label: "### Glossary"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q116-L027"
+  question: "Q116"
+  source_file: "sources/interview-q116-q120.md"
+  anchor: "q116"
+  answer_line: "27"
+  label: "| Concept | Name | Meaning |"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q116-L029"
+  question: "Q116"
+  source_file: "sources/interview-q116-q120.md"
+  anchor: "q116"
+  answer_line: "29"
+  label:
+    "| Framework (package `sutradhar`, CLI `sutra`) | sutradhar | holder \
+    of the threads |"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q116-L030"
+  question: "Q116"
+  source_file: "sources/interview-q116-q120.md"
+  anchor: "q116"
+  answer_line: "30"
+  label: "| Configuration and profiles | vinyas | arrangement |"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q116-L031"
+  question: "Q116"
+  source_file: "sources/interview-q116-q120.md"
+  anchor: "q116"
+  answer_line: "31"
+  label: "| Module registry and lifecycle | mandali | troupe |"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q116-L032"
+  question: "Q116"
+  source_file: "sources/interview-q116-q120.md"
+  anchor: "q116"
+  answer_line: "32"
+  label: "| Dependency injection | sanyojan | coordination |"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q116-L033"
+  question: "Q116"
+  source_file: "sources/interview-q116-q120.md"
+  anchor: "q116"
+  answer_line: "33"
+  label: "| Events | sanchar | communication |"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q116-L034"
+  question: "Q116"
+  source_file: "sources/interview-q116-q120.md"
+  anchor: "q116"
+  answer_line: "34"
+  label: "| Scheduled and batch jobs | karya | work |"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q116-L035"
+  question: "Q116"
+  source_file: "sources/interview-q116-q120.md"
+  anchor: "q116"
+  answer_line: "35"
+  label: "| Database and repositories | bhandar | storehouse |"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q116-L036"
+  question: "Q116"
+  source_file: "sources/interview-q116-q120.md"
+  anchor: "q116"
+  answer_line: "36"
+  label: "| Suggestions and review | sujhav | suggestion |"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q116-L037"
+  question: "Q116"
+  source_file: "sources/interview-q116-q120.md"
+  anchor: "q116"
+  answer_line: "37"
+  label: "| Audit log | lekha | record |"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q116-L038"
+  question: "Q116"
+  source_file: "sources/interview-q116-q120.md"
+  anchor: "q116"
+  answer_line: "38"
+  label: "| Health checks, metrics, actuator | drishti | sight |"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q116-L039"
+  question: "Q116"
+  source_file: "sources/interview-q116-q120.md"
+  anchor: "q116"
+  answer_line: "39"
+  label: "| Auth and request signing | dwarpal | gatekeeper |"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q116-L040"
+  question: "Q116"
+  source_file: "sources/interview-q116-q120.md"
+  anchor: "q116"
+  answer_line: "40"
+  label: "| Testing kit | pariksha | test |"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q116-L041"
+  question: "Q116"
+  source_file: "sources/interview-q116-q120.md"
+  anchor: "q116"
+  answer_line: "41"
+  label: "| XenForo integration | sampark | connection |"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q116-L042"
+  question: "Q116"
+  source_file: "sources/interview-q116-q120.md"
+  anchor: "q116"
+  answer_line: "42"
+  label: "| BBCode text extraction | shodhan | refining |"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."

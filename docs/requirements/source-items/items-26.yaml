@@ -1,0 +1,290 @@
+# Part 26 of 47; assembled by index.yaml.
+
+- source_item: "Q116-L043"
+  question: "Q116"
+  source_file: "sources/interview-q116-q120.md"
+  anchor: "q116"
+  answer_line: "43"
+  label: "| Example module | namaste | hello |"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q116-L044"
+  question: "Q116"
+  source_file: "sources/interview-q116-q120.md"
+  anchor: "q116"
+  answer_line: "44"
+  label: "| Internal linking | setu | bridge |"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q116-L045"
+  question: "Q116"
+  source_file: "sources/interview-q116-q120.md"
+  anchor: "q116"
+  answer_line: "45"
+  label: "| SEO signals | sanket | signal |"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q116-L046"
+  question: "Q116"
+  source_file: "sources/interview-q116-q120.md"
+  anchor: "q116"
+  answer_line: "46"
+  label: "| AutoModerator | panchayat | village council |"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q116-L047"
+  question: "Q116"
+  source_file: "sources/interview-q116-q120.md"
+  anchor: "q116"
+  answer_line: "47"
+  label: "| Hot/Best ranking | shikhar | peak |"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q116-L048"
+  question: "Q116"
+  source_file: "sources/interview-q116-q120.md"
+  anchor: "q116"
+  answer_line: "48"
+  label: "| Karma | karma | deeds |"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q116-L049"
+  question: "Q116"
+  source_file: "sources/interview-q116-q120.md"
+  anchor: "q116"
+  answer_line: "49"
+  label: "| Spam protection | kavach | armor |"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q116-L050"
+  question: "Q116"
+  source_file: "sources/interview-q116-q120.md"
+  anchor: "q116"
+  answer_line: "50"
+  label: "| Ask the forum | uttar | answer |"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q117-L001"
+  question: "Q117"
+  source_file: "sources/interview-q116-q120.md"
+  anchor: "q117"
+  answer_line: "1"
+  label:
+    "isolate and report the fault in plain english, also there should \
+    be an error code, there should be a health/diagnosti..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q118-L001"
+  question: "Q118"
+  source_file: "sources/interview-q116-q120.md"
+  anchor: "q118"
+  answer_line: "1"
+  label:
+    "run what has evidence this should in gsc, bing api, ga4; remove the \
+    need for paid backlink service we should focus on..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q119-L001"
+  question: "Q119"
+  source_file: "sources/interview-q116-q120.md"
+  anchor: "q119"
+  answer_line: "1"
+  label: "remove the need to change titles."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q120-L001"
+  question: "Q120"
+  source_file: "sources/interview-q116-q120.md"
+  anchor: "q120"
+  answer_line: "1"
+  label: "Check only referenced external links (Recommended)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q121-L001"
+  question: "Q121"
+  source_file: "sources/interview-q121-q130.md"
+  anchor: "q121"
+  answer_line: "1"
+  label: "Report and propose only (Recommended)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q122-L001"
+  question: "Q122"
+  source_file: "sources/interview-q121-q130.md"
+  anchor: "q122"
+  answer_line: "1"
+  label: "Prefer GA4 when available"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q123-L001"
+  question: "Q123"
+  source_file: "sources/interview-q121-q130.md"
+  anchor: "q123"
+  answer_line: "1"
+  label: "Priority pages plus a rotating sample (Recommended)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q124-L001"
+  question: "Q124"
+  source_file: "sources/interview-q121-q130.md"
+  anchor: "q124"
+  answer_line: "1"
+  label:
+    "agent prepares server once, but please make it easy to just point \
+    and click for all preparations and installations."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q125-L001"
+  question: "Q125"
+  source_file: "sources/interview-q121-q130.md"
+  anchor: "q125"
+  answer_line: "1"
+  label:
+    "both from the first release with the option to use hosted opensearch \
+    from amazon on gcp, the same applies to storage,..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q126-L001"
+  question: "Q126"
+  source_file: "sources/interview-q121-q130.md"
+  anchor: "q126"
+  answer_line: "1"
+  label: "Yes, show the missing evidence (Recommended)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q127-L001"
+  question: "Q127"
+  source_file: "sources/interview-q121-q130.md"
+  anchor: "q127"
+  answer_line: "1"
+  label:
+    "create connect with approval and with supported logins, however all \
+    this stuff should be optional"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q128-L001"
+  question: "Q128"
+  source_file: "sources/interview-q121-q130.md"
+  anchor: "q128"
+  answer_line: "1"
+  label: "Yes, a resumable guided move (Recommended)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q129-L001"
+  question: "Q129"
+  source_file: "sources/interview-q121-q130.md"
+  anchor: "q129"
+  answer_line: "1"
+  label: "Warn but keep working"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q130-L001"
+  question: "Q130"
+  source_file: "sources/interview-q121-q130.md"
+  anchor: "q130"
+  answer_line: "1"
+  label: "English label, glossary name alongside (Recommended)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q131-L001"
+  question: "Q131"
+  source_file: "sources/interview-q131-q140.md"
+  anchor: "q131"
+  answer_line: "1"
+  label:
+    "all setting vible together but collapasable and the choice for the \
+    user to decide how they should be shown, there mus..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."

@@ -1,0 +1,286 @@
+# Part 13 of 47; assembled by index.yaml.
+
+- source_item: "Q102-L042"
+  question: "Q102"
+  source_file: "sources/interview-q096-q104.md"
+  anchor: "q102"
+  answer_line: "42"
+  label:
+    "One review queue: every module’s suggestions go to the same XF admin \
+    queue, and every accept or reject becomes traini..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q102-L043"
+  question: "Q102"
+  source_file: "sources/interview-q096-q104.md"
+  anchor: "q102"
+  answer_line: "43"
+  label:
+    "No direct writes to the XF database: zen-g reads through a read-only \
+    MySQL user, and the PHP add-on makes changes thr..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q102-L044"
+  question: "Q102"
+  source_file: "sources/interview-q096-q104.md"
+  anchor: "q102"
+  answer_line: "44"
+  label:
+    "Audit log: which module changed which post, when and with which model \
+    version."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q102-L045"
+  question: "Q102"
+  source_file: "sources/interview-q096-q104.md"
+  anchor: "q102"
+  answer_line: "45"
+  label:
+    "Privacy: when XenForo deletes a post or user, zen-g deletes the matching \
+    embeddings, cached text and suggestions."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q102-L049"
+  question: "Q102"
+  source_file: "sources/interview-q096-q104.md"
+  anchor: "q102"
+  answer_line: "49"
+  label:
+    "Versioned models and indexes: roll back a bad model the same way \
+    you’d roll back a bad deploy."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q102-L050"
+  question: "Q102"
+  source_file: "sources/interview-q096-q104.md"
+  anchor: "q102"
+  answer_line: "50"
+  label:
+    "Tracing: OpenTelemetry follows each request from PHP through to the \
+    Python scoring step."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q103-L001"
+  question: "Q103"
+  source_file: "sources/interview-q096-q104.md"
+  anchor: "q103"
+  answer_line: "1"
+  label: "Keep approval for publication (Recommended)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q104-L001"
+  question: "Q104"
+  source_file: "sources/interview-q096-q104.md"
+  anchor: "q104"
+  answer_line: "1"
+  label: "Adapt the table (Recommended)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q105-L001"
+  question: "Q105"
+  source_file: "sources/interview-q105-q114.md"
+  anchor: "q105"
+  answer_line: "1"
+  label: "A moderator approves (Recommended)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q106-L001"
+  question: "Q106"
+  source_file: "sources/interview-q105-q114.md"
+  anchor: "q106"
+  answer_line: "1"
+  label: "a dedicated hub page, but this feature should ship optional"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q107-L001"
+  question: "Q107"
+  source_file: "sources/interview-q105-q114.md"
+  anchor: "q107"
+  answer_line: "1"
+  label: "Keep five links everywhere"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q108-L001"
+  question: "Q108"
+  source_file: "sources/interview-q105-q114.md"
+  anchor: "q108"
+  answer_line: "1"
+  label: "Approve each link individually (Recommended)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q109-L001"
+  question: "Q109"
+  source_file: "sources/interview-q105-q114.md"
+  anchor: "q109"
+  answer_line: "1"
+  label: "Yes, approved hubs too (Recommended)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q110-L001"
+  question: "Q110"
+  source_file: "sources/interview-q105-q114.md"
+  anchor: "q110"
+  answer_line: "1"
+  label: "staff only, also"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q110-L003"
+  question: "Q110"
+  source_file: "sources/interview-q105-q114.md"
+  anchor: "q110"
+  answer_line: "3"
+  label:
+    "Hot, Rising, Top, Best, and Controversial sorting. Reddit’s original \
+    formulas are public. Hot combines a post’s score..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q110-L007"
+  question: "Q110"
+  source_file: "sources/interview-q105-q114.md"
+  anchor: "q110"
+  answer_line: "7"
+  label:
+    "Karma. Each member gets a score from the reactions they receive, \
+    overall and per forum."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q110-L011"
+  question: "Q110"
+  source_file: "sources/interview-q105-q114.md"
+  anchor: "q110"
+  answer_line: "11"
+  label:
+    "Alt-account signals. Flag new accounts that resemble banned ones \
+    (shared IPs, similar writing style). Treat these fla..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q111-L001"
+  question: "Q111"
+  source_file: "sources/interview-q105-q114.md"
+  anchor: "q111"
+  answer_line: "1"
+  label: "Show exactly what it covers (Recommended)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q112-L001"
+  question: "Q112"
+  source_file: "sources/interview-q105-q114.md"
+  anchor: "q112"
+  answer_line: "1"
+  label:
+    "follow the administrators reaction scores and meanings plus assume \
+    that a sad or angry face is a downvote, and all re..."
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q113-L001"
+  question: "Q113"
+  source_file: "sources/interview-q105-q114.md"
+  anchor: "q113"
+  answer_line: "1"
+  label: "Members and visitors (Recommended)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q114-L001"
+  question: "Q114"
+  source_file: "sources/interview-q105-q114.md"
+  anchor: "q114"
+  answer_line: "1"
+  label: "Require supporting signals (Recommended)"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."
+- source_item: "Q115-L001"
+  question: "Q115"
+  source_file: "sources/interview-q115-q115.md"
+  anchor: "q115"
+  answer_line: "1"
+  label: "count it as a downvote also:"
+  disposition: "REVIEW_WITH_OVERRIDES"
+  evidence_status: "UNKNOWN"
+  acceptance_owner: "feature-specification"
+  evidence_required:
+    "Trace to current rule; implement and exercise relevant acceptance \
+    scenarios; record exact candidate evidence."

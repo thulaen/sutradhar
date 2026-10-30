@@ -16,5 +16,6 @@ It does not permit uploading the private corpus. See the
 [coordination draft](specifications/agent-release-coordination.md).
 
 New feature designs and protected policy changes need explicit owner approval.
-The [specification register](specifications/README.md) records the current drafts;
-the [acceptance ledger](requirements/acceptance-ledger.md) records missing proof.
+The [specification register](specifications/README.md) records the current
+drafts; the [acceptance ledger](requirements/acceptance-ledger.md) records
+missing proof.

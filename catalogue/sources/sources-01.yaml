@@ -1,0 +1,284 @@
+# Part 1 of 2; assembled by index.yaml.
+
+- id: "SRC-0001"
+  title: "BM25Similarity"
+  authors: "Apache Lucene contributors"
+  publication_year: null
+  url:
+    "https://lucene.apache.org/core/10_3_1/core/org/apache/lucene/search/simil\
+    arities/BM25Similarity.html"
+  source_type: "official_documentation"
+  accessed_on: "2026-10-30"
+  evidence_level: "selected_sections_read"
+  sections_read:
+    "Class description, term-frequency saturation, document-length normalisati\
+    on and parameter restrictions."
+  version_observed: "Lucene 10.3.1"
+  publication_reuse_status: "not_admitted"
+  rights_note:
+    "Citation and independently written research notes only. No paper, \
+    code, model or dataset redistribution is authorised by this record."
+- id: "SRC-0002"
+  title: "Text feature extraction"
+  authors: "scikit-learn contributors"
+  publication_year: null
+  url:
+    "https://scikit-learn.org/stable/modules/feature_extraction.html#text-feat\
+    ure-extraction"
+  source_type: "official_documentation"
+  accessed_on: "2026-10-30"
+  evidence_level: "selected_sections_read"
+  sections_read:
+    "Term-frequency/inverse-document-frequency weighting and vector normalisat\
+    ion."
+  version_observed: "scikit-learn 1.9.1"
+  publication_reuse_status: "not_admitted"
+  rights_note:
+    "Citation and independently written research notes only. No paper, \
+    code, model or dataset redistribution is authorised by this record."
+- id: "SRC-0003"
+  title:
+    "Reciprocal Rank Fusion outperforms Condorcet and individual Rank \
+    Learning Methods"
+  authors: "Gordon V. Cormack; Charles L. A. Clarke; Stefan Buettcher"
+  publication_year: 2009
+  url: "https://cormack.uwaterloo.ca/cormack/cormacksigir09-rrf.pdf"
+  source_type: "author_paper"
+  accessed_on: "2026-10-30"
+  evidence_level: "selected_sections_read"
+  sections_read:
+    "Section 1 and the rank-fusion definition; benchmark claims are not \
+    Sutradhar evidence."
+  version_observed: "SIGIR 2009"
+  publication_reuse_status: "not_admitted"
+  rights_note:
+    "Citation and independently written research notes only. No paper, \
+    code, model or dataset redistribution is authorised by this record."
+- id: "SRC-0004"
+  title: "PageRank"
+  authors: "NetworkX contributors"
+  publication_year: null
+  url:
+    "https://networkx.org/documentation/stable/reference/algorithms/generated/\
+    networkx.algorithms.link_analysis.pagerank_alg.pagerank.html"
+  source_type: "official_documentation"
+  accessed_on: "2026-10-30"
+  evidence_level: "selected_sections_read"
+  sections_read:
+    "Incoming-link ranking, damping, dangling-node handling and convergence \
+    contract."
+  version_observed: "NetworkX 3.7"
+  publication_reuse_status: "not_admitted"
+  rights_note:
+    "Citation and independently written research notes only. No paper, \
+    code, model or dataset redistribution is authorised by this record."
+- id: "SRC-0005"
+  title: "Authoritative Sources in a Hyperlinked Environment"
+  authors: "Jon M. Kleinberg"
+  publication_year: 1999
+  url: "https://www.cs.cornell.edu/home/kleinber/auth.pdf"
+  source_type: "author_paper"
+  accessed_on: "2026-10-30"
+  evidence_level: "selected_sections_read"
+  sections_read:
+    "Abstract and the hub/authority formulation; complete proof review \
+    remains pending."
+  version_observed: "Author-hosted paper"
+  publication_reuse_status: "not_admitted"
+  rights_note:
+    "Citation and independently written research notes only. No paper, \
+    code, model or dataset redistribution is authorised by this record."
+- id: "SRC-0006"
+  title: "Fast unfolding of communities in large networks"
+  authors:
+    "Vincent D. Blondel; Jean-Loup Guillaume; Renaud Lambiotte; Etienne \
+    Lefebvre"
+  publication_year: 2008
+  url: "https://arxiv.org/abs/0803.0476v2"
+  source_type: "author_preprint"
+  accessed_on: "2026-10-30"
+  evidence_level: "abstract_read"
+  sections_read:
+    "Modularity-based community discovery and bibliographic details."
+  version_observed: "arXiv v2"
+  publication_reuse_status: "not_admitted"
+  rights_note:
+    "Citation and independently written research notes only. No paper, \
+    code, model or dataset redistribution is authorised by this record."
+- id: "SRC-0007"
+  title: "From Louvain to Leiden: guaranteeing well-connected communities"
+  authors: "Vincent A. Traag; Ludo Waltman; Nees Jan van Eck"
+  publication_year: 2019
+  url: "https://arxiv.org/abs/1810.08473v3"
+  source_type: "author_preprint"
+  accessed_on: "2026-10-30"
+  evidence_level: "abstract_read"
+  sections_read:
+    "Connectivity problem, proposed Leiden method and stated guarantees; \
+    assumptions require full review."
+  version_observed: "arXiv v3"
+  publication_reuse_status: "not_admitted"
+  rights_note:
+    "Citation and independently written research notes only. No paper, \
+    code, model or dataset redistribution is authorised by this record."
+- id: "SRC-0008"
+  title:
+    "Pixie: A System for Recommending 3+ Billion Items to 200+ Million \
+    Users in Real-Time"
+  authors:
+    "Chantat Eksombatchai; Pranav Jindal; Jerry Zitao Liu; Yuchen Liu; \
+    Rahul Sharma; Charles Sugnet; Mark Ulrich; Jure Leskovec"
+  publication_year: 2017
+  url: "https://arxiv.org/abs/1711.07601v1"
+  source_type: "author_preprint"
+  accessed_on: "2026-10-30"
+  evidence_level: "abstract_read"
+  sections_read:
+    "Graph recommendation, random-walk approach and system context only."
+  version_observed: "arXiv v1"
+  publication_reuse_status: "not_admitted"
+  rights_note:
+    "Citation and independently written research notes only. No paper, \
+    code, model or dataset redistribution is authorised by this record."
+- id: "SRC-0009"
+  title: "TextRank: Bringing Order into Texts"
+  authors: "Rada Mihalcea; Paul Tarau"
+  publication_year: 2004
+  url: "https://aclanthology.org/W04-3252.pdf"
+  source_type: "publisher_paper"
+  accessed_on: "2026-10-30"
+  evidence_level: "selected_sections_read"
+  sections_read:
+    "Abstract, introduction and selected keyword-extraction steps, including \
+    graph construction and phrase reconstruction. Full review remains \
+    pending."
+  version_observed:
+    "ACL W04-3252 PDF; PDF title uses Texts, while catalogue-page metadata \
+    uses Text."
+  publication_reuse_status: "not_admitted"
+  rights_note:
+    "Citation and independently written research notes only. No paper, \
+    code, model or dataset redistribution is authorised by this record."
+- id: "SRC-0010"
+  title: "TextTiling: Segmenting Text into Multi-paragraph Subtopic Passages"
+  authors: "Marti A. Hearst"
+  publication_year: 1997
+  url: "https://aclanthology.org/J97-1003.pdf"
+  source_type: "publisher_paper"
+  accessed_on: "2026-10-30"
+  evidence_level: "selected_sections_read"
+  sections_read: "Abstract and lexical-cohesion segmentation introduction."
+  version_observed: "Computational Linguistics 23(1)"
+  publication_reuse_status: "not_admitted"
+  rights_note:
+    "Citation and independently written research notes only. No paper, \
+    code, model or dataset redistribution is authorised by this record."
+- id: "SRC-0011"
+  title: "Advances in domain independent linear text segmentation"
+  authors: "Freddy Y. Y. Choi"
+  publication_year: 2000
+  url: "https://aclanthology.org/A00-2004.pdf"
+  source_type: "publisher_paper"
+  accessed_on: "2026-10-30"
+  evidence_level: "selected_sections_read"
+  sections_read:
+    "Abstract and section 3: sentence similarity, local ranks and divisive \
+    clustering."
+  version_observed: "NAACL 2000"
+  publication_reuse_status: "not_admitted"
+  rights_note:
+    "Citation and independently written research notes only. No paper, \
+    code, model or dataset redistribution is authorised by this record."
+- id: "SRC-0012"
+  title: "Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks"
+  authors: "Nils Reimers; Iryna Gurevych"
+  publication_year: 2019
+  url: "https://aclanthology.org/D19-1410/"
+  source_type: "publisher_paper"
+  accessed_on: "2026-10-30"
+  evidence_level: "abstract_read"
+  sections_read:
+    "Independent sentence representations compared through similarity."
+  version_observed: "ACL EMNLP-IJCNLP 2019"
+  publication_reuse_status: "not_admitted"
+  rights_note:
+    "Citation and independently written research notes only. No paper, \
+    code, model or dataset redistribution is authorised by this record."
+- id: "SRC-0013"
+  title: "Latent Dirichlet Allocation"
+  authors: "David M. Blei; Andrew Y. Ng; Michael I. Jordan"
+  publication_year: 2003
+  url: "https://www.jmlr.org/papers/volume3/blei03a/blei03a.pdf"
+  source_type: "publisher_paper"
+  accessed_on: "2026-10-30"
+  evidence_level: "selected_sections_read"
+  sections_read:
+    "Abstract and model introduction; inference details require a later \
+    full review."
+  version_observed: "JMLR 3"
+  publication_reuse_status: "not_admitted"
+  rights_note:
+    "Citation and independently written research notes only. No paper, \
+    code, model or dataset redistribution is authorised by this record."
+- id: "SRC-0014"
+  title: "Confidence intervals for a binomial proportion"
+  authors: "NIST/SEMATECH"
+  publication_year: null
+  url: "https://www.itl.nist.gov/div898/handbook/prc/section2/prc241.htm"
+  source_type: "official_documentation"
+  accessed_on: "2026-10-30"
+  evidence_level: "selected_sections_read"
+  sections_read:
+    "Wilson interval and the distinction between an estimate and an interval."
+  version_observed: "Online statistical handbook"
+  publication_reuse_status: "not_admitted"
+  rights_note:
+    "Citation and independently written research notes only. No paper, \
+    code, model or dataset redistribution is authorised by this record."
+- id: "SRC-0015"
+  title: "Probability calibration"
+  authors: "scikit-learn contributors"
+  publication_year: null
+  url: "https://scikit-learn.org/stable/modules/calibration.html"
+  source_type: "official_documentation"
+  accessed_on: "2026-10-30"
+  evidence_level: "selected_sections_read"
+  sections_read:
+    "Sigmoid and isotonic calibration, held-out data and ranking/tie caveats."
+  version_observed: "scikit-learn 1.9.1"
+  publication_reuse_status: "not_admitted"
+  rights_note:
+    "Citation and independently written research notes only. No paper, \
+    code, model or dataset redistribution is authorised by this record."
+- id: "SRC-0016"
+  title: "From RankNet to LambdaRank to LambdaMART: An Overview"
+  authors: "Christopher J. C. Burges"
+  publication_year: 2010
+  url:
+    "https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/MSR-T\
+    R-2010-82.pdf"
+  source_type: "author_paper"
+  accessed_on: "2026-10-30"
+  evidence_level: "selected_sections_read"
+  sections_read:
+    "Abstract and introduction to related ranking procedures; equations \
+    and derivations still need independent review."
+  version_observed: "MSR-TR-2010-82"
+  publication_reuse_status: "not_admitted"
+  rights_note:
+    "Citation and independently written research notes only. No paper, \
+    code, model or dataset redistribution is authorised by this record."
+- id: "SRC-0017"
+  title: "Random Search for Hyper-Parameter Optimization"
+  authors: "James Bergstra; Yoshua Bengio"
+  publication_year: 2012
+  url: "https://www.jmlr.org/papers/v13/bergstra12a.html"
+  source_type: "publisher_paper"
+  accessed_on: "2026-10-30"
+  evidence_level: "abstract_read"
+  sections_read: "Random search as a comparator for configuration search."
+  version_observed: "JMLR 13(10)"
+  publication_reuse_status: "not_admitted"
+  rights_note:
+    "Citation and independently written research notes only. No paper, \
+    code, model or dataset redistribution is authorised by this record."

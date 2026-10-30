@@ -1,6 +1,7 @@
 # Initial request
 
-Status: historical source, subject to [later decisions](../overrides.md). Private identifiers are redacted.
+Status: historical source, subject to [later decisions](../overrides.md).
+Private identifiers are redacted.
 
 `````text
 I want you to guide me on working on an add-on for XenForo 2 that enables internal linking, written in PHP 8.5. the idea is that the add-on should have 6000 unique algorithms, methods, statistical models, meta-algorithms, metaheuristics, meta-learning, ensemble & Wrapper methods, and should not exceed 2 GB of RAM usage. All things should use a clean room implementation and there should be rules that agents should following that nothing in the repo breaks copyright laws, or violate ip laws. We must employ spec-driven development and use Google's G3Doc standard of documentation.

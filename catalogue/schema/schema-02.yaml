@@ -1,0 +1,29 @@
+# Part 2 of 4 of the catalogue JSON Schema.
+
+path:
+  - "$defs"
+  - "method"
+merge:
+  type: "object"
+  additionalProperties: false
+  required:
+    - "id"
+    - "name"
+    - "aliases"
+    - "family"
+    - "kind"
+    - "stage"
+    - "counts_toward_release"
+    - "source_ids"
+    - "summary"
+    - "proposed_use"
+    - "applicability"
+    - "input_contract_draft"
+    - "output_contract_draft"
+    - "distinctness"
+    - "test_ideas"
+    - "resource_plan"
+    - "rights"
+    - "approval"
+    - "evidence"
+    - "exclusion"
