@@ -13,6 +13,12 @@ The full product is not complete. Zero methods are qualified.
   `857c0391`. The documentation profile passed on Dell, including data
   round trip, transcript preservation, word preservation, links, limits
   and a gitleaks scan with no findings. Not yet on GitHub.
+- Source-limit checker (activation step 1, interim): test-first, 163
+  tests, 100% line and branch coverage, 769 of 770 mutants killed (one
+  reviewed equivalent), whole repository passing, two independent review
+  passes, performance result B; see the
+  [milestone record](limits-checker.md). Local commit after this ledger
+  update; unsigned until the runner exists.
 - Owner approval, 30 October 2026, of the trust boundaries, SPEC-004 to
   SPEC-007, the mapped rulebook, the SPEC-002 and SPEC-003 revisions and
   live-data storage, with recorded choices (approval record).
@@ -35,6 +41,8 @@ The full product is not complete. Zero methods are qualified.
 
 - Features F001–F023 specifications (not yet drafted, except research).
 - The `just` command interface details beyond SPEC-001.
+- The four clarifications listed in the approval record, and the
+  checker's plain-text class list (the approved text names YAML).
 
 ## Blocked by a specific external dependency
 
@@ -50,8 +58,8 @@ The full product is not complete. Zero methods are qualified.
 
 ## Not started
 
-- Runner, sandbox and signing tools; the source-limit checker; the
-  test-first gate; the performance harness; the publisher rebuild.
+- Runner, sandbox and signing tools; the test-first gate; the performance
+  harness; the publisher rebuild.
 - AutoIssues milestones 1–8 and the QA stack.
 - Method research completion toward 6,000 qualified methods, the PHP
   add-on, the Python service and every product feature.

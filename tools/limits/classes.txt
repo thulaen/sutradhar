@@ -1,0 +1,15 @@
+# Protected path classification for the source-limit checker (SPEC-007).
+# Format: class pattern. The first matching rule wins. Patterns without a
+# slash match the file name; patterns with one match the whole path.
+# Classes: text, data, lockfile, binary, third_party. Changing this file is
+# a protected change that needs the owner's approval.
+text LICENSE
+text *.md
+text *.txt
+text *.py
+text *.php
+data *.yaml
+data *.json
+lockfile uv.lock
+lockfile composer.lock
+binary *.png
