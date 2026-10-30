@@ -1,8 +1,8 @@
 {
  "format": "sutradhar-runner-policy/1",
- "version": "2026-10-30.4",
+ "version": "2026-10-30.5",
  "runner":
-  "38d849ef90f38b89df0669a4b059130022cd25dcda6ae4c3d5e68a8f8ef51ec7",
+  "5d547f0f86f0d78a1d39d36a2f3212c63ad026ab0fc170591a26aaa5b3da3291",
  "bootstrap_scope": [
   "AGENTS.md", "CLAUDE.md", "CONTRIBUTING.md", "LICENSE", "README.md",
   "SECURITY.md", "catalogue/*", "docs/*", "tools/__init__.py",
@@ -11,13 +11,27 @@
  "max_age": 86400,
  "limits": {"memory": "2G", "tasks": 256, "seconds": 600},
  "documentation": ["*.md", "docs/*.yaml", "catalogue/*.yaml"],
+ "test_first": {
+  "tests": ["test_*.py", "*_test.py", "tests/*", "*/tests/*"],
+  "paths": {
+   "configuration": [
+    ".editorconfig", ".gitattributes", ".gitignore", "*.cfg", "*.ini",
+    "*.toml"
+   ],
+   "dependency": [
+    "requirements*.txt", "*.lock", "composer.json", "package.json",
+    "package-lock.json"
+   ],
+   "secret": []
+  }
+ },
  "tools": {
   "gitleaks":
    "88f91962aa2f93ac6ab281d553b9e125f5197bbbce38f9f2437f7299c32e5509",
   "gitleaks-config":
    "8901d2cc6b088ac14c4edcd20f98b0f14698a4d9f9fbaff7c2f38f203f2558a3",
   "harness":
-   "69eb3fa10f52abf1a3cff7cb17ef24832b3ec9508e302a93852fa3b4c8d8c34b",
+   "1a4ef725de49c1e284428bd4fcf1855544abd6bffbdae12584b98dc6342c4d2c",
   "limits":
    "f552ada011600b9e43ab743acaef7cc8cfe9ec1bf0acfb3986f569f27cfd91a5"
  },
@@ -40,6 +54,13 @@
     "--classes", "@tool:limits/tools/limits/classes.txt", "@paths"
    ]
   },
+  "test-first": {
+   "cwd": "@candidate",
+   "report": "test-first",
+   "argv": [
+    "python3", "-I", "-S", "-B", "@tool:harness", "--detail", "@candidate"
+   ]
+  },
   "unit-tests": {
    "cwd": "@candidate",
    "report": "unittest",
@@ -49,49 +70,44 @@
  "profiles": {
   "docs": {
    "documentation_only": true,
-   "run": ["source-limits", "secrets"],
+   "run": ["source-limits", "secrets", "test-first"],
    "not_applicable": {
     "unit-tests": "documentation-only change: no executable path changed"
    },
    "not_yet_active": {
     "documentation-profile": "interim Dell profile, not yet a tool",
-    "test-first": "activation step 3",
     "quota": "AutoIssues milestone 5"
    },
    "interim": ["documentation-profile"]
   },
   "commit": {
    "documentation_only": false,
-   "run": ["source-limits", "unit-tests", "secrets"],
+   "run": ["source-limits", "unit-tests", "secrets", "test-first"],
    "not_applicable": {},
    "not_yet_active": {
     "documentation-profile": "interim Dell profile, not yet a tool",
     "coverage": "adapter not yet qualified",
     "mutation": "adapter not yet qualified",
-    "test-first": "activation step 3",
     "performance": "activation step 4",
     "quota": "AutoIssues milestone 5"
    },
    "interim": [
-    "documentation-profile", "coverage", "mutation", "test-first",
-    "performance"
+    "documentation-profile", "coverage", "mutation", "performance"
    ]
   },
   "push": {
    "documentation_only": false,
-   "run": ["source-limits", "unit-tests", "secrets"],
+   "run": ["source-limits", "unit-tests", "secrets", "test-first"],
    "not_applicable": {},
    "not_yet_active": {
     "documentation-profile": "interim Dell profile, not yet a tool",
     "coverage": "adapter not yet qualified",
     "mutation": "adapter not yet qualified",
-    "test-first": "activation step 3",
     "performance": "activation step 4",
     "quota": "AutoIssues milestone 5"
    },
    "interim": [
-    "documentation-profile", "coverage", "mutation", "test-first",
-    "performance"
+    "documentation-profile", "coverage", "mutation", "performance"
    ]
   }
  }

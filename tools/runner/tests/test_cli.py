@@ -117,27 +117,29 @@ class CliCase(unittest.TestCase):
         return code, json.loads(out.getvalue())
 
     def run_profile(self, profile="commit", sandbox=None, base=None,
-                    evidence=True):
+                    evidence=True, message=None):
         args = ["run", "--repo", self.repo.path, "--tree", "HEAD",
                 "--profile", profile, "--policy", self.path("policy.json"),
                 "--host", self.path("host.json"), "--key", self.key,
                 "--out", self.path("out")]
         if base:
             args += ["--base", base]
+        if message:
+            args += ["--message", message]
         if evidence:
             args += ["--evidence", self.path("evidence.json")]
             if not self.keep_evidence:
                 self.refresh_evidence()
         return self.main(*args, sandbox=sandbox)
 
-    def verify(self, tree=None, profile="commit", base=None):
+    def verify(self, tree=None, profile="commit", base=None, message="none"):
         args = ["verify", "--bundle", self.path("out/bundle.json"),
                 "--signature", self.path("out/bundle.json.sig"),
                 "--signers", self.path("signers"),
                 "--identity", "sutradhar-runner",
                 "--policy", self.path("policy.json"),
                 "--tree", tree or self.tree, "--profile", profile,
-                "--base", base or "none"]
+                "--base", base or "none", "--message", message]
         return self.main(*args)
 
 
@@ -253,7 +255,7 @@ class VerifyAndUsageTest(CliCase):
             "--profile", "commit")
         self.assertEqual((code, doc["blocked"]), (2, [
             "usage: verify needs --bundle --signature --signers --identity "
-            "--policy --tree --profile --base"]))
+            "--policy --tree --profile --base --message"]))
         with open(self.path("out/bundle.json"), "ab") as handle:
             handle.write(b" ")
         self.assertEqual(self.verify(), (2, {

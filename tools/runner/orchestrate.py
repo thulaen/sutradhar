@@ -9,11 +9,13 @@ refused for code or for no change at all), check each pinned tool, then
 create the run folder, copy the tools into it and check the copies,
 export the candidate, run each check in its own sandbox and re-check the
 export and tool copies. Only then is a canonical bundle written and
-signed. Interim evidence and review records named in the evidence file
-are hashed into the bundle; NOT_YET_ACTIVE counts only when every
-changed path is inside the policy's bootstrap scope.
+signed. Interim evidence, review and new-unit records named in the
+evidence file and the commit message's digest are recorded in the bundle;
+NOT_YET_ACTIVE counts only when every changed path is inside the policy's
+bootstrap scope. The test-first check runs through tools.runner.redgreen.
 """
 import collections
+import functools
 import hashlib
 import os
 import platform
@@ -22,7 +24,7 @@ import stat
 import subprocess
 
 from tools.runner import (bundle, candidate, execute, inputs, outcomes,
-                          policy, reports, sandbox, signing)
+                          policy, redgreen, reports, sandbox, signing)
 
 ENV = {"LANG": "C.UTF-8", "HOME": "/tmp", "TMPDIR": "/tmp",
        "PATH": "/usr/bin:/bin", "PYTHONDONTWRITEBYTECODE": "1"}
@@ -31,8 +33,8 @@ _BINARIES = ("git", "python3", "sh", "ssh-keygen")
 _HERE = os.path.dirname(os.path.abspath(__file__))
 Job = collections.namedtuple("Job", "loaded paths binds out prefix run token")
 Plan = collections.namedtuple(
-    "Plan", "raw loaded prefix installed interim reviews tree base changed "
-    "executable profile")
+    "Plan", "raw loaded prefix installed interim reviews new_units tree base "
+    "changed executable profile repo message")
 
 
 def runner_files():
@@ -114,7 +116,8 @@ def prepare(opts):
     _safe_out(opts["out"])
     repo = opts["repo"]
     tree = candidate.resolve_tree(repo, opts["tree"])
-    interim, reviews = inputs.evidence(opts.get("evidence"), tree)
+    interim, reviews, new_units = inputs.evidence(opts.get("evidence"), tree)
+    message = read(opts["message"]) if "message" in opts else None
     base = None
     marked = candidate.executables(repo, tree)
     if "base" in opts:
@@ -124,8 +127,9 @@ def prepare(opts):
     executable = [path for path in changed if path in marked]
     policy.select(loaded, opts["profile"], changed, executable)
     _check_tools(loaded, installed)
-    return Plan(raw, loaded, prefix, installed, interim, reviews, tree, base,
-                changed, executable, opts["profile"])
+    return Plan(raw, loaded, prefix, installed, interim, reviews, new_units,
+                tree, base, changed, executable, opts["profile"], repo,
+                message)
 
 
 def _binary(name):
@@ -140,18 +144,14 @@ def environment():
             "binaries": {name: _binary(name) for name in _BINARIES}}
 
 
-def _check(job, check_id):
-    unit, nonce = f"sutradhar-{check_id}-{job.token()}", job.token()
-    binds = [(os.path.join(job.out, "candidate"), sandbox.CANDIDATE),
-             *job.binds]
+def _launch(job, check_id, name, folder, judge, stdin_data):
+    """Run check_id's command on folder in a fresh sandbox, as name."""
+    unit = f"sutradhar-{name}-{job.token()}"
+    binds = [(folder, sandbox.CANDIDATE), *job.binds]
     argv = sandbox.command(
         job.prefix, unit, job.loaded["limits"], binds,
         policy.cwd(job.loaded, check_id), ENV,
         policy.argv(job.loaded, check_id, job.paths))
-    judge, stdin_data = reports.exit_judge, None
-    if job.loaded["checks"][check_id]["report"] == "unittest":
-        judge = reports.unittest_judge(nonce)
-        stdin_data = f"{nonce}\n".encode()
 
     def stop():
         try:
@@ -160,14 +160,29 @@ def _check(job, check_id):
         except (OSError, subprocess.SubprocessError):
             pass
     return execute.run_check(
-        check_id, argv, os.path.join(job.out, "private"),
+        name, argv, os.path.join(job.out, "private"),
         job.loaded["limits"]["seconds"], run=job.run,
         decode=sandbox.check_status, stop=stop, judge=judge,
         stdin_data=stdin_data)
 
 
-def _results(job, profile, interim):
-    results = [_check(job, check_id) for check_id in profile["run"]]
+def _check(job, plan, check_id):
+    report = job.loaded["checks"][check_id]["report"]
+    if report == "test-first":
+        return redgreen.check(job, plan, check_id,
+                              functools.partial(_launch, job, check_id))
+    judge, stdin_data = reports.exit_judge, None
+    if report == "unittest":
+        nonce = job.token()
+        judge, stdin_data = (reports.unittest_judge(nonce),
+                             f"{nonce}\n".encode())
+    return _launch(job, check_id, check_id,
+                   os.path.join(job.out, "candidate"), judge, stdin_data)
+
+
+def _results(job, plan, profile):
+    interim = plan.interim
+    results = [_check(job, plan, check_id) for check_id in profile["run"]]
     results += [{"id": check_id, "outcome": outcomes.NOT_APPLICABLE,
                  "reason": reason}
                 for check_id, reason in profile["not_applicable"].items()]
@@ -208,7 +223,7 @@ def run_candidate(opts, run, now, token):
     job = Job(plan.loaded, [entry["path"] for entry in manifest], binds, out,
               plan.prefix, run, token)
     profile = plan.loaded["profiles"][plan.profile]
-    results = _results(job, profile, plan.interim)
+    results = _results(job, plan, profile)
     _recheck(plan.loaded, out, manifest)
     facts = {"tree": plan.tree, "base": plan.base,
              "manifest_sha256": candidate.digest(manifest),
@@ -219,6 +234,9 @@ def run_candidate(opts, run, now, token):
              "runner_sha256": plan.loaded["runner"],
              "environment": environment(), "tools": plan.loaded["tools"],
              "reviews": plan.reviews, "started": started,
+             "message_sha256": None if plan.message is None
+             else hashlib.sha256(plan.message).hexdigest(),
+             "new_units": plan.new_units,
              "finished": bundle.timestamp(now())}
     doc = bundle.build(facts, policy.plan(plan.loaded, plan.profile),
                        results, policy.in_scope(plan.loaded, plan.changed))

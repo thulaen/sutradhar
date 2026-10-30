@@ -1,15 +1,19 @@
 """Command line for the check runner (SPEC-001; trust boundaries).
 
 run: check one exact candidate tree under a profile and write a signed
-bundle (see tools.runner.orchestrate). verify: check a bundle against a
-protected policy, an expected tree, profile and base (always given, "none"
-for a root commit), and the policy's maximum age; the status, the profile
-choice and the bootstrap scope are recomputed, never trusted. Exit codes:
-0 PASSED, 1 FAILED, 2 BLOCKED or usage error.
+bundle (see tools.runner.orchestrate); --message names the proposed
+commit message, whose digest the bundle records and whose TDD line the
+test-first check reads. verify: check a bundle against a protected
+policy, an expected tree, profile, base (always given, "none" for a root
+commit) and message (always given, "none" when there was none), and the
+policy's maximum age; the status, the profile choice and the bootstrap
+scope are recomputed, never trusted. Exit codes: 0 PASSED, 1 FAILED, 2
+BLOCKED or usage error.
 
 The host file (private, never in Git) names the command prefix used to
 start sandboxes and where each pinned tool is installed. The evidence
-file names interim evidence for checks not yet active, and review records.
+file names interim evidence for checks not yet active, review records and
+new-unit records for the test-first check.
 """
 import datetime
 import hashlib
@@ -23,9 +27,9 @@ from tools.runner import (bundle, candidate, orchestrate, outcomes, policy,
                           signing)
 
 USAGE = {"run": (("repo", "tree", "profile", "policy", "host", "key", "out"),
-                 ("base", "evidence")),
+                 ("base", "evidence", "message")),
          "verify": (("bundle", "signature", "signers", "identity", "policy",
-                     "tree", "profile", "base"), ())}
+                     "tree", "profile", "base", "message"), ())}
 _EXITS = {outcomes.PASSED: 0, outcomes.FAILED: 1}
 Blocked = orchestrate.Blocked
 
@@ -72,7 +76,10 @@ def _verify(opts, now):
               "plan": policy.plan(loaded, name),
               "policy_sha256": hashlib.sha256(raw).hexdigest(),
               "runner_sha256": loaded["runner"],
-              "base": None if opts["base"] == "none" else opts["base"]}
+              "base": None if opts["base"] == "none" else opts["base"],
+              "message_sha256": None if opts["message"] == "none"
+              else hashlib.sha256(orchestrate.read(opts["message"]))
+              .hexdigest()}
 
     def trust(data, signature):
         return signing.verify(opts["signers"], opts["identity"], data,

@@ -157,14 +157,112 @@ class RunTest(HarnessCase):
     def test_usage(self):
         out = io.StringIO()
         with contextlib.redirect_stdout(out):
-            self.assertEqual(harness.main(["a", "b"], io.StringIO(""),
-                                          lambda: out), 2)
-        self.assertEqual(out.getvalue(), "usage: harness.py ROOT < NONCE\n")
+            for argv in (["a", "b"], ["--detail"], ["--other", "a"],
+                         ["--detail", "a", "b"], ["--other"]):
+                self.assertEqual(harness.main(argv, io.StringIO(""),
+                                              lambda: out), 2, argv)
+        self.assertEqual(out.getvalue(),
+                         "usage: harness.py [--detail] ROOT < NONCE\n" * 5)
         with mock.patch.object(sys, "argv", ["harness"]), \
                 contextlib.redirect_stdout(io.StringIO()), \
                 self.assertRaises(SystemExit) as stop:
             runpy.run_module("tools.runner.harness", run_name="__main__")
         self.assertEqual(stop.exception.code, 2)
+
+
+class DetailTest(HarnessCase):
+    """The test-first check needs each test's own outcome (AT-T01)."""
+
+    def test_detail_lists_each_test_by_outcome(self):
+        self.write(f"{self.package}/test_a.py", """
+            import unittest
+            class T(unittest.TestCase):
+                def test_pass(self):
+                    pass
+                def test_fail(self):
+                    self.assertEqual(1, 2)
+                def test_error(self):
+                    raise RuntimeError("x")
+                def test_sub(self):
+                    for i in (1, 2, 3):
+                        with self.subTest(i=i):
+                            self.assertEqual(i, 1)
+            """)
+        self.write(f"{self.package}/test_b.py", "import missing_module\n")
+        got = harness.run(self.root, "n", io.StringIO(), detail=True)
+        name = f"{self.package}.test_a.T.test_"
+        broken = f"unittest.loader._FailedTest.{self.package}.test_b"
+        self.assertEqual(got["ids"], [name + "error", name + "fail",
+                                      name + "pass", name + "sub", broken])
+        self.assertEqual(got["failed_ids"], [name + "fail", name + "sub"])
+        self.assertEqual(got["errored_ids"], [name + "error", broken])
+        self.assertEqual(got["keys"][name + "pass"], [
+            f"{self.package}.test_a", f"{self.package}.test_a.T",
+            name + "pass"])
+        self.assertEqual(got["keys"][broken], [])
+
+    def test_names_and_keys_come_from_the_defining_code(self):
+        # Review: ids cannot be spoofed by id() or a "test_case" method,
+        # and a test inherited from a mixin is keyed by the mixin's code.
+        self.write(f"{self.package}/test_m.py", """
+            import unittest
+            class Cases:
+                def test_x(self):
+                    self.assertTrue(True)
+            class T(Cases, unittest.TestCase):
+                pass
+            class U(T):
+                def id(self):
+                    return "spoofed"
+                def test_case(self):
+                    pass
+            """)
+        got = harness.run(self.root, "n", io.StringIO(), detail=True)
+        m = f"{self.package}.test_m"
+        self.assertEqual(got["ids"], [f"{m}.T.test_x", f"{m}.U.test_case",
+                                      f"{m}.U.test_x"])
+        self.assertEqual(got["keys"][f"{m}.U.test_x"], [
+            m, f"{m}.Cases", f"{m}.Cases.test_x", f"{m}.T", f"{m}.U"])
+
+    def test_tests_that_never_started_are_not_listed(self):
+        self.write(f"{self.package}/test_c.py", """
+            import unittest
+            class Broken(unittest.TestCase):
+                @classmethod
+                def setUpClass(cls):
+                    raise RuntimeError("x")
+                def test_never(self):
+                    pass
+            """)
+        got = harness.run(self.root, "n", io.StringIO(), detail=True)
+        self.assertEqual(got["ids"], [])
+        self.assertEqual(got["errored_ids"],
+                         [f"setUpClass ({self.package}.test_c.Broken)"])
+
+    def test_only_the_named_modules_run(self):
+        self.write(f"{self.package}/test_a.py", PASSING)
+        self.write(f"{self.package}/test_b.py", PASSING)
+        self.write(f"{self.package}/test_c.py", "import missing_module\n")
+        chosen = [f"{self.package}.test_b", f"{self.package}.test_c"]
+        got = harness.run(self.root, "n", io.StringIO(), detail=True,
+                          modules=chosen)
+        broken = f"unittest.loader._FailedTest.{self.package}.test_c"
+        self.assertEqual((got["collected"], got["uncollected"], got["ids"]),
+                         (3, [], [f"{self.package}.test_b.T.test_a",
+                                  f"{self.package}.test_b.T.test_b",
+                                  broken]))
+
+    def test_main_reports_detail_on_request(self):
+        self.write(f"{self.package}/test_a.py", PASSING)
+        self.write(f"{self.package}/test_b.py", PASSING)
+        report = io.StringIO()
+        with contextlib.redirect_stderr(io.StringIO()):
+            code = harness.main(["--detail", self.root],
+                                io.StringIO(f"n\n{self.package}.test_b\n\n"),
+                                lambda: report)
+        summary = json.loads(report.getvalue())
+        self.assertEqual((code, summary["failed_ids"], len(summary["ids"])),
+                         (0, [], 2))
 
 
 class IsolationTest(HarnessCase):

@@ -5,18 +5,19 @@ milestones committed; nothing published to GitHub yet.
 
 ## Exact state
 
-- Working folder: the renamed Windows checkout `Sutradhar`. No second
-  checkout, branch or worktree was created. `docs/project-foundation` is
-  kept at `691559a` as history.
-- Local `main`: `cd245a6` (check runner, tree `e72805f1`) on `d960dd7`
-  (model and platform decisions), `f74e466` (source-limit checker, tree
-  `b621a8e5`), `8114c3c` (requirements update, approval record and
-  approved designs, tree `9578ac1f`), `ecbd232` (source-limit compliance,
-  tree `857c0391`) and `691559a` (foundation, tree `3ce87786`). Each
-  passed its checks on Dell before it was committed. The publication
-  decisions (R112–R118, ADR-0005) are a documentation commit made in a
-  Dell clone (R117) and copied back here. The test-first gate is written
-  and passing its tests but not committed.
+- Working folders: the Windows checkout `Sutradhar` and the Dell agent
+  clone, kept identical. No branch or worktree was created.
+  `docs/project-foundation` is kept at `691559a` as history.
+- Local `main`: the test-first gate commit, made in the Dell agent clone,
+  on `30877e7` (publication decisions R112–R118 and ADR-0005), `cd245a6`
+  (check runner, tree `e72805f1`), `d960dd7` (model and platform
+  decisions), `f74e466` (source-limit checker, tree `b621a8e5`),
+  `8114c3c` (requirements update, approval record and approved designs,
+  tree `9578ac1f`), `ecbd232` (source-limit compliance, tree `857c0391`)
+  and `691559a` (foundation, tree `3ce87786`). Each passed its checks on
+  Dell before it was committed.
+- Drafted, reviewed and revised but not committed: the linking and
+  platform specifications SPEC-008 to SPEC-012.
 - GitHub `main` = `093b001`; no other branch, no pull request.
 - Evidence, saved copies and exact host figures are in new locked Dell
   directories named in the private operator note on Dell.
@@ -44,6 +45,9 @@ milestones committed; nothing published to GitHub yet.
   step is one commit pushed after its milestone, the owner approves gate
   changes by a question, files are edited on Windows and committed on
   Dell, and the linking specifications are drafted now.
+- Test-first gate, activation step 3, built test-first, reviewed twice,
+  qualified in the real sandbox and switched on with the owner's
+  approval; see the [milestone record](test-first.md).
 - Primary-source research on GitHub rules, NASA/JPL and Meta practice and
   tool versions, each independently re-checked.
 
@@ -57,11 +61,10 @@ this work (R113).
 
 ## Next steps
 
-1. Draft the linking specifications (R098–R111) for the owner's approval,
-   as the owner chose (R118).
-2. Finish the test-first gate (coverage, mutation, review, qualification)
-   and commit it; it waits for the specifications by the coordinator's
-   sequencing, not an owner decision.
+1. Put the linking specifications' decisions (SPEC-008 to SPEC-012) to
+   the owner, then commit the approved specifications.
+2. Move the work into a session running on Dell, as the owner asked
+   after this commit, so nothing is copied from the editing computer.
 3. Build the gated Dell repository: publisher and agent accounts, bare
    repository, pre-receive gate, post-receive push with retry, `just
    check`, `just fast` and `just publish`, agent clone hooks, CI safety

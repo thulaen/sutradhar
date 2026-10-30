@@ -38,6 +38,11 @@ The full product is not complete. Zero methods are qualified.
   specifications now), recorded from the owner's answers with an
   independent fidelity review. Committed with this update in a Dell
   clone, after the Dell documentation profile.
+- Test-first gate (activation step 3), active with the owner's approval
+  (R116): test-first, two independent review passes, 100% line and
+  branch coverage, mutation testing, real-sandbox qualification and
+  performance result B; see the [milestone record](test-first.md).
+  Committed in the Dell agent clone after its Dell checks.
 - Owner approval, 30 October 2026, of the trust boundaries, SPEC-004 to
   SPEC-007, the mapped rulebook, the SPEC-002 and SPEC-003 revisions and
   live-data storage, with recorded choices (approval record).
@@ -45,12 +50,6 @@ The full product is not complete. Zero methods are qualified.
 - Authorised Dell project storage, re-checked this session.
 
 ## Implemented, awaiting checks
-
-- The test-first gate (activation step 3): written test-first, its 403
-  tests pass on Dell; coverage, mutation, review and real-sandbox
-  qualification follow after the linking specifications (the
-  coordinator's sequencing, as the owner chose to draft them now). Not
-  yet committed.
 - Earlier publisher modules (policy, candidate reader, transport): 130
   focused test methods and full statement and branch coverage for three
   modules. Their branch-and-pull-request policy is retired; the reader and
@@ -62,7 +61,8 @@ The full product is not complete. Zero methods are qualified.
 - The linking feature specification implementing R098–R108 (models,
   reading every post in full, matching, anchors, retraining, model files)
   and the specifications for R109–R111 (community models, progress, the
-  visual layer), with ADR-0001 to ADR-0004: being drafted now (R118).
+  visual layer), with ADR-0001 to ADR-0004: drafted and independently
+  reviewed (SPEC-008 to SPEC-012), awaiting the owner's decisions.
 - Features F001–F023 specifications (not yet drafted, except research).
 - The `just` command interface details beyond SPEC-001.
 - The four clarifications listed in the approval record, and the

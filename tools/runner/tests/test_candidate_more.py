@@ -100,6 +100,72 @@ class GitTest(CandidateCase):
         self.assertEqual(kwargs["timeout"], candidate.GIT_SECONDS)
 
 
+def in_tests(path):
+    return "/tests/" in path
+
+
+class RedTreeTest(CandidateCase):
+    """The red tree: the parent's source with the candidate's tests."""
+
+    def setUp(self):
+        super().setUp()
+        repo = self.repo
+        for rel, data in (("a/code.py", b"old\n"), ("a/tests/gone.py", b"g\n"),
+                          ("a/tests/test_x.py", b"old test\n")):
+            repo.write(rel, data)
+        repo.write("run.sh", b"#!/bin/sh\n", executable=True)
+        self.base = repo.commit()
+        repo.write("a/code.py", b"new\n")
+        repo.write("a/tests/test_x.py", b"new test\n", executable=True)
+        repo.git("rm", "-q", "a/tests/gone.py")
+        repo.write("a/tests/test_y.py", b"y\n")
+        repo.write("b.py", b"b\n")
+        self.tree = repo.commit()
+
+    def read(self, rel):
+        with open(os.path.join(self.dest(), rel), "rb") as handle:
+            return handle.read()
+
+    def test_parent_source_with_candidate_tests(self):
+        manifest = candidate.export_mixed(self.repo.path, self.base,
+                                          self.tree, in_tests, self.dest())
+        self.assertEqual([(m["path"], m["executable"]) for m in manifest], [
+            ("a/code.py", False), ("a/tests/test_x.py", True),
+            ("a/tests/test_y.py", False), ("run.sh", True)])
+        self.assertEqual((self.read("a/code.py"),
+                          self.read("a/tests/test_x.py")),
+                         (b"old\n", b"new test\n"))
+
+    def test_without_a_parent_only_tests_are_written(self):
+        manifest = candidate.export_mixed(self.repo.path, None, self.tree,
+                                          in_tests, self.dest())
+        self.assertEqual([m["path"] for m in manifest],
+                         ["a/tests/test_x.py", "a/tests/test_y.py"])
+
+    def test_contents_reads_only_the_chosen_files(self):
+        self.assertEqual(candidate.contents(self.repo.path, self.tree,
+                                            in_tests),
+                         {"a/tests/test_x.py": b"new test\n",
+                          "a/tests/test_y.py": b"y\n"})
+        self.assertEqual(candidate.contents(self.repo.path, None, in_tests),
+                         {})
+
+
+class ClashTest(CandidateCase):
+    def test_a_file_where_tests_need_a_folder_is_refused(self):
+        # Review: a clash in the red tree is refused, not a crash.
+        self.repo.write("a/tests", b"x\n")
+        base = self.repo.commit()
+        self.repo.git("rm", "-q", "a/tests")
+        self.repo.write("a/tests/test_x.py", b"t\n")
+        tree = self.repo.commit()
+        with self.assertRaisesRegex(candidate.CandidateError,
+                                    "^cannot write the export: "
+                                    "a/tests/test_x.py$"):
+            candidate.export_mixed(self.repo.path, base, tree, in_tests,
+                                   self.dest())
+
+
 class WriteTest(unittest.TestCase):
     def test_existing_entries_and_links_are_never_overwritten(self):
         with tempfile.TemporaryDirectory() as folder:

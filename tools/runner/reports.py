@@ -14,6 +14,7 @@ from tools.runner import outcomes
 FORMAT = "sutradhar-unittest/1"
 TAIL = 64 * 1024  # bytes read from the end of the output
 _COUNTS = ("collected", "run", "failures", "errors", "skipped")
+_DETAIL = ("ids", "failed_ids", "errored_ids")
 
 
 def exit_judge(path, outcome, reason):
@@ -21,22 +22,46 @@ def exit_judge(path, outcome, reason):
     return outcome, reason
 
 
-def _summary(path):
-    # Output is capped at sandbox.FILE_LIMIT, so reading it whole is safe.
-    with open(path, "rb") as handle:
-        tail = handle.read()[-TAIL:]
-    lines = [line for line in tail.decode(errors="replace").splitlines()
+def _last(data):
+    lines = [line for line in data.decode(errors="replace").splitlines()
              if line.strip()]
     if not lines:
         return None
     try:
         found = json.loads(lines[-1])
-    except ValueError:
+    except (ValueError, RecursionError):
         return None
     valid = (isinstance(found, dict) and found.get("harness") == FORMAT
              and all(type(found.get(key)) is int for key in _COUNTS)
              and isinstance(found.get("uncollected"), list))
     return found if valid else None
+
+
+def _read(path):
+    # Output is capped at sandbox.FILE_LIMIT, so reading it whole is safe.
+    with open(path, "rb") as handle:
+        return handle.read()
+
+
+def _summary(path):
+    return _last(_read(path)[-TAIL:])
+
+
+def _texts(value):
+    return isinstance(value, list) and all(type(v) is str for v in value)
+
+
+def detail(path):
+    """The harness summary with each test's outcome and keys, or None.
+
+    The whole output is read: with many tests the summary line is long.
+    """
+    found = _last(_read(path))
+    keys = found.get("keys") if found else None
+    if not (isinstance(keys, dict) and all(map(_texts, keys.values()))
+            and all(_texts(found.get(key)) for key in _DETAIL)):
+        return None
+    return found
 
 
 def _verdict(found, nonce):

@@ -74,7 +74,7 @@ class MoreVerifyAndUsageTest(CliCase):
                 "--signers", self.path("signers"),
                 "--identity", "sutradhar-runner",
                 "--policy", self.path("policy.json"), "--tree", self.tree,
-                "--base", "none"]
+                "--message", "none", "--base", "none"]
         code, doc = self.main(*base, "--profile", "release")
         self.assertEqual((code, doc["blocked"]),
                          (2, ["unknown profile: release"]))

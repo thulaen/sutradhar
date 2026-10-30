@@ -8,7 +8,10 @@ that is already defined cannot be listed as not yet active. A
 documentation-only profile is accepted only when something changed and
 every changed path matches a documentation pattern and has no executable
 bit before or after the change. A candidate is inside the bootstrap scope
-only when every changed path matches a bootstrap pattern. Placeholders:
+only when every changed path matches a bootstrap pattern. The test_first
+section names test file patterns (the red tree takes these from the
+candidate) and the paths each not-applicable reason may change; a check
+reporting "test-first" runs the harness for that gate. Placeholders:
 @paths (every candidate path), @candidate (the read-only export), @scan
 (the folder holding only the export) and @tool:NAME[/path] (a pinned
 tool).
@@ -25,12 +28,13 @@ _ID = re.compile(r"[a-z0-9][a-z0-9-]{0,63}")
 _HASH = re.compile(r"[0-9a-f]{64}")
 _TOOL = re.compile(r"@tool:([a-z0-9][a-z0-9-]{0,63})((?:/[A-Za-z0-9._-]+)*)")
 _WORDS = ("@paths", "@candidate", "@scan")
-_REPORTS = ("exit", "unittest")
+_REPORTS = ("exit", "unittest", "test-first")
 _TOP = {"format": str, "version": str, "runner": str,
         "bootstrap_scope": list, "max_age": int, "limits": dict,
-        "documentation": list, "tools": dict, "checks": dict,
-        "profiles": dict}
+        "documentation": list, "test_first": dict, "tools": dict,
+        "checks": dict, "profiles": dict}
 _LIMITS = {"memory": str, "tasks": int, "seconds": int}
+_PATH_REASONS = ("configuration", "dependency", "secret")
 _CHECK = {"cwd": str, "report": str, "argv": list}
 _PROFILE = {"documentation_only": bool, "run": list,
             "not_applicable": dict, "not_yet_active": dict, "interim": list}
@@ -77,7 +81,8 @@ def _checks(checks, tools):
         if check["cwd"] != "@candidate" and folder != "":
             raise PolicyError(f"{where}: cwd must be @candidate or a tool")
         if check["report"] not in _REPORTS:
-            raise PolicyError(f"{where}: report must be exit or unittest")
+            raise PolicyError(f"{where}: report must be exit, unittest or "
+                              "test-first")
         if not check["argv"]:
             raise PolicyError(f"{where}: empty argv")
         for value in check["argv"]:
@@ -108,11 +113,25 @@ def _profile(profile, checks, where):
     if active:
         raise PolicyError(f"{where}: an active check cannot be not yet "
                           f"active: {', '.join(active)}")
+    kinds = {checks[name]["report"] for name in run}
+    # A refactor or retrofit is proved green by the unit-test check.
+    if ("test-first" in kinds and "unittest" not in kinds
+            and not profile["documentation_only"]):
+        raise PolicyError(f"{where}: test-first needs a unit-test check")
 
 
 def _texts(values, message):
     if not all(type(value) is str for value in values):
         raise PolicyError(message)
+
+
+def _test_first(section):
+    _shape(section, {"tests": list, "paths": dict}, "test_first")
+    _texts(section["tests"], "test_first.tests: patterns must be text")
+    _shape(section["paths"], dict.fromkeys(_PATH_REASONS, list),
+           "test_first.paths")
+    for reason, patterns in section["paths"].items():
+        _texts(patterns, f"test_first.paths.{reason}: patterns must be text")
 
 
 def _top(doc):
@@ -139,6 +158,7 @@ def load(data):
                for pin in doc["tools"].values()):
         raise PolicyError("tools: each pin must be a SHA-256 digest")
     _texts(doc["documentation"], "documentation: patterns must be text")
+    _test_first(doc["test_first"])
     _checks(doc["checks"], doc["tools"])
     if not doc["profiles"]:
         raise PolicyError("profiles: none defined")
@@ -148,7 +168,8 @@ def load(data):
     return doc
 
 
-def _matches(patterns, path):
+def matches(patterns, path):
+    """Whether path matches a pattern; one without "/" sees the name."""
     base = posixpath.basename(path)
     return any(fnmatch.fnmatchcase(path if "/" in pattern else base, pattern)
                for pattern in patterns)
@@ -169,7 +190,7 @@ def select(loaded, name, changed, executable=()):
                               "no change")
         marked = set(executable)
         for path in changed:
-            if path in marked or not _matches(loaded["documentation"], path):
+            if path in marked or not matches(loaded["documentation"], path):
                 raise PolicyError("documentation-only profile refused: "
                                   f"not a documentation change: {path}")
     return profile
@@ -178,7 +199,7 @@ def select(loaded, name, changed, executable=()):
 def in_scope(loaded, changed):
     """Whether every changed path is inside the bootstrap scope."""
     patterns = loaded["bootstrap_scope"]
-    return bool(changed) and all(_matches(patterns, p) for p in changed)
+    return bool(changed) and all(matches(patterns, p) for p in changed)
 
 
 def plan(loaded, name):

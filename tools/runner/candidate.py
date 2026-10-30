@@ -136,7 +136,29 @@ def _write(dest, path, body, executable):
 
 def export(repo, tree, dest):
     """Write the tree's files under dest, which must not exist yet."""
-    found = _entries(repo, tree)
+    return _export(repo, _entries(repo, tree), dest)
+
+
+def export_mixed(repo, base, tree, is_test, dest):
+    """Write the red tree: base's files with tree's test files instead.
+
+    is_test(path) picks test files; without a base only tests are written.
+    """
+    kept = [] if base is None else [
+        entry for entry in _entries(repo, base) if not is_test(entry[0])]
+    tests = [entry for entry in _entries(repo, tree) if is_test(entry[0])]
+    return _export(repo, sorted(kept + tests), dest)
+
+
+def contents(repo, tree, wanted):
+    """{path: bytes} for the tree's files that wanted(path) picks."""
+    if tree is None:
+        return {}
+    found = [entry for entry in _entries(repo, tree) if wanted(entry[0])]
+    return {path: body for path, _, body in _blobs(repo, found)}
+
+
+def _export(repo, found, dest):
     if len(found) > MAX_FILES:
         raise CandidateError(f"candidate has too many files: {len(found)}")
     total = sum(entry[3] for entry in found)
@@ -149,7 +171,10 @@ def export(repo, tree, dest):
     os.chmod(dest, 0o755)
     manifest = []
     for path, executable, body in _blobs(repo, found):
-        _write(dest, path, body, executable)
+        try:
+            _write(dest, path, body, executable)
+        except OSError:  # for example a file where a folder must go
+            raise CandidateError(f"cannot write the export: {path}") from None
         manifest.append({"path": path, "executable": executable,
                          "sha256": hashlib.sha256(body).hexdigest()})
     return sorted(manifest, key=_BY_PATH)

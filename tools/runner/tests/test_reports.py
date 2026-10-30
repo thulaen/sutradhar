@@ -80,6 +80,46 @@ class JudgeTest(unittest.TestCase):
         self.assertEqual(self.judge(text), (o.PASSED, ""))
 
 
+class DetailTest(unittest.TestCase):
+    """The test-first check reads each test's outcome (whole output)."""
+
+    def setUp(self):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        self.path = os.path.join(tmp.name, "out")
+        self.good = dict(REPORT, ids=["a.T.test_x"], failed_ids=[],
+                         errored_ids=["a.T.test_x"],
+                         keys={"a.T.test_x": ["a", "a.T"]})
+
+    def detail(self, text):
+        with open(self.path, "w", encoding="utf-8") as handle:
+            handle.write(text)
+        return reports.detail(self.path)
+
+    def test_detail_needs_the_three_id_lists(self):
+        self.assertEqual(self.detail("x\n" + json.dumps(self.good) + "\n"),
+                         self.good)
+        missing = dict(self.good)
+        del missing["ids"]
+        for doc in (missing, dict(self.good, ids="a"),
+                    dict(self.good, failed_ids=[1]),
+                    dict(self.good, errored_ids=None),
+                    dict(self.good, harness="other/1"),
+                    dict(self.good, keys=[]),
+                    {k: v for k, v in self.good.items() if k != "keys"},
+                    dict(self.good, keys={"a.T.test_x": "a"}),
+                    dict(self.good, keys={"a.T.test_x": [1]})):
+            self.assertIsNone(self.detail(json.dumps(doc) + "\n"), doc)
+        self.assertIsNone(self.detail(""))
+        self.assertIsNone(self.detail("[" * 100_000 + "\n"))
+
+    def test_a_long_summary_is_read_whole(self):
+        ids = [f"m.T.test_{n:06d}" for n in range(8000)]
+        doc = dict(self.good, ids=ids)
+        self.assertGreater(len(json.dumps(doc)), reports.TAIL)
+        self.assertEqual(self.detail(json.dumps(doc) + "\n")["ids"], ids)
+
+
 class ExitJudgeTest(unittest.TestCase):
     def test_exit_judge_keeps_the_exit_outcome(self):
         self.assertEqual(reports.exit_judge("p", o.FAILED, "exit 1"),
