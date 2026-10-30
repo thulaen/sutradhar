@@ -168,6 +168,9 @@ the next milestone.
 
 All checks run in authorised environments; nothing runs on Windows (R072).
 The full product scope (R001–R082) is unchanged, including at least 6,000
-qualified methods. Signal Controller and Buganizer are behavioural
-inspiration only; nothing is copied from their implementations, databases,
-private configuration, credentials, approvals or branding (R067).
+qualified methods. Later the same day the owner added R098–R108 in the
+[models update](models.md), which also amends R021, R050 and R092, and
+R109–R111 in the [platform update](platform.md). Signal Controller and
+Buganizer are behavioural inspiration only; nothing is copied from their
+implementations, databases, private configuration, credentials, approvals
+or branding (R067).

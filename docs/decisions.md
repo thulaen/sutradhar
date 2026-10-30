@@ -15,6 +15,9 @@ It does not permit uploading the private corpus. See the
 [release contract](dev/releasing.md) and
 [coordination draft](specifications/agent-release-coordination.md).
 
+Accepted architecture decisions are in the
+[architecture decision records](adr/README.md).
+
 New feature designs and protected policy changes need explicit owner approval.
 The [specification register](specifications/README.md) records the current
 drafts; the [acceptance ledger](requirements/acceptance-ledger.md) records

@@ -20,9 +20,17 @@ The requirements are kept in three linked parts:
 
 R083–R097 were added in the
 [requirements update](updates-2026-10-30/README.md). They replace parts of
-R055–R057 and R068–R071 and R080, as listed in the
+R055–R057, R068–R071, R076 and R080, as listed in the
 [supersession table](updates-2026-10-30/supersession.md). The rows above
 are kept as written; where they conflict, the update applies.
+
+R098–R108, on semantic models and reading every post in full, were added
+in the [models update](updates-2026-10-30/models.md), which raises the
+service memory cap in R021 and R092 from 2 GB to 6 GB, raises the lab
+ceiling from 8 GB to 9 GB, and makes uninstall
+delete embeddings, the index and model files (R050 as amended). R109–R111
+(community models, one progress system, the visual layer) are in the
+[platform update](updates-2026-10-30/platform.md).
 
 ## Qualification still required
 

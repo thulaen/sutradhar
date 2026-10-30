@@ -98,14 +98,34 @@ These parts are replaced, not dropped:
   development runs never file issues.
 - "Libraries already in the product": no product code exists yet. The
   statement is a requirement to verify, not a fact (R092).
-- 16 GB Dell memory: the current host was measured; the approved 8 GB lab
-  budget governs QA stages (R092).
+- 16 GB Dell memory: the current host was measured; the approved lab
+  budget governs QA stages (R092), now 9 GB under the models update.
+
+## Models and memory
+
+- R021 (2 GB operating-system cap for the Python service on a forum
+  host) and R092 ("keeps its 2 GB limit"): the figure is replaced by 6 GB
+  in the [models update](models.md). The lab's 8 GB combined ceiling
+  becomes 9 GB. The rule that extension services declare their allowances
+  remains.
+- R050 (uninstall offers export and a retain-or-delete choice for owned
+  data): embeddings, the search index and downloaded model files are now
+  always deleted on uninstall (R108); the choice remains for the add-on's
+  other owned data, and published links remain.
+- R018 (learn from decisions) is extended by R105 (lab retraining).
+- R013 (guest-visible content only) applies unchanged to R101 and R102.
+- R027 (named replacements need the owner's approval) applies unchanged
+  to R100 challengers.
+- R028 and the Q163 data-only formats rule apply unchanged to R106: no
+  pickle files.
 
 ## Not changed
 
-R001–R006, R008–R054, R058–R067, R072–R075, R077–R079, R081–R082 and
-every requirement not named above remain as recorded. R007 is strengthened
-by R087; R055–R057, R068–R071, R076 and R080 are changed only as listed
-above. SPEC-001, SPEC-002 and SPEC-003 keep their approval except for
-the sections listed in the
+R001–R006, R008–R012, R014–R017, R019–R020, R022–R026, R029–R049,
+R051–R054, R058–R067, R072–R075, R077–R079, R081–R082 and every
+requirement not named above remain as recorded. R007 is strengthened
+by R087; R013, R018, R021, R027, R028, R050, R055–R057, R068–R071, R076,
+R080 and R092 are changed or restated only as listed above. SPEC-001,
+SPEC-002 and SPEC-003 keep their approval except for the sections listed
+in the
 [approval delta](../../specifications/approval-delta-2026-10-30.md).
