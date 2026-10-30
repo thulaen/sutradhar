@@ -27,10 +27,12 @@ scope. Approval of one feature does not approve every later implementation.
     protected decisions, ownership ledger and release sequence.
   - Status: APPROVED FOR IMPLEMENTATION
 
-## Proposed on 30 October 2026
+## Approved on 30 October 2026
 
-Awaiting the owner's approval as one grouped decision; see the
+Approved by the owner as one grouped decision; see the
+[approval record](approvals-2026-10-30.md), and the
 [approval delta](approval-delta-2026-10-30.md) for changed sections.
+SPEC-004 is replaced in part by ADR-0005.
 
 - SPEC-004: [main-only publication](main-only-publication.md) and its
   [GitHub settings](main-only-github-settings.md).
@@ -43,6 +45,25 @@ These approvals permit only the respective bounded implementations and their
 tests. They do not approve production linking, analytics collection, paid cloud
 provisioning, sending real content to AI providers, or a product release. Those
 actions have their own requirements and verified preconditions.
+
+## Linking and platform, approved 30 October 2026
+
+Drafted at the owner's request (R118) and independently reviewed;
+approved by the owner on 30 October 2026 with the answers recorded in
+the specification decisions
+([part 1](../requirements/sources/specification-decisions-2026-10-30.md))
+and requirements R120–R129. Index pages:
+[linking](linking/README.md) and [platform](platform/README.md).
+Approval covers each specification's bounded implementation and tests.
+Paid embeddings (R126) need their own specification before any content
+is sent to an outside provider.
+
+- SPEC-008: [reading and indexing](linking/reading.md).
+- SPEC-009: [matching and anchors](linking/matching.md).
+- SPEC-010: [models: files, community models, retraining and
+  removal](linking/models.md).
+- SPEC-011: [one progress system](platform/progress.md).
+- SPEC-012: [visual layer on real data](platform/visuals.md).
 
 ## Full feature register
 

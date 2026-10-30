@@ -10,12 +10,12 @@ history.
 - All work happens in a Claude session on Dell, in the shared Dell
   working copy (R119). The Windows checkout is no longer edited; it is
   left as it is. No branch or worktree was created.
-- Local `main`: the R119 commit on `c02f142` (test-first gate),
+- Local `main`: the specifications commit (SPEC-008 to SPEC-012
+  approved, R120–R129, ADR-0006 and ADR-0007) on `cdfc8a9` (R119), on
+  `c02f142` (test-first gate),
   `30877e7` (publication decisions R112–R118 and ADR-0005), `cd245a6`
   (check runner), `d960dd7`, `f74e466`, `8114c3c`, `ecbd232` and
   `691559a`. Each passed its checks on Dell before it was committed.
-- Drafted, reviewed and revised but not committed: the linking and
-  platform specifications SPEC-008 to SPEC-012.
 - GitHub `main` = `093b001`; no other branch, no pull request.
 - Evidence and exact host figures are in locked Dell directories named
   in the private operator notes on Dell.
@@ -32,11 +32,22 @@ history.
 - AGENTS.md's memory figures corrected to the models update (6 GB for
   the service, 9 GB for the lab).
 
+- SPEC-008 and SPEC-009's old SPEC-010 decision numbers corrected and
+  the uninstall classes of SPEC-008 to SPEC-012 aligned with SPEC-010's
+  table; independent review.
+- The owner's decisions on SPEC-008 to SPEC-012 put in 17 rounds of
+  questions and recorded word for word in the
+  [specification decisions](../requirements/sources/specification-decisions-2026-10-30.md)
+  (four parts); the answers that change requirements recorded as
+  R120–R129, with ADR-0006 (metrics and tracing on by default), ADR-0007
+  (service levels), the 36
+  [observability features](observability-features.md) and the 56
+  [telemetry practices](telemetry-practices.md). The five specifications
+  were revised to the answers and marked approved.
+
 ## Next steps
 
-1. Finish SPEC-008 to SPEC-012 (decision numbers, uninstall table,
-   index), have them reviewed independently, put their decisions to the
-   owner and commit the approved specifications.
+1. Draft the paid-embeddings specification (R126) for the owner.
 2. Build the gated Dell repository of
    [ADR-0005](../adr/0005-local-publication.md): publisher account, bare
    repository, pre-receive gate, post-receive push, `just`, clone hooks

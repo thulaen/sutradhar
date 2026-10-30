@@ -173,7 +173,10 @@ qualified methods. Later the same day the owner added R098–R108 in the
 R109–R111 in the [platform update](platform.md), then R112–R119 in the
 [publication update](publication.md), which replaces the GitHub App
 publisher with a gated repository on Dell and amends R070, R083, R084
-and R086; R119 moves all work onto Dell and replaces R117. Signal Controller and
-Buganizer are behavioural inspiration only; nothing is copied from their
+and R086; R119 moves all work onto Dell and replaces R117. R120–R129
+in the [decisions update](specifications.md) record the owner's
+answers on SPEC-008 to SPEC-012 and amend R015, R021, R092, R098, R106
+and R107. Signal Controller and Buganizer are
+behavioural inspiration only; nothing is copied from their
 implementations, databases, private configuration, credentials, approvals
 or branding (R067).

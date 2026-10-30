@@ -37,7 +37,14 @@ approval of gate changes by a question, editing on Windows with work on
 Dell, linking specifications now) are in the
 [publication update](updates-2026-10-30/publication.md); they amend
 R070, R083, R084 and R086. Its third round, R119, moves all work into a
-Claude session on Dell and replaces R117's editing on Windows.
+Claude session on Dell and replaces R117's editing on Windows. The
+owner's answers on SPEC-008 to SPEC-012 added R120–R129 (model file
+formats, memory, model updates, real-time suggestions, the 30-second
+target and service levels, community models, paid embeddings,
+monitoring on by default, telemetry practices and docker compose) in
+the [decisions update](updates-2026-10-30/specifications.md), with
+ADR-0006 and ADR-0007; they amend R015, R021, R092, R098, R106, R107
+and ADR-0002.
 
 ## Qualification still required
 

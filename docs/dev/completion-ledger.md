@@ -48,6 +48,13 @@ The full product is not complete. Zero methods are qualified.
   straight on to GitHub; CI checks again; failures to AutoIssues;
   failures reported to the owner first), replacing R117. Committed on
   Dell after the documentation profile and the parent's runner.
+- SPEC-008 to SPEC-012 (reading, matching, models, progress, the visual
+  layer), approved by the owner on 30 October 2026 through 17 rounds of
+  questions, with the answers recorded word for word, requirements
+  R120–R129, ADR-0006 (monitoring on by default) and ADR-0007 (service
+  levels), the 36 observability features and the 56 telemetry practices.
+  Committed on Dell after the documentation profile and the parent's
+  runner.
 - Owner approval, 30 October 2026, of the trust boundaries, SPEC-004 to
   SPEC-007, the mapped rulebook, the SPEC-002 and SPEC-003 revisions and
   live-data storage, with recorded choices (approval record).
@@ -63,11 +70,7 @@ The full product is not complete. Zero methods are qualified.
 
 ## Awaiting design approval
 
-- The linking feature specification implementing R098–R108 (models,
-  reading every post in full, matching, anchors, retraining, model files)
-  and the specifications for R109–R111 (community models, progress, the
-  visual layer), with ADR-0001 to ADR-0004: drafted and independently
-  reviewed (SPEC-008 to SPEC-012), awaiting the owner's decisions.
+- The paid-embeddings specification (R126), to be drafted next.
 - Features F001–F023 specifications (not yet drafted, except research).
 - The `just` command interface details beyond SPEC-001.
 - The four clarifications listed in the approval record, and the

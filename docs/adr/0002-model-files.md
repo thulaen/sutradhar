@@ -1,6 +1,10 @@
 # ADR-0002: One lock file governs every model
 
 Status: accepted by the owner, 30 October 2026. Requirements: R098, R106.
+Amended by R120 in the
+[decisions update](../requirements/updates-2026-10-30/specifications.md):
+bge-m3's official ONNX export is also loaded, and `en_core_web_lg`
+replaces `en_core_web_trf`.
 The owner's exact words are in the
 [model decisions source](../requirements/sources/model-decisions-2026-10-30.md).
 Community models are added by

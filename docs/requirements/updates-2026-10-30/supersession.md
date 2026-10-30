@@ -92,6 +92,34 @@ The owner's answers recorded in the
   Windows checkout, the matching AGENTS.md, CLAUDE.md and governance
   sentences and ADR-0005's account of R117: replaced by R119.
 
+### Answers on SPEC-008 to SPEC-012
+
+The owner's answers recorded in the
+[decisions update](specifications.md) change these rules:
+
+- R098: bge-m3 runs through its official ONNX export on ONNX Runtime,
+  and `en_core_web_lg` replaces `en_core_web_trf` (R120); the
+  destination is first read through its title and summary, and the
+  first pass no longer decides what bge-m3 reads first (R123).
+- R106: bge-m3's official ONNX export joins the listed formats (R120).
+- R021 and R092 as amended: the service cap becomes 8 GB if Dell
+  measurements confirm the estimate; the bundled monitoring services
+  have their own declared allowance (R121).
+- R092's "product instrumentation stays off by default": replaced for
+  metrics and tracing by R127 and
+  [ADR-0006](../../adr/0006-observability.md).
+- R015: waived only for an administrator's confirmed community model
+  (R125); promised on 4 cores and a SATA disk, with a 99% service level
+  (R124, [ADR-0007](../../adr/0007-service-levels.md)).
+- SPEC-008's reading of "the embedder has read the destination" as all
+  of it, its neighbour-first backlog order, and the "best first" order
+  of the owner's Q-MA07 answer as the queue order: replaced by R123's
+  views-and-recency order (Q-MA07 still limits which posts are scored).
+- ADR-0002's list of loaded formats: amended by R120.
+- R107's "may take days" for the first run: the owner accepted one to
+  several weeks per million posts (SPEC-008 Q-RD01).
+- SPEC-012's P-VL09 (tracing off by default): replaced by R127.
+
 ## Reviews
 
 - R057 (required GitHub AI review): the AI review remains mandatory. Without
@@ -155,13 +183,13 @@ These parts are replaced, not dropped:
 
 ## Not changed
 
-R001–R006, R008–R012, R014–R017, R019–R020, R022–R026, R029–R049,
+R001–R006, R008–R012, R014, R016–R017, R019–R020, R022–R026, R029–R049,
 R051–R054, R058–R067, R073–R075, R077–R079, R081–R082 and every
 requirement not named above remain as recorded. R007 is strengthened
 by R087; R013, R018, R021, R027, R028, R050, R055–R057, R068–R071, R076,
 R080 and R092 are changed or restated only as listed above, as are R083,
-R084 and R086 from this update and R072 and R117 from the publication
-update.
+R084 and R086 from this update, R072 and R117 from the publication
+update, and R015, R098, R106 and R107 by R120–R129.
 SPEC-001, SPEC-002 and SPEC-003 keep their approval except for the
 sections listed in the
 [approval delta](../../specifications/approval-delta-2026-10-30.md);

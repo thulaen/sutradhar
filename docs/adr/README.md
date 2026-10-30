@@ -13,3 +13,7 @@ context and its consequences, and links to the owner's exact words.
   two seconds (R110).
 - [ADR-0005](0005-local-publication.md): publication through a gated
   repository on Dell (R112–R119).
+- [ADR-0006](0006-observability.md): metrics and tracing on by default
+  (R127, R128).
+- [ADR-0007](0007-service-levels.md): service levels and the telemetry
+  overhead budget (R124, R128).
