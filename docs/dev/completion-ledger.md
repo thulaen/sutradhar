@@ -17,8 +17,21 @@ The full product is not complete. Zero methods are qualified.
   tests, 100% line and branch coverage, 769 of 770 mutants killed (one
   reviewed equivalent), whole repository passing, two independent review
   passes, performance result B; see the
-  [milestone record](limits-checker.md). Local commit after this ledger
-  update; unsigned until the runner exists.
+  [milestone record](limits-checker.md). Local commit `f74e466`, tree
+  `b621a8e5`; unsigned until the runner exists.
+- 30 October requirements record R083–R097, supersession table, the
+  81-item AutoIssues source register, the approved designs, the approval
+  record and the agent rules for trunk-based development: local commit
+  `8114c3c`, tree `9578ac1f`, after the Dell documentation profile.
+- Model, full-reading and platform decisions R098–R111 with ADR-0001 to
+  ADR-0004 and the visual layer register, recorded from the owner's
+  answers with three independent fidelity reviews: local commit
+  `d960dd7`, after the Dell documentation profile.
+- Check runner, sandbox and signing (activation step 2, interim):
+  test-first, three independent review passes, real-sandbox
+  qualification on Dell; see the [milestone record](runner.md). Signed
+  with a qualification key and started as root until the owner creates the
+  runner account.
 - Owner approval, 30 October 2026, of the trust boundaries, SPEC-004 to
   SPEC-007, the mapped rulebook, the SPEC-002 and SPEC-003 revisions and
   live-data storage, with recorded choices (approval record).
@@ -27,10 +40,6 @@ The full product is not complete. Zero methods are qualified.
 
 ## Implemented, awaiting checks
 
-- 30 October requirements record R083–R097, supersession table, the
-  81-item AutoIssues source register, the approved designs, the approval
-  record and the agent rules for trunk-based development: prepared as
-  the second local commit after the first.
 - Earlier publisher modules (policy, candidate reader, transport): 130
   focused test methods and full statement and branch coverage for three
   modules. Their branch-and-pull-request policy is retired; the reader and
@@ -39,6 +48,10 @@ The full product is not complete. Zero methods are qualified.
 
 ## Awaiting design approval
 
+- The linking feature specification implementing R098–R108 (models,
+  reading every post in full, matching, anchors, retraining, model files)
+  and the specifications for R109–R111 (community models, progress, the
+  visual layer), with ADR-0001 to ADR-0004.
 - Features F001–F023 specifications (not yet drafted, except research).
 - The `just` command interface details beyond SPEC-001.
 - The four clarifications listed in the approval record, and the
@@ -58,8 +71,7 @@ The full product is not complete. Zero methods are qualified.
 
 ## Not started
 
-- Runner, sandbox and signing tools; the test-first gate; the performance
-  harness; the publisher rebuild.
+- The test-first gate; the performance harness; the publisher rebuild.
 - AutoIssues milestones 1–8 and the QA stack.
 - Method research completion toward 6,000 qualified methods, the PHP
   add-on, the Python service and every product feature.

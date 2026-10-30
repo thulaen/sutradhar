@@ -84,6 +84,11 @@ perform them or tell the coordinator explicitly to do each one.
    approval-verifier accounts.
 2. Create `live/` and `snapshots/` inside the Sutradhar project directory
    with the owners described in the live-data storage design.
+3. For the check runner (added 30 October 2026): allow only the runner
+   account to start sandboxed checks (a narrow rule for `systemd-run`
+   with the runner's fixed properties), then have that account create
+   its own signing key. Until then the runner is started as root and
+   signs with a qualification key, which is recorded as interim.
 
 ## 7. AI reviewer
 

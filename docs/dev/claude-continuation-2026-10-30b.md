@@ -1,6 +1,6 @@
 # Claude continuation record, 30 October 2026 (second session)
 
-Owner: the Claude Git coordinator. Status: designs approved; three local
+Owner: the Claude Git coordinator. Status: designs approved; five local
 milestones committed; nothing published to GitHub yet.
 
 ## Exact state
@@ -8,7 +8,8 @@ milestones committed; nothing published to GitHub yet.
 - Working folder: the renamed Windows checkout `Sutradhar`. No second
   checkout, branch or worktree was created. `docs/project-foundation` is
   kept at `691559a` as history.
-- Local `main`: `f74e466` (source-limit checker, tree `b621a8e5`) on
+- Local `main`: the check runner commit on `d960dd7` (model and platform
+  decisions), on `f74e466` (source-limit checker, tree `b621a8e5`) on
   `8114c3c` (requirements update, approval record and approved designs,
   tree `9578ac1f`), `ecbd232` (source-limit compliance, tree `857c0391`)
   and `691559a` (foundation, tree `3ce87786`). Each passed its checks on
@@ -28,6 +29,11 @@ milestones committed; nothing published to GitHub yet.
 - Source-limit compliance applied and committed after the Dell profile.
 - Source-limit checker, activation step 1, built test-first and
   committed; see the [milestone record](limits-checker.md).
+- The owner's model and full-reading decisions (R098–R111, ADR-0001 to
+  ADR-0004) recorded and committed.
+- Check runner, sandbox and signing, activation step 2, built test-first,
+  reviewed three times and qualified in the real sandbox; see the
+  [milestone record](runner.md).
 - Primary-source research on GitHub rules, NASA/JPL and Meta practice and
   tool versions, each independently re-checked.
 
@@ -43,11 +49,11 @@ must apply the SPEC-004 GitHub changes first.
 1. Owner actions listed in the decision summary (GitHub rulesets, Apps,
    pull requests off, read-only editing credential, test repository, Dell
    accounts and directories, Claude Code reviewer sign-in).
-2. Build, test-first, the rest of the activation sequence: runner with
-   sandbox and signing, test-first gate, performance harness, then the
-   publisher; qualify on the test repository.
-3. Publish the four local commits in one fast-forward; verify GitHub;
-   update the ledger.
+2. Build, test-first, the rest of the activation sequence: the
+   test-first gate, the performance harness, then the publisher; qualify
+   on the test repository.
+3. Publish the local commits in one fast-forward; verify GitHub; update
+   the ledger.
 4. AutoIssues milestones 1 to 5, which activate the quota gate.
 
 ## Independent work allowed meanwhile
