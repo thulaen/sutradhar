@@ -138,7 +138,7 @@ fn heavy_checks_wait_in_the_queue_when_one_is_set() {
     assert_eq!(tiers::cargo_command(Some("")), ["cargo"]);
     assert_eq!(
         tiers::cargo_command(Some("/q/pankti")),
-        ["/q/pankti", "run", "--", "cargo"]
+        ["/q/pankti", "run", "--sealed", "--", "cargo"]
     );
     let dir = scratch("queued");
     fs::write(dir.join("Cargo.toml"), "[workspace]\n").unwrap();
@@ -255,4 +255,25 @@ fn file_checks_refuse_hidden_characters_and_text_that_is_not_utf8() {
         .map(|f| f.path.as_str())
         .collect();
     assert_eq!(text, ["a.rs", "b.rs"]);
+}
+
+#[test]
+fn no_rust_step_runs_on_a_tree_with_cargo_settings() {
+    let dir = scratch("cargo-settings");
+    fs::write(dir.join("Cargo.toml"), "[workspace]\n").unwrap();
+    fs::create_dir_all(dir.join("crates/a/.cargo")).unwrap();
+    fs::write(dir.join("crates/a/.cargo/config.toml"), "").unwrap();
+    let found = tiers::rust_checks(&Repo::at(&dir));
+    let names: Vec<&str> = found.iter().map(|f| f.check).collect();
+    assert_eq!(names, ["rust.cargo-settings"]);
+    fs::remove_dir_all(dir.join("crates/a/.cargo")).unwrap();
+    fs::create_dir_all(dir.join("target/.cargo")).unwrap();
+    assert!(!aegis::file_kinds::has_cargo_settings(&dir));
+}
+
+#[test]
+fn the_top_folder_is_always_a_full_path() {
+    let repo = Repo::at(".");
+    assert!(repo.root().is_absolute());
+    assert!(Repo::for_hook(".").root().is_absolute());
 }

@@ -35,6 +35,28 @@ pub enum Kind {
     Lock,
 }
 
+/// Whether a folder tree holds cargo settings (a `.cargo` folder), which
+/// could make cargo start a program from the tree. When it does, no
+/// cargo step may run on it at all, not even a fetch. The build and git
+/// folders are skipped.
+#[must_use]
+pub fn has_cargo_settings(folder: &std::path::Path) -> bool {
+    let Ok(entries) = std::fs::read_dir(folder) else {
+        return false;
+    };
+    entries.flatten().any(|entry| {
+        let name = entry.file_name();
+        let is_dir = entry.file_type().is_ok_and(|t| t.is_dir());
+        if name == ".cargo" {
+            return true;
+        }
+        is_dir
+            && name != "target"
+            && name != ".git"
+            && has_cargo_settings(&entry.path())
+    })
+}
+
 /// Works out the kind of a path, or `None` when it is not allowed at
 /// all. `typescript_on` says whether the TypeScript compiler is pinned.
 #[must_use]

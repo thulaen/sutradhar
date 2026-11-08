@@ -174,18 +174,26 @@ pub fn check(repo: &Repo, commits: &[Commit], cargo: &[&str]) -> Vec<Finding> {
             continue;
         };
         let name = (krate.as_str(), path.as_str());
-        let dest = match fresh_folder() {
+        let work = crate::history::work_folder(repo.root());
+        let dest = match fresh_folder(&work) {
             Ok(dest) => dest,
             Err(e) => {
                 out.push(Finding::new(CHECK, "", 0, e));
                 continue;
             }
         };
-        let red = parent_with_tests(repo, commit, &dest).map(|has| {
-            if has {
-                run(&dest, cargo, &red_target, name)
-            } else {
-                Outcome::Absent
+        // The old tree is fetched outside the seal first, so a missing
+        // library never passes for a red test.
+        let red = parent_with_tests(repo, commit, &dest).and_then(|has| {
+            if !has {
+                return Ok(Outcome::Absent);
+            }
+            if crate::file_kinds::has_cargo_settings(&dest) {
+                return Err("the old tree holds cargo settings".to_owned());
+            }
+            match crate::tiers::fetch(&dest) {
+                Some(failed) => Err(failed.message),
+                None => Ok(run(&dest, cargo, &red_target, name)),
             }
         });
         let _ignored = std::fs::remove_dir_all(&dest);

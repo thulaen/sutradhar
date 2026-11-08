@@ -1,7 +1,9 @@
 //! The `pankti` command:
-//! `pankti run [--both] -- COMMAND...` waits in line for a place, then
-//! runs the command capped in the heavy-job slice and passes on its exit
-//! code. `--both` takes both places, for a benchmark.
+//! `pankti run [--both] [--sealed] -- COMMAND...` waits in line for a
+//! place, then runs the command capped in the heavy-job slice and passes
+//! on its exit code. `--both` takes both places, for a benchmark.
+//! `--sealed` runs code under check with no network, no way to gain
+//! rights and a read-only system (see the specification).
 //!
 //! The places live in `PANKTI_DIR`, or else in the folder above the one
 //! that holds the program, as the install sets it up: `QUEUE_DIR/bin`.
@@ -12,23 +14,46 @@ use std::os::unix::process::ExitStatusExt;
 use std::process::{Command, ExitCode};
 use std::time::Duration;
 
-use pankti::{KEPT, Size, launch, take};
+use pankti::{
+    KEPT, Seal, Size, check_writable, launch, sealed_launch, take, writable,
+};
+
+const USAGE: &str = "usage: pankti run [--both] [--sealed] -- COMMAND...\n";
+
+/// What was asked for: how many places, whether sealed, and the command.
+struct Asked {
+    size: Size,
+    sealed: bool,
+    cmd: Vec<String>,
+}
+
+fn parse(args: &[String]) -> Option<Asked> {
+    let (first, rest) = args.split_first()?;
+    if first != "run" {
+        return None;
+    }
+    let split = rest.iter().position(|a| a == "--")?;
+    let (flags, cmd) = rest.split_at(split);
+    let cmd = cmd.get(1..).unwrap_or_default();
+    let known = flags.iter().all(|f| f == "--both" || f == "--sealed");
+    (known && !cmd.is_empty()).then(|| Asked {
+        size: if flags.iter().any(|f| f == "--both") {
+            Size::Both
+        } else {
+            Size::One
+        },
+        sealed: flags.iter().any(|f| f == "--sealed"),
+        cmd: cmd.to_vec(),
+    })
+}
 
 fn main() -> ExitCode {
     let args: Vec<String> = std::env::args().skip(1).collect();
-    let refs: Vec<&str> = args.iter().map(String::as_str).collect();
-    let (size, cmd) = match refs.as_slice() {
-        ["run", "--both", "--", cmd @ ..] if !cmd.is_empty() => {
-            (Size::Both, cmd)
-        }
-        ["run", "--", cmd @ ..] if !cmd.is_empty() => (Size::One, cmd),
-        _ => {
-            say("usage: pankti run [--both] -- COMMAND...\n");
-            return ExitCode::from(2);
-        }
+    let Some(asked) = parse(&args) else {
+        say(USAGE);
+        return ExitCode::from(2);
     };
-    let cmd: Vec<String> = cmd.iter().map(|s| (*s).to_owned()).collect();
-    match run(size, &cmd) {
+    match run(&asked) {
         Ok(code) => ExitCode::from(code),
         Err(problem) => {
             say(&format!("pankti: {problem}\n"));
@@ -37,11 +62,7 @@ fn main() -> ExitCode {
     }
 }
 
-fn run(size: Size, cmd: &[String]) -> Result<u8, String> {
-    let dir = match std::env::var("PANKTI_DIR") {
-        Ok(dir) => dir,
-        Err(_) => home()?,
-    };
+fn line(asked: &Asked) -> Result<Vec<String>, String> {
     let me = std::fs::metadata("/proc/self")
         .map_err(|e| format!("cannot find who is running: {e}"))?;
     let kept: Vec<(String, String)> = KEPT
@@ -50,8 +71,30 @@ fn run(size: Size, cmd: &[String]) -> Result<u8, String> {
             Some(((*name).to_owned(), std::env::var(name).ok()?))
         })
         .collect();
-    let held = take(&dir, size, Duration::from_secs(1))?;
-    let line = launch(size, me.uid(), me.gid(), &kept, cmd);
+    if !asked.sealed {
+        return Ok(launch(asked.size, me.uid(), me.gid(), &kept, &asked.cmd));
+    }
+    let cwd = std::env::current_dir()
+        .map_err(|e| format!("cannot find the working folder: {e}"))?
+        .display()
+        .to_string();
+    let seal = Seal {
+        writable: writable(&kept, &asked.cmd),
+        cwd,
+    };
+    check_writable(&seal.writable)?;
+    check_writable(std::slice::from_ref(&seal.cwd))?;
+    let ids = (me.uid(), me.gid());
+    Ok(sealed_launch(asked.size, ids, &seal, &kept, &asked.cmd))
+}
+
+fn run(asked: &Asked) -> Result<u8, String> {
+    let dir = match std::env::var("PANKTI_DIR") {
+        Ok(dir) => dir,
+        Err(_) => home()?,
+    };
+    let line = line(asked)?;
+    let held = take(&dir, asked.size, Duration::from_secs(1))?;
     let (program, rest) = line.split_first().ok_or("nothing to run")?;
     let status = Command::new(program)
         .args(rest)

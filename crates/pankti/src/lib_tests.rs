@@ -120,3 +120,59 @@ fn jobs_run_capped_in_the_heavy_slice() {
     assert!(both.iter().any(|a| a == "MemoryMax=8G"));
     assert!(both.iter().any(|a| a == "CPUQuota=1600%"));
 }
+
+#[test]
+fn a_sealed_job_has_no_network_no_new_rights_and_little_to_write() {
+    let cmd = ["cargo", "test", "--target-dir", "/w/target"].map(str::to_owned);
+    let kept = [
+        ("CARGO_HOME".to_owned(), "/c".to_owned()),
+        ("PATH".to_owned(), "/bin".to_owned()),
+    ];
+    let seal = super::Seal {
+        cwd: "/w".to_owned(),
+        writable: super::writable(&kept, &cmd),
+    };
+    assert_eq!(seal.writable, ["/w/target"]);
+    let line = super::sealed_launch(Size::One, (7, 8), &seal, &kept, &cmd);
+    for part in [
+        "--wait",
+        "--pipe",
+        "User=7",
+        "Group=8",
+        "NoNewPrivileges=yes",
+        "PrivateNetwork=yes",
+        "ProtectSystem=strict",
+        "ProtectHome=read-only",
+        "ReadWritePaths=-/w/target",
+        "PrivateTmp=yes",
+        "PrivateIPC=yes",
+        "InaccessiblePaths=-/run/user -/run/dbus",
+        "RuntimeMaxSec=3600",
+        "TasksMax=4096",
+        "--working-directory=/w",
+        "CARGO_HOME=/c",
+        "CARGO_NET_OFFLINE=true",
+        "MemoryMax=4G",
+    ] {
+        assert!(line.iter().any(|a| a == part), "{part}");
+    }
+    assert!(!line.iter().any(|a| a == "--scope" || a == "setpriv"));
+    assert!(line.ends_with(&cmd));
+}
+
+#[test]
+fn the_target_folder_is_found_in_every_form() {
+    let kept = [("CARGO_TARGET_DIR".to_owned(), "/t".to_owned())];
+    let cmd = ["cargo", "build", "--target-dir=/u"].map(str::to_owned);
+    assert_eq!(super::writable(&kept, &cmd), ["/t", "/u"]);
+}
+
+#[test]
+fn a_writable_path_with_a_space_is_refused() {
+    let kept = [("CARGO_TARGET_DIR".to_owned(), "/a b".to_owned())];
+    assert!(super::check_writable(&super::writable(&kept, &[])).is_err());
+    assert!(super::check_writable(&["/w/target".to_owned()]).is_ok());
+    for bad in ["/", "target", "//", ""] {
+        assert!(super::check_writable(&[bad.to_owned()]).is_err(), "{bad}");
+    }
+}

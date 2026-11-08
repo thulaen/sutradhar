@@ -54,6 +54,11 @@ fn a_named_test_must_fail_before_and_pass_after() {
         &[
             ("Cargo.toml", "[workspace]\nmembers = [\"crates/*\"]\n"),
             (
+                "Cargo.lock",
+                "version = 4\n\n[[package]]\nname = \"demo\"\n\
+                 version = \"0.1.0\"\n",
+            ),
+            (
                 "crates/demo/Cargo.toml",
                 "[package]\nname = \"demo\"\nversion = \"0.1.0\"\n\
                  edition = \"2024\"\n",

@@ -27,10 +27,43 @@ Phase 1 item 7.
   keeps its working folder. It runs as the same user, with all the
   user's groups.
 
+## Sealed jobs
+
+`pankti run --sealed -- COMMAND` is for code under check, which is not
+yet trusted. The job runs as a short-lived systemd service, not a
+scope, with:
+
+- no network (`PrivateNetwork`), and cargo told to stay offline;
+- no way to gain rights (`NoNewPrivileges`), so no sudo;
+- its own `/tmp` and shared memory, and no sight of `/run/user` or the
+  system message bus, so it cannot reach the user's own services;
+- the whole system read-only (`ProtectSystem=strict`, home folders
+  read-only), cargo's home included, but for the build folders named in
+  its settings or its `--target-dir`; a build folder may not exist yet;
+- the project folder read-only; the checks' own working copies sit in
+  the build folder, so a job can write those;
+- no devices, kernel settings, kernel modules or control groups;
+- at most an hour and 4,096 processes.
+
+It keeps the same caps, user and groups as any job. A writable folder
+must be a full path below the top folder, with no white space, which
+systemd's list could split. Since the job is offline and cargo's home
+read-only, the checks first run `cargo fetch --locked` outside the
+seal: it downloads only the exact libraries in the lock file and runs
+no code from the project. Cargo settings in a tree (a `.cargo` folder)
+could make even a fetch start a program, so when a tree holds them, no
+cargo step runs on it at all, in the pushed tree or an old-code tree.
+The checks keep their working copies in the build folder
+(`target/aegis-work`), where a sealed job can read them. The commit and
+push checks and the door run their Rust steps sealed. The runner's loop
+does not, since it must reach Forgejo and the container service; its
+jobs are sealed by their containers instead (spec 0060).
+
 ## How to use it
 
 ```sh
 pankti run -- cargo test --workspace
+pankti run --sealed -- cargo test --workspace
 pankti run --both -- cargo bench
 ```
 
@@ -91,3 +124,8 @@ on Dell.
   when a probe fails.
 - The job command carries the slice, the memory cap, no swap, the CPU
   cap and the user's own user and group.
+- A sealed job cannot reach the network, use sudo, see `/run/user`,
+  start a user service, or write its working folder or cargo's home, and
+  the full test suite passes in one (proved live on Dell, and by the
+  `a_sealed_job_has_no_network_no_new_rights_and_little_to_write` test
+  of its command line).

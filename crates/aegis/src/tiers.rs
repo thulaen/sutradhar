@@ -75,16 +75,39 @@ pub fn rust_checks(repo: &Repo) -> Vec<Finding> {
     let queue = std::env::var("AEGIS_QUEUE").ok();
     let command = cargo_command(queue.as_deref());
     let refs: Vec<&str> = command.iter().map(String::as_str).collect();
-    rust_checks_using(repo, &refs)
+    if file_kinds::has_cargo_settings(repo.content()) {
+        return vec![Finding::new(
+            "rust.cargo-settings",
+            ".cargo",
+            0,
+            "cargo settings are in the tree, so no Rust step runs on it",
+        )];
+    }
+    let mut out = Vec::new();
+    if queue.is_some_and(|q| !q.is_empty()) && repo.read("Cargo.toml").is_some()
+    {
+        // A sealed check is offline, so the exact libraries in the lock file
+        // are fetched first, outside the seal; fetching runs no build code.
+        out.extend(fetch(repo.content()));
+    }
+    out.extend(rust_checks_using(repo, &refs));
+    out
 }
 
-/// How to start `cargo`: through the queue `queue` when one is named.
+/// Fetches the libraries named in `folder`'s lock file, and nothing else.
+#[must_use]
+pub fn fetch(folder: &std::path::Path) -> Option<Finding> {
+    tool::run(folder, "rust.fetch", "cargo", &["fetch", "--locked"])
+}
+
+/// How to start `cargo`: through the queue `queue` when one is named,
+/// sealed, since the code under check is not yet trusted.
 #[must_use]
 pub fn cargo_command(queue: Option<&str>) -> Vec<String> {
     match queue {
-        Some(q) if !q.is_empty() => {
-            [q, "run", "--", "cargo"].map(str::to_owned).to_vec()
-        }
+        Some(q) if !q.is_empty() => [q, "run", "--sealed", "--", "cargo"]
+            .map(str::to_owned)
+            .to_vec(),
         _ => vec!["cargo".to_owned()],
     }
 }
@@ -185,7 +208,9 @@ pub fn push(
     let queue = std::env::var("AEGIS_QUEUE").ok();
     let cargo = cargo_command(queue.as_deref());
     let cargo: Vec<&str> = cargo.iter().map(String::as_str).collect();
-    out.extend(crate::red_green::check(repo, &commits, &cargo));
+    if !file_kinds::has_cargo_settings(repo.content()) {
+        out.extend(crate::red_green::check(repo, &commits, &cargo));
+    }
     Ok(out)
 }
 

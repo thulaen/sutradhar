@@ -147,23 +147,30 @@ fn lay_over(
         .map_err(|e| format!("cannot write {}: {e}", to.display()))
 }
 
-/// Makes a new, empty folder for one red tree, with a name no other run
-/// uses, so nothing can be waiting there.
+/// Makes a new, empty folder for one red tree inside `base`, with a name
+/// no other run uses, so nothing can be waiting there.
 ///
 /// # Errors
 /// When no new folder can be made.
-pub fn fresh_folder() -> Result<std::path::PathBuf, String> {
-    let base = std::env::temp_dir();
+pub fn fresh_folder(base: &Path) -> Result<std::path::PathBuf, String> {
+    fs::create_dir_all(base)
+        .map_err(|e| format!("cannot make {}: {e}", base.display()))?;
     for attempt in 0_u32..100 {
         let nanos = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
             .map_or(0, |d| d.subsec_nanos());
-        let name =
-            format!("aegis-red-{}-{nanos}-{attempt}", std::process::id());
+        let name = format!("red-{}-{nanos}-{attempt}", std::process::id());
         let path = base.join(name);
         if fs::create_dir(&path).is_ok() {
             return Ok(path);
         }
     }
     Err("cannot make a new folder for the red tree".to_owned())
+}
+
+/// Where the checks keep their working copies: inside the build folder,
+/// which git ignores and a sealed check may write.
+#[must_use]
+pub fn work_folder(root: &Path) -> std::path::PathBuf {
+    root.join("target").join("aegis-work")
 }

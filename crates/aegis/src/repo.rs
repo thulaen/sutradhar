@@ -55,6 +55,7 @@ impl Repo {
     #[must_use]
     pub fn for_hook(root: impl Into<PathBuf>) -> Self {
         let root = root.into();
+        let root = std::path::absolute(&root).unwrap_or(root);
         let index = std::env::var_os("GIT_INDEX_FILE").map(|i| {
             let path = PathBuf::from(i);
             if path.is_absolute() {
@@ -72,7 +73,8 @@ impl Repo {
     /// Opens the repository, running `git` as the given program.
     #[must_use]
     pub fn with_git(root: impl Into<PathBuf>, git: &str) -> Self {
-        let root = root.into();
+        let root = root.into(); // made a full path, the same for every tool
+        let root = std::path::absolute(&root).unwrap_or(root);
         Self {
             content: root.clone(),
             root,
@@ -168,7 +170,8 @@ impl Repo {
         }
     }
 
-    /// Copies exactly the staged files into a new temporary folder.
+    /// Copies exactly the staged files into a new folder under the build
+    /// folder, `target/aegis-work`, where a sealed check may read it.
     ///
     /// # Errors
     /// When the folder cannot be made or git fails.
@@ -176,8 +179,8 @@ impl Repo {
         let nanos = SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .map_or(0, |d| d.as_nanos());
-        let dir = std::env::temp_dir()
-            .join(format!("aegis-staged-{}-{nanos}", std::process::id()));
+        let dir = crate::history::work_folder(&self.root)
+            .join(format!("staged-{}-{nanos}", std::process::id()));
         fs::create_dir_all(&dir)
             .map_err(|e| format!("cannot make {}: {e}", dir.display()))?;
         let copy = StagedCopy {

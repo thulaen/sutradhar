@@ -145,6 +145,137 @@ pub fn launch(
     out
 }
 
+/// What a sealed job may see and write.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Seal {
+    /// The folder the job starts in, which it may read but not change.
+    pub cwd: String,
+    /// The only folders it may write to.
+    pub writable: Vec<String>,
+}
+
+/// The sealing a job of code under check gets: no network, no way to
+/// gain rights (so no sudo), its own /tmp and shared memory, no sockets
+/// of the user's own services, a time and process limit, and the whole
+/// system read-only (cargo's home included) but for its build folders.
+/// (`RestrictSUIDSGID` is left out: on Ubuntu 26.04 it makes tar unable to
+/// make folders, and `NoNewPrivileges` already stops such files giving
+/// any rights.)
+const SEALS: [&str; 16] = [
+    "NoNewPrivileges=yes",
+    "PrivateNetwork=yes",
+    "PrivateTmp=yes",
+    "PrivateIPC=yes",
+    "InaccessiblePaths=-/run/user -/run/dbus",
+    "RuntimeMaxSec=3600",
+    "TasksMax=4096",
+    "PrivateDevices=yes",
+    "ProtectSystem=strict",
+    "ProtectHome=read-only",
+    "ProtectKernelTunables=yes",
+    "ProtectKernelModules=yes",
+    "ProtectKernelLogs=yes",
+    "ProtectControlGroups=yes",
+    "LockPersonality=yes",
+    "RestrictRealtime=yes",
+];
+
+/// The folders a sealed job may write: every build folder named in its
+/// settings or its command. Its own /tmp is writable too. Cargo's home
+/// is not, so a build script cannot change what later builds trust;
+/// the checks fetch what they need first.
+#[must_use]
+pub fn writable(kept: &[(String, String)], cmd: &[String]) -> Vec<String> {
+    let mut out = Vec::new();
+    for (name, value) in kept {
+        if name == "CARGO_TARGET_DIR" {
+            out.push(value.clone());
+        }
+    }
+    let mut next_is_target = false;
+    for arg in cmd {
+        if next_is_target {
+            out.push(arg.clone());
+        }
+        next_is_target = arg == "--target-dir";
+        if let Some(target) = arg.strip_prefix("--target-dir=") {
+            out.push(target.to_owned());
+        }
+    }
+    out
+}
+
+/// Refuses writable folders that systemd's list could split wrongly, and
+/// any that is not a full path below the top folder.
+///
+/// # Errors
+/// Names the first such folder.
+pub fn check_writable(paths: &[String]) -> Result<(), String> {
+    let bad = |p: &&String| {
+        let deep = std::path::Path::new(p.as_str()).components().count() > 1;
+        !p.starts_with('/') || !deep || p.chars().any(char::is_whitespace)
+    };
+    match paths.iter().find(bad) {
+        Some(bad) => Err(format!("cannot seal a job that writes to `{bad}`")),
+        None => Ok(()),
+    }
+}
+
+/// The command that runs `cmd` sealed, as user `ids.0` and group
+/// `ids.1` with all that user's groups, capped in the heavy-job slice.
+#[must_use]
+pub fn sealed_launch(
+    size: Size,
+    ids: (u32, u32),
+    seal: &Seal,
+    kept: &[(String, String)],
+    cmd: &[String],
+) -> Vec<String> {
+    let (memory, cpu) = match size {
+        Size::One => ("4G", "800%"),
+        Size::Both => ("8G", "1600%"),
+    };
+    let mut out: Vec<String> = [
+        "sudo",
+        "-n",
+        "systemd-run",
+        "--quiet",
+        "--wait",
+        "--pipe",
+        "--collect",
+        "--slice=sutradhar-heavy.slice",
+    ]
+    .map(str::to_owned)
+    .to_vec();
+    let mut properties = vec![
+        format!("MemoryMax={memory}"),
+        "MemorySwapMax=0".to_owned(),
+        format!("CPUQuota={cpu}"),
+        format!("User={}", ids.0),
+        format!("Group={}", ids.1),
+    ];
+    if !seal.writable.is_empty() {
+        // A leading `-` lets a build folder not exist yet.
+        let paths: Vec<String> =
+            seal.writable.iter().map(|p| format!("-{p}")).collect();
+        properties.push(format!("ReadWritePaths={}", paths.join(" ")));
+    }
+    properties.extend(SEALS.map(str::to_owned));
+    for property in properties {
+        out.push("-p".to_owned());
+        out.push(property);
+    }
+    out.push(format!("--working-directory={}", seal.cwd));
+    for (name, value) in kept {
+        out.push("-E".to_owned());
+        out.push(format!("{name}={value}"));
+    }
+    out.extend(["-E".to_owned(), "CARGO_NET_OFFLINE=true".to_owned()]);
+    out.push("--".to_owned());
+    out.extend(cmd.iter().cloned());
+    out
+}
+
 #[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
