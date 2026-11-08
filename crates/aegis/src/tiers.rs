@@ -60,17 +60,33 @@ pub fn whole_project_docs(repo: &Repo, all: &[String]) -> Vec<Finding> {
 }
 
 /// The Rust checks: format, lints and tests, for the whole workspace.
-/// They run only when the repository has a Cargo workspace.
+/// They run only when the repository has a Cargo workspace. When
+/// `AEGIS_QUEUE` names the heavy-job queue, pankti, each one waits in it
+/// (AGENTS.md section 11).
 #[must_use]
 pub fn rust_checks(repo: &Repo) -> Vec<Finding> {
-    rust_checks_using(repo, "cargo")
+    let queue = std::env::var("AEGIS_QUEUE").ok();
+    let command = cargo_command(queue.as_deref());
+    let refs: Vec<&str> = command.iter().map(String::as_str).collect();
+    rust_checks_using(repo, &refs)
 }
 
-/// [`rust_checks`], run with the given program in place of `cargo`. The
+/// How to start `cargo`: through the queue `queue` when one is named.
+#[must_use]
+pub fn cargo_command(queue: Option<&str>) -> Vec<String> {
+    match queue {
+        Some(q) if !q.is_empty() => {
+            [q, "run", "--", "cargo"].map(str::to_owned).to_vec()
+        }
+        _ => vec!["cargo".to_owned()],
+    }
+}
+
+/// [`rust_checks`], run with the given command in place of `cargo`. The
 /// checks run on the repository's files; build output goes to the
 /// repository's own `target` folder so it is reused between runs.
 #[must_use]
-pub fn rust_checks_using(repo: &Repo, cargo: &str) -> Vec<Finding> {
+pub fn rust_checks_using(repo: &Repo, cargo: &[&str]) -> Vec<Finding> {
     if repo.read("Cargo.toml").is_none() {
         return Vec::new();
     }
@@ -91,10 +107,20 @@ pub fn rust_checks_using(repo: &Repo, cargo: &str) -> Vec<Finding> {
         ("rust.lints", &lints),
         ("rust.tests", &tests),
     ];
+    let Some((program, before)) = cargo.split_first() else {
+        return vec![Finding::new(
+            "rust.tests",
+            "",
+            0,
+            "no command was given to run the Rust checks".to_owned(),
+        )];
+    };
     steps
         .iter()
         .filter_map(|(check, args)| {
-            tool::run(repo.content(), check, cargo, args)
+            let all: Vec<&str> =
+                before.iter().chain(args.iter()).copied().collect();
+            tool::run(repo.content(), check, program, &all)
         })
         .collect()
 }

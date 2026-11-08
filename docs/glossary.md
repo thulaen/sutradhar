@@ -18,6 +18,7 @@ Plain meanings of the names and terms used in Sutradhar.
 | setu | Hindi: "bridge" | The link between the service and the site add-ons |
 | sutra | Hindi: "thread" | The command-line tool |
 | chaukidar | Hindi: "watchman" | Spots any change to what guards the project, and raises the alarm |
+| pankti | Hindi: "a line" | The heavy-job queue on Dell: at most two heavy jobs at once |
 | aegis | Greek: "shield" | The gate: every check |
 | nirikshak | Hindi: "inspector" | The code analyser used by the gate |
 | prahari | Hindi: "guard" | The outside tester that checks the gate itself |

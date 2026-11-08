@@ -126,10 +126,28 @@ fn rust_checks_run_only_with_a_workspace() {
     let repo = Repo::at(&dir);
     assert_eq!(tiers::rust_checks(&repo).len(), 0);
     fs::write(dir.join("Cargo.toml"), "[workspace]\n").unwrap();
-    assert_eq!(tiers::rust_checks_using(&repo, "true").len(), 0);
-    let failed = tiers::rust_checks_using(&repo, "false");
+    assert_eq!(tiers::rust_checks_using(&repo, &["true"]).len(), 0);
+    let failed = tiers::rust_checks_using(&repo, &["false"]);
     let got: Vec<&str> = failed.iter().map(|f| f.check).collect();
     assert_eq!(got, ["rust.format", "rust.lints", "rust.tests"]);
+}
+
+#[test]
+fn heavy_checks_wait_in_the_queue_when_one_is_set() {
+    assert_eq!(tiers::cargo_command(None), ["cargo"]);
+    assert_eq!(tiers::cargo_command(Some("")), ["cargo"]);
+    assert_eq!(
+        tiers::cargo_command(Some("/q/pankti")),
+        ["/q/pankti", "run", "--", "cargo"]
+    );
+    let dir = scratch("queued");
+    fs::write(dir.join("Cargo.toml"), "[workspace]\n").unwrap();
+    let repo = Repo::at(&dir);
+    assert_eq!(
+        tiers::rust_checks_using(&repo, &["sh", "-c", "true"]).len(),
+        0
+    );
+    assert_eq!(tiers::rust_checks_using(&repo, &[]).len(), 1);
 }
 
 #[test]

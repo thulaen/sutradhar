@@ -8,6 +8,10 @@ command -v cargo >/dev/null 2>&1 || {
   exit 1
 }
 remote="$1"
+# On Dell, the checks wait in the heavy-job queue (AGENTS.md section 11),
+# named in this checkout's own setting `sutradhar.queue`.
+queue=$(git config --get sutradhar.queue || true)
+if [ -x "$queue" ]; then export AEGIS_QUEUE="$queue"; fi
 zero=0000000000000000000000000000000000000000
 while read -r local_ref local_sha remote_ref remote_sha; do
   if [ "$local_sha" = "$zero" ]; then

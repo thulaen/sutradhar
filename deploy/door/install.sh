@@ -5,6 +5,9 @@
 # DOOR_DIR is a private folder on Dell; FORGEJO_UID is the Dell user id
 # that Forgejo's container runs as. It uses sudo for the system service.
 set -eu
+# The checks wait in the heavy-job queue (AGENTS.md section 11) when this
+# checkout names one in its setting `sutradhar.queue`.
+queue=$(git config --get sutradhar.queue || true)
 door="$1"
 forgejo_uid="$2"
 here=$(pwd)
@@ -31,6 +34,7 @@ Environment=RUSTUP_HOME=${RUSTUP_HOME:?}
 # A pushed rust-toolchain.toml must not choose the tools that judge it.
 Environment=RUSTUP_TOOLCHAIN=$toolchain
 Environment=CARGO_HOME=${CARGO_HOME:?}
+${queue:+Environment=AEGIS_QUEUE=$queue}
 Environment=PATH=$(dirname "$(command -v cargo)"):/usr/local/bin:/usr/bin:/bin
 ExecStart=$door/bin/aegis-door $door/run/door.sock $door/work
 Restart=always
