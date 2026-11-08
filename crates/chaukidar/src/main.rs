@@ -25,9 +25,8 @@ fn main() -> ExitCode {
         ["check", list, sums, state] => check(list, sums, state),
         ["raise", text] => raise_named(text),
         _ => {
-            say(
-                "usage: chaukidar record LIST SUMS | check LIST SUMS STATE | raise TEXT\n",
-            );
+            say("usage: chaukidar record LIST SUMS | check LIST SUMS STATE \
+                 | raise TEXT\n");
             return ExitCode::from(2);
         }
     };

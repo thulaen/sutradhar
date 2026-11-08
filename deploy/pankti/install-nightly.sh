@@ -20,7 +20,9 @@ OnFailure=sutradhar-noisy-neighbour-alarm.service
 Type=oneshot
 User=$(id -un)
 Environment=HOME=$HOME
-ExecStart="$dir/bin/noisy-neighbour" "$dir" "curl -sf $forgejo/api/healthz" "curl -sf -o /dev/null $forgejo/explore/repos"
+ExecStart="$dir/bin/noisy-neighbour" "$dir" \\
+  "curl -sf $forgejo/api/healthz" \\
+  "curl -sf -o /dev/null $forgejo/explore/repos"
 UNIT
 cat >"$dir/sutradhar-noisy-neighbour-alarm.service" <<UNIT
 [Unit]
