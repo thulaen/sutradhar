@@ -6,6 +6,7 @@ pub mod docs;
 pub mod file_kinds;
 pub mod finding;
 pub mod limits;
+pub mod markers;
 pub mod patch;
 pub mod repo;
 pub mod rule_file;
