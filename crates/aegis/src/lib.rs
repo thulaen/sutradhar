@@ -13,5 +13,6 @@ pub mod secrets;
 pub mod shell;
 pub mod tiers;
 pub mod tool;
+pub mod workflows;
 
 pub use finding::Finding;

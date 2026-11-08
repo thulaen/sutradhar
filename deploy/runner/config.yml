@@ -1,0 +1,22 @@
+# Settings for Forgejo's runner on Dell (see the runner specification).
+# Each job runs in a container that gets no folder from Dell, no control
+# of the container service, and at most one heavy-job place.
+log:
+  level: info
+runner:
+  file: .runner
+  capacity: 1
+  timeout: 3h
+  fetch_timeout: 5s
+  fetch_interval: 2s
+  labels:
+    - "dell:docker://ubuntu@sha256:6a06111c3b0a8600feadb270aec771dc239bf407b25625f93f44ab00e11f4d3c"
+cache:
+  enabled: false
+container:
+  network: "sutradhar-forgejo_runner-jobs"
+  privileged: false
+  options: "--memory=4g --memory-swap=4g --cpus=8 --pids-limit=4096"
+  valid_volumes: []
+  docker_host: "-"
+  force_pull: false

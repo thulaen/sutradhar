@@ -11,6 +11,9 @@ services:
     restart: unless-stopped
     ports:
       - "127.0.0.1:3000:3000"
+    networks:
+      - default
+      - runner-jobs
     mem_limit: 1g
     memswap_limit: 1g
     cpus: 1
@@ -67,6 +70,13 @@ services:
       FORGEJO__mirror__ENABLED: "false"
       FORGEJO__federation__ENABLED: "false"
       FORGEJO__cron_0X2E_update_checker__ENABLED: "false"
+
+networks:
+  default:
+  # Runner jobs join only this network (docs/specs/0060-runner.md). It
+  # has no way out, so a job reaches Forgejo and nothing else.
+  runner-jobs:
+    internal: true
 
 volumes:
   forgejo-data:

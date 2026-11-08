@@ -36,3 +36,17 @@ name = "gitleaks"
 version = "8.30.1"
 source = "https://github.com/gitleaks/gitleaks/releases/tag/v8.30.1"
 sha256 = "88f91962aa2f93ac6ab281d553b9e125f5197bbbce38f9f2437f7299c32e5509"
+
+[[tool]]
+name = "forgejo-runner"
+version = "13.2.1"
+source = "https://code.forgejo.org/forgejo/runner/releases/download/v13.2.1/forgejo-runner-13.2.1-linux-amd64"
+sha256 = "bb369fe1ecb50fdc983c0b1d993f19b0920df6e5864511892b3cdbf16d858b34"
+note = "Forgejo's runner on Dell; see docs/specs/0060-runner.md"
+
+[[tool]]
+name = "ubuntu-image"
+version = "26.04"
+source = "docker.io/library/ubuntu:26.04 (official image)"
+digest = "sha256:6a06111c3b0a8600feadb270aec771dc239bf407b25625f93f44ab00e11f4d3c"
+note = "the container each runner job starts from"

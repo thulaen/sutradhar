@@ -1,0 +1,25 @@
+# Proves Forgejo's runner on Dell works and keeps jobs sealed off (see
+# docs/specs/0060-runner.md). Every step is a plain shell command.
+on:
+  push:
+    branches: [main]
+jobs:
+  sealed:
+    runs-on: dell
+    steps:
+      - name: The job runs in the pinned Ubuntu 26.04 container
+        run: grep -q 'VERSION_ID="26.04"' /etc/os-release
+      - name: The job has no way out of its closed network
+        run: test -z "$(awk '$2 == "00000000"' /proc/net/route)"
+      - name: The job cannot reach the internet
+        run: "! timeout 5 bash -c '</dev/tcp/1.1.1.1/443'"
+      - name: The job reaches Forgejo
+        run: timeout 5 bash -c '</dev/tcp/sutradhar-forgejo/3000'
+      - name: The job sees no socket, so no container service
+        run: |
+          test -z "$(find / \( -path /proc -o -path /sys \) -prune \
+            -o -type s -print 2>/dev/null)"
+      - name: The job has at most 4 GB of memory
+        run: test "$(cat /sys/fs/cgroup/memory.max)" -le 4294967296
+      - name: Show the job's mounts, for the record
+        run: awk '{print $5}' /proc/self/mountinfo | sort

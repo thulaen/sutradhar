@@ -4,6 +4,7 @@ use crate::docs::{self, Lookup};
 use crate::repo::Repo;
 use crate::{
     Finding, commit_msg, file_kinds, limits, rule_file, secrets, shell, tool,
+    workflows,
 };
 
 /// Whether the TypeScript compiler is pinned, which switches TypeScript
@@ -30,6 +31,9 @@ pub fn file_checks(repo: &Repo, paths: &[String]) -> Vec<Finding> {
         };
         out.extend(limits::check(path, kind, &text));
         out.extend(secrets::check(path, &text));
+        if workflows::is_workflow(path) {
+            out.extend(workflows::check(path, &text));
+        }
         if kind == file_kinds::Kind::Shell {
             scripts.push(path.clone());
         }

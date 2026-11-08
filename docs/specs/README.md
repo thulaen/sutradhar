@@ -8,7 +8,7 @@ is tested. How specifications are named and approved is in
 The feature list, features 1 to 1357, is in [features.md](features.md).
 Specifications 0003 to 0057 are rewritten from the private archive
 `archive-2026-11-08-old-repo` on Dell; each names its source files at
-its end. Specifications 0001, 0002, 0058 and 0059 were written fresh.
+its end. Specifications 0001, 0002 and 0058 to 0060 were written fresh.
 
 | No. | Title | Roadmap item | Archive source (under `docs/specifications/`) |
 |---|---|---|---|
@@ -71,3 +71,4 @@ its end. Specifications 0001, 0002, 0058 and 0059 were written fresh.
 | [0057](0057-quality-judging.md) | Quality judging and release assessment | Phase 7 item 1 | `operations/judging*.md` |
 | [0058](0058-chaukidar.md) | chaukidar, the watchman | Phase 1 item 5 | written fresh |
 | [0059](0059-pankti.md) | pankti, the heavy-job queue | Phase 1 item 7 | written fresh |
+| [0060](0060-runner.md) | Forgejo's runner on Dell | Phase 1 item 2 | written fresh |
