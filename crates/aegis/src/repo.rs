@@ -202,27 +202,6 @@ impl Repo {
         Ok(patch::nul_list(&self.git(&args)?))
     }
 
-    /// The message of each commit after `base` up to `head`. A `base` of
-    /// [`NO_COMMIT`] means every commit up to `head`.
-    ///
-    /// # Errors
-    /// When git fails.
-    pub fn messages(
-        &self,
-        base: &str,
-        head: &str,
-    ) -> Result<Vec<String>, String> {
-        let range = range(base, head);
-        let args = ["log", "--format=%B%x00", "--end-of-options", &range];
-        Ok(self
-            .git(&args)?
-            .split('\0')
-            .map(str::trim)
-            .filter(|m| !m.is_empty())
-            .map(str::to_owned)
-            .collect())
-    }
-
     /// Every line added by the commits after `base` up to `head`, with
     /// the file it was added to.
     ///

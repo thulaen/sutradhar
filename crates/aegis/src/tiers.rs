@@ -169,9 +169,10 @@ pub fn push(
         )]);
     }
     let mut out = Vec::new();
-    for message in repo.messages(base, head)? {
-        out.extend(commit_msg::check(&message));
-        out.extend(secrets::check("(commit message)", &message));
+    for commit in crate::history::commits(repo, base, head)? {
+        out.extend(commit_msg::check(&commit.message));
+        out.extend(crate::tdd::check_paths(&commit.message, &commit.paths));
+        out.extend(secrets::check("(commit message)", &commit.message));
     }
     for (path, line) in repo.added_lines(base, head)? {
         out.extend(secrets::check(&format!("{path} (history)"), &line));

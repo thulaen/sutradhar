@@ -28,6 +28,12 @@ fn folder(name: &str) -> std::path::PathBuf {
 #[test]
 fn msg_passes_a_good_message_and_refuses_a_bad_one() {
     let dir = folder("msg");
+    let init = Command::new("git")
+        .args(["init", "-q"])
+        .current_dir(&dir)
+        .status()
+        .unwrap();
+    assert!(init.success());
     fs::write(dir.join("good"), GOOD_MSG).unwrap();
     fs::write(dir.join("bad"), "stuff\n").unwrap();
     let (code, text) = aegis(&dir, &["msg", "good"]);

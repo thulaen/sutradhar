@@ -14,12 +14,7 @@ const TRAILERS: [&str; 4] = ["TDD:", "Defects:", "Task:", "Signed-off-by:"];
 /// git ignores them.
 #[must_use]
 pub fn check(message: &str) -> Vec<Finding> {
-    let lines: Vec<&str> = message
-        .lines()
-        .take_while(|l| !l.starts_with("# ------------------------ >8"))
-        .filter(|l| !l.starts_with('#'))
-        .map(str::trim_end)
-        .collect();
+    let lines = lines_of(message);
     let mut out = Vec::new();
     match lines.first() {
         Some(subject) => out.extend(check_subject(subject)),
@@ -30,6 +25,27 @@ pub fn check(message: &str) -> Vec<Finding> {
         out.extend(check_trailer(block, trailer));
     }
     out
+}
+
+/// The lines git keeps: up to the cut line, without `#` comments.
+fn lines_of(message: &str) -> Vec<&str> {
+    message
+        .lines()
+        .take_while(|l| !l.starts_with("# ------------------------ >8"))
+        .filter(|l| !l.starts_with('#'))
+        .map(str::trim_end)
+        .collect()
+}
+
+/// The value of a trailer such as `TDD:`, read the one way every check
+/// reads it: from the last paragraph only.
+#[must_use]
+pub fn trailer(message: &str, name: &str) -> Option<String> {
+    let lines = lines_of(message);
+    trailer_block(&lines)
+        .iter()
+        .find_map(|l| l.strip_prefix(name))
+        .map(|v| v.trim().to_owned())
 }
 
 /// The last paragraph, after the subject: the only place trailers count.
@@ -94,9 +110,18 @@ fn check_trailer(lines: &[&str], trailer: &str) -> Option<Finding> {
     let Some(value) = lines.iter().find_map(|l| l.strip_prefix(trailer)) else {
         return Some(problem(format!("the `{trailer}` line is missing")));
     };
+    if lines.iter().filter(|l| l.starts_with(trailer)).count() > 1 {
+        return Some(problem(format!("the `{trailer}` line is given twice")));
+    }
     let value = value.trim();
     if value.is_empty() {
         return Some(problem(format!("the `{trailer}` line is empty")));
+    }
+    if trailer == "TDD:" && crate::tdd::parse(value).is_none() {
+        return Some(problem(
+            "`TDD:` must name the test that failed before, as \
+             `crate::path::test`, or say `none (docs only)`",
+        ));
     }
     if trailer == "Task:" && !is_task(value) {
         return Some(problem(

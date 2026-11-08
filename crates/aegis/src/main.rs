@@ -28,7 +28,10 @@ fn run(args: &[&str]) -> Result<Vec<Finding>, String> {
         ["msg", file] => {
             let text = std::fs::read_to_string(file)
                 .map_err(|e| format!("cannot read {file}: {e}"))?;
-            Ok(commit_msg::check(&text))
+            let mut out = commit_msg::check(&text);
+            let staged = aegis::history::staged_paths(&repo)?;
+            out.extend(aegis::tdd::check_paths(&text, &staged));
+            Ok(out)
         }
         ["commit"] => tiers::commit(&repo),
         ["push", base, head] => tiers::push(&repo, base, head),
