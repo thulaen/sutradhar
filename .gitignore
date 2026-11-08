@@ -1,0 +1,8 @@
+/target/
+*.swp
+.env
+.env.*
+*.pem
+*.key
+*.p12
+secrets/

@@ -1,0 +1,32 @@
+# Pinned tools. Rules: AGENTS.md section 4.
+
+[[tool]]
+name = "rust"
+version = "1.99.1"
+source = "https://static.rust-lang.org"
+sha256 = "b53b780f77f952062f8ca8a3b70aef2390b1e45ad91939be94afdc9543026853"
+note = "rustc binary of the pinned toolchain"
+
+[[tool]]
+name = "gh"
+version = "2.46.0"
+source = "Ubuntu 26.04 package gh 2.46.0-4ubuntu0.26.04.1~esm1"
+sha256 = "b6d8368292fabbbc739eb366f006edf1c2f06ba3919051743e8d610beab72ca6"
+
+[[tool]]
+name = "forgejo"
+version = "15.0.11"
+source = "codeberg.org/forgejo/forgejo"
+digest = "sha256:3cd6bc2b74c87cbde0a0fd527c9665cb416f5a0540dee54fe5afb3fa2df9f40c"
+
+[[tool]]
+name = "shellcheck"
+version = "0.11.0"
+source = "Ubuntu 26.04 package shellcheck 0.11.0-2"
+sha256 = "311de5f94ecea1d98052ccdc94166591dce89e031e7357debd2f3213b547f7df"
+
+[[tool]]
+name = "shfmt"
+version = "3.12.0"
+source = "Ubuntu 26.04 package shfmt 3.12.0-1"
+sha256 = "1bad7d44e5642714b3241708a85ba03fbd0a52460f9e4442b369edc75976d6ca"
