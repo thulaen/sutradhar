@@ -62,12 +62,13 @@ a timer that runs `noisy-neighbour.sh` every night at 03:30. It takes
 one place with a job that fills all 8 threads and about 3.8 GB for a
 minute. The job may first wait in line; probing starts only once it
 has begun, so a night can never pass without the load. Then it checks
-every 2 seconds that Forgejo's health page and a `git ls-remote` of the
-repository each answer within 2 seconds. If any probe is late, or the
-job fails or is stopped, the night fails and the watchman raises its
-alarm (`chaukidar raise`, spec 0058). Each failed night raises a new
-alarm, so a problem that stays is seen every day. PostgreSQL and the
-test sites get their own probes once they run on Dell.
+every 2 seconds that Forgejo's health page and its public list of
+repositories each answer within 2 seconds. The probes need no sign-in.
+If any probe is late, or the job fails or is stopped, the night fails
+and the watchman raises its alarm (`chaukidar raise`, spec 0058). Each
+failed night raises a new alarm, so a problem that stays is seen every
+day. PostgreSQL and the test sites get their own probes once they run
+on Dell.
 
 ## Limits
 
