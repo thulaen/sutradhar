@@ -162,3 +162,29 @@ fn a_half_raised_alarm_is_not_repeated() {
     let kept = std::fs::read_to_string(&state).unwrap();
     assert_eq!(kept, "`thing` has changed");
 }
+
+#[test]
+fn a_named_alarm_needs_its_settings_and_one_line() {
+    assert_eq!(watchman(&["raise"]), Some(2));
+    assert_eq!(watchman(&["raise", ""]), Some(2));
+    assert_eq!(watchman(&["raise", "two\nlines"]), Some(2));
+    assert_eq!(
+        watchman(&["raise", "the noisy-neighbour test failed"]),
+        Some(2)
+    );
+}
+
+#[test]
+fn a_named_alarm_carries_its_own_text() {
+    let fake = Fake {
+        fail: "",
+        calls: RefCell::new(Vec::new()),
+    };
+    chaukidar::alarm::raise_text(&fake, &config(), "the night failed").unwrap();
+    let calls = fake.calls.borrow();
+    let posts: Vec<&String> =
+        calls.iter().filter(|c| c.contains(TITLE)).collect();
+    assert_eq!(posts.len(), 2);
+    assert!(posts.iter().all(|c| c.contains("the night failed")));
+    assert!(!posts.iter().any(|c| c.contains("outside an install")));
+}

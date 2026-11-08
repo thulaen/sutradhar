@@ -2,7 +2,9 @@
 //! - `chaukidar record LIST SUMS` writes the fingerprints, after an
 //!   install;
 //! - `chaukidar check LIST SUMS STATE` compares, and raises the alarm
-//!   when what it finds differs from the last check, kept in `STATE`.
+//!   when what it finds differs from the last check, kept in `STATE`;
+//! - `chaukidar raise TEXT` raises the alarm for one line of text from
+//!   another guard.
 //!
 //! The alarm needs `CHAUKIDAR_FORGEJO` (Forgejo's API address for the
 //! repository), `CHAUKIDAR_HEADER` (a private file with Forgejo's
@@ -21,8 +23,11 @@ fn main() -> ExitCode {
     let result = match refs.as_slice() {
         ["record", list, sums] => record_sums(list, sums),
         ["check", list, sums, state] => check(list, sums, state),
+        ["raise", text] => raise_named(text),
         _ => {
-            say("usage: chaukidar record LIST SUMS | check LIST SUMS STATE\n");
+            say(
+                "usage: chaukidar record LIST SUMS | check LIST SUMS STATE | raise TEXT\n",
+            );
             return ExitCode::from(2);
         }
     };
@@ -76,6 +81,19 @@ fn check(list: &str, sums: &str, state: &str) -> Result<bool, String> {
         raised?;
     }
     Ok(false)
+}
+
+/// Raises the alarm for one line of text from another guard, such as the
+/// nightly noisy-neighbour test. The text must be one public line.
+fn raise_named(text: &str) -> Result<bool, String> {
+    if text.is_empty() || text.contains('\n') {
+        return Err("the alarm text must be one line".to_owned());
+    }
+    let body = format!(
+        "{text}.\n\nRead the guard's log on Dell before any further push."
+    );
+    alarm::raise_text(&System::default(), &config()?, &body)?;
+    Ok(true)
 }
 
 fn setting(name: &str) -> Result<String, String> {

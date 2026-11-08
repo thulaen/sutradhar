@@ -33,6 +33,10 @@ alarm in two places at once: an urgent task in Forgejo's current phase
 and an issue on GitHub. It raises the alarm again only when what it
 finds changes. The sync never copies alarms either way.
 
+Other guards can raise the same alarm with `chaukidar raise TEXT`, where
+TEXT is one public line. The nightly noisy-neighbour test (spec 0059)
+uses it when a night fails.
+
 ## Installing and updating
 
 On Dell, from the repository's top folder, on the commit just accepted:
@@ -50,4 +54,5 @@ that install.
 
 `crates/chaukidar` tests reading the watch list, fingerprints of files
 and commands, every kind of change, the alarm in both places (and when
-one place fails), and the command itself.
+one place fails), the command itself, and that `raise` refuses an empty
+or many-line text.

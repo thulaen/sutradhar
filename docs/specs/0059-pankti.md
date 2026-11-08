@@ -55,6 +55,20 @@ since a system scope is made for each one.
   directly.
 - The Forgejo runner's jobs run through it too (Phase 1 item 2).
 
+## The nightly noisy-neighbour test
+
+`deploy/pankti/install-nightly.sh QUEUE_DIR WATCH_DIR HEADER_FILE` sets up
+a timer that runs `noisy-neighbour.sh` every night at 03:30. It takes
+one place with a job that fills all 8 threads and about 3.8 GB for a
+minute. The job may first wait in line; probing starts only once it
+has begun, so a night can never pass without the load. Then it checks
+every 2 seconds that Forgejo's health page and a `git ls-remote` of the
+repository each answer within 2 seconds. If any probe is late, or the
+job fails or is stopped, the night fails and the watchman raises its
+alarm (`chaukidar raise`, spec 0058). Each failed night raises a new
+alarm, so a problem that stays is seen every day. PostgreSQL and the
+test sites get their own probes once they run on Dell.
+
 ## Limits
 
 - If pankti itself is killed while its job runs, the job goes on in its
@@ -71,5 +85,8 @@ since a system scope is made for each one.
   of it.
 - Places are free again after jobs end.
 - A missing folder is an error.
+- Live: the noisy-neighbour test passes on Dell, with every probe on
+  time while the heavy job holds about 3.9 GB and 8 threads, and fails
+  when a probe fails.
 - The job command carries the slice, the memory cap, no swap, the CPU
   cap and the user's own user and group.

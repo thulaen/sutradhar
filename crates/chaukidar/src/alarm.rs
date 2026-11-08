@@ -25,6 +25,19 @@ pub fn raise(
          them and why before any further push.",
         changes.join("\n- ")
     );
+    raise_text(run, config, &text)
+}
+
+/// Raises the alarm with this text, in both places. Both are tried even
+/// if the first fails.
+///
+/// # Errors
+/// Lists every place the alarm could not be raised.
+pub fn raise_text(
+    run: &dyn Run,
+    config: &Config,
+    text: &str,
+) -> Result<(), String> {
     let forgejo = urgent_home(run, config).and_then(|(label, milestone)| {
         let body = json!({"title": TITLE, "body": text,
             "labels": [label], "milestone": milestone});
