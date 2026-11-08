@@ -149,8 +149,9 @@ Forgejo milestone: `Phase 5: Core`.
 5. The `sutra` command and the MCP server.
 6. Cloud helpers on the owner's own accounts.
 7. The manual, built into the app.
-8. A pinned test machine that matches the owner's PC.
-9. The release-tier peak memory, load and soak tests on that machine.
+8. Two pinned test machines that match both sizes of the owner's PC:
+   one under 16 GB, and one with 16 GB or more.
+9. The release-tier peak memory, load and soak tests on those machines.
 
 Finished when: items 1 to 9 are met and pass every gate, each has a
 beginner guide in the manual, and the six reviews of the phase pass.
@@ -165,6 +166,7 @@ this order:
 1. The first range in the feature list.
 2. The second range.
 3. The third range.
+4. The fourth range.
 
 Within each range, build the features in four kinds, in this order:
 insight-only features (they only show information), then review-page

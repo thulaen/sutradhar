@@ -55,7 +55,17 @@ sites, with the related tools in the specifications. The heavy work runs
 on the owner's own Ubuntu PC. A thin add-on on the site hands over posts
 and applies only what a moderator accepts.
 
-Version 1 holds the full scope: features 1 to 1312 in the
+Every feature is a clean-room design. Where the feature list says a
+feature works "as" another product does, that names the idea only. We
+learn what a product does from its public pages, and copy no code,
+wording, screens, data, formulas or trademarked names.
+
+Every feature that learns something about a page passes it to the link
+ranking as a signal, as spec 0027 sets out. A signal can only reorder
+links that are already on the same subject; popularity or traffic can
+never make an off-topic link rank higher.
+
+Version 1 holds the full scope: features 1 to 1357 in the
 specifications. It ships only when the release gate passes:
 
 1. At least 6,000,000 distinct, independently qualified methods.
@@ -203,6 +213,11 @@ shipped product is built on it. Parts made before Boot exists (the gate,
 ### 5.5 Models and outside data
 
 - Models run in pure Rust (candle or tract).
+- When working through a large backlog, a tiny model,
+  potion-retrieval-32M, makes a fast first pick of likely matches.
+  Qwen3-Embedding-0.6B makes every final match.
+- The entity model, which spots names of things, places and products,
+  is our own, built in pure Rust.
 - Lists of data-centre network addresses, used to spot bots, come from
   free public lists. They are fetched weekly and checked by hash.
 - Paid embeddings through AWS Bedrock are optional, off by default, and
@@ -215,18 +230,27 @@ shipped product is built on it. Parts made before Boot exists (the gate,
   site only, and never credentials, keys or audit logs. A tool may read
   and may draft wording, such as writing tips; every draft is only a
   suggestion that a moderator must accept.
+- Suggestion quality may be graded by Bedrock or by an AI tool connected
+  through MCP, only when the owner turns that on.
 - Site text leaves the owner's PC only through Bedrock, cloud helpers or
   an MCP tool, and only when the owner has turned that route on.
 
 ### 5.6 Limits on the owner's PC
 
-- Sutradhar uses at most 8 GB of memory in total: service, engine,
-  desktop window (including its web view), models and PostgreSQL
-  together.
+- The owner's PC needs at least 8 GB of memory; 16 GB or more is
+  recommended. Sutradhar must run fast on an 8 GB PC.
+- On a PC with less than 16 GB, Sutradhar uses at most 5 GB in total:
+  4.5 GB for the service, engine, models, the MCP server and
+  PostgreSQL, and 0.5 GB for the desktop window.
+- On a PC with 16 GB or more, it uses at most 8 GB in total: 7 GB and
+  1 GB.
 - The service, engine, models, the MCP server and PostgreSQL run in one
-  systemd slice for the whole computer, capped at 7 GB. The desktop window
-  runs in the owner's own session, capped at 1 GB. A release-tier test
-  measures the combined peak under the load set in the specifications.
+  systemd slice for the whole computer, capped at the first figure. The
+  desktop window runs in the owner's own session, capped at the second.
+  Release-tier tests measure the combined peak under the load set in
+  the specifications, on both sizes of PC.
+- Extensions run sealed off inside Sutradhar, using Linux's own
+  controls. The owner's PC never needs Docker.
 - Expensive work is bounded, recoverable and schedulable, within the
   limits each specification sets (gate items GI-36 and GI-43).
 
@@ -529,8 +553,9 @@ report gets a first reply within 7 days.
 - Heavy jobs (builds, full test runs, runner jobs) wait in one queue.
   At most 2 run at once, each held by a systemd limit to 4 GB of memory
   and 8 CPU threads. A benchmark takes both places, so it runs alone.
-- The release tier's memory, load and soak tests run on a test machine
-  that matches the owner's PC, outside the Dell job limits.
+- The release tier's memory, load and soak tests run on two test
+  machines that match both sizes of the owner's PC (under 16 GB, and
+  16 GB or more), outside the Dell job limits.
 - One writer per file. Take a lock in the mailbox before editing, and
   release it after.
 - Forgejo's runner jobs run in containers that cannot reach the release
@@ -563,7 +588,7 @@ report gets a first reply within 7 days.
     started. Otherwise, and when it fits no existing item, it goes to
     "Later".
 - Specifications are named `NNNN-short-name.md` in `docs/specs/`. The
-  feature list for features 1 to 1312 is
+  feature list for features 1 to 1357 is
   `docs/specs/features.md`.
 - A design rewritten without changing its approved behaviour is
   approved. Any change in behaviour needs the owner's approval.
