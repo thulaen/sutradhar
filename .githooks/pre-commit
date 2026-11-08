@@ -1,0 +1,8 @@
+#!/bin/sh
+# Commit tier (AGENTS.md section 7). A missing tool fails the commit.
+set -eu
+command -v cargo >/dev/null 2>&1 || {
+  echo "aegis: cargo is missing, so the commit is refused" >&2
+  exit 1
+}
+exec cargo run --quiet --package aegis -- commit

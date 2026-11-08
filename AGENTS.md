@@ -262,6 +262,9 @@ shipped product is built on it. Parts made before Boot exists (the gate,
    specification. Source files are Rust, TypeScript, CSS, PHP and SQL
    files.
 10. No globals, singletons, monkey patching or shared mutable state.
+11. A source file has at most 300 lines and a function at most 60 lines.
+    A function takes at most 5 arguments, nests at most 4 levels deep and
+    stays under a complexity score of 15.
 
 ## 7. The gate
 
@@ -355,9 +358,9 @@ Until Phase 2 is finished:
   Phase 2 is finished from the day the style guides and rule matrix,
   the MC/DC tool, the benchmark runner and GanitEvolve each arrive. A
   task on that roadmap item brings each part up to the rule.
-- Until Phase 1 item 9 builds the sync, step 11 of section 8 is done by
-  hand with `gh`, and a failed copy is written on the task instead of
-  raising an urgent task.
+- Until Phase 1 item 9 builds the sync, agents copy to GitHub by hand
+  with `gh` for step 11 of section 8, and write a failed copy on the task
+  instead of raising an urgent task.
 
 ## 8. How a session works
 

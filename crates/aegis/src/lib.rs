@@ -1,0 +1,17 @@
+//! aegis: the gate. Every check Sutradhar runs at commit, push and
+//! release. The rules it enforces are in `AGENTS.md`.
+
+pub mod commit_msg;
+pub mod docs;
+pub mod file_kinds;
+pub mod finding;
+pub mod limits;
+pub mod patch;
+pub mod repo;
+pub mod rule_file;
+pub mod secrets;
+pub mod shell;
+pub mod tiers;
+pub mod tool;
+
+pub use finding::Finding;

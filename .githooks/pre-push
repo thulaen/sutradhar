@@ -1,0 +1,47 @@
+#!/bin/sh
+# Push tier (AGENTS.md section 7). Only main and release tags may be
+# pushed, never deleted or forced (section 9). A release tag must name a
+# commit already on the remote's main.
+set -eu
+command -v cargo >/dev/null 2>&1 || {
+  echo "aegis: cargo is missing, so the push is refused" >&2
+  exit 1
+}
+remote="$1"
+zero=0000000000000000000000000000000000000000
+while read -r local_ref local_sha remote_ref remote_sha; do
+  if [ "$local_sha" = "$zero" ]; then
+    echo "aegis: deleting $remote_ref is refused" >&2
+    exit 1
+  fi
+  case "$remote_ref" in
+  refs/heads/main) ;;
+  refs/tags/v[0-9]*)
+    if [ "$remote_sha" != "$zero" ]; then
+      echo "aegis: replacing the tag $remote_ref is refused" >&2
+      exit 1
+    fi
+    commit=$(git rev-parse "$local_sha^{commit}")
+    main="refs/remotes/$remote/main"
+    if ! git merge-base --is-ancestor "$commit" "$main"; then
+      echo "aegis: $remote_ref must name a commit already on main" >&2
+      exit 1
+    fi
+    continue
+    ;;
+  *)
+    echo "aegis: only main and release tags may be pushed" >&2
+    exit 1
+    ;;
+  esac
+  if [ "$remote_sha" != "$zero" ] &&
+    ! git merge-base --is-ancestor "$remote_sha" "$local_sha"; then
+    echo "aegis: rewriting main's history is refused" >&2
+    exit 1
+  fi
+  if [ "$(git rev-parse HEAD)" != "$local_sha" ]; then
+    echo "aegis: check out $local_ref before pushing it" >&2
+    exit 1
+  fi
+  cargo run --quiet --package aegis -- push "$remote_sha" "$local_sha"
+done
