@@ -121,8 +121,7 @@ fn refuses_tags_that_change_what_a_key_means() {
     ] {
         assert!(refused(&format!("{GOOD}{bad}")), "{bad}");
     }
-    let directive = format!(
-        "%TAG !e! tag:yaml.org,2002:\n---\n{GOOD}    !e!binary Y29udGFpbmVy: x\n"
-    );
+    let head = "%TAG !e! tag:yaml.org,2002:\n---\n";
+    let directive = format!("{head}{GOOD}    !e!binary Y29udGFpbmVy: x\n");
     assert!(refused(&directive));
 }

@@ -12,6 +12,7 @@ pub mod repo;
 pub mod rule_file;
 pub mod secrets;
 pub mod shell;
+pub mod text;
 pub mod tiers;
 pub mod tool;
 pub mod workflows;

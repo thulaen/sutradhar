@@ -15,20 +15,22 @@ pub fn typescript_on(repo: &Repo) -> bool {
         .is_some_and(|t| t.lines().any(|l| l.trim() == "name = \"tsgo\""))
 }
 
-/// The checks for a set of files: kind, size, secrets and the shell
-/// checks. Files that are missing are only checked for their
-/// kind.
+/// The checks for a set of files: kind, clean text, size, markers,
+/// secrets, workflows and the shell checks. Files that are missing are
+/// only checked for their kind.
 #[must_use]
 pub fn file_checks(repo: &Repo, paths: &[String]) -> Vec<Finding> {
     let ts = typescript_on(repo);
     let mut out = file_kinds::check(paths.iter().map(String::as_str), ts);
     let mut scripts = Vec::new();
     for path in paths {
-        let (Some(kind), Some(text)) =
-            (file_kinds::kind_of(path, ts), repo.read(path))
+        let (Some(kind), Some(bytes)) =
+            (file_kinds::kind_of(path, ts), repo.read_bytes(path))
         else {
             continue;
         };
+        out.extend(crate::text::check(path, kind, &bytes));
+        let text = String::from_utf8_lossy(&bytes);
         out.extend(limits::check(path, kind, &text));
         out.extend(markers::check(path, kind, &text));
         out.extend(secrets::check(path, &text));

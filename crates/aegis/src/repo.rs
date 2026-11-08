@@ -253,6 +253,12 @@ impl Repo {
         Some(String::from_utf8_lossy(&bytes).into_owned())
     }
 
+    /// The bytes of a file, or `None` when it cannot be read.
+    #[must_use]
+    pub fn read_bytes(&self, path: &str) -> Option<Vec<u8>> {
+        fs::read(self.content.join(path)).ok()
+    }
+
     /// True when the path is a folder.
     #[must_use]
     pub fn is_folder(&self, path: &str) -> bool {

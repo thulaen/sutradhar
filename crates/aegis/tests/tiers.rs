@@ -239,3 +239,20 @@ fn push_tier_scans_changes_made_in_merges() {
     let paths: Vec<&str> = found.iter().map(|f| f.path.as_str()).collect();
     assert!(paths.contains(&"m.md (history)"), "{found:?}");
 }
+
+#[test]
+fn file_checks_refuse_hidden_characters_and_text_that_is_not_utf8() {
+    let dir = scratch("text");
+    fs::write(dir.join("a.rs"), "fn f() {} // a\u{202e}b\n").unwrap();
+    fs::write(dir.join("b.rs"), b"// caf\xe9\n").unwrap();
+    fs::write(dir.join("c.rs"), "fn g() {}\n").unwrap();
+    let repo = Repo::at(&dir);
+    let paths = ["a.rs", "b.rs", "c.rs"].map(str::to_owned);
+    let found = tiers::file_checks(&repo, &paths);
+    let text: Vec<&str> = found
+        .iter()
+        .filter(|f| f.check == "text.clean")
+        .map(|f| f.path.as_str())
+        .collect();
+    assert_eq!(text, ["a.rs", "b.rs"]);
+}
