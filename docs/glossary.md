@@ -71,6 +71,7 @@ Plain meanings of the names and terms used in Sutradhar.
 | DRY | "Don't repeat yourself": each fact or piece of logic lives in one place |
 | DST | Daylight saving time |
 | Ed25519 | A modern, fast method for signing messages |
+| Editorial Coach | The feature that suggests the smallest useful edit to a page |
 | Embeddings | Numbers that stand for the meaning of a piece of text |
 | End-to-end test | A test that runs a whole journey, from start to finish |
 | Environment variable | A named setting passed to a program when it starts |
@@ -99,6 +100,7 @@ Plain meanings of the names and terms used in Sutradhar.
 | Lock file | A file that records the exact version of every library used |
 | Mailbox | The shared service where agents send messages and take file locks |
 | MC/DC | Modified condition/decision coverage: tests show each condition in a decision really changes the result |
+| MCP | Model Context Protocol: a standard way for AI tools to plug into a program |
 | Method | One distinct, independently qualified way of doing a job, counted for the release bar |
 | Migration | A numbered change to the database's layout |
 | Milestone | A group of Forgejo tasks: one for each roadmap phase, plus "Later" |

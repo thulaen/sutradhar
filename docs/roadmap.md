@@ -146,7 +146,7 @@ Forgejo milestone: `Phase 5: Core`.
 2. Self-healing and recovery.
 3. Retention.
 4. ganit, darshak, hisaab and the rest of tijori.
-5. The `sutra` command.
+5. The `sutra` command and the MCP server.
 6. Cloud helpers on the owner's own accounts.
 7. The manual, built into the app.
 8. A pinned test machine that matches the owner's PC.

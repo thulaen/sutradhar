@@ -18,3 +18,4 @@ Decided by the owner on 8 November 2026. The rules for each are in
 | Release key on Dell | Keeps releases automatic; every use is logged |
 | Agents mark ready tasks in roadmap order | Agents keep moving without waiting |
 | Agents close phases after a signed check | Work never waits at the end of a phase |
+| Editorial Coach wording by pure-Rust models, plus an MCP server | Private by default; the owner may plug in their own AI tools |

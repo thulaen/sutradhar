@@ -206,19 +206,27 @@ shipped product is built on it. Parts made before Boot exists (the gate,
 - Lists of data-centre network addresses, used to spot bots, come from
   free public lists. They are fetched weekly and checked by hash.
 - Paid embeddings through AWS Bedrock are optional, off by default, and
-  use the owner's own key. They are the only time site text leaves the
-  owner's PC, apart from cloud helpers the owner turns on. Local models
-  always work without them.
+  use the owner's own key. Local models always work without them.
+- Writing tips (the Editorial Coach) come from the pure-Rust models.
+- Sutradhar offers an MCP server for AI tools the owner connects. It is
+  reached only on the owner's PC, through the owner-only socket or a
+  program the owner starts, never a network port. Every request is
+  checked against the Cedar permission rules. Each session sees one
+  site only, and never credentials, keys or audit logs. A tool may read
+  and may draft wording, such as writing tips; every draft is only a
+  suggestion that a moderator must accept.
+- Site text leaves the owner's PC only through Bedrock, cloud helpers or
+  an MCP tool, and only when the owner has turned that route on.
 
 ### 5.6 Limits on the owner's PC
 
 - Sutradhar uses at most 8 GB of memory in total: service, engine,
   desktop window (including its web view), models and PostgreSQL
   together.
-- The service, engine, models and PostgreSQL run in one systemd slice
-  for the whole computer, capped at 7 GB. The desktop window runs in the
-  owner's own session, capped at 1 GB. A release-tier test measures the
-  combined peak under the load set in the specifications.
+- The service, engine, models, the MCP server and PostgreSQL run in one
+  systemd slice for the whole computer, capped at 7 GB. The desktop window
+  runs in the owner's own session, capped at 1 GB. A release-tier test
+  measures the combined peak under the load set in the specifications.
 - Expensive work is bounded, recoverable and schedulable, within the
   limits each specification sets (gate items GI-36 and GI-43).
 
