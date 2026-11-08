@@ -3,8 +3,9 @@
 use std::fs;
 
 use crate::patch;
+use std::io::Write;
 use std::path::{Path, PathBuf};
-use std::process::Command;
+use std::process::{Command, Stdio};
 use std::time::{SystemTime, UNIX_EPOCH};
 
 /// A git repository on disk. Git runs in `root`; files are read from
@@ -97,6 +98,20 @@ impl Repo {
     /// # Errors
     /// When git cannot start or ends with an error.
     pub fn git(&self, args: &[&str]) -> Result<String, String> {
+        self.git_with_input(args, &[])
+    }
+
+    /// Runs git with `input` as what it reads, and returns what it
+    /// printed. Git's hook variables are cleared, so git always works on
+    /// this repository, except for the index a hook was given.
+    ///
+    /// # Errors
+    /// When git cannot start or ends with an error.
+    pub fn git_with_input(
+        &self,
+        args: &[&str],
+        input: &[u8],
+    ) -> Result<String, String> {
         let mut command = Command::new(&self.git);
         let _cleared = command
             .env_remove("GIT_DIR")
@@ -105,13 +120,20 @@ impl Repo {
         if let Some(index) = &self.index {
             let _kept = command.env("GIT_INDEX_FILE", index);
         }
-        let out = command
+        let mut child = command
             .arg("-C")
             .arg(&self.root)
             .args(args)
-            .output()
+            .stdin(Stdio::piped())
+            .stdout(Stdio::piped())
+            .stderr(Stdio::piped())
+            .spawn()
             .map_err(|e| format!("cannot run git: {e}"))?;
-        if out.status.success() {
+        let sent = child.stdin.take().map(|mut s| s.write_all(input));
+        let out = child
+            .wait_with_output()
+            .map_err(|e| format!("git did not finish: {e}"))?;
+        if out.status.success() && !matches!(sent, Some(Err(_))) {
             Ok(String::from_utf8_lossy(&out.stdout).into_owned())
         } else {
             Err(format!(

@@ -39,6 +39,11 @@ pub enum Kind {
 /// all. `typescript_on` says whether the TypeScript compiler is pinned.
 #[must_use]
 pub fn kind_of(path: &str, typescript_on: bool) -> Option<Kind> {
+    // Cargo settings in the tree could change how checks run, so they
+    // are never allowed.
+    if path.starts_with(".cargo/") || path.contains("/.cargo/") {
+        return None;
+    }
     let name = path.rsplit('/').next().unwrap_or(path);
     if let Some(kind) = by_name(path, name) {
         return Some(kind);
@@ -166,6 +171,8 @@ mod tests {
             "docs/LICENSE",
             "composer.lock",
             "crates/a/Cargo.lock",
+            ".cargo/config.toml",
+            "crates/a/.cargo/config.toml",
         ];
         assert_eq!(check(planted, true).len(), planted.len());
     }

@@ -30,6 +30,9 @@ services:
     volumes:
       - forgejo-data:/var/lib/gitea
       - forgejo-config:/etc/gitea
+      # The door's socket folder on Dell. Set SUTRADHAR_DOOR_DIR in the
+      # private file docker/forgejo/.env, which is never committed.
+      - ${SUTRADHAR_DOOR_DIR:?see docker/forgejo/.env}:/door
     environment:
       FORGEJO__database__DB_TYPE: sqlite3
       FORGEJO__log__MODE: console

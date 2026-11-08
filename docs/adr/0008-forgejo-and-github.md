@@ -17,7 +17,8 @@ Decided by the owner on 8 November 2026.
 - Agents may commit, push and release on their own. The release key is
   kept encrypted on Dell, and every use is logged.
 
-The rules are in
+How Forgejo refuses a failing push is in the
+[door specification](../specs/0001-door.md). The rules are in
 [AGENTS.md sections 8 and 9](../../AGENTS.md#8-how-a-session-works).
 
 ## Why
