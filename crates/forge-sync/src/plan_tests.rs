@@ -248,3 +248,13 @@ fn spots_private_text() {
     assert!(is_private(&[["/srv", "/data"].concat()], &[]));
     assert!(!is_private(&["plain".to_owned()], &words));
 }
+
+#[test]
+fn alarms_are_never_copied_either_way() {
+    let sides = Sides {
+        forgejo_issues: vec![issue(70, super::ALARM_TITLE, "changed")],
+        github_issues: vec![issue(71, super::ALARM_TITLE, "changed")],
+        ..Sides::default()
+    };
+    assert_eq!(run(&sides, &Record::default(), &[]).unwrap().len(), 0);
+}

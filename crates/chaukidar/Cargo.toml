@@ -1,0 +1,15 @@
+[package]
+name = "chaukidar"
+version = "0.1.0"
+description = "The watchman: spots any change to what guards the project."
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+forge-sync = { path = "../forge-sync" }
+serde_json = "1"
+
+[lints]
+workspace = true

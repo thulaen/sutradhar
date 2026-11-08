@@ -141,7 +141,13 @@ fn raise_urgent(
 
 /// The `status/urgent` label and the current phase: the open phase
 /// milestone with the lowest number.
-fn urgent_home(run: &dyn Run, config: &Config) -> Result<(u64, u64), String> {
+///
+/// # Errors
+/// When Forgejo cannot be read, or has no such label or phase.
+pub fn urgent_home(
+    run: &dyn Run,
+    config: &Config,
+) -> Result<(u64, u64), String> {
     let labels: Value =
         serde_json::from_str(&forgejo_list(run, config, "labels?")?)
             .map_err(|e| e.to_string())?;

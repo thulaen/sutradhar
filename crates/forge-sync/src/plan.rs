@@ -12,6 +12,16 @@ pub const FROM_GITHUB: &str = "<!-- github-issue: ";
 pub const COPIED: &str = "copied-to-forgejo";
 /// The title of the sync's own urgent task, which is never copied.
 pub const URGENT_TITLE: &str = "forge-sync: the copy to GitHub had problems";
+/// The title of the watchman's alarms. They are raised on both sides at
+/// once, so they are never copied either way.
+pub const ALARM_TITLE: &str =
+    "chaukidar: something that guards the project changed";
+
+/// True for the titles of tasks that belong to one side only.
+#[must_use]
+pub fn is_local_only(title: &str) -> bool {
+    title == URGENT_TITLE || title == ALARM_TITLE
+}
 
 /// One change to make.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -96,10 +106,10 @@ pub fn plan(
     }
 }
 
-/// Tasks that came from GitHub, and the sync's urgent task, stay on
+/// Tasks that came from GitHub, the sync's urgent task and alarms stay on
 /// Forgejo.
 fn belongs_on_github(i: &Issue) -> bool {
-    i.title != URGENT_TITLE && !i.body.contains(FROM_GITHUB)
+    !is_local_only(&i.title) && !i.body.contains(FROM_GITHUB)
 }
 
 fn milestone(m: &Milestone, github: &[Milestone]) -> Option<Action> {
@@ -153,7 +163,8 @@ pub fn copy_of(g: &Issue, github_user: &str) -> Option<u64> {
 fn imports(sides: &Sides, rules: Rules<'_>) -> Vec<Action> {
     let mut out = Vec::new();
     for g in &sides.github_issues {
-        let is_copy = copy_of(g, rules.github_user).is_some();
+        let is_copy =
+            copy_of(g, rules.github_user).is_some() || is_local_only(&g.title);
         let done = g.labels.iter().any(|l| l == COPIED)
             || rules.record.imported.contains(&g.number);
         if !is_copy && !done {
