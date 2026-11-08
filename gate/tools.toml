@@ -30,3 +30,9 @@ name = "shfmt"
 version = "3.12.0"
 source = "Ubuntu 26.04 package shfmt 3.12.0-1"
 sha256 = "1bad7d44e5642714b3241708a85ba03fbd0a52460f9e4442b369edc75976d6ca"
+
+[[tool]]
+name = "gitleaks"
+version = "8.30.1"
+source = "https://github.com/gitleaks/gitleaks/releases/tag/v8.30.1"
+sha256 = "88f91962aa2f93ac6ab281d553b9e125f5197bbbce38f9f2437f7299c32e5509"

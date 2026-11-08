@@ -1,0 +1,15 @@
+[package]
+name = "forge-sync"
+version = "0.1.0"
+description = "Copies Forgejo to GitHub one way and brings GitHub issues back."
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+aegis = { path = "../aegis" }
+serde_json = "1"
+
+[lints]
+workspace = true
