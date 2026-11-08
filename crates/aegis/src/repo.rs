@@ -93,6 +93,39 @@ impl Repo {
         &self.content
     }
 
+    /// A git command for this repository, with git's hook variables
+    /// cleared but for the index a hook was given.
+    fn command(&self) -> Command {
+        let mut command = Command::new(&self.git);
+        let _cleared = command
+            .env_remove("GIT_DIR")
+            .env_remove("GIT_INDEX_FILE")
+            .env_remove("GIT_WORK_TREE");
+        if let Some(index) = &self.index {
+            let _kept = command.env("GIT_INDEX_FILE", index);
+        }
+        let _at = command.arg("-C").arg(&self.root);
+        command
+    }
+
+    /// Runs git and returns the bytes it printed, unchanged.
+    ///
+    /// # Errors
+    /// When git cannot start or ends with an error.
+    pub fn git_bytes(&self, args: &[&str]) -> Result<Vec<u8>, String> {
+        let out = self
+            .command()
+            .args(args)
+            .stdin(Stdio::null())
+            .output()
+            .map_err(|e| format!("cannot run git: {e}"))?;
+        if out.status.success() {
+            Ok(out.stdout)
+        } else {
+            Err(format!("git {} failed", args.join(" ")))
+        }
+    }
+
     /// Runs git and returns what it printed.
     ///
     /// # Errors
@@ -112,17 +145,8 @@ impl Repo {
         args: &[&str],
         input: &[u8],
     ) -> Result<String, String> {
-        let mut command = Command::new(&self.git);
-        let _cleared = command
-            .env_remove("GIT_DIR")
-            .env_remove("GIT_INDEX_FILE")
-            .env_remove("GIT_WORK_TREE");
-        if let Some(index) = &self.index {
-            let _kept = command.env("GIT_INDEX_FILE", index);
-        }
-        let mut child = command
-            .arg("-C")
-            .arg(&self.root)
+        let mut child = self
+            .command()
             .args(args)
             .stdin(Stdio::piped())
             .stdout(Stdio::piped())

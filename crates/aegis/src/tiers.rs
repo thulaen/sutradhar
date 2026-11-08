@@ -169,7 +169,8 @@ pub fn push(
         )]);
     }
     let mut out = Vec::new();
-    for commit in crate::history::commits(repo, base, head)? {
+    let commits = crate::history::commits(repo, base, head)?;
+    for commit in &commits {
         out.extend(commit_msg::check(&commit.message));
         out.extend(crate::tdd::check_paths(&commit.message, &commit.paths));
         out.extend(secrets::check("(commit message)", &commit.message));
@@ -181,6 +182,10 @@ pub fn push(
     out.extend(file_checks(repo, &all));
     out.extend(whole_project_docs(repo, &all));
     out.extend(rust_checks(repo));
+    let queue = std::env::var("AEGIS_QUEUE").ok();
+    let cargo = cargo_command(queue.as_deref());
+    let cargo: Vec<&str> = cargo.iter().map(String::as_str).collect();
+    out.extend(crate::red_green::check(repo, &commits, &cargo));
     Ok(out)
 }
 
