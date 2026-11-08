@@ -50,7 +50,7 @@ its end. Specifications 0001, 0002 and 0058 to 0060 were written fresh.
 | [0036](0036-audit-proof.md) | Audit proof | Phase 5 item 4 | `operations/audit-proof.md` |
 | [0037](0037-extension-isolation.md) | Third-party extension isolation | Phase 5 item 5 | `operations/extensions*.md` |
 | [0038](0038-search-services-cloud-storage.md) | Search services, cloud storage and provisioning | Phase 5 item 6 | `operations/search-storage*.md` |
-| [0039](0039-test-room.md) | Test room | Phase 5 item 8 | `signals/machinemirror*.md` |
+| [0039](0039-test-room.md) | Test room | Phase 6 item 1 | `signals/machinemirror*.md` |
 | [0040](0040-search-connectors.md) | Search Console, Bing and GA4 connectors | Phase 6 item 1 | `signals/connectors*.md` |
 | [0041](0041-editorial-coach.md) | Editorial Coach | Phase 6 item 1 | `signals/editorial-coach.md` |
 | [0042](0042-coach-additions.md) | Coach additions | Phase 6 item 1 | `signals/coach-additions*.md` |

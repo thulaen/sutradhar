@@ -28,7 +28,7 @@ is roadmap Phase 4 item 3, and builds on 0022 (reading and indexing),
   of text. A Hub access token (0024) is a different thing.
 - Provider client: the one process that may call Bedrock.
 - Input: one text sent to be turned into a vector: a piece, an extras
-  input, a title, a summary cut text or an anchor phrase, exactly as
+  input, a title or an anchor phrase, exactly as
   0022 and 0023 define them.
 - Spending caps: the rebuild budget (most allowed for one rebuild), the
   monthly cap (everything else in a calendar month) and the daily
@@ -54,8 +54,9 @@ is roadmap Phase 4 item 3, and builds on 0022 (reading and indexing),
    - one embedder per index generation; vectors from different models
      never share an index, so a paid model replaces the local model for the
      whole index and cannot shorten the local model's first run;
-   - pieces of at most 1,024 tokens of the active embedder's tokenizer,
-     titles prefixed, about 15% overlap, nothing truncated; quotes,
+   - pieces of the piece size in the active embedder's tokenizer
+     (1,024 by default, never fewer), titles prefixed, the overlap
+     setting (64 by default), nothing truncated; quotes,
      code, spoilers and signatures skipped;
    - changing the embedder is a full rebuild with new suggestions paused
      and a one-step switch; suggestions already made stay approvable;
@@ -136,12 +137,13 @@ leaves the PC before step 8, and then only the trial's sample.
    typed-in model, which must return one vector.
 5. Self-test, fixed neutral text only: 0024's four embedder sentences
    (vector size, finite values, paraphrase ordering), and one fixed
-   neutral text of 1,024 tokens by the record's counting method, which
-   must be accepted whole. Reported token counts must agree with that
-   method. The vector size requested is always 1,024. A model that
-   cannot give 1,024 numbers, fails, or that the checked terms exclude
-   is refused with its reason (PE-E17). The outputs become the
-   reference for the daily drift check. The model is "added (inactive)".
+   neutral text of the piece size (1,024 tokens by default) by the
+   record's counting method, which must be accepted whole. Reported
+   token counts must agree with that method. The vector size requested
+   is always 1,024. A model that cannot give 1,024 numbers, fails, or
+   that the checked terms exclude is refused with its reason (PE-E17).
+   The outputs become the reference for the daily drift check. The
+   model is "added (inactive)".
 6. Price and limits: read from the provider, or, where not published to
    programs, entered by the owner, dated.
 7. Forecast and caps.
@@ -242,8 +244,8 @@ details kept apart from the minimal event.
    - inputs built from guest-visible content at the moment of sending,
      exactly as a local embedder would get them: title-prefixed pieces
      of readable body text; extras inputs (alt text, attachment names,
-     stored link-preview and media titles, each cut to 200 characters);
-     destination titles; summary cut texts; anchor phrases. Quotes,
+     stored link-preview and media titles, each read in full);
+     destination titles; anchor phrases. Quotes,
      code, spoilers and signatures never; censored words already masked;
    - fixed neutral text for the key check, self-test and probes;
    - with each request: the key in the authentication header, the model
@@ -298,7 +300,7 @@ details kept apart from the minimal event.
 4. Forecast:
    - rebuild cost: after 0022's first pass gives every eligible item's
      readable text, Sutradhar cuts pieces by the counting method and
-     counts pieces, extras, titles and summary cut texts; anchor
+     counts pieces, extras and titles; anchor
      phrases are estimated from a seeded sample of 1,000 posts. Money
      is tokens times price over a million;
    - shown as a range: the count, and the count plus 10% for retries,
@@ -307,8 +309,9 @@ details kept apart from the minimal event.
    - rebuild time, which is also the pause: tokens over the lower of
      the account's token rate limit and the trial's throughput;
    - monthly cost: the last 30 days' new and edited posts, title edits
-     (which re-read a whole thread), summary rebuilds and anchor
-     phrases, beside the monthly cap;
+     (which re-read a whole thread) and anchor phrases, beside the
+     monthly cap; summary vectors need no paid call, as 0022 builds
+     them from stored piece vectors;
    - catch-up cost: every item changed since a fallback;
    - for scale only: about 165 million local-tokenizer tokens for a million
      posts' pieces, so about 165 times the price per million;
@@ -320,7 +323,7 @@ details kept apart from the minimal event.
    cap, trials and catch-ups included; the daily ceiling,
    `models.paid.cap.daily_share` of the monthly cap (10%). A rebuild
    that is not the owner's own choice, such as new reading rules in an
-   upgrade or a changed summary setting, also needs its forecast
+   upgrade or a changed piece size or overlap, also needs its forecast
    approved against a new rebuild budget before it starts.
 6. The hard stop: before each request its cost is reserved in the
    ledger in one atomic step; if spent plus outstanding reservations
@@ -378,8 +381,9 @@ details kept apart from the minimal event.
 
 ### Tokens, pieces and the compatibility key
 
-1. For a paid embedder, pieces hold at most 1,024 tokens by the record's
-   counting method, title included.
+1. For a paid embedder, pieces hold at most the piece size by the
+   record's counting method, title included. The piece size is never
+   below 1,024, so a model whose window is under it is not offered.
 2. Where a tokenizer for Bedrock's embedding models is published for
    local use, its files are pinned with SHA-256, data-only, load offline
    and never fetch files at run time; its fingerprint enters the key.
@@ -391,8 +395,9 @@ details kept apart from the minimal event.
    owner before the record is admitted. A route with neither method is
    not offered.
 3. Before every request each input is counted again; one over the window
-   (as read, or else the 1,024 tokens the self-test proved), or a piece
-   over 1,024, is refused with an error code and reported as a defect.
+   (as read, or else the piece size the self-test proved), or a piece
+   over the piece size, is refused with an error code and reported as
+   a defect.
    Nothing is cut silently.
 4. The paid key, in 0024's terms: entry id is the record's; repository
    becomes route plus typed-in model name; revision becomes the model
@@ -960,8 +965,8 @@ logged.
   uses its figure and a daily gap over 2% warns. A rebuild stopped by
   its budget cancels the activation, reloads the local model, keeps the partial
   generation and shows the money spent.
-- Index: pieces never pass 1,024 tokens; an input one over the window is
-  refused before sending; nothing is cut. The generation record holds
+- Index: pieces never pass the piece size; an input one over the
+  window is refused before sending; nothing is cut. The generation record holds
   the full paid key; a search with another key is refused, and after a
   fallback or return every search carries the serving key.
 - Trial: runs only after steps 1 to 7, sends only its sample, stays in

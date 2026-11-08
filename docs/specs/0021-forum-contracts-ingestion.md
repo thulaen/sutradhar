@@ -481,6 +481,7 @@ dwarpal uses SUT-300 to SUT-329, sampark SUT-330 to SUT-399:
 | SUT-344 | The breaker on the site is open |
 | SUT-345 | A test profile pointed at a site that is not a test site |
 | SUT-346 | A post over 2 MB is skipped for link insertion |
+| SUT-347 | A WordPress post's part or whole checksum failed; read restarted |
 
 - Site slow or unreachable: the breaker opens; backfill pauses; live
   reads retry with backoff; notes wait in the outbox; suggestions made
@@ -541,6 +542,41 @@ signing rules and pairing. It has its own visibility facts, native
 capabilities and content validator; neither adapter inherits the
 other's visibility or save rules. Its events, pause and conditional
 writes are tested on their own.
+
+**`ReadRange`, the WordPress ranged fetch.** A WordPress post may be
+longer than 16 MiB. The service reads it in parts of at most 16 MiB,
+each fetched in slices of at most 1 MiB (spec 0022). Nothing is cut.
+
+- It is a signed message under "Signing a message": Ed25519, the Unix
+  time, a single-use nonce and a request ID, all checked in the same
+  order with the same codes. The reply is signed with the plugin's key
+  and covers the request ID it answers. A read changes nothing, so a
+  repeated request ID simply gets a fresh, signed answer.
+- Request: post id, content version, part number (from 0), and the
+  slice's byte start and length within the post. A part is a fixed
+  byte range: part n starts at n × 16 MiB, moved back to a character
+  boundary.
+- Reply: post id, content version, part number, the slice's actual
+  start and length (the plugin ends a slice only between characters,
+  so it may be a few bytes short), the slice bytes in base64, and three
+  SHA-256 checksums: of the slice, of the whole part, and of the whole
+  post, plus the post's length in bytes. Every slice of a version
+  carries the same part and whole checksums. The plugin works out the
+  part and whole checksums once per content version, reading the post
+  from the database in 1 MiB chunks, and keeps them with that version
+  until the post changes. It never holds the whole post in memory, so
+  PHP's 8 MB limit holds for any size of post.
+- Checks in the service: each slice's checksum on arrival; the part's
+  checksum once its slices are joined, before the part is parsed; the
+  whole post's checksum over all parts, before any piece is served. A
+  failed check, or a content version that changes, restarts the read
+  from part 0 (SUT-347). After three restarts the post is marked
+  failed (SUT-338), never read in part.
+- Limits: a slice at most 1 MiB of text; the reply body at most
+  1.5 MiB, the stated exception to the 1 MiB body limit, to hold the
+  base64 slice; a part at most 16 MiB; one post read in parts at a
+  time per role; the plugin's extra memory at most 8 MB per request;
+  the same rate limit as other signed routes; never cached.
 
 ### Observability
 
@@ -713,6 +749,13 @@ Edits, versions and limits:
 41. Benchmarks `bench_guest_decision`, `bench_permission_map` and
     `bench_sign_verify`; load tests for backlog reading, the apply
     check and nightly reconciliation hold their targets.
+42. `ReadRange` on the WordPress test site: a 40 MiB post comes in
+    three parts of 1 MiB slices; each reply is signed and covers the
+    request ID; a reply whose request ID differs is refused. A slice,
+    part or whole checksum made wrong in the test gives SUT-347 and a
+    restart from part 0, with nothing served; three restarts give
+    SUT-338. A stale time, a reused nonce and a bad signature are
+    refused with their usual codes. No reply body passes 1.5 MiB.
 
 Release tier for every add-on release: fault injection, defect and
 security checks, resource, memory and storage checks, profiling, load

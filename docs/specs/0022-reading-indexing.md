@@ -9,8 +9,9 @@ owner's PC. It is roadmap Phase 4 item 3.
 
 - Token: the unit a model counts text in; roughly four tokens for
   every three English words. Each model counts in its own way.
-- Piece: a stretch of one post's text, at most 1,024 tokens, that a
-  model reads in one go.
+- Piece: a stretch of one post's text, at most the piece size, that a
+  model reads at once. The piece size is 1,024 tokens by default and
+  never fewer; the owner may set it higher.
 - Vector (embedding): a list of numbers a model writes for a text;
   texts with similar meaning get similar vectors.
 - Embedder: the model that writes the vectors: Qwen3-Embedding-0.6B at
@@ -60,7 +61,8 @@ Each stage commits its result before the next starts, so a crash
 repeats at most the unfinished stage.
 
 1. Receive: the service fetches guest-visible items, from an event or
-   from the backlog cursor; a very long post comes by ranged fetch.
+   from the backlog cursor; a very long post comes by ranged fetch. A
+   WordPress post over 16 MiB is read in parts of at most 16 MiB.
 2. Extract: the parser (spec 0026) turns stored BBCode into typed
    segments.
 3. Record: existing links and state, for every guest-visible post,
@@ -72,8 +74,8 @@ repeats at most the unfinished stage.
    suggestion).
 7. Full reading: embedder vectors for pieces, extras and the title.
 8. Entities: sentences, entities and noun phrases.
-9. Summary: the thread's summary vector and text are rebuilt when the
-   item changes the selected subset.
+9. Summary: the post's vector is added to its thread's running sum,
+   and the thread's summary vector is written again from that sum.
 
 After the first pass, the embedder builds the thread-level index
 first, then the per-post index, with new and edited posts always
@@ -143,32 +145,77 @@ stored message.
   and end markers included. The tokenizer's identity (files and
   checksums) is part of the generation key, so pieces cut for one model
   are never read by another.
+- Piece size: `reading.pieces.tokens`, in the embedder's tokens, 1,024
+  by default. It is never below 1,024; the owner may set it up to
+  3,072. Spec 0023 records the reranker tokens this maps to, measured,
+  and always lets the best piece into the reranker.
+- A piece size larger than the active embedder's window is refused
+  with a plain message, such as "This piece size is longer than the
+  embedder can read" (spec 0024, MF-C07).
+- A size above 1,024 is allowed only once a measured run on that PC
+  shows the embedder stays within its row in spec 0024's memory table
+  (1,300 MB under 16 GB, 1,400 MB at 16 GB or more) at that size.
+  Otherwise the setting is refused with a plain message, such as "This
+  piece size needs more memory than the embedder has", and the old
+  size stays.
 - A piece is the thread title, a blank line, then body text, all
-  within 1,024 tokens.
+  within the piece size and within 64 KiB of UTF-8 text, a hard cap.
+  Whichever limit comes first ends the piece, by the same split rules.
 - A paragraph is text between line breaks or between block tags (list
   items, headings, table rows).
 - Whole paragraphs are packed until the next would not fit. A post
   that fits in one piece has exactly one.
-- Overlap: each further piece starts with the last whole sentences of
-  the one before, added from the end until they reach 12.5% to 20% of
-  1,024 tokens (about 15%, or 154 tokens). If no run of whole sentences
-  lands in that band, the overlap is cut at a word boundary at 154.
+- Overlap: `reading.pieces.overlap_tokens`, 64 by default, from 0 to a
+  quarter of the piece size. Each further piece starts with the last
+  whole sentences of the one before, added from the end while they fit
+  in the overlap. If the last sentence alone is longer, the overlap is
+  the last whole words that fit. Only a setting of 0 gives no overlap.
 - A paragraph over the body budget splits at sentence boundaries, found
   by a rule-based splitter (no model needed); a sentence over the
   budget splits at words, with the same overlap.
 - No cut falls inside a word, a combining sequence or an emoji
-  sequence. Every readable character is in at least one piece: nothing
-  is truncated, however long the post.
+  sequence, with one exception: a single word longer than a piece, in
+  tokens or in bytes, is split at grapheme boundaries, and the split is
+  counted and shown. Every readable character is in at least one
+  piece: nothing is truncated, however long the post.
+- Changing the piece size or the overlap re-splits every post. It is a
+  rebuild for new reading rules: the serving generation and
+  suggestions keep running until the new one is whole.
 - Before every model call the input is counted again with that model's
-  tokenizer. An input over the model's window, or a piece over 1,024
-  tokens, is refused with an error code and reported as a defect.
+  tokenizer. An input over the model's window, or a piece over the
+  piece size, is refused with an error code and reported as a defect.
   Nothing is ever cut silently.
+
+### Very long posts
+
+- XenForo's largest post is 16 MiB, the size of its message column.
+  16 MiB is also the most the text engine takes as one message (spec
+  0026).
+- A WordPress post over 16 MiB is read in full, in parts of at most
+  16 MiB, so nothing is cut or refused. Each part is fetched in slices
+  of at most 1 MiB by `ReadRange`, the WordPress plugin's ranged fetch
+  (spec 0021). It is then parsed, split, read and dropped from memory
+  before the next.
+- A part is a fixed byte range of at most 16 MiB, ending on a
+  character boundary. The parser's open tags and positions carry into
+  the next part, and so do the unfinished paragraph, piece and
+  overlap. So a part edge needs no paragraph boundary, and the pieces
+  are the same as if the post were read whole.
+- Checksums: each part's checksum is checked before the part is
+  parsed and before any of its results are stored. Its pieces,
+  vectors, spans and links are stored as staged, and none of the
+  post's pieces is served until the whole post's checksum passes. Then
+  the staged results replace the old version in one step.
+- If a part's or the whole post's checksum fails, or the post changes
+  part-way, every staged result of that read is dropped and the new
+  version is read from the start. The old version serves meanwhile.
 
 ### Extras
 
-- Each extra is cut to its first 200 characters at a word boundary. A
-  post's extras are joined and read as their own title-prefixed input
-  within 1,024 tokens; more extras form another input.
+- Each extra is read in full. A post's extras are joined and read as
+  their own title-prefixed inputs within the piece size; more extras
+  form another input. An extra longer than one input splits like body
+  text, with the same overlap.
 - Extras vectors are stored apart from pieces, carry weight 0.5 in
   matching and are flagged never-anchor.
 
@@ -207,43 +254,58 @@ stored message.
 - An edit that changes only skipped zones changes no piece; only its
   links and the new version are recorded.
 - New and edited posts go to the live lane.
-- A thread title edit changes every piece. The first post and summary
-  are re-read in the live lane, the other posts in the backlog lane.
-  Old pieces serve until each is replaced.
+- A thread title edit changes every piece. The title, the first post
+  and the accepted answer are re-read in the live lane, the other posts
+  in the backlog lane. Old pieces serve until each is replaced, and
+  each re-read post swaps its old share of the thread's sum for its
+  new one.
 - Moved, merged and split threads: moved posts count as edited, and
   their visibility is checked again.
 - Deletion, loss of guest visibility or an erasure request removes the
-  item from the serving index at once and purges its stored data.
-  Affected summaries are rebuilt.
+  item from the serving index at once and purges its stored data. Its
+  share leaves its thread's sum in the same step.
 - A daily reconciliation compares the add-on's list of ids, last-edit
   times and visibility with the index and repairs differences.
 
 ### Thread summary vector
 
-- Subset: the title (weighted); the first post in full; the accepted
-  answer, if any; the 5 highest-reacted replies; the first 5 replies;
-  the 3 most recent posts; then, without duplicates, the next
-  most-reacted replies until there are 20 posts.
-- Only guest-visible posts that are read are chosen; an ineligible
-  post is passed over and the next takes its place.
-- "Highest-reacted" adds up reactions of every type equally, Sad and
-  Angry included.
-- Each selected post but the first is cut to its first 400 characters
-  of readable text, at or before a word boundary, with quotes, code,
-  spoilers and signatures already gone.
-- The vector is the weighted average of normalised vectors: the title
-  (weight 2), the first post and each other cut text (weight 1),
-  normalised again. The first post's vector is the average of its
-  pieces' vectors, so the whole post counts with no extra model run.
-- Summary text, for the reranker: the title, the first post's readable
-  text, then each cut text in subset order. Spec 0023 caps the first
-  post's share.
-- Cut-text vectors are kept, so a rebuild reads only newly selected
-  posts. Rebuilds after reaction changes wait at least 10 minutes per
-  thread.
-- Changing a summary setting rebuilds the affected summaries in the
-  background with progress. Each old summary serves until its new one
-  is written.
+- A thread's summary vector is built from every read post, each read
+  in full. No post is picked out and no text is cut.
+- A post's vector is the average of its pieces' normalised vectors,
+  normalised again, so the whole post counts with no extra model run.
+- Four parts, each with its own weight: the title; the first post; the
+  accepted answer, if any; and the other posts together, as the
+  normalised average of their post vectors. The vector is the weighted
+  sum of the parts, normalised again. A missing part is left out.
+- The title always weighs most. The first post and the accepted answer
+  each weigh more than the other posts together. Settings that break
+  this order are refused.
+- The starting weights are 0.4, 0.25, 0.2 and 0.15. The Dell lab tunes
+  them by link reconstruction (spec 0023): the forum's existing links
+  are rebuilt, and the weights that rebuild them best, within the
+  order above, become the defaults.
+- Only guest-visible posts that are read count. Reactions do not
+  choose or weigh posts.
+- Streaming: no thread is ever held whole. Each destination keeps a
+  running sum of its other posts' vectors at 64-bit precision, with
+  their count. A newly read post adds its vector. An edit takes out
+  the old vector, worked out from the old pieces before they are
+  removed, and adds the new one. A removal takes its vector out.
+  Memory per thread is one sum, 8 KiB, whatever the thread's length.
+- The accepted answer is not in the other posts' sum. When an answer
+  is marked, changed to another post or unmarked, that thread's sum is
+  worked out again from its stored per-post vectors (each the average
+  of the post's stored piece vectors), one post at a time, with no
+  model run and no re-reading. The summary vector is then written
+  again. A newly marked answer leaves the sum; an unmarked one joins
+  it.
+- The summary vector is written again from the sum and the three other
+  parts after each change. The daily reconciliation works out each
+  sum changed that day again from the stored pieces, one post at a
+  time, so rounding never builds up.
+- Changing a summary weight rewrites the summary vectors from the
+  stored sums in the background, with progress, with no model run.
+  Each old vector serves until its new one is written.
 - Resources use the same rule, with updates for replies and no
   accepted answer. Hub pages use their title and own text.
 
@@ -254,7 +316,7 @@ stored message.
 - At the start of the first backlog run it sweeps every eligible item:
   extraction, links and state, language, splitting and potion vectors.
   This gives exact totals for honest progress estimates, and each
-  thread's eligible posts with reactions for the summaries. The
+  thread's eligible posts for the summaries. The
   sweep's time is measured and shown.
 - It gives an early shortlist of each thread's nearest threads, by
   exact search over potion vectors. The shortlist feeds progress
@@ -267,15 +329,19 @@ stored message.
   seconds, per post, never per batch. A new thread's title and summary
   are made in the live lane, so it is a destination at once.
 - Phase 1, the thread-level index: for each eligible destination the
-  embedder reads its title and summary subset (the first post as its
-  pieces, and each cut text) and writes the title and summary vectors.
-  The first post's pieces join the per-post index as written. When
-  every eligible destination has both vectors, the thread-level index
-  is complete and suggestions may start. Estimate: a day or two for
+  embedder reads its title, its first post in full and its accepted
+  answer in full, and writes the title vector and a first summary
+  vector from them. Their pieces join the per-post index as written.
+  When every eligible destination has both vectors, the thread-level
+  index is complete and suggestions may start. Estimate: a day or two for
   50,000 threads on an ordinary processor; measured figures replace it.
 - Phase 2, the per-post index: remaining posts are read in the backlog
-  lane, one thread's posts together before the next thread. Each
-  post's suggestions can appear the moment it is read.
+  lane, one thread's posts together before the next thread. Each post
+  joins its thread's running sum as it is read, and the summary vector
+  is written again at each checkpoint and when the thread is fully
+  read. Until then the summary vector holds the posts read so far, and
+  coverage records that. Each post's suggestions can appear the moment
+  it is read.
 - Both phases take threads highest first by view count divided by one
   plus the years since the last post, newer first on ties. Resources
   and hub pages use the same rule, counting no views where none are
@@ -295,9 +361,11 @@ stored message.
   reranker call in backlog matching. After each backlog call, waiting
   live work is served.
 - A model call cannot be stopped part-way, so live work waits at most
-  for one backlog call: in the worst case one full 1,024-token piece,
-  about 3 to 6 seconds on the reference hardware (4 processor cores
-  and a SATA solid-state disk), to be measured.
+  for one backlog call: in the worst case one full piece. At 1,024
+  tokens that is about 3 to 6 seconds on the reference hardware (4
+  processor cores and a SATA solid-state disk), to be measured. A
+  larger piece size makes the wait longer; the settings screen shows
+  the measured wait before the change is made.
 - The backlog lane runs at the lowest processor priority and idle disk
   priority. The live lane runs below normal but above the backlog.
 - The backlog pauses under load. It watches pressure (the share of
@@ -342,7 +410,9 @@ Per item (post, resource description or update, hub page):
 - readable text with masks, and the position-map version;
 - positions of skipped zones and extras, for the "post X-ray" view;
 - pieces: offsets, token count, text, embedder vector, potion vector;
-- extras: kind, cut text and vector, flagged never-anchor;
+- extras: kind, text and vector, flagged never-anchor;
+- for a post read in parts: the part boundaries and the running
+  checksum, until the post is fully read;
 - sentence boundaries, allowed entities with labels, noun phrases, and
   the entity model's key.
 
@@ -352,8 +422,8 @@ Per destination (thread, resource, hub page):
 - view count and last post date, for the reading order;
 - in the serving generation, whether its title and summary vectors are
   written, and how many of its eligible posts are read;
-- summary subset (post ids), cut-text vectors, summary vector, summary
-  text and summary settings version.
+- summary vector; the running sum of the other posts' vectors (64-bit)
+  and their count; the summary settings version.
 
 Per index generation:
 
@@ -373,12 +443,12 @@ background compaction clears. Matching scans the segments in blocks.
 Spec 0024 owns the uninstall table. Reading's stores fall as follows:
 
 - Always deleted, with no keep option and no export: every vector
-  (pieces, extras, titles, summaries, cut texts, first pass), segment
+  (pieces, extras, titles, summaries, running sums, first pass), segment
   files, row tables, removed-row lists and generation records.
 - With the export offer and keep-or-delete choice: the reading records
   the index is built from (state, skip reasons, language, readable-text
-  copies, piece, extras and summary text, entity and noun-phrase spans,
-  link records, summary subsets), reading checkpoints and the backlog
+  copies, piece and extras text, entity and noun-phrase spans, link
+  records), reading checkpoints and the backlog
   cursor. Reading's settings follow spec 0024's rule for settings.
 
 ### Index generations and the revision check
@@ -408,9 +478,9 @@ Spec 0024 owns the uninstall table. Reading's stores fall as follows:
 Spec 0024's community-model check and install preflight use this.
 
 - Projected bytes = V × D × B + V × W + T + F, where V is the number of
-  stored vectors (pieces, extras inputs, titles, summaries, kept
-  cut-text vectors); D is the vector size (1,024, the size
-  Qwen3-Embedding-0.6B's model card gives); B is 4
+  stored vectors (pieces, extras inputs, titles, summaries, and each
+  running sum counted twice, as it is 64-bit); D is the vector size
+  (1,024, the size Qwen3-Embedding-0.6B's model card gives); B is 4
   bytes per number; W is the row-table cost, about 16 bytes per vector;
   T is stored text and records (2 KB per piece until measured); F is
   the first-pass store (its vectors × potion's vector size × 4 bytes).
@@ -435,12 +505,12 @@ never reads the site's database; the add-on supplies the data.
   and solution flags, post and edit dates, stored message, reaction
   counts by type, attachment names, stored preview and media titles,
   censor positions, content version and `guest_visible`, which must be
-  true. A batch holds at most 1 MB of message text, so the add-on's
+  true. A batch holds at most 1 MiB of message text, so the add-on's
   extra memory stays under 8 MB per request.
 - A message over the batch cap is sent as a header only: length in
   code points, content version and checksum.
 - `ReadPart` (the ranged fetch): one slice of one message (start and
-  length in code points, at most 1 MB) for that content version. The
+  length in code points, at most 1 MiB) for that content version. The
   add-on cuts only between characters. The service joins the slices
   and checks the checksum; if the post changed, it starts again.
 - `ContentEvent`: post saved, edited, soft-deleted, hard-deleted or
@@ -470,22 +540,22 @@ Settings use spec 0014, with versioned, atomic changes; each batch
 records the settings version it used. Settings move only within
 approved bounds.
 
-Fixed, not settings: pieces of at most 1,024 tokens; about 15%
-overlap; the title in every piece; quotes, code, spoilers and
+Fixed, not settings: pieces never below 1,024 tokens; every post,
+extra and part read in full; parts of at most 16 MiB for a longer
+WordPress post; the order of the summary weights; the title in every
+piece; quotes, code, spoilers and
 signatures skipped; English only, by main language; dense vectors at
 32-bit; Qwen3-Embedding-0.6B at its published precision; the
 thread-level index first; the views-and-recency order.
 
 | Setting | Default |
 |---|---|
-| `reading.summary.top_reacted` | 5 |
-| `reading.summary.first_replies` | 5 |
-| `reading.summary.recent` | 3 |
-| `reading.summary.total` | 20 |
-| `reading.summary.cut_chars` | 400 |
-| `reading.summary.title_weight` | 2.0 |
-| `reading.summary.rebuild_delay_minutes` | 10 |
-| `reading.extras.item_chars` | 200 |
+| `reading.pieces.tokens` | 1,024 (1,024 to 3,072) |
+| `reading.pieces.overlap_tokens` | 64 (0 to a quarter of the piece size) |
+| `reading.summary.title_weight` | 0.4 (tuned on Dell) |
+| `reading.summary.first_post_weight` | 0.25 (tuned on Dell) |
+| `reading.summary.accepted_weight` | 0.2 (tuned on Dell) |
+| `reading.summary.other_posts_weight` | 0.15 (tuned on Dell) |
 | `reading.extras.weight` | 0.5 |
 | `reading.language.min_letters` | 20 |
 | `reading.index.budget_gb` | 25 |
@@ -497,8 +567,9 @@ thread-level index first; the views-and-recency order.
 | `reading.php.part_bytes` | 1,048,576 |
 | `reading.reconcile.interval_hours` | 24 |
 
-Changing a setting that alters vectors (summary counts, cut length,
-title weight) rebuilds the affected summaries in the background.
+Changing a summary weight rewrites the summary vectors in the
+background from stored sums, with no model run. Changing the piece
+size or the overlap is a rebuild for new reading rules.
 
 ### Model files
 
@@ -594,9 +665,29 @@ treated as zero.
   worker loads its own copy.
 - Batches are limited by tokens, not items, so a long post cannot spike
   memory.
+- Reading every post in full streams; it never holds a whole thread.
+  A post is read one piece at a time, and its vector is a running
+  average of its pieces. A thread keeps one running sum of 8 KiB. A
+  WordPress post over 16 MiB is held one part at a time, never whole,
+  so it peaks no higher than XenForo's largest post.
+- One message of up to 16 MiB is read as a stream (spec 0026): one
+  copy of the message, freed after reading; a streaming parser capped
+  at 4 MiB; text straight into the piece builder; pieces to the
+  embedder queue one at a time. Worked peak for a 16 MiB message:
+  about 26.3 MB; with one ordinary batch and the running sums beside
+  it, about 33 MB. Only one message over 1 MiB is read at a time.
+- So reading's peak does not grow with thread or post length. It stays
+  in its row of spec 0024's memory table (48 MB under 16 GB, 128 MB at
+  16 GB or more), with no change to the row, and the whole service
+  stays under the 85% line of its slice (3,825 MB under 16 GB,
+  5,950 MB at 16 GB or more).
 - The add-on adds at most 8 MB per request; batches and slices carry at
-  most 1 MB of text each.
-- Pieces at most 1,024 tokens; a batch at most 30 seconds of model
+  most 1 MiB of text each.
+- At most 64 threads are being read at once across both lanes, each
+  holding one running sum of 8 KiB, so the sums take at most 512 KiB.
+  A thread waits for a free place before its first post is read.
+- Pieces of the piece size (1,024 tokens by default, never fewer, at
+  most 3,072); a batch at most 30 seconds of model
   work; at most one minute of repeated work per worker after a crash.
 - Index size: ceiling `reading.index.budget_gb` (25 GB), warning at
   80%.
@@ -627,15 +718,17 @@ reason.
   tests refusal of over-long input. Integration tests repeat the
   splitter checks with the real pinned tokenizer.
 - Property tests on generated posts: every readable character is in a
-  piece; no piece exceeds 1,024 tokens; overlaps stay in band; no cut
-  splits a word or combining sequence; skipped zones and extras never
-  enter pieces; the same input always gives the same pieces.
+  piece; no piece exceeds the piece size; no overlap exceeds the
+  overlap setting; no cut splits a word or combining sequence; skipped
+  zones and extras never enter pieces; the same input always gives the
+  same pieces.
 - Fixtures: the synthetic fixture of about 300 threads gains nested
   and unclosed quotes, code holding BBCode-like text, spoilers,
   mentions, unknown BBCode, censored words, mixed and short-language
-  posts, a 5 MB post, a tag bomb, image-only and quote-only posts,
-  links inside quotes, attachments, link previews, NFC and NFD text,
-  four-byte emoji, CRLF line endings, zero-width characters, a question
+  posts, a 5 MB post, a 40 MiB WordPress post, a tag bomb, image-only
+  and quote-only posts, links inside quotes, attachments, link
+  previews, NFC and NFD text, four-byte emoji, CRLF line endings,
+  zero-width characters, a question
   thread with an accepted answer and every reaction type, threads with
   known views and last post dates, a resource with updates and reviews,
   and a hub page. All text is made up.
@@ -654,7 +747,8 @@ reason.
   tokens per hour) on the reference hardware and Dell; one full piece;
   the first-pass sweep and the thread-level index per thousand
   destinations; peak memory with disk cache during the backlog, a 5 MB
-  post and a summary rebuild; index size per million posts against the
+  post, a 40 MiB WordPress post, a 5,000-post thread and a summary
+  rewrite; index size per million posts against the
   projection; the time from a pressure spike to pausing (target 5
   seconds); the live wait behind a backlog call.
 
@@ -670,7 +764,9 @@ Acceptance tests (Rust):
    at most 1,024 tokens by the embedder's tokenizer.
 4. A 5,000-token post of 20 paragraphs gives pieces of at most 1,024
    tokens, each starting at a paragraph or sentence boundary, with
-   overlaps of 128 to 205 tokens.
+   overlaps of whole sentences of at most 64 tokens. Where the last
+   sentence of a piece is over 64 tokens, the next piece's overlap is
+   the last whole words that fit in 64 tokens.
 5. A 3,000-token paragraph splits at sentences; a 2,000-token sentence
    with no punctuation splits at words; no piece is too long and no
    word is cut.
@@ -685,20 +781,24 @@ Acceptance tests (Rust):
 9. Alt text, attachment names and stored preview titles become extras
    with weight 0.5, in no piece, flagged never-anchor; no network
    request is made for a title.
-10. Editing one reply in a 2,000-post thread re-reads that reply alone,
-    plus the summary if the reply is in the subset.
+10. Editing one reply in a 2,000-post thread re-reads that reply alone;
+    the thread's sum swaps the reply's old vector for its new one, and
+    equals a sum made from scratch within rounding.
 11. An edit to a quote only makes no embedder call and records the new
     content version.
-12. A title edit re-reads the first post and summary in the live lane
+12. A title edit re-reads the title, first post and accepted answer
+    in the live lane
     and queues every other post in the backlog lane; the count shows.
-13. In a question thread with 60 replies, the subset holds the title,
-    first post, accepted answer, 5 highest-reacted, first 5 and 3 most
-    recent, topped up to 20 without duplicates; each but the first is
-    cut to 400 characters without quotes, code and spoilers; every
-    reaction type counts equally; the first post's vector is the
-    average of its pieces.
-14. Changing `reading.summary.recent` from 3 to 4 rebuilds summaries in
-    the background with progress; old summaries serve until replaced.
+13. In a question thread with 60 replies of up to 3,000 tokens each,
+    the summary vector uses every read post in full: it equals the
+    weighted sum, normalised, of the title, the first post, the
+    accepted answer and the average of all 58 other posts. Removing any
+    one post's text from the input changes the vector. Reactions do
+    not change it. Each post's vector is the average of its pieces.
+14. Changing a summary weight rewrites summary vectors in the
+    background with progress and no model run; old vectors serve until
+    replaced. Weights that put the title below another part, or the
+    first post or accepted answer below the other posts, are refused.
 15. With 10,000 backlog posts queued, a new post waits only for the one
     backlog call running (measured).
 16. Pressure above 20% for 10 seconds from programs outside the slice
@@ -729,6 +829,8 @@ Acceptance tests (Rust):
 25. During a backlog run on the 50,000-thread tier, peak memory stays
     under the slice cap; with injected memory pressure, batches shrink
     and the backlog refuses new work, with a reason, before the cap.
+    Peak memory while reading a 5,000-post thread equals that of a
+    5-post thread within the measuring tolerance.
 26. Censored words are masked in stored text and pieces.
 27. With Resource Manager, descriptions and updates are read with the
     resource title and reviews are not; without it, nothing about
@@ -745,7 +847,7 @@ Acceptance tests (Rust):
     and the first pass shows as degraded.
 32. No `ReadBatch` exceeds its byte cap; the add-on's extra memory per
     request stays under 8 MB, measured with it on and off.
-33. A 5 MB post arrives in slices of at most 1 MB, each request under
+33. A 5 MB post arrives in slices of at most 1 MiB, each request under
     8 MB; the joined text matches its checksum and is read in full.
     An edit mid-fetch restarts the fetch for the new version.
 34. An input one token over a fake model's window is refused with a
@@ -756,9 +858,10 @@ Acceptance tests (Rust):
     projection over the budget stops backlog writing with a plain
     message before it is exceeded.
 37. After the first pass, every eligible destination's title and
-    summary vectors are written before any post outside the summary
-    subsets is read, live work apart. The thread-level index is
-    complete only when all have both, and no suggestion comes before.
+    first summary vectors are written before any post other than a
+    first post or accepted answer is read, live work apart. The
+    thread-level index is complete only when all have both, and no
+    suggestion comes before.
 38. Threads with known views and last post dates are read in the
     views-and-recency order in both phases; changing the potion
     shortlist leaves the order unchanged.
@@ -771,6 +874,51 @@ Acceptance tests (Rust):
     complete. In a rebuild for a new embedder the new generation is not
     served before it is whole, no new suggestion is made, and the
     switch changes the serving generation id in one step.
+42. Setting `reading.pieces.tokens` to 1,023, or to any value under
+    1,024, is refused with the setting's key, and the old size stays.
+    At 2,048 every piece of a long post is at most 2,048 tokens, every
+    readable character is still in a piece, and the change starts a
+    rebuild for new reading rules while the serving generation runs.
+43. With the default overlap, each further piece starts with whole
+    sentences of at most 64 tokens from the end of the one before. At
+    128 the overlap is at most 128; at 0 there is none; a value over a
+    quarter of the piece size is refused. A single sentence longer than
+    the overlap gives an overlap of whole words.
+44. A 40 MiB WordPress post is read in three parts of at most 16 MiB.
+    Every readable character is in a piece, and the pieces equal those
+    of the same post read whole by a test build with the limit raised.
+    No part is refused, and peak memory is no higher than for one
+    16 MiB XenForo post. An edit after the second part restarts the
+    read for the new version; no half-read pieces stay.
+45. A 2,000-post thread's summary vector uses every read post: a test
+    that changes the last post's text alone changes the vector. It
+    equals, within rounding, a sum made from scratch over all posts.
+    The daily reconciliation's recomputed sum matches the running one.
+46. In a 300-post thread, marking reply 40 as the accepted answer,
+    changing it to reply 90, then unmarking it, each gives a sum equal
+    within rounding to one made from scratch with that answer left out
+    (or with none left out after unmarking). No embedder call is made
+    and no post is fetched again.
+47. A 40 MiB WordPress post with a wrong checksum on its second part
+    stores none of that part's results, serves none of the post's new
+    pieces, and starts again; the old version serves meanwhile. With
+    every part right but a wrong whole-post checksum, the staged
+    pieces are dropped and none is served. With all checksums right,
+    the new pieces serve in one step.
+48. A 70 KiB paragraph with no break gives pieces of at most 64 KiB
+    of text, split at words; a single 70 KiB word is split at grapheme
+    boundaries, counted and shown; every character is in a piece.
+49. An extra of 5,000 characters is read in full, split like body text
+    with the overlap setting; no character of it is dropped.
+50. Reading a 16 MiB post, measured with a counting allocator, peaks
+    under the reading row (48 MB under 16 GB), at about 33 MB with an
+    ordinary batch beside it; the message buffer is freed when reading
+    ends.
+51. Setting a piece size of 2,048 with no measured run, or with a run
+    whose embedder peak passes 1,300 MB, is refused with a plain
+    message and the old size stays; with a passing run it is allowed.
+    A piece size over a fake embedder's window is refused with its
+    plain message.
 
 ## Changes from the source
 
@@ -789,6 +937,13 @@ Acceptance tests (Rust):
   with the forum; site impact is held by the footprint budget.
 - Paid embeddings come through AWS Bedrock with the owner's own key
   (spec 0025).
+- Pieces are 1,024 tokens by default and never fewer, with an overlap
+  setting of 64 tokens by default, in place of a fixed overlap of about
+  15%.
+- The summary vector reads every post in full, by a running sum, in
+  place of 20 chosen posts cut to 400 characters. Extras are no longer
+  cut to 200 characters.
+- A WordPress post over 16 MiB is read in full, in 16 MiB parts.
 - The old speed goal is replaced by the 5% median rule.
 - Memory follows the limits in AGENTS.md section 5.6.
 - Message contracts are checked by Rust shape checks.

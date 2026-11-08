@@ -106,9 +106,9 @@ A destination is removed, with its reason recorded, when:
 
 - it is not guest-visible now, or is deleted, soft-deleted or awaiting
   moderation;
-- the embedder has not read its title and summary in the serving
-  generation (a destination read only by potion never qualifies); its
-  other posts need not be read yet;
+- the embedder has not written its title vector and first summary
+  vector in the serving generation (a destination read only by potion
+  never qualifies); its other posts need not be read yet;
 - its thread is not English;
 - it is the source's own thread, or a thread the source post quotes;
 - the source thread already links to it (bare URLs and links inside
@@ -191,16 +191,38 @@ keeping the higher scores.
   that have an anchor, or all when fewer remain. 50 is fixed, not a
   setting.
 - Query side, at most 1,024 tokens (an eighth of the window): the
-  source thread title, then the paragraph around the source sentence.
-  The sentence is always whole. A longer paragraph keeps the sentence
-  and its nearest neighbours; a sentence over the limit keeps the words
-  around the anchor.
-- Document side: the destination title; its 3 pieces most similar to
-  the source piece holding the sentence, best first, from the pieces
-  held so far; then its summary text, cut at the end to fill the
-  window. The first post fills at most half the room left for summary
-  text. A selected post already wholly inside a chosen piece is left
-  out of the summary text.
+  source thread title, then a window of the source text around the
+  anchor. The query is a question put to the model, not stored post
+  text, so the rule that no text is cut does not apply to it. The
+  window rule: take the source sentence whole; if room is left, add
+  its nearest neighbours in the paragraph, one each side in turn; if
+  the sentence alone is over the room, take the anchor and the whole
+  words on each side of it, the same number each side where the text
+  allows, until the room is full.
+- Document side: the destination title; then its pieces most similar
+  to the source piece holding the sentence, best first, from the
+  pieces held so far: up to 3, as many whole pieces as fit in the
+  pieces' room, three-eighths of the window (3,072 reranker tokens);
+  then summary pieces.
+- Pieces are sized in embedder tokens (spec 0022), and the reranker
+  counts in its own. The largest piece size, 3,072 embedder tokens,
+  maps to a reranker count measured on the corpus and recorded with
+  the generation; the measured figure, not an estimate, is used. So
+  that no piece fits nowhere, the best-scoring piece always enters. If
+  it is over the pieces' room in reranker tokens, it is split at
+  sentence boundaries (words for a sentence too long) into parts that
+  each fit. Each part is scored in its own pair with the same query
+  and title, and the destination takes the highest score. Other pieces
+  join only whole, while they fit. Summary pieces are
+  whole pieces of the first post and the accepted answer, most similar
+  to the source first, added while whole pieces fit the room left. The
+  first post fills at most half that room. A piece already chosen is
+  not repeated.
+- No text is cut on the document side: every post's text reaches
+  pieces (spec 0022), and each piece goes in whole, in split parts
+  that together hold all of it, or not at all. The window holds only
+  some of a long thread, but every post still counts in full through
+  the summary vector.
 - Tokens are counted with the reranker's tokenizer. An input over
   8,192 tokens, markers included, is refused with an error code.
 - Pairs run in retrieval order, best first, one pair per model call in
@@ -442,7 +464,7 @@ content.
 - Shorter windows: each challenger runs at its own window (512 tokens
   or fewer). Pieces are re-split under the same rules; reranker inputs
   keep the shares: an eighth for the query, three-eighths for pieces,
-  the rest for summary text.
+  the rest for summary pieces.
 - A challenger clearly wins only if: the lower end of the paired 95%
   interval (by re-sampling) of its recall-at-5 gain is at least +2
   points; no subgroup is worse with 95% confidence; anchor agreement's
@@ -495,11 +517,11 @@ Signing and schemas are spec 0021's.
 
 ### Settings and defaults
 
-Fixed, not settings: exact search; top 50 reranked; 3 best pieces;
-the 8,192-token window; the four anchor sources; the allowed entity
-types; merged keyphrases; moderator approval of every link; suggestions
-never held; the thread-level index first; the two queues; the pause
-during an embedder rebuild.
+Fixed, not settings: exact search; top 50 reranked; up to 3 best
+whole pieces; the 8,192-token window; the four anchor sources; the
+allowed entity types; merged keyphrases; moderator approval of every
+link; suggestions never held; the thread-level index first; the two
+queues; the pause during an embedder rebuild.
 
 | Setting | Default |
 |---|---|
@@ -597,7 +619,8 @@ spans stand in for the models.
   offsets; anchors never fall in excluded zones and never overlap; at
   most five destinations per phrase; every reranker input is within
   8,192 tokens and holds the source sentence, the title and a
-  first-post share no larger than half the summary room.
+  first-post share no larger than half the summary room; every piece
+  in it is whole.
 - Fixtures: the synthetic 300-thread fixture gains destinations that
   trip each filter and exclusion, people's names that are user names,
   products named like members, censored words, quoted threads, links in
@@ -635,9 +658,11 @@ Acceptance tests (Rust):
    reranked, in retrieval order; with 12, exactly 12.
 4. Every reranker input is at most 8,192 tokens and holds the whole
    source sentence (or the anchor and nearby words, for a sentence over
-   1,024 tokens), the title and the 3 most similar pieces read so far;
-   the first post fills at most half the summary room; summary text is
-   cut only at its end.
+   1,024 tokens), the title and the 3 most similar pieces read so far
+   (fewer only when a larger piece size leaves room for fewer);
+   the first post fills at most half the summary room; every piece on
+   the document side is whole or split into parts that hold all of it.
+   The query window follows the window rule.
 5. Each hard filter removes its fixture destination with its reason:
    not guest-visible, soft-deleted, own thread, quoted thread, already
    linked (bare URL, and link inside a quote), a pair waiting for
@@ -736,6 +761,20 @@ Acceptance tests (Rust):
     coverages, each equal to the service's own metric.
 41. The comparison harness is tested on synthetic results with known
     answers for each branch of the "clearly wins" rule.
+42. With a 1,000-reply destination, the document side holds only whole
+    pieces: the 3 best, then first-post and accepted-answer pieces
+    while they fit, the first post at most half that room. No piece is
+    cut, none repeats, and the destination's summary vector comes from
+    all 1,001 posts.
+43. At a piece size of 3,072 embedder tokens, the measured reranker
+    count is recorded. A best piece over the pieces' room is split
+    into parts at sentences, each scored in its own pair within 8,192
+    tokens; the parts together hold every character of the piece, and
+    the destination's score is the highest part's.
+44. A source sentence of 3,000 tokens gives a query of the anchor and
+    the same number of whole words on each side, where the text allows,
+    within 1,024 tokens;
+    a short sentence gives the sentence whole plus neighbours in turn.
 
 ## Changes from the source
 
@@ -748,6 +787,8 @@ Acceptance tests (Rust):
   median rule; the 30-second service level still blocks release.
 - Paid embeddings come through AWS Bedrock (spec 0025).
 - Memory follows the limits in AGENTS.md section 5.6.
+- The document side holds whole pieces only, in place of summary text
+  cut at its end.
 - The embedder is Qwen3-Embedding-0.6B, and names come from our own
   pure-Rust entity model, not a ready-made one.
 

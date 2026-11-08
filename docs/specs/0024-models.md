@@ -375,12 +375,16 @@ and anchors in 0023, progress in 0016 and the visual layer in 0017.
      source-code file, or an architecture outside the allowlist);
    - MF-C06: architecture not supported by the admitted candle or tract
      version; a reranker must give one score per pair;
-   - MF-C07: window too small: embedders need at least 1,024 tokens and
-     rerankers at least 8,192. The window is the smallest of the
-     declared maximum sequence length, the tokenizer's maximum and the
-     architecture's position limit, counted with the model's own
-     tokenizer. A model declaring no limit is refused. Longer input is
-     refused with an error, never cut short;
+   - MF-C07: window too small: embedders need at least the configured
+     piece size (`reading.pieces.tokens`, 1,024 by default and never
+     fewer, spec 0022) and rerankers at least 8,192. The window is the
+     smallest of the declared maximum sequence length, the tokenizer's
+     maximum and the architecture's position limit, counted with the
+     model's own tokenizer. A model declaring no limit is refused.
+     Longer input is refused with an error, never cut short. A piece
+     size larger than the active embedder's window is refused with a
+     plain message, such as "This piece size is longer than the
+     embedder can read", and the old size stays;
    - MF-C08: over the memory budget (below);
    - MF-C09: the index size from 0022's formula for this vector size
      passes 0022's index size budget;
@@ -598,8 +602,8 @@ Removing a site, or uninstalling Sutradhar, deletes embeddings, the
 index and model files always, with no keep option and no export.
 
 1. Always deleted, no export, no keep option:
-   - 0022: every vector (pieces, extras, titles, summaries, kept
-     cut-text vectors, the first-pass store), vector segment files, row
+   - 0022: every vector (pieces, extras, titles, summaries, running
+     sums, the first-pass store), vector segment files, row
      tables, removed-row lists and index generation records;
    - 0023: phrase vectors used for anchors;
    - this part: model files of every tier, previous revisions, staging
@@ -610,8 +614,8 @@ index and model files always, with no keep option and no export.
    figures; sampled metrics and traces kept by the service.
 3. Export offered, then kept or deleted as the owner chooses:
    - 0022: reading records (per-item state and skip reasons, language,
-     readable-text copies, piece, extras and summary text, entity and
-     noun-phrase spans, existing-link records, summary subsets),
+     readable-text copies, piece and extras text, entity and
+     noun-phrase spans, existing-link records),
      checkpoints and the backlog cursor;
    - 0023: suggestion records with states and scores, reranker scores,
      review decisions with rejection and removal reasons, rejected

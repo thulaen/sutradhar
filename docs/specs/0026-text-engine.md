@@ -88,7 +88,7 @@ value     = "'" { any } "'" | '"' { any } '"'
 | --- | --- | --- |
 | B, I, U, S | inline style | read; a link may sit inside |
 | COLOR, FONT, SIZE | inline style | option ignored; as above |
-| LEFT, CENTER, RIGHT, JUSTIFY, INDENT | block style | new paragraph; link allowed |
+| LEFT, CENTER, RIGHT, JUSTIFY, INDENT | block style | paragraph; link allowed |
 | HEADING | block | one paragraph; a link may sit inside |
 | HR | block | a rule, `[HR][/HR]`; ends a paragraph |
 | LIST, `[*]` | block, item | each item is a paragraph |
@@ -273,20 +273,58 @@ so no link is placed: the post is shown as skipped with SUT-424.
 - An identifier that cannot load or fails gives SUT-407 and the post
   waits.
 
+### Streaming read
+
+Reading (0022) never builds a whole `Document`. It uses `ReadStream`,
+which gives the same readable text, zones, links and pieces as
+`parse` with `readable`, with memory that does not grow with the post.
+
+- The message: held as one copy, the bytes as received from the 1 MiB
+  slices, in one buffer sized once from the stated length. sampark
+  hands this buffer over; it is not copied. It is kept only so offsets
+  point into it. Its checksum (each part's, for a WordPress post read
+  in parts) is checked before it is parsed and before anything from
+  it is stored. It is freed as soon as reading of the message ends.
+- The parser streams over that buffer. BBCode uses our own parser with
+  an explicit stack of at most 20 open tags. WordPress HTML uses
+  lol_html, a streaming rewriter, with its memory limit
+  (`max_allowed_memory_usage`) set to 4 MiB. Our BBCode parser keeps
+  the same 4 MiB limit for its own state. Going over it is SUT-433,
+  with no partial result, reported as a defect; no fixture meets it,
+  a tag bomb included.
+- Readable text flows straight into the piece builder. The builder
+  holds only the piece being filled, the text waiting for the next
+  boundary and the overlap: at most three pieces of text.
+- Piece cap in bytes: a piece holds at most 64 KiB of UTF-8 text, a
+  hard cap beside the token size. Whichever is reached first ends the
+  piece, split by 0022's rules: paragraph, then sentence, then word.
+  A single word over 64 KiB is split at grapheme boundaries, counted
+  and shown. A piece over the cap after splitting is SUT-409 and a
+  defect, never cut.
+- Each finished piece goes to the embedder queue one at a time. The
+  queue holds at most 4 pieces; the builder waits when it is full.
+- Links, zones, spans and readable text are written to the store in
+  batches of at most 2 MiB. The offset index keeps one checkpoint per
+  1,024 code points (128 KiB for 16 MiB).
+- A WordPress post over 16 MiB is fed part by part into the same
+  stream; the stream's state is the carry-over between parts.
+
 ### Pieces, extras and the rules version
 
 - shodhan implements 0022's piece rules: title, blank line, then whole
-  paragraphs, at most 1,024 tokens, about 15% overlap of whole
-  sentences; long paragraphs split at sentences, long sentences at
-  words; every readable character in a piece; nothing cut silently.
+  paragraphs, within the piece size (`reading.pieces.tokens`, 1,024 by
+  default, never fewer); an overlap of whole sentences within
+  `reading.pieces.overlap_tokens` (64 by default); long paragraphs
+  split at sentences, long sentences at words; every readable
+  character in a piece; nothing cut silently.
 - `TokenCounter::count` counts tokens, markers included. In service it
   loads the active embedder's tokenizer with `tokenizers` from the
   pinned files; tests use a fake counter with a small window. Each
-  piece is recounted; one over 1,024 or over a model's window is
-  SUT-409, never cut. Missing tokenizer files are SUT-408.
+  piece is recounted; one over the piece size or over a model's window
+  is SUT-409, never cut. Missing tokenizer files are SUT-408.
 - Extras: `alt` text from the message; attachment names, link-preview
-  and media titles from sampark. Each is cut to 200 characters at a
-  word boundary (`reading.extras.item_chars`) and is never-anchor.
+  and media titles from sampark. Each is read in full, split like body
+  text when longer than one input, and is never-anchor.
 - `RULES_VERSION` changes whenever a rule changes any output. 0022
   includes it in its reading-rules version, so a change re-reads the
   forum in the background.
@@ -565,7 +603,7 @@ anchors or names.
 
 | Code | Meaning |
 |---|---|
-| SUT-401 | message over 16 MiB |
+| SUT-401 | one message or part over 16 MiB; a defect |
 | SUT-402 | invalid UTF-8; never decoded with substitutes |
 | SUT-403 | budget used up; retried later, no partial result |
 | SUT-404 | invalid forum profile |
@@ -573,7 +611,7 @@ anchors or names.
 | SUT-406 | position map inconsistent; a defect, issue filed |
 | SUT-407 | language identifier unavailable |
 | SUT-408 | tokenizer files missing or fail to load |
-| SUT-409 | input over a model window, or piece over 1,024 tokens |
+| SUT-409 | input over a model window, or piece over its token or byte cap |
 | SUT-410 | phrase index over its memory budget |
 | SUT-411 | post changed since the suggestion |
 | SUT-412 | anchor text no longer at its offsets |
@@ -596,7 +634,8 @@ anchors or names.
 | SUT-429 | model tokenising conventions differ from settings |
 | SUT-430 | a setting out of range, naming its key |
 | SUT-431 | malformed CoNLL-U line, naming its line number |
-| SUT-432 | readable text handed to the layer over 16 MiB |
+| SUT-432 | readable text handed to the layer over 16 MiB in one part |
+| SUT-433 | streaming parser over its 4 MiB limit; a defect |
 
 ### Public API conventions
 
@@ -609,8 +648,8 @@ units plus an optional caller "stop now" check asked every 64 KiB),
 `PostLanguage`, `ExistingLink`, `UrlTarget`, phrase and candidate
 types, `NameLabel`, `Name`, `Piece`, `Extra`, `Placement`, `Refusal`,
 `LinkTarget`, `InsertionRequest`, `Insertion`, `InsertionRecord` and
-`UndoPlan`. Functions: `parse`, `readable`, `match_key`, `words`,
-`sentences`, `paragraphs`, `graphemes`, `zones`, `resave_form`,
+`UndoPlan`, `ReadStream`. Functions: `parse`, `readable`, `match_key`,
+`words`, `sentences`, `paragraphs`, `graphemes`, `zones`, `resave_form`,
 `LanguageDetector::new`, `post_language`, `pieces`, `extras`, `links`,
 `classify_url`, `keyphrases`, `ngrams`, `name_like`, `PhraseIndex`,
 `similarity`, `anchor_candidates`, `names`, `check_placement`,
@@ -903,16 +942,49 @@ needs its own manual page.
 
 ## Limits
 
-- Input: at most 16 MiB (16,777,215 bytes), the size of XenForo's
-  `xf_post.message` column; larger is SUT-401 (SUT-432 for text handed
-  to the language layer). No other size limit: 0022 reads every post
-  in full.
+- One message: at most 16 MiB (16,777,215 bytes), the size of
+  XenForo's `xf_post.message` column and so XenForo's largest post.
+  16 MiB is the size of one message to every call.
+- Longer text is read in full, never cut or refused. A WordPress post
+  over 16 MiB comes in parts of at most 16 MiB (0022), fed into one
+  `ReadStream`. Its state (open tags, positions, the unfinished
+  paragraph and piece) carries from part to part, so the result for a
+  post read in parts equals the result for the same post read whole.
+- A single message or part over 16 MiB is SUT-401 (SUT-432 for text
+  handed to the language layer). It cannot come from a working fetch,
+  so it is reported as a defect. No other size limit: 0022 reads every
+  post in full.
 - Nesting: 20 open tags, as XenForo; an explicit stack, so a tag bomb
   never grows the call stack.
 - Work: time and memory grow linearly with input (plus output for
   matching). Doubling a hostile input at most multiplies time by 2.5.
-- Memory: `parse` with `readable` peaks under 16 times the message
-  size plus 1 MiB, measured with a counting allocator.
+- Memory for reading one message, the worked peak for 16 MiB with the
+  largest piece size (3,072 tokens) and the hard cap of 64 KiB of text
+  per piece:
+
+  | Part | Most |
+  |---|---|
+  | The message, one copy | 16 MiB |
+  | Parser state, the lol_html or BBCode limit | 4 MiB |
+  | Piece builder, three pieces of text | 192 KiB |
+  | Embedder queue, 4 pieces | 256 KiB |
+  | Offset index | 128 KiB |
+  | Tokenizer working memory | 1 MiB |
+  | Store batches | 2 MiB |
+  | The `ReadRange` reply, while it is decoded | 1.5 MiB |
+  | Total | about 25.1 MiB (26.3 MB) |
+
+  Only one message over 1 MiB is read at a time in the service; others
+  wait. Beside it, one ordinary batch (1 MiB of text, its parser state
+  of 4 MiB and its piece buffers of 0.5 MiB, about 5.8 MB) and the
+  running sums of the threads being read (8 KiB each, at most 64 by
+  0022's limit, about 0.5 MB) bring reading's peak to about 33 MB.
+  That is under its row in spec 0024's memory table (48 MB under
+  16 GB, 128 MB at 16 GB or more), with no change to it.
+  Each figure is checked with a counting allocator.
+- Memory for `parse` (the whole `Document`) is used only to place or
+  undo a link in one post, never for reading. It is measured with a
+  counting allocator and counts in the staff suggestions budget (0028).
 - Budgets: 5 seconds per call in the service, 1 second in the preview.
 - Speed targets on the 4-core reference machine, each a hard check:
   - preview of a 150,000-character post within 1 second, the preview
@@ -933,9 +1005,10 @@ needs its own manual page.
   memory budgets per mode are set by research; no mode, setting or preset may
   pass the total. Only the chosen method loads; a switch that does not fit is
   refused with the reason; over budget refuses start-up.
-- Fixed elsewhere and used here: pieces of 1,024 tokens, extras of 200
-  characters (0022); anchors of 3 to 80 characters and 8 words, 20
-  keyphrases per post (0023).
+- Fixed elsewhere and used here: pieces of the piece size, 1,024
+  tokens by default and never fewer, with the overlap setting; extras
+  read in full; parts of at most 16 MiB (0022); anchors of 3 to 80
+  characters and 8 words, 20 keyphrases per post (0023).
 - Private data: link reconstruction samples, the forum gold set and
   their results stay on Dell; only reviewed aggregates leave it.
 
@@ -1045,12 +1118,13 @@ Starred (★) cases block any release they touch.
   `&amp;` and literal `[url]` read as shown; SH10 ★ all URL forms,
   EMAIL and bare addresses recorded with form, quote flag kept; SH11 ★
   `[USER=123]@name[/USER]` never an anchor; SH12 IMG, ATTACH and MEDIA
-  give only `alt` extras cut to 200 at a word boundary; SH13 spoilers
+  give only `alt` extras, each read in full; SH13 spoilers
   and titles skipped; SH14 items, cells and headings are paragraphs;
   SH15 `:cool:` is a space even in "great:cool:idea", `:COOL:` is
   text, code inside CODE; SH16 LF, CRLF and CR kept, CRLF two code
   points; SH17 "no readable text" cases; SH18 tag bombs within
-  targets and memory; SH19 SUT-402 and 16 MiB plus one byte SUT-401;
+  targets and memory; SH19 SUT-402, and 16 MiB plus one byte in one
+  message or part SUT-401;
   SH20 (Dell) readable text, zone kinds and `resave_form` equal
   XenForo's on the conformance corpus.
 - Text: SH21 ★ decomposed posts give NFC with stored bytes unchanged
@@ -1068,7 +1142,7 @@ Starred (★) cases block any release they touch.
   non-voting short paragraph may hold a link, an unnamed voting one
   may not.
 - Pieces: SH33 0022's piece cases pass with the fake counter and one
-  token over is SUT-409; SH34 (Dell) counts equal the pinned
+  token over the piece size is SUT-409; SH34 (Dell) counts equal the pinned
   Qwen3-Embedding-0.6B tokenizer's own.
 - Links and matching: SH35 every address form gives the right kind and
   number, `/THREADS/1/` is unreadable; SH36 keyphrases equal the
@@ -1137,6 +1211,25 @@ Starred (★) cases block any release they touch.
 - Member text: SH100 candidates only from forum words or a moderator;
   SH101 no person's name offered; SH102 no model produces a candidate,
   and with the option off a link on a misspelt word is refused.
+- No text cut: SH103 a piece size under 1,024 is SUT-430 naming
+  `reading.pieces.tokens`; at 1,024 and at 2,048 no piece passes the
+  size; SH104 overlaps are whole sentences within
+  `reading.pieces.overlap_tokens` at 0, 64 and 128, whole words when
+  one sentence is longer, and a value over a quarter of the piece size
+  is SUT-430; SH105 a 40 MiB WordPress post read by `ReadStream` in
+  three parts gives the same segments, readable text and pieces as a
+  test build reading it whole; no character is dropped, no part is
+  refused, tags open across a part edge close correctly, and peak
+  memory stays within one 16 MiB part's bound; SH106 a 5,000-character
+  `alt` text is one never-anchor extra, read in full; SH107 reading a
+  16 MiB post, BBCode and HTML, peaks under 48 MB measured with the
+  counting allocator, each part under its line in the worked peak,
+  and the message buffer is freed when reading ends; SH108
+  `ReadStream` gives the same readable text, zones, links and pieces
+  as `parse` with `readable` on the conformance corpus; SH109 no
+  piece holds over 64 KiB of text, a 70 KiB word splits at grapheme
+  boundaries and is counted; SH110 a part whose checksum fails is not
+  parsed and nothing from it is stored.
 
 ### Link reconstruction and model choice
 
