@@ -24,3 +24,15 @@ job = "reading YAML, for the workflow check"
 [[package]]
 name = "sha2"
 job = "SHA-256 fingerprints"
+
+[[package]]
+name = "syn"
+job = "reading Rust source, for the code analyser"
+
+[[package]]
+name = "proc-macro2"
+job = "the line of each piece of Rust source"
+
+[[package]]
+name = "regorus"
+job = "running rules written in Rego"

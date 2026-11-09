@@ -72,3 +72,4 @@ its end. Specifications 0001, 0002 and 0058 to 0060 were written fresh.
 | [0058](0058-chaukidar.md) | chaukidar, the watchman | Phase 1 item 5 | written fresh |
 | [0059](0059-pankti.md) | pankti, the heavy-job queue | Phase 1 item 7 | written fresh |
 | [0060](0060-runner.md) | Forgejo's runner on Dell | Phase 1 item 2 | written fresh |
+| [0061](0061-nirikshak.md) | nirikshak, the code analyser | Phase 2 item 2 | `findings/nirikshak-2026-11-07.md`, rewritten for Rust and Rego |

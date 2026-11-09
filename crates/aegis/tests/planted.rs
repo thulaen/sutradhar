@@ -204,3 +204,27 @@ fn a_planted_token_fails_the_leak_scan_and_an_allow_note_does_not_help() {
     fs::write(dir.join(".gitleaksignore"), "a.md:github-pat:1\n").unwrap();
     assert!(run(&dir).is_none());
 }
+
+#[test]
+fn a_thrown_away_error_fails_the_code_analysis() {
+    let dir = std::env::temp_dir()
+        .join(format!("aegis-planted-analysis-{}", std::process::id()));
+    let _ = fs::remove_dir_all(&dir);
+    fs::create_dir_all(dir.join("src")).unwrap();
+    let all = ["src/a.rs".to_owned()];
+    let run = |d: &Path| {
+        let found = tiers::whole_project_docs(&Repo::at(d), &all);
+        found
+            .into_iter()
+            .filter(|f| f.check == "analysis.nirikshak")
+            .map(|f| (f.path, f.line))
+            .collect::<Vec<_>>()
+    };
+    fs::write(dir.join("src/a.rs"), "fn f() -> R {\n    g()?;\n}\n").unwrap();
+    assert_eq!(run(&dir), []);
+    fs::write(dir.join("src/a.rs"), "fn f() {\n    let _ = g();\n}\n").unwrap();
+    assert_eq!(run(&dir), [("src/a.rs".to_owned(), 2)]);
+    fs::write(dir.join("src/a.rs"), "fn f( {\n").unwrap();
+    assert_eq!(run(&dir).len(), 1);
+    fs::remove_dir_all(&dir).unwrap();
+}

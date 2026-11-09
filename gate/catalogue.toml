@@ -188,6 +188,12 @@ tiers = ["commit", "push"]
 proof = "aegis::names::tests::refuses_a_crate_missing_from_the_glossary"
 
 [[check]]
+id = "analysis.nirikshak"
+partly = ["GI-15", "GI-32", "GI-47"]
+tiers = ["commit", "push"]
+proof = "aegis::planted::a_thrown_away_error_fails_the_code_analysis"
+
+[[check]]
 id = "metrics.no-vanity"
 partly = ["GI-50"]
 tiers = ["commit", "push"]
