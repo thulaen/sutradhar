@@ -84,6 +84,18 @@ pub fn whole_project_docs(repo: &Repo, all: &[String]) -> Vec<Finding> {
             .filter_map(|p| Some((p.clone(), repo.read(p)?)))
             .collect();
         out.extend(crate::catalogue::check(&|p| repo.read(p), &rust));
+        let manifests: Vec<(String, String)> = all
+            .iter()
+            .filter(|p| p.starts_with("crates/") && p.ends_with("/Cargo.toml"))
+            .filter_map(|p| Some((p.clone(), repo.read(p)?)))
+            .collect();
+        let list = repo.read(crate::packages::PATH);
+        let root = repo.read("Cargo.toml");
+        out.extend(crate::packages::check(
+            list.as_deref(),
+            root.as_deref(),
+            &manifests,
+        ));
     }
     out
 }

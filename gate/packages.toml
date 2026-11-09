@@ -1,0 +1,26 @@
+# The only outside libraries the project may use (task #21; carried from
+# the old overlap rule). Each has one job, and no two share a job. The
+# check gate.packages refuses a library not listed here, two with the
+# same job, and a listed one nothing uses. Adding one means listing it
+# with its job and making sure no listed library already does that job;
+# that last part is for the reviewers, since a job can be reworded.
+
+[[package]]
+name = "serde"
+job = "typed reading of structured data"
+
+[[package]]
+name = "serde_json"
+job = "reading and writing JSON"
+
+[[package]]
+name = "toml"
+job = "reading TOML"
+
+[[package]]
+name = "yaml-rust2"
+job = "reading YAML, for the workflow check"
+
+[[package]]
+name = "sha2"
+job = "SHA-256 fingerprints"

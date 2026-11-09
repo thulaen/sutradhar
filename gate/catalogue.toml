@@ -168,3 +168,9 @@ id = "gate.catalogue"
 partly = ["GI-49"]
 tiers = ["commit", "push"]
 proof = "aegis::catalogue::tests::refuses_a_check_missing_from_the_catalogue"
+
+[[check]]
+id = "gate.packages"
+partly = ["GI-28", "GI-29"]
+tiers = ["commit", "push"]
+proof = "aegis::packages::tests::refuses_a_library_not_on_the_list"
