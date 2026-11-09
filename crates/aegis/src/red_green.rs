@@ -3,7 +3,8 @@
 //! At push, for each such commit, the named test is run twice:
 //!
 //! - red: on the commit's parent with the commit's own test files laid
-//!   over it. It must fail, or not exist there yet;
+//!   over it. It must fail, or not exist there yet. A compile error
+//!   counts only when it is in one of those test files;
 //! - green: on the pushed code. It must run and pass.
 //!
 //! A test file is a file under a `tests/` folder or one whose name ends in
@@ -18,21 +19,9 @@ use crate::history::{Commit, fresh_folder, parent_with_tests};
 use crate::repo::Repo;
 use crate::tdd::{self, Tdd};
 
-const CHECK: &str = "commit.test-first";
+pub use crate::run_outcome::{Counted, Outcome, outcome};
 
-/// What one run of the named test showed.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub enum Outcome {
-    /// It ran and passed.
-    Passed,
-    /// It ran and failed, or the code did not compile against it.
-    Failed,
-    /// No test of that name exists.
-    Absent,
-    /// Cargo could not run at all, for a reason that is not the test's,
-    /// such as a folder it may not write. This is never proof.
-    Broken(String),
-}
+const CHECK: &str = "commit.test-first";
 
 /// The ways to run a named test, as `cargo test` arguments. A path whose
 /// first part names a file in the crate's `tests/` folder may be that
@@ -63,38 +52,6 @@ pub fn targets(root: &Path, krate: &str, path: &str) -> Vec<Vec<String>> {
     out
 }
 
-/// Reads one `cargo test` run: whether it succeeded, and what it wrote
-/// to its output and to its error stream.
-#[must_use]
-pub fn outcome(succeeded: bool, output: &str, errors: &str) -> Outcome {
-    if !succeeded {
-        let ran_and_failed = output
-            .lines()
-            .any(|l| l.trim().starts_with("test result: FAILED"));
-        let did_not_compile = errors.contains("error[E");
-        if ran_and_failed || did_not_compile {
-            return Outcome::Failed;
-        }
-        let why = errors
-            .lines()
-            .filter(|l| l.trim_start().starts_with("error"))
-            .take(3)
-            .collect::<Vec<_>>()
-            .join("; ");
-        return Outcome::Broken(why);
-    }
-    let passed: usize = output
-        .lines()
-        .filter_map(|l| l.trim().strip_prefix("test result: ok. "))
-        .filter_map(|r| r.split(' ').next()?.parse::<usize>().ok())
-        .sum();
-    if passed > 0 {
-        Outcome::Passed
-    } else {
-        Outcome::Absent
-    }
-}
-
 /// Runs the named test in `folder` every way it can be run, with
 /// `cargo` as the command that starts cargo (perhaps through the
 /// queue) and build output in `target`. A pass anywhere is a pass;
@@ -105,6 +62,7 @@ pub fn run(
     cargo: &[&str],
     target: &Path,
     test: (&str, &str),
+    counted: Counted<'_>,
 ) -> Outcome {
     let (krate, path) = test;
     let Some((program, before)) = cargo.split_first() else {
@@ -124,6 +82,7 @@ pub fn run(
                 o.status.success(),
                 &String::from_utf8_lossy(&o.stdout),
                 &String::from_utf8_lossy(&o.stderr),
+                counted,
             ),
             Err(e) => Outcome::Broken(format!("cannot start cargo: {e}")),
         });
@@ -193,6 +152,34 @@ pub fn judge(test: &Tdd, red: &Outcome, green: &Outcome) -> Vec<Finding> {
     out
 }
 
+/// Makes the build folders first: a sealed job may write only to
+/// folders that already exist, so a missing one would only show as a
+/// broken run.
+fn make_folders(folders: &[&Path]) -> Option<Finding> {
+    folders.iter().find_map(|folder| {
+        std::fs::create_dir_all(folder).err().map(|e| {
+            Finding::new(
+                CHECK,
+                "",
+                0,
+                format!("cannot make {}: {e}", folder.display()),
+            )
+        })
+    })
+}
+
+/// The commit's own test files. Before the change, only a compile error
+/// in one of these counts as the test failing; one elsewhere is not
+/// proof.
+fn own_tests(commit: &Commit) -> Vec<String> {
+    commit
+        .paths
+        .iter()
+        .filter(|p| is_test_file(p))
+        .cloned()
+        .collect()
+}
+
 /// The test-first proof for every commit that names a test.
 #[must_use]
 pub fn check(repo: &Repo, commits: &[Commit], cargo: &[&str]) -> Vec<Finding> {
@@ -201,19 +188,8 @@ pub fn check(repo: &Repo, commits: &[Commit], cargo: &[&str]) -> Vec<Finding> {
     let target = repo.root().join("target");
     let red_target = target.join("red-green");
     let mut out = Vec::new();
-    // A sealed job may write only to build folders that already exist,
-    // so both are made first; otherwise its build fails for want of a
-    // folder, which would only show as a broken run.
-    for folder in [&target, &red_target] {
-        if let Err(e) = std::fs::create_dir_all(folder) {
-            out.push(Finding::new(
-                CHECK,
-                "",
-                0,
-                format!("cannot make {}: {e}", folder.display()),
-            ));
-            return out;
-        }
+    if let Some(failed) = make_folders(&[&target, &red_target]) {
+        return vec![failed];
     }
     for commit in commits {
         let Some(test) =
@@ -225,6 +201,7 @@ pub fn check(repo: &Repo, commits: &[Commit], cargo: &[&str]) -> Vec<Finding> {
             continue;
         };
         let name = (krate.as_str(), path.as_str());
+        let own = own_tests(commit);
         let work = crate::history::work_folder(repo.root());
         let dest = match fresh_folder(&work) {
             Ok(dest) => dest,
@@ -244,7 +221,7 @@ pub fn check(repo: &Repo, commits: &[Commit], cargo: &[&str]) -> Vec<Finding> {
             }
             match crate::tiers::fetch(&dest) {
                 Some(failed) => Err(failed.message),
-                None => Ok(run(&dest, cargo, &red_target, name)),
+                None => Ok(run(&dest, cargo, &red_target, name, Some(&own))),
             }
         });
         let _ignored = std::fs::remove_dir_all(&dest);
@@ -255,7 +232,7 @@ pub fn check(repo: &Repo, commits: &[Commit], cargo: &[&str]) -> Vec<Finding> {
                 continue;
             }
         };
-        let green = run(repo.content(), cargo, &target, name);
+        let green = run(repo.content(), cargo, &target, name, None);
         out.extend(judge(&test, &red, &green));
     }
     out

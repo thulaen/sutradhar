@@ -60,19 +60,19 @@ fn reads_passed_failed_and_absent() {
     let none = "test result: ok. 0 passed; 0 failed; 88 filtered out\n";
     let failed =
         "running 1 test\nF\ntest result: FAILED. 0 passed; 1 failed;\n";
-    assert_eq!(outcome(true, ran, ""), Outcome::Passed);
-    assert_eq!(outcome(true, none, ""), Outcome::Absent);
-    assert_eq!(outcome(true, "", ""), Outcome::Absent);
-    assert_eq!(outcome(false, failed, ""), Outcome::Failed);
+    assert_eq!(outcome(true, ran, "", None), Outcome::Passed);
+    assert_eq!(outcome(true, none, "", None), Outcome::Absent);
+    assert_eq!(outcome(true, "", "", None), Outcome::Absent);
+    assert_eq!(outcome(false, failed, "", None), Outcome::Failed);
     let new_api = "error[E0425]: cannot find function `add` in crate `demo`\n";
-    assert_eq!(outcome(false, "", new_api), Outcome::Failed);
+    assert_eq!(outcome(false, "", new_api, None), Outcome::Failed);
 }
 
 #[test]
 fn a_run_that_could_not_start_is_never_proof() {
     let readonly =
         "error: Read-only file system (os error 30) at path \"/t\"\n";
-    let found = outcome(false, "", readonly);
+    let found = outcome(false, "", readonly, None);
     assert!(
         matches!(&found, Outcome::Broken(why) if why.contains("Read-only"))
     );
