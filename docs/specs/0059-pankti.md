@@ -114,7 +114,10 @@ Builds and caches only grow. Two guards, set by the owner on 9 November
 - Every night at 03:00, `deploy/pankti/sweep.sh` empties any listed
   build folder over 10 GB, since it holds only output the next build
   makes again. It also removes the checks' leftover working copies in
-  `aegis-work` older than a day. It touches a folder only when it is a
+  `aegis-work` older than a day, and the scratch folders our tests
+  leave in the temp folder (`aegis-*` and `forge-sync-*`, its own
+  account's, over an hour old), since on Dell that folder lives in
+  memory. It touches a folder only when it is a
   full path, not `/` or a home folder, and holds cargo's own files: a
   real `CACHEDIR.TAG` (not a link) with the standard mark, and
   `.rustc_info.json`. Removal never crosses into another disk. It holds

@@ -7,6 +7,9 @@
 # - leftover work copies in FOLDER/aegis-work older than a day go;
 # - a FOLDER bigger than CAP_BYTES is emptied (it only holds build
 #   output, which the next build makes again);
+# - scratch folders our tests leave in the temp folder (aegis-* and
+#   forge-sync-*, this account's own, over an hour old) go, since on Dell
+#   the temp folder lives in memory;
 # - it fails, so the alarm is raised, when the disk still has less than
 #   FLOOR_BYTES free, or when anything goes wrong.
 # A FOLDER is touched only when it is a full path, not / or a home
@@ -87,6 +90,10 @@ flock 9
 for dir in "$@"; do
   sweep "$dir"
 done
+tmp=${TMPDIR:-/tmp}
+find "$tmp" -mindepth 1 -maxdepth 1 -user "$(id -un)" -mmin +60 \
+  \( -name 'aegis-*' -o -name 'forge-sync-*' \) \
+  -exec rm -rf --one-file-system -- {} +
 free=$(df -B1 --output=avail "$first" | tail -n 1 | tr -d ' ')
 case "$free" in
 '' | *[!0-9]*)
