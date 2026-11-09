@@ -20,7 +20,7 @@ Forgejo milestone: `Phase 0: Save and settle`.
 4. Set the Forgejo owner password and keep it in the private notes on
    Dell.
 
-Finished when: items 1 to 4 are met and the six reviews of the phase
+Finished when: items 1 to 4 are met and the required reviews of the phase
 pass. This phase's proof is kept on its milestone once Phase 1 item 6
 creates it.
 
@@ -57,14 +57,14 @@ Forgejo milestone: `Phase 1: Forgejo home`.
 
 Finished when: items 1 to 11 are met; a push that fails a check is
 refused, even with hooks skipped; a push that passes lands on `main`;
-GitHub matches Forgejo; and the six reviews of the phase pass.
+GitHub matches Forgejo; and the required reviews of the phase pass.
 
 ## Phase 2: The gate at 100%
 
 Forgejo milestone: `Phase 2: The gate`.
 
 1. Bring the useful gate code over from the archive, one part at a time.
-   Each part must pass every check already built and the six reviews.
+   Each part must pass every check already built and the required reviews.
 2. Fill `gate/catalogue.toml` with every check and every gate item, with
    no repeats, each with a planted-fault test per allowed language.
 3. Pin every tool in `gate/tools.toml`.
@@ -81,7 +81,7 @@ Forgejo milestone: `Phase 2: The gate`.
    - no status statements in docs;
    - the commit message form;
    - GanitEvolve receipts;
-   - the six review records;
+   - the required review records;
    - waivers signed only with the owner's key;
    - the backlog limits.
 10. Git hooks in Rust that run the commit tier on commit and fail when a
@@ -94,7 +94,7 @@ Finished when: items 1 to 12 are met; a signed full run shows every
 check that exists refusing its planted fault and passing clean code, in
 every allowed language, at every tier (the release tier on planted faults
 only, since its long tests come in Phase 5); GitHub CI gives the same
-results; and the six reviews of the phase pass.
+results; and the required reviews of the phase pass.
 
 ## Phase 3: First slice
 
@@ -118,7 +118,7 @@ Forgejo milestone: `Phase 3: First slice`.
    Sutradhar Boot.
 
 Finished when: items 1 to 8 are met, the slice passes every gate, a
-recorded demonstration shows it working, and the six reviews of the
+recorded demonstration shows it working, and the required reviews of the
 phase pass.
 
 ## Phase 4: XenForo, then WordPress
@@ -154,7 +154,7 @@ Forgejo milestone: `Phase 5: Core`.
 9. The release-tier peak memory, load and soak tests on those machines.
 
 Finished when: items 1 to 9 are met and pass every gate, each has a
-beginner guide in the manual, and the six reviews of the phase pass.
+beginner guide in the manual, and the required reviews of the phase pass.
 
 ## Phase 6: Feature waves
 
@@ -186,7 +186,7 @@ Forgejo milestone: `Phase 7: Version 1`.
 2. The public manual on GitHub Pages.
 3. Signed release artefacts.
 
-Finished when: items 1 to 3 are met, the six reviews of the phase pass,
+Finished when: items 1 to 3 are met, the required reviews of the phase pass,
 the owner approves, and `v1.0.0` is tagged in Forgejo with the same tag on
 GitHub.
 

@@ -71,7 +71,7 @@ are in [AGENTS.md sections 6 and 7](../../AGENTS.md#7-the-gate).
   web security scan, container scans, planted-defect canaries, restore
   drill, upgrade and rollback rehearsal and the evaluation set. Every
   required test must pass.
-- The six reviews of AGENTS.md section 7.1 run at commit and release and
+- The required reviews of AGENTS.md section 7.1 run at commit and release and
   block like any check.
 
 ### Nirikshak analysis
@@ -493,7 +493,7 @@ Tests live in `crates/aegis/tests/` unless named otherwise.
 - The tiers are the three of AGENTS.md section 7; the old nightly
   campaign moves to the release tier, and its pause after ten commits
   is dropped.
-- The old AI review becomes the six reviews of AGENTS.md section 7.1.
+- The old AI review becomes the required reviews of AGENTS.md section 7.1.
 - The old 45-minute push budget is replaced by the 30-minute speed-task
   rule.
 - The fixed count of 47 checks is replaced by `gate/catalogue.toml` and

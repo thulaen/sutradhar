@@ -1,6 +1,7 @@
 //! The `aegis` command: `aegis msg FILE`, `aegis commit`,
-//! `aegis push BASE HEAD`, and `aegis catalogue`, which lists the gate
-//! items no check covers yet.
+//! `aegis push BASE HEAD`, `aegis catalogue`, which lists the gate
+//! items no check covers yet, and `aegis fingerprint`, which prints the
+//! staged change's fingerprint for review records.
 
 use std::io::{self, Write};
 use std::process::ExitCode;
@@ -9,13 +10,25 @@ use aegis::repo::Repo;
 use aegis::{Finding, commit_msg, tiers};
 
 const USAGE: &str = "usage: aegis msg FILE | aegis commit \
-     | aegis push BASE HEAD | aegis catalogue\n";
+     | aegis push BASE HEAD | aegis catalogue | aegis fingerprint\n";
 
 fn main() -> ExitCode {
     let args: Vec<String> = std::env::args().skip(1).collect();
     let refs: Vec<&str> = args.iter().map(String::as_str).collect();
     if refs == ["catalogue"] {
         return catalogue();
+    }
+    if refs == ["fingerprint"] {
+        return match aegis::reviews::staged(&Repo::for_hook(".")) {
+            Ok(change) => {
+                let _ignored = writeln!(io::stdout(), "{change}");
+                ExitCode::SUCCESS
+            }
+            Err(problem) => {
+                say(&format!("aegis: {problem}\n"));
+                ExitCode::from(2)
+            }
+        };
     }
     match run(&refs) {
         Ok(findings) => report(&findings),

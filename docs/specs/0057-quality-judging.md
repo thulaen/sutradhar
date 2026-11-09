@@ -224,8 +224,8 @@ each must pass with current evidence:
     (SUT-855).
 13. Battle tested: every check below passed for this candidate, the
     add-ons included, with current evidence.
-14. The release artefacts are signed, all six reviews pass and the owner
-    approves.
+14. The release artefacts are signed, all the required reviews pass and
+    the owner approves.
 
 The Assessment screen and `sutra release assess` show each criterion
 with its result, its evidence and, for a failure, why in plain English.
@@ -548,7 +548,7 @@ soak (BT-06, BT-07).
 
 - The release counts follow AGENTS.md section 3: 6,000,000 methods,
   6,000,000 capabilities and 16 quadrillion checked variants, not
-  2,000 and 2,000; signed artefacts, the six reviews and the owner's
+  2,000 and 2,000; signed artefacts, the required reviews and the owner's
   approval join as criterion 14.
 - ganit's statistics jobs and their tests are rewritten as Rust.
 - Results are read through Rust lab runs with recorded inputs and

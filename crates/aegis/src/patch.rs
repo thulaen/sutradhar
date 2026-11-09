@@ -14,6 +14,8 @@ pub fn added_lines(patch: &str) -> Vec<(String, String)> {
             file.clear();
         } else if in_header {
             if let Some(name) = line.strip_prefix("+++ ") {
+                // git ends a name holding a space with a tab.
+                let name = name.strip_suffix('\t').unwrap_or(name);
                 name.strip_prefix("b/")
                     .unwrap_or(name)
                     .clone_into(&mut file);
@@ -54,6 +56,16 @@ mod tests {
         assert_eq!(
             added_lines(patch),
             pairs(&[("x", "++ added"), ("x", "new"), ("y", "more")])
+        );
+    }
+
+    #[test]
+    fn a_name_holding_a_space_loses_the_tab_git_adds() {
+        let patch = "diff --git a/my x b/my x\n--- a/my x\t\n+++ b/my x\t\n\
+            @@ -0,0 +1 @@\n+line\n";
+        assert_eq!(
+            added_lines(patch),
+            [("my x".to_owned(), "line".to_owned())]
         );
     }
 

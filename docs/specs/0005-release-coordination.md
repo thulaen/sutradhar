@@ -62,9 +62,10 @@ out the release steps in full. It is roadmap Phase 7 item 3.
 
 ### Reviews
 
-The six reviews of AGENTS.md section 7.1 must each name the current
+The required reviews of AGENTS.md section 7.1 must each name the current
 candidate and finish. A reaction, silence, a stale review, a partial
-scope or a skipped job is never a pass. Self-review is labelled as such.
+scope or a skipped job is never a pass. A reviewer never wrote the
+change it reviews.
 
 ### A broken `main`
 
@@ -185,7 +186,7 @@ scratch Forgejo repositories:
 - Pull requests, squash merges, auto-merge and fork checks are gone;
   outside work follows AGENTS.md section 9.2.
 - Owner approval is the owner's key signature, not a GitHub comment.
-- The GitHub AI review is replaced by the six reviews.
+- The GitHub AI review is replaced by the required reviews.
 - Releases are made only when the roadmap names one or the owner asks,
   not weekly.
 - The release bar is the one in AGENTS.md section 3, in place of the

@@ -176,7 +176,7 @@ Rust integration tests in the aegis crates, run on scratch repositories:
 - The trusted runner is a pinned Rust build, not source copied from the
   parent commit.
 - GitHub statuses, proposal bots and pull-request reviews are gone:
-  Forgejo's door runs the push tier, and the six reviews of AGENTS.md
+  Forgejo's door runs the push tier, and the required reviews of AGENTS.md
   section 7.1 block like every other check.
 - Release and dependency proposal bots are dropped; their work happens
   on Dell, as 0005 describes.

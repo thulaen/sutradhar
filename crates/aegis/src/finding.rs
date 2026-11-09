@@ -34,18 +34,24 @@ impl Finding {
     }
 }
 
+/// Text with every control character but line breaks and tabs removed,
+/// so a file name or tool output cannot send codes to the screen.
+fn shown(text: &str) -> String {
+    text.chars()
+        .filter(|c| !c.is_control() || matches!(c, '\n' | '\t'))
+        .collect()
+}
+
 impl fmt::Display for Finding {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match (self.path.is_empty(), self.line) {
-            (true, _) => write!(f, "[{}] {}", self.check, self.message),
-            (false, 0) => {
-                write!(f, "[{}] {}: {}", self.check, self.path, self.message)
-            }
-            (false, n) => write!(
-                f,
-                "[{}] {}:{}: {}",
-                self.check, self.path, n, self.message
-            ),
+        // A path is one line: a line break in a name cannot fake a
+        // finding of its own.
+        let path = shown(&self.path).replace(['\n', '\t'], " ");
+        let message = shown(&self.message);
+        match (path.is_empty(), self.line) {
+            (true, _) => write!(f, "[{}] {message}", self.check),
+            (false, 0) => write!(f, "[{}] {path}: {message}", self.check),
+            (false, n) => write!(f, "[{}] {path}:{n}: {message}", self.check),
         }
     }
 }
@@ -58,6 +64,8 @@ mod tests {
     fn shows_path_and_line() {
         let f = Finding::new("x.y", "a.md", 3, "bad");
         assert_eq!(f.to_string(), "[x.y] a.md:3: bad");
+        let codes = Finding::new("x.y", "a\u{1b}[31m.md", 0, "b\u{7}ad\nnext");
+        assert_eq!(codes.to_string(), "[x.y] a[31m.md: bad\nnext");
     }
 
     #[test]

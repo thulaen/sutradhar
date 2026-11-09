@@ -72,7 +72,7 @@ specifications. It ships only when the release gate passes:
 2. At least 6,000,000 shipped capabilities.
 3. At least 16,000,000,000,000,000 (16 quadrillion) checked variants,
    each counted only with its evidence.
-4. Every check passes at 100% and all six reviews pass.
+4. Every check passes at 100% and all the required reviews pass.
 5. The release artefacts are signed.
 6. The owner approves the release.
 
@@ -333,22 +333,33 @@ The languages that are switched on are listed in `gate/catalogue.toml`.
 A language is switched on when its first file is added, and that commit
 must bring its checks and planted faults with it.
 
-### 7.1 The six reviews
+### 7.1 The required reviews
 
-Six subagent reviews must pass on every commit and every release:
+Eight reviews must pass on every commit and every release. Each has a
+skill in `.claude/skills/` that every agent follows (Codex and Gemini
+read the same files):
 
-1. Architecture.
-2. Performance.
-3. Defects: correctness and tests.
-4. Security.
-5. Backlog: fit with the task and the roadmap.
-6. Code style and docs.
+1. Architecture (`architecture`).
+2. Performance (`fast-performance`).
+3. Defects: correctness and tests (`defects`).
+4. Security (`security`).
+5. Backlog: fit with the task and the roadmap (`backlog`).
+6. Code style and docs (`style-docs`).
+7. Red team: subagents that attack the change (`red-team`).
+8. Unsafe code patterns the tools miss (`unsafe-patterns`).
 
 - Each agent runs these as its own subagents, each with a fresh context.
   A reviewer never wrote the change it reviews.
-- Each review is saved as a signed record for the commit in
-  `reviews/`. The push tier refuses a commit without all six passing
-  records.
+- Each review is saved as a record in `reviews/`, one file per skill,
+  naming the fingerprint of the content it reviewed
+  (`aegis fingerprint`). The check `reviews.required` refuses a commit,
+  and the door a push, when any record is missing, does not pass, has a
+  finding not fixed, or names other content. It applies to every
+  commit after the one that brought the check in, so no review can be
+  skipped and deleting a file does not switch it off.
+- Until tijori signs the records (Phase 2 item 8), an agent with full
+  sudo could write a false one. Nothing yet catches that; a false record
+  is a broken rule.
 - A finding that belongs to the work of a later roadmap item, and that
   the change does not make worse, becomes a task on that item. It does
   not block the change. Every other finding blocks until it is fixed.
@@ -373,7 +384,7 @@ these files too.
 
 Until Phase 2 is finished:
 
-- Each commit must pass every check already built, plus the six reviews.
+- Each commit must pass every check already built, plus the required reviews.
 - No product code is written before the gate is complete. The two
   exceptions are `forge-sync` and the signing core of tijori, because
   Phases 1 and 2 need them.
@@ -414,9 +425,9 @@ other branches. Each change is small, complete and safe to ship.
 5. Write the failing test first.
 6. Make it pass with the smallest clean change.
 7. Run the commit tier.
-8. Run the six reviews and fix what they find.
+8. Run the required reviews and fix what they find.
 9. Commit on `main` and bring in any newer commits from Forgejo. If
-   anything came in, run the commit tier and the six reviews again on
+   anything came in, run the commit tier and the required reviews again on
    the result. Then push `main` to Forgejo.
 10. Forgejo's door gate runs the push tier before it accepts the push.
     If any check fails, the push is refused and `main` stays as it was.
@@ -449,7 +460,7 @@ sync, a failed release or a security problem, never for new scope.
    created only for a release named in the roadmap or asked for by the
    owner. It is taken and locked like any task, and made from `main`
    only.
-2. The release tier and the six reviews run on the change since the last
+2. The release tier and the required reviews run on the change since the last
    release.
 3. The version, notes and changelog come from the commit messages.
 4. The release step signs the artefacts with the release key. The key is
@@ -540,7 +551,7 @@ report gets a first reply within 7 days.
    reason.
 5. An agent closes a phase milestone once a signed check shows every
    "finished when" item is met, no task in the milestone is open, and
-   the six reviews of the phase pass. The owner may reopen any phase.
+   the required reviews of the phase pass. The owner may reopen any phase.
 6. Every Monday, Claude posts one plain-English summary issue for the
    owner: what was finished, what comes after, every blocked task, and
    questions for the owner.

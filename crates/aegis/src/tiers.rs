@@ -151,6 +151,7 @@ pub fn commit(repo: &Repo) -> Result<Vec<Finding>, String> {
     let mut out = file_checks(snapshot, &staged);
     out.extend(whole_project_docs(snapshot, &all));
     out.extend(rust_checks(snapshot));
+    out.extend(crate::reviews::of_staged(repo)?);
     Ok(out)
 }
 
@@ -190,8 +191,9 @@ pub fn push(
         out.extend(crate::tdd::check_paths(&commit.message, &commit.paths));
         out.extend(secrets::check("(commit message)", &commit.message));
         out.extend(private("(commit message)", &commit.message));
+        out.extend(crate::reviews::of_pushed(repo, base, &commit.id)?);
     }
-    for (path, line) in repo.added_lines(base, head)? {
+    for (path, line) in crate::history::added_lines(repo, base, head)? {
         let at = format!("{path} (history)");
         out.extend(secrets::check(&at, &line));
         out.extend(private(&at, &line));

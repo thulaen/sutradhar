@@ -71,7 +71,7 @@ finding the cause.
    coordinator role for everything else until named owners exist.
 7. A readability approver is an agent that passed a readability
    exercise for that language, checked once by the owner.
-8. This sits beside the six reviews of AGENTS.md section 7.1; it
+8. This sits beside the required reviews of AGENTS.md section 7.1; it
    replaces none of them.
 
 ### GG-06 Identical builds
@@ -262,7 +262,7 @@ it: unit, property, integration, failure-injection and regression tests.
   to keep status out of the docs.
 - Screenshots come from the Dioxus app, not from a browser test tool.
 - The fixed count of 47 checks is replaced by the catalogue.
-- Owner and readability approvals sit beside the six reviews.
+- Owner and readability approvals sit beside the required reviews.
 
 Source: `docs/specifications/coding-harness/google-grade.md` and
 `docs/specifications/coding-harness/google-grade-2.md` in the archive

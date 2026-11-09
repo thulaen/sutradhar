@@ -14,8 +14,9 @@ and follows [AGENTS.md section 9](../../AGENTS.md#9-git-and-github).
 1. Only `main` and release tags are accepted. Other branches, force
    pushes and deletes are refused by the door (0001).
 2. The door runs the push tier on every push of `main`. The push tier
-   refuses a commit without all six passing review records in
-   `reviews/` ([AGENTS.md section 7.1](../../AGENTS.md#71-the-six-reviews)).
+   refuses a commit without a passing record in `reviews/` from each of
+   the required reviews
+   ([AGENTS.md section 7.1](../../AGENTS.md#71-the-required-reviews)).
 3. A protected change (AGENTS.md section 7.2) is accepted only when it
    is signed with the owner's key. The signed statement names the
    candidate tree, the commit identifiers and a SHA-256 digest of the
@@ -182,7 +183,7 @@ plan:
   push tier; GitHub CI re-runs the gate afterwards as a second wall.
 - Owner approval by GitHub comment is replaced by the owner's key
   signature.
-- The hosted AI review is replaced by the six reviews.
+- The hosted AI review is replaced by the required reviews.
 - The sync may send release tags and releases, as AGENTS.md section 9.1
   asks.
 - Pull requests stay open for outside contributions, which are never

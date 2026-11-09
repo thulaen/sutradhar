@@ -8,9 +8,20 @@ use aegis::Finding;
 use aegis::repo::{NO_COMMIT, Repo};
 use aegis::tiers;
 
-/// The ref that records the last `main` the door accepted, so that every
-/// accepted commit stays in the door's copy for good.
+/// The ref that records the last `main` the door accepted. Every accepted
+/// commit stays in the door's copy for good, and this ref, not Forgejo's
+/// report, is the base for history, the push tier and release tags.
 pub const ACCEPTED: &str = "refs/door/main";
+
+/// The most commits one push may bring.
+const MOST_COMMITS: usize = 500;
+/// The most files, and bytes in all, a pushed tree may hold, counted
+/// before anything is written out: a small pack can name one file a
+/// million times.
+const MOST_FILES: usize = 200_000;
+const MOST_BYTES: u64 = 64 * 1024 * 1024;
+/// The largest one file may be; ours is about 130 KB.
+const MOST_FILE_BYTES: u64 = 1024 * 1024;
 
 /// One pushed ref, as Forgejo's hook reports it.
 #[derive(Debug, Clone, Copy)]
@@ -21,7 +32,8 @@ pub struct Push<'a> {
     pub old: &'a str,
     /// The commit or tag the ref will point at, or [`NO_COMMIT`].
     pub new: &'a str,
-    /// Forgejo's `main` before this push, or [`NO_COMMIT`].
+    /// Forgejo's `main` before this push, or [`NO_COMMIT`]. Used only for
+    /// release tags, which must also be on the door's own record.
     pub main: &'a str,
 }
 
@@ -68,7 +80,7 @@ impl Door {
         if push.name == "refs/heads/main" {
             check_main(&repo, push, commit)
         } else if is_release_tag(push.name) {
-            Ok(check_tag(&repo, push, commit))
+            check_tag(&repo, push, commit)
         } else {
             Ok(refused(
                 "door.ref",
@@ -83,29 +95,139 @@ fn check_main(
     push: Push<'_>,
     commit: &str,
 ) -> Result<Vec<Finding>, String> {
-    if push.old != NO_COMMIT && !is_ancestor(repo, push.old, commit) {
+    let accepted = accepted(repo)?;
+    let base = accepted.as_deref().unwrap_or(push.old);
+    if base != NO_COMMIT && !is_ancestor(repo, base, commit) {
         return Ok(refused(
             "door.history",
             "rewriting main's history is refused",
         ));
     }
+    // Before anything is written out: too many commits, or a tree too
+    // big, is refused, so a small push cannot fill the disk or keep the
+    // door busy for hours. The very first push, of a whole history, has
+    // no commit limit.
+    if base != NO_COMMIT {
+        let range = format!("{base}..{commit}");
+        let count = repo.git(&["rev-list", "--count", &range, "--"])?;
+        if count
+            .trim()
+            .parse::<usize>()
+            .map_or(true, |n| n > MOST_COMMITS)
+        {
+            return Ok(refused(
+                "door.size",
+                "a push may bring at most 500 commits; push in smaller parts",
+            ));
+        }
+    }
+    if let Some(why) = big_object(repo, base, commit) {
+        return Ok(refused("door.size", &why));
+    }
+    if let Some(why) = too_big(repo, commit) {
+        return Ok(refused("door.size", &why));
+    }
     let _out = repo.git(&["checkout", "-q", "--detach", "--force", commit])?;
     let _out =
         repo.git(&["clean", "-q", "-f", "-d", "-x", "-e", "/target/"])?;
-    let found = tiers::push(repo, push.old, commit)?;
+    let found = tiers::push(repo, base, commit)?;
     if found.is_empty() {
         let _out = repo.git(&["update-ref", ACCEPTED, commit])?;
     }
     Ok(found)
 }
-fn check_tag(repo: &Repo, push: Push<'_>, commit: &str) -> Vec<Finding> {
+fn check_tag(
+    repo: &Repo,
+    push: Push<'_>,
+    commit: &str,
+) -> Result<Vec<Finding>, String> {
     if push.old != NO_COMMIT {
-        return refused("door.tag", "replacing a release tag is refused");
+        return Ok(refused("door.tag", "replacing a release tag is refused"));
     }
-    if push.main == NO_COMMIT || !is_ancestor(repo, commit, push.main) {
-        return refused("door.tag", "a release tag must name a commit on main");
+    // Only a commit the door accepted, and that is on Forgejo's main too,
+    // may be released: the door can accept a main that Forgejo then
+    // turns down when another part of the same push fails.
+    let on_main = push.main != NO_COMMIT
+        && is_ancestor(repo, commit, push.main)
+        && accepted(repo)?.is_some_and(|a| is_ancestor(repo, commit, &a));
+    if !on_main {
+        return Ok(refused(
+            "door.tag",
+            "a release tag must name a commit the door accepted on main",
+        ));
     }
-    Vec::new()
+    Ok(Vec::new())
+}
+
+/// The last `main` the door accepted, which is the base for every check:
+/// Forgejo's own record of `main` could be lost or reset outside the
+/// door. `None` only when the door has accepted nothing yet; any other
+/// failure to read it refuses the push.
+fn accepted(repo: &Repo) -> Result<Option<String>, String> {
+    // `for-each-ref` prints nothing for a missing ref and fails on a
+    // fault, so the two cannot be mixed up.
+    let listed =
+        repo.git(&["for-each-ref", "--format=%(objectname)", ACCEPTED])?;
+    if listed.trim().is_empty() {
+        return Ok(None);
+    }
+    let id = repo.git(&["rev-parse", "--verify", &commit_of(ACCEPTED)])?;
+    Ok(Some(id.trim().to_owned()))
+}
+
+/// Why some file the push brings, in any of its commits, is too big, if
+/// one is: git's own size filter lists every object of the push and
+/// marks each file over the limit, before any of them is read.
+fn big_object(repo: &Repo, base: &str, commit: &str) -> Option<String> {
+    let filter =
+        format!("--filter=blob:limit={}", MOST_FILE_BYTES.saturating_add(1));
+    let mut args = vec![
+        "rev-list",
+        "--objects",
+        "--filter-print-omitted",
+        &filter,
+        commit,
+    ];
+    let not_base = format!("^{base}");
+    if base != NO_COMMIT {
+        args.push(&not_base);
+    }
+    match aegis::reviews::capped(repo, &args) {
+        Ok(listed)
+            if listed.split(|b| *b == b'\n').any(|l| l.starts_with(b"~")) =>
+        {
+            Some(format!(
+                "the push brings a file over {MOST_FILE_BYTES} bytes"
+            ))
+        }
+        Ok(_) => None,
+        Err(why) => Some(format!("the push cannot be listed: {why}")),
+    }
+}
+
+/// Why the tree of `commit` is too big to write out, if it is.
+fn too_big(repo: &Repo, commit: &str) -> Option<String> {
+    let (files, bytes, largest) =
+        match aegis::reviews::tree_totals(repo, commit) {
+            Ok(totals) => totals,
+            Err(why) => {
+                return Some(format!(
+                    "the pushed tree cannot be listed: {why}"
+                ));
+            }
+        };
+    if largest > MOST_FILE_BYTES {
+        return Some(format!(
+            "the pushed tree holds a file of {largest} bytes; the most is \
+             {MOST_FILE_BYTES}"
+        ));
+    }
+    (files > MOST_FILES || bytes > MOST_BYTES).then(|| {
+        format!(
+            "the pushed tree holds {files} files and {bytes} bytes; the most \
+             is {MOST_FILES} files and {MOST_BYTES} bytes"
+        )
+    })
 }
 
 fn refused(check: &'static str, message: &str) -> Vec<Finding> {

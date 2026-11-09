@@ -58,6 +58,108 @@ pub fn commits(
         .collect()
 }
 
+/// The most text, and lines, the change of one push may hold. The
+/// project's whole history is about 2.5 MB and 60,000 lines.
+const MOST_PATCH_BYTES: usize = 32 * 1024 * 1024;
+const MOST_PATCH_LINES: usize = 1_000_000;
+/// The longest file name a change may hold; ours is 58 bytes.
+const MOST_PATH_BYTES: usize = 512;
+
+/// The length of the name on a `--- a/NAME` or `+++ b/NAME` line: git
+/// ends a name holding a space with a tab, which is not part of it. A
+/// name git must still quote (one holding `"`, `\` or a control byte) is
+/// measured as quoted, so it can only be refused early, never let in;
+/// one that is not valid text counts as too long.
+fn name_bytes(line: &[u8]) -> usize {
+    let name = line.get(6..).unwrap_or_default();
+    let name = name.strip_suffix(b"\t").unwrap_or(name);
+    // A name that is not valid text grows when it is read, so it cannot
+    // be measured honestly and is refused.
+    if std::str::from_utf8(name).is_err() {
+        return usize::MAX;
+    }
+    name.len()
+}
+
+/// Every line added by the commits after `base` up to `head`, with
+/// the file it was added to.
+///
+/// # Errors
+/// When git fails, or the change is over 32 MiB, a million lines or
+/// names a file longer than 512 bytes.
+pub fn added_lines(
+    repo: &Repo,
+    base: &str,
+    head: &str,
+) -> Result<Vec<(String, String)>, String> {
+    let range = crate::repo::range(base, head);
+    let args = [
+        // Names as they are, not as escape codes, so a short name in
+        // another script is not measured as a long one.
+        "-c",
+        "core.quotePath=false",
+        "log",
+        "-p",
+        // A rename as a delete and an add, so the new name shows with
+        // every line it adds (an empty file adds none, so copies none).
+        "--no-renames",
+        // Every file as text, whatever `.gitattributes` says, so a file
+        // marked `-diff` or given a text filter cannot hide its lines.
+        "--text",
+        "--no-textconv",
+        "--no-ext-diff",
+        "--no-color",
+        "--diff-merges=first-parent",
+        "--format=",
+        "--end-of-options",
+        &range,
+    ];
+    let mut command = repo.command();
+    let _args = command.args(args);
+    let raw = crate::git_env::read_capped(&mut command, MOST_PATCH_BYTES)?;
+    // A small pack can unpack into a huge change, so the lines are
+    // counted before they are split up and copied.
+    // Each added line keeps its file's name, so a long name is refused
+    // too. Each name is measured on its own `--- a/` or `+++ b/` line in
+    // a file's header (before its first `@@`), so a rename cannot carry
+    // a name twice as long.
+    let mut lines = 0_usize;
+    let mut in_header = false;
+    for line in raw.split(|b| *b == b'\n') {
+        lines = lines.saturating_add(1);
+        if line.starts_with(b"diff --git ") {
+            in_header = true;
+            // A change of mode only, or an empty new file, has no `---`
+            // or `+++` lines, so the line holding both names is measured
+            // too: `diff --git a/NAME b/NAME` is twice the name plus 16
+            // bytes of its own. A line that is not valid text is refused.
+            let both = MOST_PATH_BYTES.saturating_mul(2).saturating_add(16);
+            if line.len() > both || std::str::from_utf8(line).is_err() {
+                return Err(format!(
+                    "the push names a file longer than {MOST_PATH_BYTES} bytes"
+                ));
+            }
+        } else if line.starts_with(b"@@") {
+            in_header = false;
+        } else if in_header
+            && (line.starts_with(b"--- ") || line.starts_with(b"+++ "))
+            && name_bytes(line) > MOST_PATH_BYTES
+        {
+            return Err(format!(
+                "the push names a file longer than {MOST_PATH_BYTES} bytes"
+            ));
+        }
+    }
+    // The piece after the last line break is not a line.
+    let lines = lines.saturating_sub(1);
+    if lines > MOST_PATCH_LINES {
+        return Err(format!(
+            "the push changes {lines} lines; the most is {MOST_PATCH_LINES}"
+        ));
+    }
+    Ok(patch::added_lines(&String::from_utf8_lossy(&raw)))
+}
+
 /// Every path the index changes against `HEAD`, deletions included and
 /// renames given as both paths, as the push tier sees them.
 ///

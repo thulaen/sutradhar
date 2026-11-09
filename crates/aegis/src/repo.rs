@@ -96,13 +96,11 @@ impl Repo {
     }
 
     /// A git command for this repository, with git's hook variables
-    /// cleared but for the index a hook was given.
-    fn command(&self) -> Command {
+    /// cleared but for the index a hook was given. Replace objects and
+    /// outside settings, which could show another history, are shut off.
+    pub(crate) fn command(&self) -> Command {
         let mut command = Command::new(&self.git);
-        let _cleared = command
-            .env_remove("GIT_DIR")
-            .env_remove("GIT_INDEX_FILE")
-            .env_remove("GIT_WORK_TREE");
+        crate::git_env::shut_off(&mut command);
         if let Some(index) = &self.index {
             let _kept = command.env("GIT_INDEX_FILE", index);
         }
@@ -229,29 +227,6 @@ impl Repo {
         Ok(patch::nul_list(&self.git(&args)?))
     }
 
-    /// Every line added by the commits after `base` up to `head`, with
-    /// the file it was added to.
-    ///
-    /// # Errors
-    /// When git fails.
-    pub fn added_lines(
-        &self,
-        base: &str,
-        head: &str,
-    ) -> Result<Vec<(String, String)>, String> {
-        let range = range(base, head);
-        let args = [
-            "log",
-            "-p",
-            "--no-color",
-            "--diff-merges=first-parent",
-            "--format=",
-            "--end-of-options",
-            &range,
-        ];
-        Ok(patch::added_lines(&self.git(&args)?))
-    }
-
     /// The text of a file, or `None` when it cannot be read.
     #[must_use]
     pub fn read(&self, path: &str) -> Option<String> {
@@ -272,7 +247,7 @@ impl Repo {
     }
 }
 
-fn range(base: &str, head: &str) -> String {
+pub(crate) fn range(base: &str, head: &str) -> String {
     if base == NO_COMMIT {
         head.to_owned()
     } else {

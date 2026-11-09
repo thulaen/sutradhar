@@ -188,6 +188,12 @@ tiers = ["commit", "push"]
 proof = "aegis::names::tests::refuses_a_crate_missing_from_the_glossary"
 
 [[check]]
+id = "reviews.required"
+partly = ["GI-01", "GI-02", "GI-11", "GI-18", "GI-19", "GI-51"]
+tiers = ["commit", "push"]
+proof = "aegis::reviews::commit_and_push_agree_for_plain_commits_amends_and_merges"
+
+[[check]]
 id = "analysis.nirikshak"
 partly = [
     "GI-06", "GI-11", "GI-15", "GI-18", "GI-20", "GI-23", "GI-25", "GI-32",

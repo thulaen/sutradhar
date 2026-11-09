@@ -1,0 +1,5 @@
+skill = "backlog"
+change = "sha256:0a485de92d6b2718ba92436bf2706debf7ef322f1a7a8cba51424639d2c4c80e"
+verdict = "pass"
+agent = "claude subagents"
+summary = "Ten rounds by fresh subagents. The change does task #111 and fixes #123 found by its own red team; follow-ups are tasks #119, #121, #122 and #124 in Later or Phase 2; the last round (eleven) passed."
