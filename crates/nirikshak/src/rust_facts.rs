@@ -8,7 +8,7 @@ use syn::visit::{self, Visit};
 use crate::facts::{Facts, number, text};
 use crate::shapes::{
     err_wild, first_text, in_test_file, is_call, is_cfg_test, is_empty,
-    is_test_attr, line_of, macro_text,
+    is_test_attr, line_of, macro_text, receiver_text, token_strings,
 };
 use crate::uses::{Aliases, aliases, expand};
 
@@ -20,6 +20,8 @@ struct Walker<'a> {
     aliases: Aliases,
     scopes: Vec<String>,
     test_depth: usize,
+    // The last part of the trait the current `impl` block implements.
+    implementing: Option<String>,
     facts: &'a mut Facts,
 }
 
@@ -78,6 +80,10 @@ impl Walker<'_> {
         self.here("call", &[("callee", text(callee)), ("line", number(at))]);
     }
 
+    fn literal(&mut self, found: String, at: usize) {
+        self.here("literal", &[("text", text(found)), ("line", number(at))]);
+    }
+
     fn discard(&mut self, at: usize, kind: &str) {
         self.here("discard", &[("line", number(at)), ("kind", text(kind))]);
     }
@@ -92,6 +98,10 @@ impl<'ast> Visit<'ast> for Walker<'_> {
 
     fn visit_impl_item_fn(&mut self, item: &'ast syn::ImplItemFn) {
         self.function(&item.attrs, &item.sig, &item.block);
+        if let Some(name) = self.implementing.clone() {
+            let at = number(line_of(item.sig.ident.span()));
+            self.here("impl_fn", &[("trait", text(name)), ("line", at)]);
+        }
         visit::visit_impl_item_fn(self, item);
         let _done = self.scopes.pop();
     }
@@ -102,6 +112,17 @@ impl<'ast> Visit<'ast> for Walker<'_> {
             visit::visit_trait_item_fn(self, item);
             let _done = self.scopes.pop();
         }
+    }
+
+    fn visit_item_impl(&mut self, item: &'ast syn::ItemImpl) {
+        let name = item
+            .trait_
+            .as_ref()
+            .and_then(|(path, _)| path.segments.last())
+            .map(|s| s.ident.to_string());
+        let outer = std::mem::replace(&mut self.implementing, name);
+        visit::visit_item_impl(self, item);
+        self.implementing = outer;
     }
 
     fn visit_item_mod(&mut self, item: &'ast syn::ItemMod) {
@@ -133,7 +154,25 @@ impl<'ast> Visit<'ast> for Walker<'_> {
     }
 
     fn visit_expr_method_call(&mut self, call: &'ast syn::ExprMethodCall) {
-        self.call(format!(".{}", call.method), line_of(call.method.span()));
+        let (name, at) =
+            (format!(".{}", call.method), line_of(call.method.span()));
+        if let Some(on) = receiver_text(&call.receiver) {
+            let fields = [
+                ("method", text(name.clone())),
+                ("receiver", text(on)),
+                ("line", number(at)),
+            ];
+            self.here("method_receiver", &fields);
+        }
+        if let Some(first) = first_text(call.args.first()) {
+            let fields = [
+                ("callee", text(name.clone())),
+                ("text", text(first)),
+                ("line", number(at)),
+            ];
+            self.here("call_text", &fields);
+        }
+        self.call(name, at);
         visit::visit_expr_method_call(self, call);
     }
 
@@ -151,7 +190,14 @@ impl<'ast> Visit<'ast> for Walker<'_> {
             }
             self.here("macro", &[("name", text(name)), ("line", number(at))]);
         }
+        for (found, at) in token_strings(&mac.tokens) {
+            self.literal(found, at);
+        }
         visit::visit_macro(self, mac);
+    }
+
+    fn visit_lit_str(&mut self, s: &'ast syn::LitStr) {
+        self.literal(s.value(), line_of(s.span()));
     }
 
     // Attributes hold doc comments and settings, not program text.
@@ -200,6 +246,7 @@ pub fn read(path: &str, source: &str, facts: &mut Facts) {
                 aliases: aliases(&file),
                 scopes: Vec::new(),
                 test_depth: 0,
+                implementing: None,
                 facts,
             };
             walker.visit_file(&file);

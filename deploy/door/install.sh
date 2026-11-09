@@ -24,7 +24,8 @@ fi
 git -C "$door/work" config gc.auto 0
 # Only the door's own account and Forgejo's may reach the socket.
 chmod 0700 "$door/run"
-setfacl -m "u:$forgejo_uid:rwx" "$door/run"
+# The default entry passes to the socket the door makes inside.
+setfacl -m "u:$forgejo_uid:rwx" -m "d:u:$forgejo_uid:rwx" "$door/run"
 toolchain=$(sed -n 's/^channel = "\(.*\)"$/\1/p' rust-toolchain.toml)
 cat >"$door/sutradhar-door.service" <<UNIT
 [Unit]

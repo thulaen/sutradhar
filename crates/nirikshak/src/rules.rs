@@ -13,7 +13,7 @@ use crate::facts::Facts;
 pub type Source = (&'static str, &'static str);
 
 /// Every rule, in order.
-pub const ALL: [Source; 9] = [
+pub const ALL: [Source; 20] = [
     (
         "r05_environment.rego",
         include_str!("../rules/r05_environment.rego"),
@@ -49,6 +49,47 @@ pub const ALL: [Source; 9] = [
     (
         "s03_weak_hashes.rego",
         include_str!("../rules/s03_weak_hashes.rego"),
+    ),
+    (
+        "h06_open_permissions.rego",
+        include_str!("../rules/h06_open_permissions.rego"),
+    ),
+    (
+        "h11_unbuffered_writes.rego",
+        include_str!("../rules/h11_unbuffered_writes.rego"),
+    ),
+    (
+        "h22_destructive_sql.rego",
+        include_str!("../rules/h22_destructive_sql.rego"),
+    ),
+    (
+        "h23_check_then_set.rego",
+        include_str!("../rules/h23_check_then_set.rego"),
+    ),
+    (
+        "h25_cache_never_cleared.rego",
+        include_str!("../rules/h25_cache_never_cleared.rego"),
+    ),
+    (
+        "h35_panic_in_drop.rego",
+        include_str!("../rules/h35_panic_in_drop.rego"),
+    ),
+    (
+        "h39_writes_outside_transaction.rego",
+        include_str!("../rules/h39_writes_outside_transaction.rego"),
+    ),
+    (
+        "h42_too_few_cases.rego",
+        include_str!("../rules/h42_too_few_cases.rego"),
+    ),
+    (
+        "h44_local_clock.rego",
+        include_str!("../rules/h44_local_clock.rego"),
+    ),
+    ("h53_leaks.rego", include_str!("../rules/h53_leaks.rego")),
+    (
+        "h56_platform_paths.rego",
+        include_str!("../rules/h56_platform_paths.rego"),
     ),
 ];
 
@@ -183,5 +224,13 @@ fn findings(
 }
 
 #[cfg(test)]
+#[path = "rules_tests_common.rs"]
+mod tests_common;
+
+#[cfg(test)]
 #[path = "rules_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "rules_h_tests.rs"]
+mod h_tests;

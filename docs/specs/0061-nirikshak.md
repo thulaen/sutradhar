@@ -36,10 +36,13 @@ folder; lines start at 1. Code outside any function is in the function
 | `file` | `path`, `language` |
 | `function` | `path`, `name`, `first`, `last`, `kind` |
 | `call` | `path`, `function`, `callee`, `line` |
-| `call_text` | `path`, `function`, `callee`, `text`, `line` (a call whose first argument is a string) |
+| `call_text` | `path`, `function`, `callee`, `text`, `line` (a call whose first argument is a string or a whole number) |
 | `macro` | `path`, `function`, `name`, `line` |
 | `macro_text` | `path`, `function`, `name`, `text`, `line` (a macro whose first argument is a string) |
 | `doc_code` | `path`, `text`, `line` (an inline code span in a page) |
+| `literal` | `path`, `function`, `text`, `line` (a string, macros included) |
+| `method_receiver` | `path`, `function`, `method`, `receiver`, `line` (what a method is called on, such as `self.cache`) |
+| `impl_fn` | `path`, `function`, `trait`, `line` (a method of a trait impl) |
 | `discard` | `path`, `function`, `line`, `kind` (`let _ =` or `.ok();`) |
 | `empty_handler` | `path`, `function`, `line` (an `Err(_) => {}` arm) |
 | `uses_try` | `path`, `function`, `line` (a `?`) |
@@ -66,6 +69,17 @@ Each rule file starts with comment lines naming its `id`, `title`,
 | S01 | A command run through a shell, in code | GI-37 |
 | S02 | Certificate checks switched off, anywhere | GI-18 |
 | S03 | MD5 or SHA-1, anywhere | GI-18 |
+| H06 | A file mode that lets anyone write, in code | GI-18 |
+| H11 | A file written more than once with no buffer | GI-11 |
+| H22 | SQL that drops, empties or deletes every row, in code | GI-06 |
+| H23 | An atomic value read, then set in a separate step | GI-23 |
+| H25 | A long-lived cache filled where nothing ever clears it | GI-25 |
+| H35 | A panic inside `drop` | GI-35 |
+| H39 | Two or more SQL writes with no transaction around them | GI-39 |
+| H42 | A property test with fewer than ten cases | GI-57 |
+| H44 | Local clock time in code | GI-44 |
+| H53 | Memory leaked on purpose, in code | GI-20 |
+| H56 | A drive letter or a `/Users/` folder written into code | GI-56 |
 
 Each has tests that a planted case is found and a clean one passes.
 
@@ -84,6 +98,7 @@ since the gate runs a debug build.
 - R05 sees `std::env::var` and its kin, and `env!`. A setting read
   through a helper of our own, such as `setting("NAME")`, is not seen
   yet, so every program's page lists its settings by hand as well.
+- H39 matches callers by name alone, as R14 matches helpers.
 - R14 matches helpers by name alone, so a helper of the same name
   elsewhere that asserts can hide a finding.
 - The earlier work's other rules come over one by one, each with its

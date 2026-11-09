@@ -73,7 +73,8 @@ pub fn err_wild(pat: &syn::Pat) -> Option<Span> {
     (last.ident == "Err" && wild).then(|| last.ident.span())
 }
 
-/// The text of a call's first argument, when it is a string literal.
+/// The text of a call's first argument, when it is a string literal,
+/// or a whole number as written, such as `0o777`.
 #[must_use]
 pub fn first_text(first: Option<&syn::Expr>) -> Option<String> {
     match first {
@@ -81,6 +82,68 @@ pub fn first_text(first: Option<&syn::Expr>) -> Option<String> {
             lit: syn::Lit::Str(s),
             ..
         })) => Some(s.value()),
+        Some(syn::Expr::Lit(syn::ExprLit {
+            lit: syn::Lit::Int(n),
+            ..
+        })) => Some(n.to_string()),
+        _ => None,
+    }
+}
+
+/// Every string literal in a macro's tokens, nested groups included,
+/// with its line.
+#[must_use]
+pub fn token_strings(tokens: &TokenStream) -> Vec<(String, usize)> {
+    let mut found = Vec::new();
+    for tree in tokens.clone() {
+        match tree {
+            TokenTree::Group(group) => {
+                found.extend(token_strings(&group.stream()));
+            }
+            TokenTree::Literal(literal) => {
+                let at = line_of(literal.span());
+                let tree = TokenTree::Literal(literal);
+                if let Ok(s) = syn::parse2::<syn::LitStr>(tree.into()) {
+                    found.push((s.value(), at));
+                }
+            }
+            TokenTree::Ident(_) | TokenTree::Punct(_) => {}
+        }
+    }
+    found
+}
+
+/// A short written form of what a method is called on: paths, fields,
+/// `&`, `*`, indexing as `[]` and calls as `()`, without their
+/// arguments. Other shapes have none.
+#[must_use]
+pub fn receiver_text(expr: &syn::Expr) -> Option<String> {
+    let around = |inner: &syn::Expr, before: &str, after: &str| {
+        receiver_text(inner).map(|t| format!("{before}{t}{after}"))
+    };
+    match expr {
+        syn::Expr::Path(path) => Some(
+            path.path
+                .segments
+                .iter()
+                .map(|s| s.ident.to_string())
+                .collect::<Vec<_>>()
+                .join("::"),
+        ),
+        syn::Expr::Field(field) => {
+            let member = match &field.member {
+                syn::Member::Named(name) => name.to_string(),
+                syn::Member::Unnamed(index) => index.index.to_string(),
+            };
+            around(&field.base, "", &format!(".{member}"))
+        }
+        syn::Expr::MethodCall(call) => {
+            around(&call.receiver, "", &format!(".{}()", call.method))
+        }
+        syn::Expr::Call(call) => around(&call.func, "", "()"),
+        syn::Expr::Reference(inner) => around(&inner.expr, "&", ""),
+        syn::Expr::Paren(inner) => receiver_text(&inner.expr),
+        syn::Expr::Index(index) => around(&index.expr, "", "[]"),
         _ => None,
     }
 }

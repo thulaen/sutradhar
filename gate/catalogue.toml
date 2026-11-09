@@ -189,7 +189,11 @@ proof = "aegis::names::tests::refuses_a_crate_missing_from_the_glossary"
 
 [[check]]
 id = "analysis.nirikshak"
-partly = ["GI-15", "GI-18", "GI-32", "GI-36", "GI-37", "GI-47", "GI-48"]
+partly = [
+    "GI-06", "GI-11", "GI-15", "GI-18", "GI-20", "GI-23", "GI-25", "GI-32",
+    "GI-35", "GI-36", "GI-37", "GI-39", "GI-44", "GI-47", "GI-48", "GI-56",
+    "GI-57",
+]
 tiers = ["commit", "push"]
 proof = "aegis::planted::a_thrown_away_error_fails_the_code_analysis"
 
