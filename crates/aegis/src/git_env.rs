@@ -6,7 +6,7 @@
 //! file watcher is off. The person's own `~/.gitconfig`, at its usual
 //! place, is still read: it is theirs to keep safe.
 
-use std::io::Read;
+use std::io::{Read, Write};
 use std::process::{Command, Stdio};
 
 /// The settings a git command never takes from outside.
@@ -72,6 +72,39 @@ pub fn read_capped(
         Ok(status) if status.success() => Ok(out),
         Ok(status) => Err(format!("a git listing failed: {status}")),
         Err(e) => Err(format!("a git listing failed: {e}")),
+    }
+}
+
+/// Runs `command` with `input` as what it reads, and gives what it
+/// printed. `what` names it in the errors: it could not start, did not
+/// finish, or ended with an error (with what it said, and `args`).
+///
+/// # Errors
+/// When the program cannot start, or ends with an error, or does not
+/// take all of `input`.
+pub fn run_with_input(
+    command: &mut Command,
+    input: &[u8],
+    what: &str,
+    args: &str,
+) -> Result<String, String> {
+    let mut child = command
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .spawn()
+        .map_err(|e| format!("cannot run {what}: {e}"))?;
+    let sent = child.stdin.take().map(|mut s| s.write_all(input));
+    let out = child
+        .wait_with_output()
+        .map_err(|e| format!("{what} did not finish: {e}"))?;
+    if out.status.success() && !matches!(sent, Some(Err(_))) {
+        Ok(String::from_utf8_lossy(&out.stdout).into_owned())
+    } else {
+        Err(format!(
+            "{what} {args} failed: {}",
+            String::from_utf8_lossy(&out.stderr).trim()
+        ))
     }
 }
 

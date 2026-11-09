@@ -23,15 +23,12 @@ pub fn git(dir: &Path, args: &[&str]) -> String {
         .to_owned()
 }
 
+/// The gate's own scratch-repository helpers, shared, not copied.
+#[path = "../../../aegis/tests/common/mod.rs"]
+mod shared;
+
 pub fn folder(name: &str) -> PathBuf {
-    let dir = std::env::temp_dir()
-        .join(format!("aegis-door-{name}-{}", std::process::id()));
-    let _ = fs::remove_dir_all(&dir);
-    fs::create_dir_all(&dir).unwrap();
-    let _ = git(&dir, &["init", "-q", "-b", "main"]);
-    let _ = git(&dir, &["config", "user.email", "a@example.com"]);
-    let _ = git(&dir, &["config", "user.name", "A"]);
-    dir
+    shared::repo("door", name)
 }
 
 /// A source repository with one good commit, and a door whose copy has

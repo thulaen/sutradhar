@@ -152,6 +152,12 @@ tiers = ["commit", "push"]
 proof = "aegis::planted::a_stale_lock_file_fails_the_fetch"
 
 [[check]]
+id = "code.copies"
+partly = ["GI-28", "GI-29"]
+tiers = ["commit", "push"]
+proof = "aegis::copies::tests::a_copy_with_new_names_is_found"
+
+[[check]]
 id = "supply.sbom"
 partly = ["GI-18"]
 tiers = ["commit", "push"]

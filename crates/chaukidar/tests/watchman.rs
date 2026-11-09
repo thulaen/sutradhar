@@ -114,14 +114,22 @@ fn watchman(args: &[&str]) -> Option<i32> {
         .code()
 }
 
+/// A watched file, a list naming it, and where the sums and state go,
+/// with the sums recorded by the command.
+fn recorded(name: &str) -> (String, String, String, String) {
+    let watched = temp(name);
+    std::fs::write(&watched, "1\n").unwrap();
+    let list = temp(&format!("{name}list"));
+    std::fs::write(&list, format!("file thing {watched}\n")).unwrap();
+    let sums = temp(&format!("{name}sums"));
+    let state = temp(&format!("{name}state"));
+    assert_eq!(watchman(&["record", &list, &sums]), Some(0));
+    (watched, list, sums, state)
+}
+
 #[test]
 fn the_command_records_checks_and_raises_the_alarm() {
-    let watched = temp("watched");
-    std::fs::write(&watched, "1\n").unwrap();
-    let list = temp("list");
-    std::fs::write(&list, format!("file thing {watched}\n")).unwrap();
-    let (sums, state) = (temp("sums"), temp("state"));
-    assert_eq!(watchman(&["record", &list, &sums]), Some(0));
+    let (watched, list, sums, state) = recorded("cmd");
     assert_eq!(watchman(&["check", &list, &sums, &state]), Some(0));
     std::fs::write(&watched, "2\n").unwrap();
     assert_eq!(watchman(&["check", &list, &sums, &state]), Some(2));
@@ -143,12 +151,7 @@ fn the_command_refuses_bad_use() {
 
 #[test]
 fn a_half_raised_alarm_is_not_repeated() {
-    let watched = temp("half");
-    std::fs::write(&watched, "1\n").unwrap();
-    let list = temp("halflist");
-    std::fs::write(&list, format!("file thing {watched}\n")).unwrap();
-    let (sums, state) = (temp("halfsums"), temp("halfstate"));
-    assert_eq!(watchman(&["record", &list, &sums]), Some(0));
+    let (watched, list, sums, state) = recorded("half");
     std::fs::write(&watched, "2\n").unwrap();
     let out = Command::new(env!("CARGO_BIN_EXE_chaukidar"))
         .args(["check", &list, &sums, &state])

@@ -1,9 +1,9 @@
 skill = "style-docs"
-change = "sha256:f99e5be14e05f86436b18aff8fbb0b12ae6c38a5db5ad7b1c62d9dae59ce460e"
+change = "sha256:f374f227497c168f8478438978a16755d76b9d898bae40fb179c6bb7b880df5f"
 verdict = "pass"
 agent = "claude subagents"
-summary = "Four rounds by fresh subagents on task #113 (the SBOM). Names, doc comments and AGENTS.md match the code; wording says every part we build with and ship."
+summary = "Six rounds by fresh subagents on task #115 (the copy check). Docs, names, AGENTS.md item 12 and test comments match the code; Copy was renamed Copied."
 
 [[finding]]
-what = "main.rs still said every part we ship"
+what = "AGENTS.md item 12 described a list that does not exist"
 fixed = true

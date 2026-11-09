@@ -3,41 +3,20 @@
 #![allow(clippy::unwrap_used, reason = "tests stop at the first failure")]
 
 use std::fs;
-use std::path::{Path, PathBuf};
-use std::process::Command;
+use std::path::PathBuf;
 
 use aegis::repo::Repo;
 
-fn git(dir: &Path, args: &[&str]) -> String {
-    let out = Command::new("git")
-        .args(["-c", "user.name=t", "-c", "user.email=t@t"])
-        .args(["-c", "core.hooksPath=/dev/null"])
-        .env_remove("GIT_DIR")
-        .env_remove("GIT_WORK_TREE")
-        .args(args)
-        .current_dir(dir)
-        .env_remove("GIT_INDEX_FILE")
-        .output()
-        .unwrap();
-    assert!(out.status.success(), "git {args:?}: {out:?}");
-    String::from_utf8_lossy(&out.stdout).trim().to_owned()
-}
-
-fn write(dir: &Path, path: &str, text: &str) {
-    let path = dir.join(path);
-    fs::create_dir_all(path.parent().unwrap()).unwrap();
-    fs::write(path, text).unwrap();
-}
+mod common;
+use common::{git, repo, save, write};
 
 fn scratch(name: &str) -> PathBuf {
-    let dir = std::env::temp_dir()
-        .join(format!("aegis-reviews-{name}-{}", std::process::id()));
-    let _ = fs::remove_dir_all(&dir);
-    fs::create_dir_all(&dir).unwrap();
-    let _ok = git(&dir, &["init", "-q", "-b", "main"]);
-    write(&dir, "crates/aegis/src/reviews.rs", "// the check\n");
-    let _ok = git(&dir, &["add", "-A"]);
-    let _ok = git(&dir, &["commit", "-qm", "start"]);
+    let dir = repo("history", name);
+    let _start = save(
+        &dir,
+        &[("crates/aegis/src/reviews.rs", "// the check\n")],
+        "start",
+    );
     dir
 }
 
@@ -49,27 +28,19 @@ fn a_change_too_long_or_naming_a_very_long_file_is_refused() {
     // three folders deep.
     let part = "n".repeat(200);
     let long = format!("{part}/{part}/{part}.txt");
-    write(&dir, &long, "x\n");
-    let _ok = git(&dir, &["add", "-A"]);
-    let _ok = git(&dir, &["commit", "-qm", "long name"]);
-    let head = git(&dir, &["rev-parse", "HEAD"]);
+    let head = save(&dir, &[(&long, "x\n")], "long name");
     let refused = aegis::history::added_lines(&Repo::at(&dir), &base, &head);
     assert!(refused.is_err_and(|e| e.contains("longer than 512")));
     // A rename from a short name to a long one is measured too.
     let _ok = git(&dir, &["reset", "-q", "--hard", &base]);
-    write(&dir, "x.txt", "same text\n");
-    let _ok = git(&dir, &["add", "-A"]);
-    let _ok = git(&dir, &["commit", "-qm", "short"]);
-    let short_id = git(&dir, &["rev-parse", "HEAD"]);
+    let short_id = save(&dir, &[("x.txt", "same text\n")], "short");
     let folder = dir.join(&long);
     fs::create_dir_all(folder.parent().unwrap()).unwrap();
     let _ok = git(&dir, &["mv", "x.txt", &long]);
     // A rename that also adds a line has a `+++` line naming the new file,
     // which is measured.
-    write(&dir, &long, "same text\nand one more\n");
-    let _ok = git(&dir, &["add", "-A"]);
-    let _ok = git(&dir, &["commit", "-qm", "renamed"]);
-    let renamed = git(&dir, &["rev-parse", "HEAD"]);
+    let renamed =
+        save(&dir, &[(&long, "same text\nand one more\n")], "renamed");
     let refused =
         aegis::history::added_lines(&Repo::at(&dir), &short_id, &renamed);
     assert!(refused.is_err_and(|e| e.contains("longer than 512")));
@@ -87,10 +58,11 @@ fn a_change_too_long_or_naming_a_very_long_file_is_refused() {
     // A short name in another script is not refused: 50 letters of 3
     // bytes each, which git would quote as 600 bytes of escapes.
     let _ok = git(&dir, &["reset", "-q", "--hard", &short_id]);
-    write(&dir, &format!("{}.txt", "\u{915}".repeat(50)), "x\n");
-    let _ok = git(&dir, &["add", "-A"]);
-    let _ok = git(&dir, &["commit", "-qm", "hindi name"]);
-    let hindi = git(&dir, &["rev-parse", "HEAD"]);
+    let hindi = save(
+        &dir,
+        &[(&format!("{}.txt", "\u{915}".repeat(50)), "x\n")],
+        "hindi name",
+    );
     let seen = aegis::history::added_lines(&Repo::at(&dir), &short_id, &hindi);
     assert!(seen.is_ok_and(|l| l.iter().any(|(_, line)| line == "x")));
     // A change of mode only names the file only on the `diff --git` line,
@@ -111,10 +83,7 @@ fn a_file_marked_not_to_diff_still_shows_its_lines() {
     let dir = scratch("nodiff");
     let base = git(&dir, &["rev-parse", "HEAD"]);
     write(&dir, ".gitattributes", "hidden.dat -diff\n");
-    write(&dir, "hidden.dat", "a line to see\n");
-    let _ok = git(&dir, &["add", "-A"]);
-    let _ok = git(&dir, &["commit", "-qm", "hidden"]);
-    let head = git(&dir, &["rev-parse", "HEAD"]);
+    let head = save(&dir, &[("hidden.dat", "a line to see\n")], "hidden");
     let lines =
         aegis::history::added_lines(&Repo::at(&dir), &base, &head).unwrap();
     assert!(
@@ -137,10 +106,7 @@ fn an_empty_file_just_over_the_limit_or_a_name_not_text_is_refused() {
         "e".repeat(200),
         "e".repeat(112)
     );
-    write(&dir, &path, "");
-    let _ok = git(&dir, &["add", "-A"]);
-    let _ok = git(&dir, &["commit", "-qm", "empty"]);
-    let empty = git(&dir, &["rev-parse", "HEAD"]);
+    let empty = save(&dir, &[(&path, "")], "empty");
     let refused = aegis::history::added_lines(&Repo::at(&dir), &base, &empty);
     assert!(refused.is_err_and(|e| e.contains("longer than 512")));
     let _ok = git(&dir, &["reset", "-q", "--hard", &base]);

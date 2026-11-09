@@ -1,8 +1,7 @@
 //! Running the outside tools the sync uses: `curl` for Forgejo, `gh` for
 //! GitHub, `git` for the code and gitleaks for secrets.
 
-use std::io::Write;
-use std::process::{Command, Stdio};
+use std::process::Command;
 use std::time::Duration;
 
 /// Something that runs a program with arguments and input, and gives
@@ -50,28 +49,14 @@ impl Run for System {
         args: &[&str],
         input: &[u8],
     ) -> Result<String, String> {
-        let mut child = Command::new("timeout")
-            .arg(self.limit.to_string())
-            .arg(program)
-            .args(args)
-            .stdin(Stdio::piped())
-            .stdout(Stdio::piped())
-            .stderr(Stdio::piped())
-            .spawn()
-            .map_err(|e| format!("cannot run {program}: {e}"))?;
-        let sent = child.stdin.take().map(|mut s| s.write_all(input));
-        let out = child
-            .wait_with_output()
-            .map_err(|e| format!("{program} did not finish: {e}"))?;
-        if out.status.success() && !matches!(sent, Some(Err(_))) {
-            Ok(String::from_utf8_lossy(&out.stdout).into_owned())
-        } else {
-            Err(format!(
-                "{program} {} failed: {}",
-                args.first().copied().unwrap_or_default(),
-                String::from_utf8_lossy(&out.stderr).trim()
-            ))
-        }
+        let mut command = Command::new("timeout");
+        let _args = command.arg(self.limit.to_string()).arg(program).args(args);
+        aegis::git_env::run_with_input(
+            &mut command,
+            input,
+            program,
+            args.first().copied().unwrap_or_default(),
+        )
     }
 
     fn pause(&self) {

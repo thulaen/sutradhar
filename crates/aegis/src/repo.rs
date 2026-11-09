@@ -3,7 +3,6 @@
 use std::fs;
 
 use crate::patch;
-use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 use std::time::{SystemTime, UNIX_EPOCH};
@@ -150,27 +149,14 @@ impl Repo {
         args: &[&str],
         input: &[u8],
     ) -> Result<String, String> {
-        let mut child = self
-            .command()
-            .args(args)
-            .stdin(Stdio::piped())
-            .stdout(Stdio::piped())
-            .stderr(Stdio::piped())
-            .spawn()
-            .map_err(|e| format!("cannot run git: {e}"))?;
-        let sent = child.stdin.take().map(|mut s| s.write_all(input));
-        let out = child
-            .wait_with_output()
-            .map_err(|e| format!("git did not finish: {e}"))?;
-        if out.status.success() && !matches!(sent, Some(Err(_))) {
-            Ok(String::from_utf8_lossy(&out.stdout).into_owned())
-        } else {
-            Err(format!(
-                "git {} failed: {}",
-                args.join(" "),
-                String::from_utf8_lossy(&out.stderr).trim()
-            ))
-        }
+        let mut command = self.command();
+        let _args = command.args(args);
+        crate::git_env::run_with_input(
+            &mut command,
+            input,
+            "git",
+            &args.join(" "),
+        )
     }
 
     /// Copies exactly the staged files into a new folder under the build

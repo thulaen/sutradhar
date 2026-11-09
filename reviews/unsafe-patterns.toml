@@ -1,5 +1,5 @@
 skill = "unsafe-patterns"
-change = "sha256:f99e5be14e05f86436b18aff8fbb0b12ae6c38a5db5ad7b1c62d9dae59ce460e"
+change = "sha256:f374f227497c168f8478438978a16755d76b9d898bae40fb179c6bb7b880df5f"
 verdict = "pass"
 agent = "claude subagents"
-summary = "Four rounds by fresh subagents on task #113 (the SBOM). No overflow, panics, open files or weakened tests; errors are refused, not turned into defaults."
+summary = "Six rounds by fresh subagents on task #115 (the copy check). No panics, unchecked indexing or endless loops; all sums are checked and stress inputs end fast."

@@ -3,38 +3,20 @@
 
 use std::fs;
 use std::path::{Path, PathBuf};
-use std::process::Command;
 
 use aegis::repo::{NO_COMMIT, Repo};
 use aegis::rule_file::POINTER;
 use aegis::tiers;
 
+mod common;
+use common::{git, repo};
+
 const GOOD_MSG: &str = "docs: start\n\nTDD: none (docs only)\nDefects: none\n\
     Task: bootstrap\nSigned-off-by: A <a@example.com>\n";
 
-fn git(dir: &Path, args: &[&str]) -> String {
-    let out = Command::new("git")
-        .env_remove("GIT_DIR")
-        .env_remove("GIT_INDEX_FILE")
-        .env_remove("GIT_WORK_TREE")
-        .arg("-C")
-        .arg(dir)
-        .args(args)
-        .output()
-        .unwrap();
-    assert!(out.status.success(), "git {args:?}: {out:?}");
-    String::from_utf8(out.stdout).unwrap().trim().to_owned()
-}
-
 /// A scratch repository: rule and pointer files, README, numbers list.
 fn scratch(name: &str) -> PathBuf {
-    let dir = std::env::temp_dir()
-        .join(format!("aegis-tiers-{name}-{}", std::process::id()));
-    let _ = fs::remove_dir_all(&dir);
-    fs::create_dir_all(&dir).unwrap();
-    let _ = git(&dir, &["init", "-q", "-b", "main"]);
-    let _ = git(&dir, &["config", "user.email", "a@example.com"]);
-    let _ = git(&dir, &["config", "user.name", "A"]);
+    let dir = repo("tiers", name);
     fs::write(dir.join("CLAUDE.md"), POINTER).unwrap();
     fs::write(dir.join("GEMINI.md"), POINTER).unwrap();
     fs::write(dir.join("README.md"), "# Read me\n").unwrap();

@@ -4,6 +4,7 @@
 pub mod analysis;
 pub mod catalogue;
 pub mod commit_msg;
+pub mod copies;
 pub mod docs;
 pub mod file_kinds;
 pub mod finding;

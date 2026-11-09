@@ -5,37 +5,18 @@
 
 use std::fs;
 use std::path::{Path, PathBuf};
-use std::process::Command;
 
 use aegis::repo::{NO_COMMIT, Repo};
 use aegis::reviews::{REQUIRED, of_pushed, of_staged, staged};
+
+mod common;
+use common::{git, repo, save, write};
 
 fn record(skill: &str, change: &str, verdict: &str) -> String {
     format!(
         "skill = \"{skill}\"\nchange = \"{change}\"\nverdict = \"{verdict}\"\n\
          agent = \"claude\"\nsummary = \"Read every changed line twice.\"\n"
     )
-}
-
-fn git(dir: &Path, args: &[&str]) -> String {
-    let out = Command::new("git")
-        .args(["-c", "user.name=t", "-c", "user.email=t@t"])
-        .args(["-c", "core.hooksPath=/dev/null"])
-        .env_remove("GIT_DIR")
-        .env_remove("GIT_WORK_TREE")
-        .args(args)
-        .current_dir(dir)
-        .env_remove("GIT_INDEX_FILE")
-        .output()
-        .unwrap();
-    assert!(out.status.success(), "git {args:?}: {out:?}");
-    String::from_utf8_lossy(&out.stdout).trim().to_owned()
-}
-
-fn write(dir: &Path, path: &str, text: &str) {
-    let path = dir.join(path);
-    fs::create_dir_all(path.parent().unwrap()).unwrap();
-    fs::write(path, text).unwrap();
 }
 
 /// Writes passing records for the staged content, as the skills do.
@@ -52,14 +33,12 @@ fn review(dir: &Path) {
 }
 
 fn scratch(name: &str) -> PathBuf {
-    let dir = std::env::temp_dir()
-        .join(format!("aegis-reviews-{name}-{}", std::process::id()));
-    let _ = fs::remove_dir_all(&dir);
-    fs::create_dir_all(&dir).unwrap();
-    let _ok = git(&dir, &["init", "-q", "-b", "main"]);
-    write(&dir, "crates/aegis/src/reviews.rs", "// the check\n");
-    let _ok = git(&dir, &["add", "-A"]);
-    let _ok = git(&dir, &["commit", "-qm", "start"]);
+    let dir = repo("reviews", name);
+    let _start = save(
+        &dir,
+        &[("crates/aegis/src/reviews.rs", "// the check\n")],
+        "start",
+    );
     dir
 }
 
@@ -122,10 +101,7 @@ fn deleting_the_check_needs_reviews_too() {
     assert_eq!(of_pushed(&repo, NO_COMMIT, &gone).unwrap().len(), 8);
     // A later commit, pushed onto the main that held the check, needs
     // reviews too, though its own parent no longer holds it.
-    write(&dir, "src/after.rs", "fn later() {}\n");
-    let _ok = git(&dir, &["add", "-A"]);
-    let _ok = git(&dir, &["commit", "-qm", "after"]);
-    let after = git(&dir, &["rev-parse", "HEAD"]);
+    let after = save(&dir, &[("src/after.rs", "fn later() {}\n")], "after");
     assert_eq!(of_pushed(&repo, &main, &after).unwrap().len(), 8);
     fs::remove_dir_all(&dir).unwrap();
 }
@@ -174,11 +150,7 @@ fn a_file_only_marked_for_adding_does_not_change_the_fingerprint() {
 
 #[test]
 fn commits_made_before_the_check_need_no_reviews() {
-    let dir = std::env::temp_dir()
-        .join(format!("aegis-reviews-before-{}", std::process::id()));
-    let _ = fs::remove_dir_all(&dir);
-    fs::create_dir_all(&dir).unwrap();
-    let _ok = git(&dir, &["init", "-q", "-b", "main"]);
+    let dir = repo("reviews", "before");
     write(&dir, "a.txt", "a\n");
     let _ok = git(&dir, &["add", "-A"]);
     let _ok = git(&dir, &["commit", "-qm", "old"]);
@@ -193,11 +165,8 @@ fn commits_made_before_the_check_need_no_reviews() {
 
 #[test]
 fn a_replaced_commit_does_not_switch_the_reviews_off() {
-    let dir = std::env::temp_dir()
-        .join(format!("aegis-replace-{}", std::process::id()));
-    let _ = fs::remove_dir_all(&dir);
+    let dir = repo("reviews", "replace");
     fs::create_dir_all(dir.join("crates/aegis/src")).unwrap();
-    let _ok = git(&dir, &["init", "-q", "-b", "main"]);
     fs::write(dir.join("a.txt"), "a\n").unwrap();
     let _ok = git(&dir, &["add", "-A"]);
     let _ok = git(&dir, &["commit", "-qm", "before the check"]);

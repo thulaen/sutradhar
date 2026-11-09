@@ -305,6 +305,13 @@ shipped product is built on it. Parts made before Boot exists (the gate,
 11. A source file has at most 300 lines and a function at most 60 lines.
     A function takes at most 5 arguments, nests at most 4 levels deep and
     stays under a complexity score of 15.
+12. No copied code. Two runs of 100 or more equal tokens, in one file
+    or two, in Rust, shell, SQL, CSS, TypeScript, PHP or a policy file,
+    are refused: write the code once and share it. In Rust a copy with
+    its names changed still counts, and `use` items are left out. A
+    table of like entries, written the same way, names and all, is a
+    list, not code, and counts once. No old copies are allowed; only a
+    signed owner waiver (section 7.2) may allow one.
 
 ## 7. The gate
 

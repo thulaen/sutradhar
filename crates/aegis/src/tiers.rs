@@ -86,6 +86,15 @@ pub fn whole_project_docs(repo: &Repo, all: &[String]) -> Vec<Finding> {
     out.extend(tool::run(repo.content(), "text.typos", "typos", &[]));
     out.extend(crate::leaks::files(repo.content()));
     out.extend(crate::analysis::check(repo, all));
+    let ts = typescript_on(repo);
+    let sources: Vec<(String, file_kinds::Kind, String)> = all
+        .iter()
+        .filter_map(|p| {
+            let kind = file_kinds::kind_of(p, ts)?;
+            Some((p.clone(), kind, repo.read(p)?))
+        })
+        .collect();
+    out.extend(crate::copies::check(&sources));
     out.extend(crate::sbom::check(
         repo.read("Cargo.lock").as_deref(),
         repo.read("gate/tools.toml").as_deref(),

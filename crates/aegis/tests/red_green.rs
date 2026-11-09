@@ -2,44 +2,17 @@
 #![allow(clippy::unwrap_used, reason = "tests stop at the first failure")]
 
 use std::fs;
-use std::path::{Path, PathBuf};
-use std::process::Command;
+use std::path::PathBuf;
 
 use aegis::history::commits;
 use aegis::red_green::check;
 use aegis::repo::Repo;
 
-fn git(dir: &Path, args: &[&str]) -> String {
-    let out = Command::new("git")
-        .args(["-c", "core.hooksPath=/dev/null"])
-        .args(args)
-        .current_dir(dir)
-        .output()
-        .unwrap();
-    assert!(out.status.success(), "git {args:?}");
-    String::from_utf8_lossy(&out.stdout).trim().to_owned()
-}
-
-fn save(dir: &Path, files: &[(&str, &str)], message: &str) -> String {
-    for (path, text) in files {
-        let path = dir.join(path);
-        fs::create_dir_all(path.parent().unwrap()).unwrap();
-        fs::write(path, text).unwrap();
-    }
-    let _ = git(dir, &["add", "-A"]);
-    let _ = git(dir, &["commit", "-q", "-m", message]);
-    git(dir, &["rev-parse", "HEAD"])
-}
+mod common;
+use common::{repo, save};
 
 fn workspace(name: &str) -> PathBuf {
-    let dir = std::env::temp_dir()
-        .join(format!("aegis-red-green-{name}-{}", std::process::id()));
-    let _ = fs::remove_dir_all(&dir);
-    fs::create_dir_all(&dir).unwrap();
-    let _ = git(&dir, &["init", "-q", "-b", "main"]);
-    let _ = git(&dir, &["config", "user.email", "a@example.com"]);
-    let _ = git(&dir, &["config", "user.name", "A"]);
-    dir
+    repo("red-green", name)
 }
 
 fn message(test: &str) -> String {

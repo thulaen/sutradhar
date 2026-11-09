@@ -3,11 +3,20 @@
 
 mod common;
 
+use std::path::Path;
 use std::process::Command;
 
 use aegis::repo::NO_COMMIT;
 use aegis_door::gate::{ACCEPTED, Door, Push};
 use common::{GOOD, commit, door_work, folder, git, main_push, pack, setup};
+
+/// Pushes `old..new` from `source` through `door`, and checks the door
+/// refuses it for its size.
+fn refused_for_size(source: &Path, door: &Door, old: &str, new: &str) {
+    let body = pack(source, old, new);
+    let found = door.check(main_push(old, new), &body).unwrap();
+    assert!(found.iter().any(|f| f.check == "door.size"), "{found:?}");
+}
 
 #[test]
 fn a_good_push_passes_and_is_remembered() {
@@ -152,9 +161,7 @@ fn a_push_of_too_many_commits_is_refused_before_anything_is_written() {
         );
     }
     let head = git(&source, &["rev-parse", "HEAD"]);
-    let body = pack(&source, &first, &head);
-    let found = door.check(main_push(&first, &head), &body).unwrap();
-    assert!(found.iter().any(|f| f.check == "door.size"), "{found:?}");
+    refused_for_size(&source, &door, &first, &head);
 }
 
 #[test]
@@ -175,9 +182,7 @@ fn a_tree_that_names_one_file_too_many_times_is_refused_before_checkout() {
     }
     let tree = git_input(&source, &["mktree"], &top);
     let bomb = git(&source, &["commit-tree", "-p", &first, "-m", "x", &tree]);
-    let body = pack(&source, &first, &bomb);
-    let found = door.check(main_push(&first, &bomb), &body).unwrap();
-    assert!(found.iter().any(|f| f.check == "door.size"), "{found:?}");
+    refused_for_size(&source, &door, &first, &bomb);
 }
 
 fn git_input(dir: &std::path::Path, args: &[&str], input: &str) -> String {
@@ -218,9 +223,7 @@ fn a_big_file_in_an_earlier_commit_of_the_push_is_refused_too() {
     let _ = git(&source, &["rm", "-q", "big.txt"]);
     let _ = git(&source, &["commit", "-q", "-m", GOOD]);
     let head = git(&source, &["rev-parse", "HEAD"]);
-    let body = pack(&source, &first, &head);
-    let found = door.check(main_push(&first, &head), &body).unwrap();
-    assert!(found.iter().any(|f| f.check == "door.size"), "{found:?}");
+    refused_for_size(&source, &door, &first, &head);
 }
 
 #[test]
