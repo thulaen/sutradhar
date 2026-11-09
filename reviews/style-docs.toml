@@ -1,9 +1,9 @@
 skill = "style-docs"
-change = "sha256:a55207be33b03b18c78afd7c60b282e1a6254473d6a35b4d2b7b28a489818b40"
+change = "sha256:e66efeefb7f4a0cb2daccc2093a292f765aed9f24174e95600db0ac91665abe1"
 verdict = "pass"
 agent = "claude subagents"
-summary = "Nine rounds by fresh subagents on task #114 (the image check). AGENTS.md 5.7 is the one list of what is read and refused, and the docs match the code."
+summary = "Two rounds by fresh subagents on the allowed-holes list for task #114. The docs say what the code does and point to AGENTS.md 5.7, and 7.2 names the exception."
 
 [[finding]]
-what = "docs described rules the code did not follow"
+what = "docs claimed rules the code did not keep"
 fixed = true

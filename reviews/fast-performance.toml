@@ -1,13 +1,5 @@
 skill = "fast-performance"
-change = "sha256:a55207be33b03b18c78afd7c60b282e1a6254473d6a35b4d2b7b28a489818b40"
+change = "sha256:e66efeefb7f4a0cb2daccc2093a292f765aed9f24174e95600db0ac91665abe1"
 verdict = "pass"
 agent = "claude subagents"
-summary = "Nine rounds by fresh subagents on task #114 (the image check). A scan takes 12 to 220 s with a 600 s limit; YAML and JSON reading is linear and bounded."
-
-[[finding]]
-what = "network calls had no time limit"
-fixed = true
-
-[[finding]]
-what = "the scan limit was too tight for a cold scan"
-fixed = true
+summary = "Two rounds by fresh subagents on the allowed-holes list for task #114. No hot path is touched; one database update and one scan per image as before."

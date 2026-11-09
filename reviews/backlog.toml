@@ -1,9 +1,9 @@
 skill = "backlog"
-change = "sha256:a55207be33b03b18c78afd7c60b282e1a6254473d6a35b4d2b7b28a489818b40"
+change = "sha256:e66efeefb7f4a0cb2daccc2093a292f765aed9f24174e95600db0ac91665abe1"
 verdict = "pass"
 agent = "claude subagents"
-summary = "Nine rounds by fresh subagents on task #114 (the image check). The change does task #114 and the owner's decision; #130 pins clean images, #132 allows build files, and later notes are on #131."
+summary = "Two rounds by fresh subagents on the allowed-holes list for task #114. The list holds exactly the ten ids of task #130; the owner's decision is recorded on #114 and #130."
 
 [[finding]]
-what = "no task covered pinning fixed images"
+what = "the owner's decision was not on Forgejo"
 fixed = true

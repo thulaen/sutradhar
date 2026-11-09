@@ -1,9 +1,9 @@
 skill = "architecture"
-change = "sha256:a55207be33b03b18c78afd7c60b282e1a6254473d6a35b4d2b7b28a489818b40"
+change = "sha256:e66efeefb7f4a0cb2daccc2093a292f765aed9f24174e95600db0ac91665abe1"
 verdict = "pass"
 agent = "claude subagents"
-summary = "Nine rounds by fresh subagents on task #114 (the image check). One reader for gate/tools.toml, private child modules for image names and safe YAML, and the check wired into the push tier."
+summary = "Two rounds by fresh subagents on the allowed-holes list for task #114. The list is a private child of the image check, read once per scan, and kept to the known holes in code."
 
 [[finding]]
-what = "gate/tools.toml was read in two places"
+what = "nothing in code stopped the list from growing"
 fixed = true

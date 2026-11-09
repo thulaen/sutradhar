@@ -1,13 +1,9 @@
 skill = "security"
-change = "sha256:a55207be33b03b18c78afd7c60b282e1a6254473d6a35b4d2b7b28a489818b40"
+change = "sha256:e66efeefb7f4a0cb2daccc2093a292f765aed9f24174e95600db0ac91665abe1"
 verdict = "pass"
 agent = "claude subagents"
-summary = "Nine rounds by fresh subagents on task #114 (the image check). Settings files, outside settings, planted lists and pushed image names cannot hide holes or reach other hosts."
+summary = "Two rounds by fresh subagents on the allowed-holes list for task #114. Only the ten known holes can pass, for task 130, until 9 December; a bad list or clock blocks the push."
 
 [[finding]]
-what = "a list folder inside the checkout could be planted"
-fixed = true
-
-[[finding]]
-what = "compose build, extends and include brought in unscanned images"
+what = "an empty id or a new hole could be listed"
 fixed = true

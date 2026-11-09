@@ -1,0 +1,63 @@
+# Known image holes allowed for now. The rule and why: AGENTS.md
+# section 5.7. The gate refuses any entry but these, as listed in
+# crates/aegis/src/images_allowed.rs.
+
+[[hole]]
+image = "forgejo"
+id = "CVE-2026-113351"
+task = 130
+until = "2026-12-09"
+
+[[hole]]
+image = "forgejo"
+id = "CVE-2026-115506"
+task = 130
+until = "2026-12-09"
+
+[[hole]]
+image = "forgejo"
+id = "CVE-2026-117610"
+task = 130
+until = "2026-12-09"
+
+[[hole]]
+image = "forgejo"
+id = "CVE-2026-118370"
+task = 130
+until = "2026-12-09"
+
+[[hole]]
+image = "forgejo"
+id = "CVE-2026-123158"
+task = 130
+until = "2026-12-09"
+
+[[hole]]
+image = "forgejo"
+id = "CVE-2026-4738"
+task = 130
+until = "2026-12-09"
+
+[[hole]]
+image = "forgejo"
+id = "GO-2026-6860"
+task = 130
+until = "2026-12-09"
+
+[[hole]]
+image = "forgejo"
+id = "GO-2026-6865"
+task = 130
+until = "2026-12-09"
+
+[[hole]]
+image = "forgejo"
+id = "GO-2026-6888"
+task = 130
+until = "2026-12-09"
+
+[[hole]]
+image = "ubuntu-image"
+id = "CVE-2026-109518"
+task = 130
+until = "2026-12-09"

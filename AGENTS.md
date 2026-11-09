@@ -275,8 +275,13 @@ shipped product is built on it. Parts made before Boot exists (the gate,
 - Every image pinned in `gate/tools.toml` is scanned at the push tier
   with the pinned Grype. A high or critical hole that has a fix blocks
   the push, by the owner's decision of 9 November 2026, until a fixed
-  image is pinned. Every image the set-up files under `docker/` and
-  `deploy/` name must be an image and digest `gate/tools.toml` pins:
+  image is pinned. Later that day the owner told agents to keep commits
+  and pushes possible and to decide on their behalf, so the holes found
+  that day are listed in `gate/image-holes.toml`: each names task #130,
+  none runs past 9 December 2026, a new hole is never added, and an
+  entry for a hole that is gone must be removed. Every image the
+  set-up files under `docker/` and `deploy/` name must be an image
+  and digest `gate/tools.toml` pins:
   - an `image:` value and a `docker://` runner label;
   - any `sha256:` digest in any file, scripts included.
 
@@ -393,7 +398,10 @@ read the same files):
 ### 7.2 Waivers
 
 Only the owner may loosen, skip or waive a check, and only in a signed,
-written record in `gate/waivers/`. No agent may do it, ever.
+written record in `gate/waivers/`. No agent may do it, ever. The one
+exception is the short list of image holes in section 5.7, which the
+owner asked for in chat on 9 November 2026, and which the gate keeps to
+the holes known that day.
 
 The owner's signing key never lives on Dell. Its public key is pinned in
 `gate/owner-key.pub`, and the gate accepts a waiver only when it is

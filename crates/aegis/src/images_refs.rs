@@ -6,6 +6,8 @@
 
 use yaml_rust2::Yaml;
 
+use super::CHECK;
+use crate::Finding;
 use crate::tools_list::is_hex64;
 
 /// Compose keys that bring in images, models, programs or files from
@@ -163,6 +165,33 @@ pub fn loose_digests(text: &str, pinned: &[(String, String)]) -> Vec<String> {
             out.push(format!("sha256:{hex}"));
         }
         rest = tail;
+    }
+    out
+}
+
+/// The images the set-up files name that the list does not pin.
+pub fn unpinned(
+    images: &[(String, String)],
+    used: &[(String, String)],
+) -> Vec<Finding> {
+    let mut out = Vec::new();
+    for (path, text) in used {
+        let mut say = |why: String| out.push(Finding::new(CHECK, path, 0, why));
+        match named(path, text) {
+            Ok(named) => {
+                named
+                    .iter()
+                    .filter_map(|i| problem(i, images))
+                    .for_each(&mut say);
+            }
+            Err(why) => say(why),
+        }
+        for digest in loose_digests(text, images) {
+            say(format!(
+                "the image {digest} is not pinned in gate/tools.toml, so it \
+                 is never scanned"
+            ));
+        }
     }
     out
 }

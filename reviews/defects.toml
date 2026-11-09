@@ -1,13 +1,9 @@
 skill = "defects"
-change = "sha256:a55207be33b03b18c78afd7c60b282e1a6254473d6a35b4d2b7b28a489818b40"
+change = "sha256:e66efeefb7f4a0cb2daccc2093a292f765aed9f24174e95600db0ac91665abe1"
 verdict = "pass"
 agent = "claude subagents"
-summary = "Nine rounds by fresh subagents on task #114 (the image check). Every staged line read; mutations of each rule fail a test, and a clean report passes."
+summary = "Two rounds by fresh subagents on the allowed-holes list for task #114. Mutations of each rule fail a test; an end-to-end test covers listed, new, gone and failed-scan cases."
 
 [[finding]]
-what = "a clean image could never pass"
-fixed = true
-
-[[finding]]
-what = "tests did not check the scanner's arguments"
+what = "no test ran the scan with a list"
 fixed = true

@@ -1,16 +1,15 @@
 //! Holes in container images (task #114; the rule is in AGENTS.md
 //! section 5.7). Every image pinned in `gate/tools.toml` is scanned with
-//! the pinned scanner, Grype, against its list of known holes, and a
-//! high or critical hole that has a fix is refused. Every image digest
-//! named in the set-up files under `docker/` and `deploy/` must be one
-//! the list pins, so the images that run are the images scanned.
+//! the pinned Grype, and a high or critical hole that has a fix is
+//! refused unless `allowed` lets it through for now. The images the
+//! set-up files under `docker/` and `deploy/` name must be pinned ones.
 //!
 //! The list of holes is kept outside the repository, in the folder
 //! `AEGIS_GRYPE_DB` names, and fetched there first, outside any seal.
-//! Grype is run with an empty settings file, in its own folder, with no
-//! `GRYPE_` setting from outside, and with a time limit. A missing
-//! scanner, a failed or late scan, or an image entry that is not whole
-//! fails the check; it never skips it (AGENTS.md section 7).
+//! Grype runs with an empty settings file, in its own folder, with no
+//! outside `GRYPE_` setting and a time limit. A missing scanner, a
+//! failed or late scan, or an image entry that is not whole fails the
+//! check; it never skips it (AGENTS.md section 7).
 
 use std::path::{Component, Path, PathBuf};
 use std::process::Command;
@@ -159,31 +158,38 @@ fn grype(
     crate::git_env::run_with_input(&mut command, b"", program, &args.join(" "))
 }
 
-/// The images the set-up files name that the list does not pin.
-fn unpinned(
-    images: &[(String, String)],
-    used: &[(String, String)],
-) -> Vec<Finding> {
-    let mut out = Vec::new();
-    for (path, text) in used {
-        let mut say = |why: String| out.push(Finding::new(CHECK, path, 0, why));
-        match refs::named(path, text) {
-            Ok(named) => {
-                named
-                    .iter()
-                    .filter_map(|i| refs::problem(i, images))
-                    .for_each(&mut say);
-            }
-            Err(why) => say(why),
-        }
-        for digest in refs::loose_digests(text, images) {
-            say(format!(
-                "the image {digest} is not pinned in gate/tools.toml, so it \
-                 is never scanned"
-            ));
-        }
+/// Scans one image (`name@digest`) and gives its serious holes.
+fn scan_image(
+    program: &str,
+    db: &Path,
+    image: &str,
+) -> Result<Vec<String>, String> {
+    let source = format!("registry:{image}");
+    let args = [
+        source.as_str(),
+        "--platform",
+        "linux/amd64",
+        "--only-fixed",
+        "-o",
+        "cyclonedx-json",
+        "-q",
+    ];
+    grype(program, db, SCAN_SECONDS, &args).and_then(|r| holes(&r))
+}
+
+/// The message for an image's serious holes, naming the first few.
+fn serious(name: &str, image: &str, holes: &[String]) -> String {
+    let more = holes.len().saturating_sub(NAMED);
+    let mut named: Vec<String> = holes.iter().take(NAMED).cloned().collect();
+    if more > 0 {
+        named.push(format!("and {more} more"));
     }
-    out
+    format!(
+        "`{name}` ({image}) has {} serious hole(s) with a fix: {}; pin a \
+         fixed image",
+        holes.len(),
+        named.join("; ")
+    )
 }
 
 /// Scans every image pinned in `tools` with the scanner `program`, the
@@ -195,12 +201,25 @@ pub fn scan_with(
     tools: &str,
     used: &[(String, String)],
 ) -> Vec<Finding> {
+    scan_allowing(program, db, tools, used, &[])
+}
+
+/// As [`scan_with`], letting through the holes `allowed` lists (the
+/// module `allowed`).
+#[must_use]
+pub fn scan_allowing(
+    program: &str,
+    db: Result<PathBuf, String>,
+    tools: &str,
+    used: &[(String, String)],
+    allowed: &[allowed::Entry],
+) -> Vec<Finding> {
     let problem = |why: String| Finding::new(CHECK, tools_list::PATH, 0, why);
     let images = match tools_list::images(tools) {
         Ok(images) => images,
         Err(why) => return vec![problem(why)],
     };
-    let mut out = unpinned(&images, used);
+    let mut out = refs::unpinned(&images, used);
     if images.is_empty() {
         return out;
     }
@@ -218,33 +237,14 @@ pub fn scan_with(
         out.push(problem(format!("the list of holes: {why}")));
         return out;
     }
+    let (mut seen, mut scanned) = (Vec::new(), Vec::new());
     for (name, image) in images {
-        let source = format!("registry:{image}");
-        let args = [
-            source.as_str(),
-            "--platform",
-            "linux/amd64",
-            "--only-fixed",
-            "-o",
-            "cyclonedx-json",
-            "-q",
-        ];
-        match grype(program, &db, SCAN_SECONDS, &args).and_then(|r| holes(&r)) {
+        let found = scan_image(program, &db, &image)
+            .inspect(|_| scanned.push(name.clone()))
+            .map(|h| allowed::not_allowed(&name, h, allowed, &mut seen));
+        match found {
             Ok(holes) if holes.is_empty() => {}
-            Ok(holes) => {
-                let more = holes.len().saturating_sub(NAMED);
-                let mut named: Vec<String> =
-                    holes.iter().take(NAMED).cloned().collect();
-                if more > 0 {
-                    named.push(format!("and {more} more"));
-                }
-                out.push(problem(format!(
-                    "`{name}` ({image}) has {} serious hole(s) with a fix: \
-                     {}; pin a fixed image",
-                    holes.len(),
-                    named.join("; ")
-                )));
-            }
+            Ok(holes) => out.push(problem(serious(&name, &image, &holes))),
             Err(why) => {
                 out.push(problem(format!(
                     "`{name}` could not be scanned: {why}"
@@ -252,23 +252,41 @@ pub fn scan_with(
             }
         }
     }
+    out.extend(
+        allowed::stale(allowed, &seen, &scanned)
+            .into_iter()
+            .map(problem),
+    );
     out
 }
 
 /// Scans every image pinned in `tools` with the pinned `grype`, its list
-/// of holes in the folder `AEGIS_GRYPE_DB` names. No list means no
-/// images.
+/// of holes in the folder `AEGIS_GRYPE_DB` names, letting through the
+/// holes the list in `allowed_text` allows. No list means no images.
 #[must_use]
 pub fn scan(
     root: &Path,
     tools: Option<&str>,
     used: &[(String, String)],
+    allowed_text: Option<&str>,
 ) -> Vec<Finding> {
+    let entries = match allowed::for_scan(tools, allowed_text) {
+        Ok(entries) => entries,
+        Err(why) => {
+            return why
+                .into_iter()
+                .map(|w| Finding::new(CHECK, allowed::PATH, 0, w))
+                .collect();
+        }
+    };
     let named = std::env::var_os("AEGIS_GRYPE_DB").map(PathBuf::from);
     tools.map_or_else(Vec::new, |t| {
-        scan_with("grype", database(root, named), t, used)
+        scan_allowing("grype", database(root, named), t, used, &entries)
     })
 }
+
+#[path = "images_allowed.rs"]
+pub mod allowed;
 
 #[path = "images_refs.rs"]
 mod refs;

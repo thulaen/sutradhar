@@ -228,6 +228,7 @@ pub fn push(
         repo.root(),
         repo.read(crate::tools_list::PATH).as_deref(),
         &used,
+        repo.read(crate::images::allowed::PATH).as_deref(),
     ));
     let all = repo.tracked_files()?;
     out.extend(file_checks(repo, &all));

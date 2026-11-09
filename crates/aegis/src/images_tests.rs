@@ -239,3 +239,46 @@ fn ubuntu() -> String {
         &format!("digest = \"sha256:{HEX}\""),
     )
 }
+
+#[test]
+fn the_list_of_allowed_holes_works_end_to_end() {
+    use super::{allowed, scan_allowing};
+    let today = allowed::day_of("2026-11-09").unwrap();
+    let list = "[[hole]]\nimage = \"forgejo\"\nid = \"CVE-2026-4738\"\n\
+                task = 130\nuntil = \"2026-12-09\"\n\n[[hole]]\n\
+                image = \"forgejo\"\nid = \"GO-2026-6888\"\ntask = 130\n\
+                until = \"2026-12-09\"\n";
+    let entries =
+        allowed::read(Some(list), today, &["forgejo".into()]).unwrap();
+    let run = |name: &str, text: &str| {
+        let program = scanner(name, true, text);
+        let dir = program.parent().unwrap().to_path_buf();
+        let p = program.to_str().unwrap();
+        let found =
+            scan_allowing(p, Ok(dir.join("db")), &good(), &[], &entries);
+        let _ = fs::remove_dir_all(&dir);
+        found
+    };
+    // Both listed holes found: nothing blocks.
+    let both = report(&[
+        hit("CVE-2026-4738", "critical"),
+        hit("GO-2026-6888", "high"),
+    ]);
+    assert_eq!(run("allow-both", &both), Vec::new());
+    // A new hole blocks; a listed one that is gone must be removed.
+    let new =
+        report(&[hit("CVE-2026-4738", "critical"), hit("CVE-2026-1", "high")]);
+    let found = run("allow-new", &new);
+    assert_eq!(found.len(), 2, "{found:?}");
+    assert!(found.iter().any(|f| f.message.contains("CVE-2026-1")));
+    assert!(
+        found
+            .iter()
+            .any(|f| f.message.contains("GO-2026-6888 is gone")
+                || f.message.contains("`GO-2026-6888` in `forgejo` is gone"))
+    );
+    // A failed scan is a finding, and nothing is called gone.
+    let failed = run("allow-failed", "");
+    assert_eq!(failed.len(), 1, "{failed:?}");
+    assert!(failed[0].message.contains("could not be scanned"));
+}

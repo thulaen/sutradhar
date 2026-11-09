@@ -1,17 +1,9 @@
 skill = "red-team"
-change = "sha256:a55207be33b03b18c78afd7c60b282e1a6254473d6a35b4d2b7b28a489818b40"
+change = "sha256:e66efeefb7f4a0cb2daccc2093a292f765aed9f24174e95600db0ac91665abe1"
 verdict = "pass"
 agent = "claude subagents"
-summary = "Nine rounds by fresh subagents on task #114 (the image check). Each round had attacker agents; settings files, tags, variables, YAML tricks, build files and image volumes no longer get an image past the check."
+summary = "Two rounds by fresh subagents on the allowed-holes list for task #114. Adding, changing or stretching an entry is refused; no new or expired hole got through."
 
 [[finding]]
-what = "a Grype settings file hid every hole"
-fixed = true
-
-[[finding]]
-what = "an image named by tag in a set-up file was never scanned"
-fixed = true
-
-[[finding]]
-what = "Dockerfile reading differed from Docker"
+what = "a made-up critical hole could be added and pushed"
 fixed = true
