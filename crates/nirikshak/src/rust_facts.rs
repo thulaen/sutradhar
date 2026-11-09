@@ -7,8 +7,8 @@ use syn::visit::{self, Visit};
 
 use crate::facts::{Facts, number, text};
 use crate::shapes::{
-    err_wild, first_text, in_test_file, is_call, is_cfg_test, is_empty,
-    is_test_attr, line_of, macro_text, receiver_text, token_strings,
+    err_wild, first_text, from_start, in_test_file, is_call, is_cfg_test,
+    is_empty, is_test_attr, line_of, macro_text, receiver_text, token_strings,
 };
 use crate::uses::{Aliases, aliases, expand};
 
@@ -80,6 +80,13 @@ impl Walker<'_> {
         self.here("call", &[("callee", text(callee)), ("line", number(at))]);
     }
 
+    fn range_cut(&mut self, on: &syn::Expr, at: usize) {
+        if let Some(receiver) = receiver_text(on) {
+            let fields = [("receiver", text(receiver)), ("line", number(at))];
+            self.here("range_cut", &fields);
+        }
+    }
+
     fn literal(&mut self, found: String, at: usize) {
         self.here("literal", &[("text", text(found)), ("line", number(at))]);
     }
@@ -123,6 +130,14 @@ impl<'ast> Visit<'ast> for Walker<'_> {
         let outer = std::mem::replace(&mut self.implementing, name);
         visit::visit_item_impl(self, item);
         self.implementing = outer;
+    }
+
+    fn visit_expr_index(&mut self, index: &'ast syn::ExprIndex) {
+        if from_start(&index.index) {
+            let at = line_of(index.bracket_token.span.open());
+            self.range_cut(&index.expr, at);
+        }
+        visit::visit_expr_index(self, index);
     }
 
     fn visit_item_mod(&mut self, item: &'ast syn::ItemMod) {
@@ -171,6 +186,9 @@ impl<'ast> Visit<'ast> for Walker<'_> {
                 ("line", number(at)),
             ];
             self.here("call_text", &fields);
+        }
+        if call.method == "get" && call.args.first().is_some_and(from_start) {
+            self.range_cut(&call.receiver, at);
         }
         self.call(name, at);
         visit::visit_expr_method_call(self, call);

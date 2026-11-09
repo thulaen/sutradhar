@@ -50,17 +50,17 @@ pub fn trailer(message: &str, name: &str) -> Option<String> {
 
 /// The last paragraph, after the subject: the only place trailers count.
 fn trailer_block<'a>(lines: &'a [&'a str]) -> &'a [&'a str] {
-    let body = lines.get(1..).unwrap_or(&[]);
-    let end = body
+    let after_subject = lines.get(1..).unwrap_or(&[]);
+    let end = after_subject
         .iter()
         .rposition(|l| !l.is_empty())
         .map_or(0, |i| i.saturating_add(1));
-    let body = body.get(..end).unwrap_or(&[]);
-    let start = body
+    let paragraphs = after_subject.get(..end).unwrap_or(&[]);
+    let start = paragraphs
         .iter()
         .rposition(|l| l.is_empty())
         .map_or(0, |i| i.saturating_add(1));
-    body.get(start..).unwrap_or(&[])
+    paragraphs.get(start..).unwrap_or(&[])
 }
 
 fn problem(message: impl Into<String>) -> Finding {

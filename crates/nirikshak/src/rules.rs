@@ -13,7 +13,7 @@ use crate::facts::Facts;
 pub type Source = (&'static str, &'static str);
 
 /// Every rule, in order.
-pub const ALL: [Source; 20] = [
+pub const ALL: [Source; 21] = [
     (
         "r05_environment.rego",
         include_str!("../rules/r05_environment.rego"),
@@ -49,6 +49,10 @@ pub const ALL: [Source; 20] = [
     (
         "s03_weak_hashes.rego",
         include_str!("../rules/s03_weak_hashes.rego"),
+    ),
+    (
+        "t01_text_cut_short.rego",
+        include_str!("../rules/t01_text_cut_short.rego"),
     ),
     (
         "h06_open_permissions.rego",

@@ -44,6 +44,7 @@ folder; lines start at 1. Code outside any function is in the function
 | `doc_code` | `path`, `text`, `line` (an inline code span in a page) |
 | `literal` | `path`, `function`, `text`, `line` (a string, macros included) |
 | `method_receiver` | `path`, `function`, `method`, `receiver`, `line` (what a method is called on, such as `self.cache`) |
+| `range_cut` | `path`, `function`, `receiver`, `line` (a slice or `get` from the start, such as `body[..200]`) |
 | `impl_fn` | `path`, `function`, `trait`, `line` (a method of a trait impl) |
 | `discard` | `path`, `function`, `line`, `kind` (`let _ =` or `.ok();`) |
 | `empty_handler` | `path`, `function`, `line` (an `Err(_) => {}` arm) |
@@ -72,6 +73,7 @@ Each rule file starts with comment lines naming its `id`, `title`,
 | S01 | A command run through a shell, in code | GI-37 |
 | S02 | Certificate checks switched off, anywhere | GI-18 |
 | S03 | MD5 or SHA-1, anywhere | GI-18 |
+| T01 | Text cut short, in code: `truncate`, `split_off`, `take` or `drain`, or a slice or `get` from the start, on anything named like content (text, body, post, page, message, title, chunk, token, word and the like). The owner's rule is no truncation anywhere (task #77). Refusing a whole message with an error is allowed. | GI-06 |
 | H06 | A file mode that lets anyone write, in code | GI-18 |
 | H11 | A file written more than once with no buffer | GI-11 |
 | H22 | SQL that drops, empties or deletes every row, in code | GI-06 |
@@ -101,6 +103,11 @@ since the gate runs a debug build.
 - R05 sees `std::env::var` and its kin, and `env!`. A setting read
   through a helper of our own, such as `setting("NAME")`, is not seen
   yet, so every program's page lists its settings by hand as well.
+- T01 goes by names. A cut on content held under another name is not
+  seen, and a variable named like content that is not post text is
+  refused; such code is renamed to say what it holds. The reading and
+  text-engine crates add their own test, when they are built, that
+  every character of a post reaches a piece or a counted skip.
 - H39 matches callers by name alone, as R14 matches helpers.
 - R14 matches helpers by name alone, so a helper of the same name
   elsewhere that asserts can hide a finding.

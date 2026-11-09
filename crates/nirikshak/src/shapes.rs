@@ -157,3 +157,17 @@ pub fn macro_text(tokens: &TokenStream) -> Option<String> {
         .ok()
         .map(|s| s.value())
 }
+
+/// Whether an expression is a range from the start: `..n`, `..=n`,
+/// `0..n` or `0..=n`.
+#[must_use]
+pub fn from_start(expr: &syn::Expr) -> bool {
+    let syn::Expr::Range(range) = expr else {
+        return false;
+    };
+    let zero = |e: &syn::Expr| {
+        matches!(e, syn::Expr::Lit(syn::ExprLit { lit: syn::Lit::Int(n), .. })
+            if n.base10_digits() == "0")
+    };
+    range.end.is_some() && range.start.as_deref().is_none_or(zero)
+}

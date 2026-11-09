@@ -85,3 +85,24 @@ fn h44_h53_and_h56_find_local_time_leaks_and_one_machine_paths() {
     assert_eq!(lines("H53", &files), [4]);
     assert_eq!(lines("H56", &files), [5, 6]);
 }
+
+#[test]
+fn t01_finds_text_cut_short_and_lets_whole_refusals_pass() {
+    let cut = "fn first(text: &str) -> String {\n    \
+               text.chars().take(400).collect()\n}\n\
+               fn embed(mut tokens: Vec<u32>) {\n    tokens.truncate(512);\n}\n\
+               fn head(post: &Post) -> &str {\n    &post.body[..200]\n}\n\
+               fn lead(page: &str) -> Option<&str> {\n    page.get(..80)\n}\n";
+    assert_eq!(
+        lines("T01", &[("crates/shodhan/src/a.rs", cut)]),
+        [2, 5, 8, 11]
+    );
+    let fine = "fn check(text: &str) -> Result<(), E> {\n    \
+                if text.len() > MAX {\n        \
+                return Err(E::TooLong);\n    }\n    \
+                Ok(())\n}\n\
+                fn top(mut found: Vec<F>) {\n    found.truncate(20);\n}\n\
+                fn rest(text: &str) -> &str {\n    &text[4..]\n}\n";
+    assert_eq!(lines("T01", &[("crates/shodhan/src/a.rs", fine)]), NONE);
+    assert_eq!(lines("T01", &[("crates/shodhan/tests/a.rs", cut)]), NONE);
+}
