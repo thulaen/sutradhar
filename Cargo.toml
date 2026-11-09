@@ -37,3 +37,12 @@ cognitive_complexity = "deny"
 
 [profile.release]
 overflow-checks = true
+
+# The code analyser's engine and parser run inside every gate check,
+# which uses a debug build; built optimised, the run takes about a second
+# rather than seven (docs/specs/0061-nirikshak.md).
+[profile.dev.package.regorus]
+opt-level = 3
+
+[profile.dev.package.syn]
+opt-level = 3

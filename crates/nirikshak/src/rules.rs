@@ -13,7 +13,11 @@ use crate::facts::Facts;
 pub type Source = (&'static str, &'static str);
 
 /// Every rule, in order.
-pub const ALL: [Source; 3] = [
+pub const ALL: [Source; 9] = [
+    (
+        "r05_environment.rego",
+        include_str!("../rules/r05_environment.rego"),
+    ),
     (
         "r08_timeouts.rego",
         include_str!("../rules/r08_timeouts.rego"),
@@ -25,6 +29,26 @@ pub const ALL: [Source; 3] = [
     (
         "r14_tests_prove_nothing.rego",
         include_str!("../rules/r14_tests_prove_nothing.rego"),
+    ),
+    (
+        "r18_unbounded_channels.rego",
+        include_str!("../rules/r18_unbounded_channels.rego"),
+    ),
+    (
+        "r19_sql_from_strings.rego",
+        include_str!("../rules/r19_sql_from_strings.rego"),
+    ),
+    (
+        "s01_shell_commands.rego",
+        include_str!("../rules/s01_shell_commands.rego"),
+    ),
+    (
+        "s02_tls_checks.rego",
+        include_str!("../rules/s02_tls_checks.rego"),
+    ),
+    (
+        "s03_weak_hashes.rego",
+        include_str!("../rules/s03_weak_hashes.rego"),
     ),
 ];
 
@@ -87,22 +111,59 @@ fn found(rule: &About, item: &Value) -> Option<Found> {
     })
 }
 
+/// Runs every rule in `sources` over the facts, in one engine, so the
+/// facts are handed over once. Each rule's findings, or why it could not
+/// run, come back in order.
+#[must_use]
+pub fn run_all(
+    sources: &[Source],
+    facts: &Facts,
+) -> Vec<Result<Vec<Found>, String>> {
+    let mut engine = regorus::Engine::new();
+    let input = regorus::Value::from_json_str(&facts.to_json().to_string());
+    match input {
+        Ok(input) => engine.set_input(input),
+        Err(e) => {
+            let why = format!("the facts cannot be handed over: {e}");
+            return sources.iter().map(|_| Err(why.clone())).collect();
+        }
+    }
+    let mut loaded = Vec::new();
+    for (name, text) in sources {
+        let added = about(name, text).and_then(|rule| {
+            engine
+                .add_policy((*name).to_owned(), (*text).to_owned())
+                .map(|_package| rule)
+                .map_err(|e| format!("rule {name}: {e}"))
+        });
+        loaded.push(added);
+    }
+    sources
+        .iter()
+        .zip(loaded)
+        .map(|((name, _), rule)| {
+            rule.and_then(|r| findings(&mut engine, name, &r))
+        })
+        .collect()
+}
+
 /// Runs one rule over the facts.
 ///
 /// # Errors
 /// When the rule cannot be read or run, or gives a finding of the wrong
 /// shape.
 pub fn run(source: Source, facts: &Facts) -> Result<Vec<Found>, String> {
-    let (name, text) = source;
-    let rule = about(name, text)?;
+    run_all(&[source], facts)
+        .pop()
+        .unwrap_or_else(|| Err("no rule was run".to_owned()))
+}
+
+fn findings(
+    engine: &mut regorus::Engine,
+    name: &str,
+    rule: &About,
+) -> Result<Vec<Found>, String> {
     let bad = |e: &dyn std::fmt::Display| format!("rule {name}: {e}");
-    let mut engine = regorus::Engine::new();
-    let _package = engine
-        .add_policy(name.to_owned(), text.to_owned())
-        .map_err(|e| bad(&e))?;
-    let input = regorus::Value::from_json_str(&facts.to_json().to_string())
-        .map_err(|e| bad(&e))?;
-    engine.set_input(input);
     let query = format!("data.nirikshak.{}.findings", rule.id.to_lowercase());
     let result = engine.eval_rule(query).map_err(|e| bad(&e))?;
     let json: Value = result
@@ -115,7 +176,7 @@ pub fn run(source: Source, facts: &Facts) -> Result<Vec<Found>, String> {
     items
         .iter()
         .map(|item| {
-            found(&rule, item)
+            found(rule, item)
                 .ok_or_else(|| bad(&"a finding has the wrong shape"))
         })
         .collect()

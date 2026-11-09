@@ -3,73 +3,17 @@
 //! the function it is in. A file `syn` cannot read becomes a
 //! `parse_failure` fact, never silence.
 
-use proc_macro2::Span;
 use syn::visit::{self, Visit};
 
 use crate::facts::{Facts, number, text};
+use crate::shapes::{
+    err_wild, first_text, in_test_file, is_call, is_cfg_test, is_empty,
+    is_test_attr, line_of, macro_text,
+};
 use crate::uses::{Aliases, aliases, expand};
 
 /// The function name for code outside any function.
 pub const TOP: &str = "<top>";
-
-fn line_of(span: Span) -> usize {
-    span.start().line
-}
-
-fn is_test_attr(attr: &syn::Attribute) -> bool {
-    attr.path()
-        .segments
-        .last()
-        .is_some_and(|s| s.ident == "test")
-}
-
-fn is_cfg_test(attr: &syn::Attribute) -> bool {
-    attr.path().is_ident("cfg")
-        && attr.meta.require_list().is_ok_and(|list| {
-            list.tokens
-                .to_string()
-                .split(|c: char| !c.is_alphanumeric())
-                .any(|word| word == "test")
-        })
-}
-
-/// Whether a path is in a test folder, or is a test file of a module.
-#[must_use]
-pub fn in_test_file(path: &str) -> bool {
-    path.ends_with("_tests.rs")
-        || ["tests/", "benches/"].iter().any(|folder| {
-            path.starts_with(folder) || path.contains(&format!("/{folder}"))
-        })
-}
-
-fn is_call(expr: &syn::Expr) -> bool {
-    matches!(
-        expr,
-        syn::Expr::Call(_)
-            | syn::Expr::MethodCall(_)
-            | syn::Expr::Macro(_)
-            | syn::Expr::Await(_)
-            | syn::Expr::Try(_)
-    )
-}
-
-fn is_empty(expr: &syn::Expr) -> bool {
-    match expr {
-        syn::Expr::Block(block) => block.block.stmts.is_empty(),
-        syn::Expr::Tuple(tuple) => tuple.elems.is_empty(),
-        _ => false,
-    }
-}
-
-/// The span of `Err(_)` in a pattern, when it is one.
-fn err_wild(pat: &syn::Pat) -> Option<Span> {
-    let syn::Pat::TupleStruct(tuple) = pat else {
-        return None;
-    };
-    let last = tuple.path.segments.last()?;
-    let wild = tuple.elems.iter().all(|p| matches!(p, syn::Pat::Wild(_)));
-    (last.ident == "Err" && wild).then(|| last.ident.span())
-}
 
 struct Walker<'a> {
     path: &'a str,
@@ -174,7 +118,16 @@ impl<'ast> Visit<'ast> for Walker<'_> {
                 .segments
                 .first()
                 .map_or(0, |s| line_of(s.ident.span()));
-            self.call(expand(&callee.path, &self.aliases), at);
+            let name = expand(&callee.path, &self.aliases);
+            if let Some(first) = first_text(call.args.first()) {
+                let fields = [
+                    ("callee", text(name.clone())),
+                    ("text", text(first)),
+                    ("line", number(at)),
+                ];
+                self.here("call_text", &fields);
+            }
+            self.call(name, at);
         }
         visit::visit_expr_call(self, call);
     }
@@ -186,11 +139,17 @@ impl<'ast> Visit<'ast> for Walker<'_> {
 
     fn visit_macro(&mut self, mac: &'ast syn::Macro) {
         if let Some(last) = mac.path.segments.last() {
-            let at = number(line_of(last.ident.span()));
-            self.here(
-                "macro",
-                &[("name", text(last.ident.to_string())), ("line", at)],
-            );
+            let (name, at) =
+                (last.ident.to_string(), line_of(last.ident.span()));
+            if let Some(first) = macro_text(&mac.tokens) {
+                let fields = [
+                    ("name", text(name.clone())),
+                    ("text", text(first)),
+                    ("line", number(at)),
+                ];
+                self.here("macro_text", &fields);
+            }
+            self.here("macro", &[("name", text(name)), ("line", number(at))]);
         }
         visit::visit_macro(self, mac);
     }

@@ -5,8 +5,10 @@
 //! taken as a pass.
 
 pub mod facts;
+pub mod markdown_facts;
 pub mod rules;
 pub mod rust_facts;
+pub mod shapes;
 pub mod uses;
 
 use facts::Facts;
@@ -22,21 +24,31 @@ pub struct Report {
     pub blocked: Vec<String>,
 }
 
-/// Reads the facts of every file given as (path, text). Only Rust is
-/// read so far; other files hold no facts any rule uses yet.
+/// Reads the facts of every file given as (path, text): Rust and
+/// Markdown so far. Other files hold no facts any rule uses yet.
 #[must_use]
 pub fn read(files: &[(String, String)]) -> Facts {
     let mut facts = Facts::default();
-    for (path, text) in files.iter().filter(|(p, _)| is_rust(p)) {
-        rust_facts::read(path, text, &mut facts);
+    for (path, text) in files {
+        match extension(path).as_deref() {
+            Some("rs") => rust_facts::read(path, text, &mut facts),
+            Some("md") => markdown_facts::read(path, text, &mut facts),
+            _ => {}
+        }
     }
     facts
 }
 
-fn is_rust(path: &str) -> bool {
+/// The files `read` takes facts from.
+#[must_use]
+pub fn reads(path: &str) -> bool {
+    matches!(extension(path).as_deref(), Some("rs" | "md"))
+}
+
+fn extension(path: &str) -> Option<String> {
     std::path::Path::new(path)
         .extension()
-        .is_some_and(|e| e.eq_ignore_ascii_case("rs"))
+        .map(|e| e.to_string_lossy().to_lowercase())
 }
 
 /// Applies `rules` to `facts`.
@@ -48,8 +60,8 @@ pub fn check(facts: &Facts, rules: &[rules::Source]) -> Report {
             .blocked
             .push(format!("cannot read a file: {failure}"));
     }
-    for rule in rules {
-        match rules::run(*rule, facts) {
+    for result in rules::run_all(rules, facts) {
+        match result {
             Ok(found) => report.found.extend(found),
             Err(e) => report.blocked.push(e),
         }

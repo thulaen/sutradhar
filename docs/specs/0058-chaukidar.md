@@ -50,6 +50,13 @@ holds Forgejo's sign-in header. The script records fresh fingerprints,
 so run it again after every other install, or the watchman will flag
 that install.
 
+## Settings
+
+The alarm needs `CHAUKIDAR_FORGEJO` (Forgejo's API address for the
+repository), `CHAUKIDAR_HEADER` (a private file with Forgejo's sign-in
+header) and `CHAUKIDAR_GITHUB` (the GitHub repository, as
+`OWNER/NAME`).
+
 ## How it is tested
 
 `crates/chaukidar` tests reading the watch list, fingerprints of files

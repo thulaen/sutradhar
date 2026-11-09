@@ -73,6 +73,9 @@ until it ends. The system frees a lock when its holder ends, even after
 a crash or a restart, so no place is ever lost and nothing needs
 cleaning up.
 
+`PANKTI_DIR` names the folder that holds the three lock files. When it
+is unset, pankti uses the folder above its own program's folder.
+
 ## Install
 
 `deploy/pankti/install.sh QUEUE_DIR GROUP` builds pankti, installs it in

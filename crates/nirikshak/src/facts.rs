@@ -49,11 +49,14 @@ impl Facts {
 }
 
 /// The relations, as listed in the specification.
-pub const RELATIONS: [&str; 8] = [
+pub const RELATIONS: [&str; 11] = [
     "file",
     "function",
     "call",
+    "call_text",
     "macro",
+    "macro_text",
+    "doc_code",
     "discard",
     "empty_handler",
     "uses_try",

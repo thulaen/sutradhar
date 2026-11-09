@@ -1,13 +1,12 @@
 use super::{ALL, Source, about, run};
 use crate::facts::Facts;
-use crate::rust_facts;
 
 fn facts(files: &[(&str, &str)]) -> Facts {
-    let mut f = Facts::default();
-    for (path, text) in files {
-        rust_facts::read(path, text, &mut f);
-    }
-    f
+    let owned: Vec<(String, String)> = files
+        .iter()
+        .map(|(p, t)| ((*p).to_owned(), (*t).to_owned()))
+        .collect();
+    crate::read(&owned)
 }
 
 fn rule(id: &str) -> Source {
@@ -82,4 +81,51 @@ fn a_rule_that_cannot_run_blocks() {
          import rego.v1\nfindings contains {\"path\": \"a\"} if { true }\n",
     );
     assert!(run(shape, &f).is_err());
+}
+
+#[test]
+fn r05_finds_a_setting_no_page_explains() {
+    let code = "fn f() {\n    let _q = std::env::var(\"AEGIS_QUEUE\");\n    \
+                let _h = std::env::var(\"HIDDEN\");\n    \
+                let _c = env!(\"CARGO_PKG_NAME\");\n    \
+                let _o = option_env!(\"SECRET_PLACE\");\n}\n";
+    let docs = "Set `AEGIS_QUEUE` to the queue.\n";
+    let files = [("src/a.rs", code), ("docs/a.md", docs)];
+    assert_eq!(lines("R05", &files), [3, 5]);
+    let tests = [("crates/a/tests/t.rs", code), ("docs/a.md", docs)];
+    assert_eq!(lines("R05", &tests), Vec::<usize>::new());
+}
+
+#[test]
+fn r18_finds_a_queue_with_no_limit() {
+    let code = "use std::sync::mpsc;\nfn f() {\n    \
+                let _c = mpsc::channel::<u8>();\n    \
+                let _b = mpsc::sync_channel::<u8>(8);\n    \
+                let _u = tokio::sync::mpsc::unbounded_channel::<u8>();\n}\n";
+    assert_eq!(lines("R18", &[("src/a.rs", code)]), [3, 5]);
+}
+
+#[test]
+fn r19_finds_sql_built_from_strings() {
+    let code = "fn f() {\n    \
+                let _q = format!(\"select * from t where a = {a}\");\n    \
+                let _n = format!(\"selected {n}\");\n}\n";
+    assert_eq!(lines("R19", &[("src/a.rs", code)]), [2]);
+}
+
+#[test]
+fn s01_finds_a_command_run_through_a_shell() {
+    let code = "use std::process::Command;\nfn f() {\n    \
+                let _s = Command::new(\"sh\");\n    \
+                let _g = Command::new(\"git\");\n}\n";
+    assert_eq!(lines("S01", &[("src/a.rs", code)]), [3]);
+}
+
+#[test]
+fn s02_and_s03_find_switched_off_checks_and_weak_hashes() {
+    let code = "fn f() {\n    c.danger_accept_invalid_certs(true);\n    \
+                let _h = md5::compute(b\"x\");\n    \
+                let _s = sha2::Sha256::digest(b\"x\");\n}\n";
+    assert_eq!(lines("S02", &[("tests/a.rs", code)]), [2]);
+    assert_eq!(lines("S03", &[("tests/a.rs", code)]), [3]);
 }

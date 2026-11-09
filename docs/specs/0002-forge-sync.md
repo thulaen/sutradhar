@@ -62,6 +62,19 @@ deploy/forge-sync/install.sh SYNC_DIR HELPER TOKEN_FILE GITLEAKS WORDS...
 - `WORDS` are private files of words that must never reach GitHub.
 - GitHub sign-in comes from the signed-in `gh` tool on Dell.
 
+## Settings
+
+The installed service sets these for the program:
+
+- `FORGE_SYNC_FORGEJO`: Forgejo's API address for the repository.
+- `FORGE_SYNC_HEADER`: a private file holding Forgejo's sign-in header.
+- `FORGE_SYNC_GITHUB`: the GitHub repository, as `OWNER/NAME`.
+- `FORGE_SYNC_GITHUB_USER`: the sync's own GitHub account.
+- `FORGE_SYNC_MIRROR`: the bare mirror repository.
+- `FORGE_SYNC_RECORD`: the sync's record of what it copied.
+- `FORGE_SYNC_GITLEAKS`: the pinned gitleaks program.
+- `FORGE_SYNC_PRIVATE`: a file of words that must never leave Dell.
+
 ## How it is tested
 
 `crates/forge-sync/tests` runs whole syncs with a stand-in for `curl`,
