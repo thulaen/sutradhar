@@ -1,4 +1,4 @@
-use super::check;
+use super::{check, is_zero};
 use crate::file_kinds::Kind;
 
 fn found(text: &str) -> usize {
@@ -139,5 +139,26 @@ fn zero_in_any_spelling_and_a_bound_assume_are_refused() {
     ];
     for text in honest {
         assert_eq!(found(&text), 0, "{text}");
+    }
+}
+
+proptest::proptest! {
+    #[test]
+    fn zero_is_seen_in_every_spelling_and_nothing_else_is(
+        n in proptest::prelude::any::<u32>(),
+        pad in 0_usize..4,
+    ) {
+        let zeros = "0".repeat(pad);
+        for spelt in [
+            format!("{zeros}{n}"),
+            format!("0x{n:x}"),
+            format!("0o{n:o}"),
+            format!("0b{n:b}"),
+            format!("{n}_u32"),
+        ] {
+            let leading = spelt.starts_with('0');
+            let want = n == 0 && leading;
+            proptest::prop_assert_eq!(is_zero(&spelt), want, "{}", spelt);
+        }
     }
 }

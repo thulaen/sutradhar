@@ -30,6 +30,8 @@ fn names_split_the_same_in_every_spelling() {
         assert_eq!(parts(name), ["page", "views"], "{name}");
     }
     assert_eq!(parts("HTTPServer2go"), ["httpserver2go"]);
+    assert_eq!(parts("PAGE0VIEWS"), ["page0views"]);
+    assert_eq!(parts("page0Views"), ["page0", "views"]);
 }
 
 #[test]
@@ -107,4 +109,39 @@ compared_with = "last month"
     ] {
         assert!(messages.iter().any(|m| m.contains(want)), "{want}");
     }
+}
+
+proptest::proptest! {
+    #[test]
+    fn a_name_splits_the_same_in_every_spelling(
+        words in proptest::collection::vec("[a-z]{2,8}", 1..5),
+        digits in "[0-9]{0,3}",
+    ) {
+        // Snake, kebab and capitals may carry digits anywhere; camel
+        // case is only clear for words of two or more letters.
+        let numbered = format!("{}{digits}", words.join("_"));
+        let mut with_digits = words.clone();
+        if let Some(last) = with_digits.last_mut() {
+            last.push_str(&digits);
+        }
+        proptest::prop_assert_eq!(parts(&numbered), with_digits.clone());
+        proptest::prop_assert_eq!(parts(&numbered.to_uppercase()), with_digits);
+        let snake = words.join("_");
+        let kebab = words.join("-");
+        let camel: String = words
+            .iter()
+            .enumerate()
+            .map(|(i, w)| if i == 0 { w.clone() } else { upper_first(w) })
+            .collect();
+        proptest::prop_assert_eq!(parts(&snake), words.clone());
+        proptest::prop_assert_eq!(parts(&kebab), words.clone());
+        proptest::prop_assert_eq!(parts(&snake.to_uppercase()), words.clone());
+        proptest::prop_assert_eq!(parts(&camel), words);
+    }
+}
+
+fn upper_first(w: &str) -> String {
+    let mut c = w.chars();
+    c.next()
+        .map_or_else(String::new, |f| f.to_uppercase().chain(c).collect())
 }

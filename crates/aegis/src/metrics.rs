@@ -63,7 +63,9 @@ fn parts(name: &str) -> Vec<String> {
         if c.is_alphanumeric() {
             part.extend(c.to_lowercase());
         }
-        lower_before = c.is_lowercase() || c.is_ascii_digit();
+        // A digit carries on what came before it, so `A0A` is one part
+        // and `a0A` is two.
+        lower_before = c.is_lowercase() || (c.is_ascii_digit() && lower_before);
     }
     if !part.is_empty() {
         out.push(part);
@@ -140,8 +142,10 @@ fn is_test(path: &str) -> bool {
 
 /// Whether this kind of file is read.
 fn read(path: &str, kind: Kind) -> bool {
-    !matches!(kind, Kind::Markdown | Kind::Licence | Kind::Lock)
-        && path != PATH
+    !matches!(
+        kind,
+        Kind::Markdown | Kind::Licence | Kind::Lock | Kind::Snapshot
+    ) && path != PATH
         && !is_test(path)
 }
 

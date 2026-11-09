@@ -25,5 +25,8 @@ syn = { version = "3", default-features = false, features = [
     "visit",
 ] }
 
+[dev-dependencies]
+proptest = { version = "1", default-features = false, features = ["std"] }
+
 [lints]
 workspace = true

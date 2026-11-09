@@ -280,7 +280,10 @@ shipped product is built on it. Parts made before Boot exists (the gate,
    MC/DC. 100% of mutants are killed.
 5. Use property tests, fuzzing, failure injection and model checks
    (stateright) where they fit. Prove critical code with Kani, Verus and
-   Creusot.
+   Creusot. Property and fuzz tests use `proptest`: 256 random cases by
+   default, more at the release tier through `PROPTEST_CASES`. Text the
+   gate shows people is kept as a snapshot in `tests/snapshots`; a
+   deliberate change is accepted with `AEGIS_UPDATE_SNAPSHOTS=1`.
 6. Write safe Rust only. No `unsafe` in our code.
 7. No dead code, no commented-out code and no unused dependencies.
 8. Performance is measured at the push tier on Dell, against baselines

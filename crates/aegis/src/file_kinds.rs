@@ -32,6 +32,9 @@ pub enum Kind {
     /// `.gitignore`, `.gitattributes`, or `.gitleaksignore` (the leak
     /// scan's reviewed false alarms).
     Git,
+    /// A test's saved output, in a `tests/snapshots` folder, written by
+    /// the test itself.
+    Snapshot,
     /// A lock file written by a tool.
     Lock,
 }
@@ -87,6 +90,7 @@ pub fn kind_of(path: &str, typescript_on: bool) -> Option<Kind> {
         "toml" | "yaml" | "yml" | "json" => Some(Kind::Config),
         "md" => Some(Kind::Markdown),
         "txt" if path.starts_with("LICENSES/") => Some(Kind::Licence),
+        "txt" if path.contains("/tests/snapshots/") => Some(Kind::Snapshot),
         _ => None,
     }
 }

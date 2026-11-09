@@ -192,6 +192,30 @@ mod tests {
         );
     }
 
+    proptest::proptest! {
+        #[test]
+        fn quoted_words_never_leak_and_no_text_breaks_the_reader(
+            word in "[a-z]{12,16}",
+            noise in "\\PC{0,200}",
+        ) {
+            let quoted = [
+                format!("let a = \"{word}\";"),
+                format!("let a = r#\"{word}\"#;"),
+                format!("let a = b\"{word}\";"),
+                format!("// {word}\n"),
+                format!("/* {word} */"),
+            ];
+            for text in quoted {
+                let found = words(&text);
+                proptest::prop_assert!(!found.contains(&word), "{}", text);
+            }
+            let lines = noise.lines().count().saturating_add(1);
+            for (_, line) in tokens(&noise) {
+                proptest::prop_assert!(line >= 1 && line <= lines);
+            }
+        }
+    }
+
     #[test]
     fn keeps_lifetimes_and_lines() {
         let found = tokens("fn f<'a>(x: &'a u8)\n{ y }");

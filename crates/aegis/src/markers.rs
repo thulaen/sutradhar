@@ -24,7 +24,10 @@ fn markers() -> [String; 4] {
 
 /// Whether this kind of file is read.
 fn read(kind: Kind) -> bool {
-    !matches!(kind, Kind::Markdown | Kind::Licence | Kind::Lock)
+    !matches!(
+        kind,
+        Kind::Markdown | Kind::Licence | Kind::Lock | Kind::Snapshot
+    )
 }
 
 /// Whether `rest`, the text just after a marker, names a task: `(#N)`.

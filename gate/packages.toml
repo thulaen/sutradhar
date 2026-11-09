@@ -36,3 +36,7 @@ job = "the line of each piece of Rust source"
 [[package]]
 name = "regorus"
 job = "running rules written in Rego"
+
+[[package]]
+name = "proptest"
+job = "property and fuzz tests with random inputs"

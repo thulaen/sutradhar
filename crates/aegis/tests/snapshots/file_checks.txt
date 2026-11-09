@@ -1,0 +1,4 @@
+[code.markers] src/a.rs:1: a marker for unfinished work must name its Forgejo task, as in MARKER(#16); keep unfinished work out of main
+[proofs.no-tricks] src/a.rs:2: a proof trick: this skips loops in the proof
+[metrics.no-vanity] src/a.rs:4: `total_visits` is a vanity number; report a number from gate/metrics.toml instead
+[limits.line-width] src/b.rs:1: 90 characters; the most is 80
