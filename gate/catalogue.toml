@@ -174,3 +174,9 @@ id = "gate.packages"
 partly = ["GI-28", "GI-29"]
 tiers = ["commit", "push"]
 proof = "aegis::packages::tests::refuses_a_library_not_on_the_list"
+
+[[check]]
+id = "docs.names"
+partly = ["GI-49"]
+tiers = ["commit", "push"]
+proof = "aegis::names::tests::refuses_a_crate_missing_from_the_glossary"

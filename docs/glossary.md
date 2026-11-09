@@ -20,6 +20,7 @@ Plain meanings of the names and terms used in Sutradhar.
 | chaukidar | Hindi: "watchman" | Spots any change to what guards the project, and raises the alarm |
 | pankti | Hindi: "a line" | The heavy-job queue on Dell: at most two heavy jobs at once |
 | aegis | Greek: "shield" | The gate: every check |
+| aegis-door | aegis + English "door" | The gate on Forgejo's side: checks every push before it lands |
 | nirikshak | Hindi: "inspector" | The code analyser used by the gate |
 | prahari | Hindi: "guard" | The outside tester that checks the gate itself |
 | autoissues | English name | Turns findings into Forgejo tasks |

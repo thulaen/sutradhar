@@ -89,6 +89,8 @@ pub fn whole_project_docs(repo: &Repo, all: &[String]) -> Vec<Finding> {
             .filter(|p| p.starts_with("crates/") && p.ends_with("/Cargo.toml"))
             .filter_map(|p| Some((p.clone(), repo.read(p)?)))
             .collect();
+        let glossary = repo.read(crate::names::GLOSSARY);
+        out.extend(crate::names::check(glossary.as_deref(), all));
         let list = repo.read(crate::packages::PATH);
         let root = repo.read("Cargo.toml");
         out.extend(crate::packages::check(

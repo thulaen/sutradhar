@@ -9,6 +9,7 @@ pub mod finding;
 pub mod history;
 pub mod limits;
 pub mod markers;
+pub mod names;
 pub mod packages;
 pub mod patch;
 pub mod private;
