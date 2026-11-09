@@ -58,10 +58,35 @@ fn a_path_maps_to_the_library_and_any_matching_test_file() {
 fn reads_passed_failed_and_absent() {
     let ran = "running 1 test\n.\ntest result: ok. 1 passed; 0 failed;\n";
     let none = "test result: ok. 0 passed; 0 failed; 88 filtered out\n";
-    assert_eq!(outcome(true, ran), Outcome::Passed);
-    assert_eq!(outcome(true, none), Outcome::Absent);
-    assert_eq!(outcome(true, ""), Outcome::Absent);
-    assert_eq!(outcome(false, ran), Outcome::Failed);
+    let failed =
+        "running 1 test\nF\ntest result: FAILED. 0 passed; 1 failed;\n";
+    assert_eq!(outcome(true, ran, ""), Outcome::Passed);
+    assert_eq!(outcome(true, none, ""), Outcome::Absent);
+    assert_eq!(outcome(true, "", ""), Outcome::Absent);
+    assert_eq!(outcome(false, failed, ""), Outcome::Failed);
+    let new_api = "error[E0425]: cannot find function `add` in crate `demo`\n";
+    assert_eq!(outcome(false, "", new_api), Outcome::Failed);
+}
+
+#[test]
+fn a_run_that_could_not_start_is_never_proof() {
+    let readonly =
+        "error: Read-only file system (os error 30) at path \"/t\"\n";
+    let found = outcome(false, "", readonly);
+    assert!(
+        matches!(&found, Outcome::Broken(why) if why.contains("Read-only"))
+    );
+    let test = Tdd::Test {
+        krate: "a".to_owned(),
+        path: "b".to_owned(),
+    };
+    let refused = judge(&test, &found, &Outcome::Passed);
+    assert_eq!(refused.len(), 1);
+    assert!(
+        refused
+            .iter()
+            .all(|f| f.message.contains("could not be run before"))
+    );
 }
 
 #[test]
@@ -85,18 +110,18 @@ fn a_test_must_be_red_before_and_green_after() {
         path: "b".to_owned(),
     };
     assert_eq!(
-        judge(&test, Outcome::Failed, Outcome::Passed),
+        judge(&test, &Outcome::Failed, &Outcome::Passed),
         Vec::<_>::new()
     );
     assert_eq!(
-        judge(&test, Outcome::Absent, Outcome::Passed),
+        judge(&test, &Outcome::Absent, &Outcome::Passed),
         Vec::<_>::new()
     );
-    assert_eq!(judge(&test, Outcome::Passed, Outcome::Passed).len(), 1);
-    assert_eq!(judge(&test, Outcome::Failed, Outcome::Failed).len(), 1);
-    assert_eq!(judge(&test, Outcome::Failed, Outcome::Absent).len(), 1);
+    assert_eq!(judge(&test, &Outcome::Passed, &Outcome::Passed).len(), 1);
+    assert_eq!(judge(&test, &Outcome::Failed, &Outcome::Failed).len(), 1);
+    assert_eq!(judge(&test, &Outcome::Failed, &Outcome::Absent).len(), 1);
     assert_eq!(
-        judge(&Tdd::DocsOnly, Outcome::Passed, Outcome::Absent),
+        judge(&Tdd::DocsOnly, &Outcome::Passed, &Outcome::Absent),
         Vec::<_>::new()
     );
 }

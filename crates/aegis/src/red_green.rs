@@ -21,14 +21,17 @@ use crate::tdd::{self, Tdd};
 const CHECK: &str = "commit.test-first";
 
 /// What one run of the named test showed.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Outcome {
     /// It ran and passed.
     Passed,
-    /// It failed, or could not be built.
+    /// It ran and failed, or the code did not compile against it.
     Failed,
     /// No test of that name exists.
     Absent,
+    /// Cargo could not run at all, for a reason that is not the test's,
+    /// such as a folder it may not write. This is never proof.
+    Broken(String),
 }
 
 /// The ways to run a named test, as `cargo test` arguments. A path whose
@@ -60,11 +63,25 @@ pub fn targets(root: &Path, krate: &str, path: &str) -> Vec<Vec<String>> {
     out
 }
 
-/// Reads one `cargo test` run: whether it succeeded, and its output.
+/// Reads one `cargo test` run: whether it succeeded, and what it wrote
+/// to its output and to its error stream.
 #[must_use]
-pub fn outcome(succeeded: bool, output: &str) -> Outcome {
+pub fn outcome(succeeded: bool, output: &str, errors: &str) -> Outcome {
     if !succeeded {
-        return Outcome::Failed;
+        let ran_and_failed = output
+            .lines()
+            .any(|l| l.trim().starts_with("test result: FAILED"));
+        let did_not_compile = errors.contains("error[E");
+        if ran_and_failed || did_not_compile {
+            return Outcome::Failed;
+        }
+        let why = errors
+            .lines()
+            .filter(|l| l.trim_start().starts_with("error"))
+            .take(3)
+            .collect::<Vec<_>>()
+            .join("; ");
+        return Outcome::Broken(why);
     }
     let passed: usize = output
         .lines()
@@ -103,15 +120,25 @@ pub fn run(
             .stdin(Stdio::null())
             .output();
         seen.push(match result {
-            Ok(o) => {
-                outcome(o.status.success(), &String::from_utf8_lossy(&o.stdout))
-            }
-            Err(_) => Outcome::Failed,
+            Ok(o) => outcome(
+                o.status.success(),
+                &String::from_utf8_lossy(&o.stdout),
+                &String::from_utf8_lossy(&o.stderr),
+            ),
+            Err(e) => Outcome::Broken(format!("cannot start cargo: {e}")),
         });
     }
     if seen.contains(&Outcome::Passed) {
-        Outcome::Passed
-    } else if seen.contains(&Outcome::Failed) {
+        return Outcome::Passed;
+    }
+    if let Some(broken) = seen
+        .iter()
+        .find(|o| matches!(o, Outcome::Broken(_)))
+        .cloned()
+    {
+        return broken;
+    }
+    if seen.contains(&Outcome::Failed) {
         Outcome::Failed
     } else {
         Outcome::Absent
@@ -128,13 +155,23 @@ pub fn is_test_file(path: &str) -> bool {
 
 /// The findings for one commit, given its red and green outcomes.
 #[must_use]
-pub fn judge(test: &Tdd, red: Outcome, green: Outcome) -> Vec<Finding> {
+pub fn judge(test: &Tdd, red: &Outcome, green: &Outcome) -> Vec<Finding> {
     let Tdd::Test { krate, path } = test else {
         return Vec::new();
     };
     let name = format!("{krate}::{path}");
     let mut out = Vec::new();
-    if red == Outcome::Passed {
+    for (when, run) in [("before", &red), ("after", &green)] {
+        if let Outcome::Broken(why) = run {
+            out.push(Finding::new(
+                CHECK,
+                "",
+                0,
+                format!("`{name}` could not be run {when} the change: {why}"),
+            ));
+        }
+    }
+    if *red == Outcome::Passed {
         out.push(Finding::new(
             CHECK,
             "",
@@ -145,7 +182,7 @@ pub fn judge(test: &Tdd, red: Outcome, green: Outcome) -> Vec<Finding> {
             ),
         ));
     }
-    if green != Outcome::Passed {
+    if !matches!(green, Outcome::Passed | Outcome::Broken(_)) {
         out.push(Finding::new(
             CHECK,
             "",
@@ -164,6 +201,20 @@ pub fn check(repo: &Repo, commits: &[Commit], cargo: &[&str]) -> Vec<Finding> {
     let target = repo.root().join("target");
     let red_target = target.join("red-green");
     let mut out = Vec::new();
+    // A sealed job may write only to build folders that already exist,
+    // so both are made first; otherwise its build fails for want of a
+    // folder, which would only show as a broken run.
+    for folder in [&target, &red_target] {
+        if let Err(e) = std::fs::create_dir_all(folder) {
+            out.push(Finding::new(
+                CHECK,
+                "",
+                0,
+                format!("cannot make {}: {e}", folder.display()),
+            ));
+            return out;
+        }
+    }
     for commit in commits {
         let Some(test) =
             tdd::value(&commit.message).as_deref().and_then(tdd::parse)
@@ -205,7 +256,7 @@ pub fn check(repo: &Repo, commits: &[Commit], cargo: &[&str]) -> Vec<Finding> {
             }
         };
         let green = run(repo.content(), cargo, &target, name);
-        out.extend(judge(&test, red, green));
+        out.extend(judge(&test, &red, &green));
     }
     out
 }
