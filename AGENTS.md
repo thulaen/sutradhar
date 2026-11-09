@@ -343,6 +343,12 @@ shipped product is built on it. Parts made before Boot exists (the gate,
 - A check counts only once it is proven to refuse a planted fault in
   every allowed language that is switched on.
 - If a tool a check needs is missing, the check fails. It never skips.
+- After every `aegis commit` and `aegis push` the gate shows one
+  quality score: the share of eight parts (security, tests, copies,
+  smells, complexity, reviews, set-up, style and docs) with no problem,
+  out of 100, with each part's count. The bar is 100, so a change that
+  scores less is refused. Coverage of new lines joins the score once
+  Phase 2 item 5 measures it (task #135).
 
 | Tier | When | Scope |
 |---|---|---|

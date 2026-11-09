@@ -1,5 +1,9 @@
 skill = "security"
-change = "sha256:bd7ba4bb5286159c7d098f20c2d876334df0c2b904b3b6fcb0225a07bca1913d"
+change = "sha256:936fe4e3585e6ecace27eac937395dce7588b63adbada92069ecb51466d072dd"
 verdict = "pass"
 agent = "claude subagents"
-summary = "Six rounds by fresh subagents on task #118 (the code-smell rules). No allow or refuse decision, redaction or secret pattern changed; fact text reaches Rego only as escaped input."
+summary = "Three rounds by fresh subagents on task #116 (one quality score). No outside input; the score test no longer touches a hook's own git index."
+
+[[finding]]
+what = "the command test leaked the hook's git settings"
+fixed = true

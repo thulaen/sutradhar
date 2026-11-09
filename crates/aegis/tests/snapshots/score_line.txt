@@ -1,0 +1,1 @@
+aegis: quality score 75 of 100 (problems: security 0, tests 0, copies 0, smells 0, complexity 0, reviews 0, set-up 1, style and docs 3)

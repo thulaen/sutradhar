@@ -1,9 +1,9 @@
 skill = "architecture"
-change = "sha256:bd7ba4bb5286159c7d098f20c2d876334df0c2b904b3b6fcb0225a07bca1913d"
+change = "sha256:936fe4e3585e6ecace27eac937395dce7588b63adbada92069ecb51466d072dd"
 verdict = "pass"
 agent = "claude subagents"
-summary = "Six rounds by fresh subagents on task #118 (the code-smell rules). Rust gathers the smell facts in their own files, the Rego rules only read them, and the spec, catalogue and relations agree."
+summary = "Three rounds by fresh subagents on task #116 (one quality score). A typed Part enum, a table tied to catalogue::REPORTED, and one call from main.rs; the design fits the gate's rules."
 
 [[finding]]
-what = "doc comments were split by the refactor"
+what = "part names were loose text not tied to the reported checks"
 fixed = true

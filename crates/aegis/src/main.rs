@@ -33,7 +33,14 @@ fn main() -> ExitCode {
         };
     }
     match run(&refs) {
-        Ok(findings) => report(&findings),
+        Ok(findings) => {
+            // A whole change, not a message alone, gets its score.
+            if refs.first() != Some(&"msg") {
+                let score = aegis::score::of(&findings);
+                say(&format!("{}\n", aegis::score::line(&score)));
+            }
+            report(&findings)
+        }
         Err(problem) => stop(&problem),
     }
 }
