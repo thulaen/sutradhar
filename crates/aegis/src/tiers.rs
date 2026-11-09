@@ -63,6 +63,16 @@ pub fn whole_project_docs(repo: &Repo, all: &[String]) -> Vec<Finding> {
     for path in rule_file::POINTER_FILES {
         out.extend(rule_file::check(path, repo.read(path).as_deref()));
     }
+    // The gate's own repository keeps its catalogue in step with its code.
+    let gate = all.iter().any(|p| p.starts_with("crates/aegis/"));
+    if gate || all.iter().any(|p| p == crate::catalogue::PATH) {
+        let rust: Vec<(String, String)> = all
+            .iter()
+            .filter(|p| p.starts_with("crates/") && is_rust(p))
+            .filter_map(|p| Some((p.clone(), repo.read(p)?)))
+            .collect();
+        out.extend(crate::catalogue::check(&|p| repo.read(p), &rust));
+    }
     out
 }
 
@@ -212,6 +222,12 @@ pub fn push(
         out.extend(crate::red_green::check(repo, &commits, &cargo));
     }
     Ok(out)
+}
+
+fn is_rust(path: &str) -> bool {
+    std::path::Path::new(path)
+        .extension()
+        .is_some_and(|e| e.eq_ignore_ascii_case("rs"))
 }
 
 fn is_markdown(path: &str) -> bool {

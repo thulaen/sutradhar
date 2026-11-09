@@ -1,5 +1,6 @@
-//! The `aegis` command: `aegis msg FILE`, `aegis commit` and
-//! `aegis push BASE HEAD`.
+//! The `aegis` command: `aegis msg FILE`, `aegis commit`,
+//! `aegis push BASE HEAD`, and `aegis catalogue`, which lists the gate
+//! items no check covers yet.
 
 use std::io::{self, Write};
 use std::process::ExitCode;
@@ -7,12 +8,15 @@ use std::process::ExitCode;
 use aegis::repo::Repo;
 use aegis::{Finding, commit_msg, tiers};
 
-const USAGE: &str =
-    "usage: aegis msg FILE | aegis commit | aegis push BASE HEAD\n";
+const USAGE: &str = "usage: aegis msg FILE | aegis commit \
+     | aegis push BASE HEAD | aegis catalogue\n";
 
 fn main() -> ExitCode {
     let args: Vec<String> = std::env::args().skip(1).collect();
     let refs: Vec<&str> = args.iter().map(String::as_str).collect();
+    if refs == ["catalogue"] {
+        return catalogue();
+    }
     match run(&refs) {
         Ok(findings) => report(&findings),
         Err(problem) => {
@@ -56,4 +60,32 @@ fn report(findings: &[Finding]) -> ExitCode {
 
 fn say(text: &str) {
     let _ignored = io::stderr().write_all(text.as_bytes());
+}
+
+/// Says which gate items no check covers yet. It is a progress report,
+/// not a check: the release tier needs every item covered.
+fn catalogue() -> ExitCode {
+    let read = |p: &str| std::fs::read_to_string(p).unwrap_or_default();
+    let items = read(aegis::catalogue::ITEMS);
+    match aegis::catalogue::uncovered(&read(aegis::catalogue::PATH), &items) {
+        Ok((none, partly)) if none.is_empty() && partly.is_empty() => {
+            say("aegis: every gate item has a check that covers it in full\n");
+            ExitCode::SUCCESS
+        }
+        Ok((none, partly)) => {
+            say(&format!(
+                "aegis: {} gate items have no check yet: {}\n\
+                 aegis: {} are covered only in part: {}\n",
+                none.len(),
+                none.join(", "),
+                partly.len(),
+                partly.join(", ")
+            ));
+            ExitCode::SUCCESS
+        }
+        Err(problem) => {
+            say(&format!("aegis: {problem}\n"));
+            ExitCode::from(2)
+        }
+    }
 }

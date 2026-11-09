@@ -11,4 +11,6 @@ publish.workspace = true
 workspace = true
 
 [dependencies]
+serde = { version = "1.0.229", features = ["derive"] }
+toml = { version = "1", default-features = false, features = ["parse", "serde"] }
 yaml-rust2 = { version = "0.13.0", default-features = false }

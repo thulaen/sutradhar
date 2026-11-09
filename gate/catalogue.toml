@@ -1,0 +1,146 @@
+# The gate's catalogue (AGENTS.md section 7; roadmap Phase 2 item 2).
+# One entry for every check the gate can report. Each names the owner's
+# gate items (docs/standards/gate-items.md) it covers in full (`items`)
+# or only in part (`partly`): for some languages, or some cases. Only
+# full cover counts toward the release bar. Each also names the tiers it
+# runs in, and its proof: the test that plants a fault and sees it
+# refused.
+# The check gate.catalogue keeps this list and the code in step.
+
+[[check]]
+id = "commit.message"
+partly = ["GI-17", "GI-49"]
+tiers = ["commit", "push"]
+proof = "aegis::commit_msg::tests::refuses_bad_subjects"
+
+[[check]]
+id = "commit.tdd"
+partly = ["GI-08"]
+tiers = ["commit", "push"]
+proof = "aegis::tdd::tests::docs_only_commits_may_touch_only_markdown"
+
+[[check]]
+id = "commit.test-first"
+partly = ["GI-08", "GI-32"]
+tiers = ["push"]
+proof = "aegis::red_green::a_named_test_must_fail_before_and_pass_after"
+
+[[check]]
+id = "docs.line-length"
+partly = ["GI-49"]
+tiers = ["commit", "push"]
+proof = "aegis::docs::tests::refuses_a_long_line"
+
+[[check]]
+id = "docs.links"
+partly = ["GI-49"]
+tiers = ["commit", "push"]
+proof = "aegis::docs::tests::refuses_missing_files_and_anchors"
+
+[[check]]
+id = "docs.one-rule-file"
+partly = ["GI-49"]
+tiers = ["commit", "push"]
+proof = "aegis::rule_file::tests::refuses_extra_rules_and_missing_files"
+
+[[check]]
+id = "docs.status-words"
+partly = ["GI-17"]
+tiers = ["commit", "push"]
+proof = "aegis::docs::tests::refuses_status_words"
+
+[[check]]
+id = "files.allowed-kind"
+partly = ["GI-51"]
+tiers = ["commit", "push"]
+proof = "aegis::file_kinds::tests::refuses_planted_files"
+
+[[check]]
+id = "limits.file-length"
+partly = ["GI-04"]
+tiers = ["commit", "push"]
+proof = "aegis::limits::tests::refuses_a_long_source_file"
+
+[[check]]
+id = "limits.line-width"
+partly = ["GI-05"]
+tiers = ["commit", "push"]
+proof = "aegis::limits::tests::refuses_a_wide_line_with_its_number"
+
+[[check]]
+id = "code.markers"
+partly = ["GI-17", "GI-24"]
+tiers = ["commit", "push"]
+proof = "aegis::markers::tests::a_bare_marker_is_refused_with_its_line"
+
+[[check]]
+id = "text.clean"
+partly = ["GI-18"]
+tiers = ["commit", "push"]
+proof = "aegis::text::tests::hidden_and_control_characters_fail"
+
+[[check]]
+id = "secrets.private-data"
+partly = ["GI-46"]
+tiers = ["commit", "push"]
+proof = "aegis::secrets::tests::finds_planted_secrets"
+
+[[check]]
+id = "workflows.sealed"
+partly = ["GI-18"]
+tiers = ["commit", "push"]
+proof = "aegis::workflows::tests::refuses_containers_services_actions_and_options"
+
+[[check]]
+id = "shell.format"
+partly = ["GI-05"]
+tiers = ["commit", "push"]
+proof = "aegis::planted::a_badly_laid_out_script_fails_only_the_shell_format_check"
+
+[[check]]
+id = "shell.lint"
+partly = ["GI-01", "GI-07"]
+tiers = ["commit", "push"]
+proof = "aegis::planted::a_shell_lint_breach_fails_only_the_shell_lint_check"
+
+[[check]]
+id = "rust.format"
+partly = ["GI-05"]
+tiers = ["commit", "push"]
+proof = "aegis::planted::badly_laid_out_code_fails_only_the_format_check"
+
+[[check]]
+id = "rust.lints"
+partly = ["GI-01", "GI-07", "GI-09", "GI-10"]
+tiers = ["commit", "push"]
+proof = "aegis::planted::a_lint_breach_fails_only_the_lint_check"
+
+[[check]]
+id = "rust.tests"
+partly = ["GI-01", "GI-08"]
+tiers = ["commit", "push"]
+proof = "aegis::planted::a_failing_test_fails_only_the_test_check"
+
+[[check]]
+id = "rust.fetch"
+partly = ["GI-48"]
+tiers = ["commit", "push"]
+proof = "aegis::planted::a_stale_lock_file_fails_the_fetch"
+
+[[check]]
+id = "rust.cargo-settings"
+partly = ["GI-18"]
+tiers = ["commit", "push"]
+proof = "aegis::tiers::no_rust_step_runs_on_a_tree_with_cargo_settings"
+
+[[check]]
+id = "push.clean-tree"
+partly = ["GI-17"]
+tiers = ["push"]
+proof = "aegis::tiers::push_tier_checks_only_new_commits_and_needs_a_clean_tree"
+
+[[check]]
+id = "gate.catalogue"
+partly = ["GI-49"]
+tiers = ["commit", "push"]
+proof = "aegis::catalogue::tests::refuses_a_check_missing_from_the_catalogue"
