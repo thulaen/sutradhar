@@ -103,3 +103,12 @@ fn s02_and_s03_find_switched_off_checks_and_weak_hashes() {
     assert_eq!(lines("S02", &[("tests/a.rs", code)]), [2]);
     assert_eq!(lines("S03", &[("tests/a.rs", code)]), [3]);
 }
+
+#[test]
+fn r05_also_finds_a_yaml_setting_no_page_explains() {
+    let compose = "services:\n  a:\n    environment:\n      SHOWN: x\n      \
+                   UNSEEN: y\n";
+    let docs = "`SHOWN` turns it on.\n";
+    let files = [("docker/a/compose.yaml", compose), ("docs/a.md", docs)];
+    assert_eq!(lines("R05", &files), [5]);
+}

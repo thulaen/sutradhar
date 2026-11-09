@@ -10,7 +10,9 @@ project. A run over the whole project takes about a second.
 
 1. **Facts.** `rust_facts` reads each Rust file with `syn`, a pure Rust
    parser, and records facts about it (below). `markdown_facts`
-   records each inline code span in a page, outside fenced blocks. A
+   records each inline code span in a page, outside fenced blocks.
+   `yaml_facts` records each setting a YAML file declares under
+   `environment:` or `env:`, or reads as `${NAME}`. A
    call is named through the file's `use` lines, so `mpsc::channel`
    reads as
    `std::sync::mpsc::channel`.
@@ -46,6 +48,7 @@ folder; lines start at 1. Code outside any function is in the function
 | `discard` | `path`, `function`, `line`, `kind` (`let _ =` or `.ok();`) |
 | `empty_handler` | `path`, `function`, `line` (an `Err(_) => {}` arm) |
 | `uses_try` | `path`, `function`, `line` (a `?`) |
+| `env_declared` | `path`, `name`, `line` (a setting a YAML file declares or reads) |
 | `parse_failure` | `path`, `line`, `reason` |
 
 A function's `kind` is `test` (a `#[test]`), `test_panics` (a test that
@@ -60,7 +63,7 @@ Each rule file starts with comment lines naming its `id`, `title`,
 
 | Rule | Finds | Gate items |
 |---|---|---|
-| R05 | A setting read in code (`std::env::var`, `env!` and the like) that no page names in a code span; Cargo's own and test code are left out | GI-48 |
+| R05 | A setting read in code (`std::env::var`, `env!` and the like), or declared in a YAML file, that no page names in a code span; Cargo's own and test code are left out | GI-48 |
 | R08 | A network call with no time limit, in code | GI-15 |
 | R09 | An error thrown away, in code: `let _ =` on a call, `.ok();`, or an empty `Err(_)` arm | GI-47 |
 | R14 | A test that checks nothing, following its helpers across files | GI-32 |
@@ -93,8 +96,8 @@ since the gate runs a debug build.
 
 ## Limits
 
-- Only Rust is read so far. Other languages get facts when a rule needs
-  them.
+- Rust, Markdown and YAML are read so far. The other allowed languages
+  get facts when their code arrives and a rule needs them.
 - R05 sees `std::env::var` and its kin, and `env!`. A setting read
   through a helper of our own, such as `setting("NAME")`, is not seen
   yet, so every program's page lists its settings by hand as well.

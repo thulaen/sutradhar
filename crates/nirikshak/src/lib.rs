@@ -10,6 +10,7 @@ pub mod rules;
 pub mod rust_facts;
 pub mod shapes;
 pub mod uses;
+pub mod yaml_facts;
 
 use facts::Facts;
 use rules::Found;
@@ -24,8 +25,8 @@ pub struct Report {
     pub blocked: Vec<String>,
 }
 
-/// Reads the facts of every file given as (path, text): Rust and
-/// Markdown so far. Other files hold no facts any rule uses yet.
+/// Reads the facts of every file given as (path, text): Rust, Markdown
+/// and YAML so far. Other files hold no facts any rule uses yet.
 #[must_use]
 pub fn read(files: &[(String, String)]) -> Facts {
     let mut facts = Facts::default();
@@ -33,6 +34,7 @@ pub fn read(files: &[(String, String)]) -> Facts {
         match extension(path).as_deref() {
             Some("rs") => rust_facts::read(path, text, &mut facts),
             Some("md") => markdown_facts::read(path, text, &mut facts),
+            Some("yml" | "yaml") => yaml_facts::read(path, text, &mut facts),
             _ => {}
         }
     }
@@ -42,7 +44,10 @@ pub fn read(files: &[(String, String)]) -> Facts {
 /// The files `read` takes facts from.
 #[must_use]
 pub fn reads(path: &str) -> bool {
-    matches!(extension(path).as_deref(), Some("rs" | "md"))
+    matches!(
+        extension(path).as_deref(),
+        Some("rs" | "md" | "yml" | "yaml")
+    )
 }
 
 fn extension(path: &str) -> Option<String> {

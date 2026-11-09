@@ -49,7 +49,7 @@ impl Facts {
 }
 
 /// The relations, as listed in the specification.
-pub const RELATIONS: [&str; 14] = [
+pub const RELATIONS: [&str; 15] = [
     "file",
     "function",
     "call",
@@ -57,6 +57,7 @@ pub const RELATIONS: [&str; 14] = [
     "macro",
     "macro_text",
     "doc_code",
+    "env_declared",
     "literal",
     "method_receiver",
     "impl_fn",

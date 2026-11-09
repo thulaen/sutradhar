@@ -4,8 +4,9 @@
 # fix: Explain the setting in a page, in a code span such as `NAME`.
 #
 # Rule 5 of the approved list, and the first that crosses languages: a
-# setting read in Rust must be named in a Markdown page. Cargo's own
-# settings (CARGO_*) and test code are left out.
+# setting read in Rust, or declared or read in a YAML file, must be named
+# in a Markdown page. Cargo's own settings (CARGO_*) and test code are
+# left out.
 package nirikshak.r05
 
 import rego.v1
@@ -44,6 +45,10 @@ used contains {"path": m.path, "line": m.line, "what": m.text} if {
 	some m in input.macro_text
 	m.name in setting_macro
 	not_test(m.path, m.function)
+}
+
+used contains {"path": e.path, "line": e.line, "what": e.name} if {
+	some e in input.env_declared
 }
 
 documented contains d.text if {
