@@ -13,7 +13,7 @@ use crate::facts::Facts;
 pub type Source = (&'static str, &'static str);
 
 /// Every rule, in order.
-pub const ALL: [Source; 21] = [
+pub const ALL: [Source; 30] = [
     (
         "r05_environment.rego",
         include_str!("../rules/r05_environment.rego"),
@@ -53,6 +53,42 @@ pub const ALL: [Source; 21] = [
     (
         "t01_text_cut_short.rego",
         include_str!("../rules/t01_text_cut_short.rego"),
+    ),
+    (
+        "c01_unpinned_images.rego",
+        include_str!("../rules/c01_unpinned_images.rego"),
+    ),
+    (
+        "c02_runs_as_root.rego",
+        include_str!("../rules/c02_runs_as_root.rego"),
+    ),
+    (
+        "c03_privileged.rego",
+        include_str!("../rules/c03_privileged.rego"),
+    ),
+    (
+        "c04_host_network.rego",
+        include_str!("../rules/c04_host_network.rego"),
+    ),
+    (
+        "c05_no_limits.rego",
+        include_str!("../rules/c05_no_limits.rego"),
+    ),
+    (
+        "c06_writable_root.rego",
+        include_str!("../rules/c06_writable_root.rego"),
+    ),
+    (
+        "c07_new_privileges.rego",
+        include_str!("../rules/c07_new_privileges.rego"),
+    ),
+    (
+        "c08_rights_kept.rego",
+        include_str!("../rules/c08_rights_kept.rego"),
+    ),
+    (
+        "c09_secret_in_settings.rego",
+        include_str!("../rules/c09_secret_in_settings.rego"),
     ),
     (
         "h06_open_permissions.rego",
@@ -229,7 +265,7 @@ fn findings(
 
 #[cfg(test)]
 #[path = "rules_tests_common.rs"]
-mod tests_common;
+pub(crate) mod tests_common;
 
 #[cfg(test)]
 #[path = "rules_tests.rs"]

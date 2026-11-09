@@ -19,7 +19,7 @@ job = "reading TOML"
 
 [[package]]
 name = "yaml-rust2"
-job = "reading YAML, for the workflow check"
+job = "reading YAML, for the workflow and setup-file checks"
 
 [[package]]
 name = "sha2"

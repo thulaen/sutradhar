@@ -8,6 +8,7 @@ pub mod facts;
 pub mod markdown_facts;
 pub mod rules;
 pub mod rust_facts;
+pub mod setup_facts;
 pub mod shapes;
 pub mod uses;
 pub mod yaml_facts;
@@ -25,16 +26,24 @@ pub struct Report {
     pub blocked: Vec<String>,
 }
 
-/// Reads the facts of every file given as (path, text): Rust, Markdown
-/// and YAML so far. Other files hold no facts any rule uses yet.
+/// Reads the facts of every file given as (path, text): Rust, Markdown,
+/// YAML (compose files too) and Dockerfiles so far. Other files hold no
+/// facts any rule uses yet.
 #[must_use]
 pub fn read(files: &[(String, String)]) -> Facts {
     let mut facts = Facts::default();
     for (path, text) in files {
+        if is_dockerfile(path) {
+            setup_facts::read_dockerfile(path, text, &mut facts);
+            continue;
+        }
         match extension(path).as_deref() {
             Some("rs") => rust_facts::read(path, text, &mut facts),
             Some("md") => markdown_facts::read(path, text, &mut facts),
-            Some("yml" | "yaml") => yaml_facts::read(path, text, &mut facts),
+            Some("yml" | "yaml") => {
+                yaml_facts::read(path, text, &mut facts);
+                setup_facts::read_compose(path, text, &mut facts);
+            }
             _ => {}
         }
     }
@@ -44,10 +53,31 @@ pub fn read(files: &[(String, String)]) -> Facts {
 /// The files `read` takes facts from.
 #[must_use]
 pub fn reads(path: &str) -> bool {
-    matches!(
+    is_dockerfile(path)
+        || matches!(
+            extension(path).as_deref(),
+            Some("rs" | "md" | "yml" | "yaml")
+        )
+}
+
+/// Whether a path is read as a Dockerfile (for tests).
+#[cfg(test)]
+pub(crate) fn reads_as_dockerfile(path: &str) -> bool {
+    is_dockerfile(path)
+}
+
+fn is_dockerfile(path: &str) -> bool {
+    let name = path.rsplit('/').next().unwrap_or(path).to_ascii_lowercase();
+    // A file of a kind read in its own way keeps it: `Dockerfile.md` is a
+    // page, `dockerfile.rs` is Rust.
+    let own_kind = matches!(
         extension(path).as_deref(),
-        Some("rs" | "md" | "yml" | "yaml")
-    )
+        Some("rs" | "md" | "yml" | "yaml" | "toml" | "json" | "sh")
+    );
+    let named = ["dockerfile", "containerfile"]
+        .iter()
+        .any(|base| name == *base || name.starts_with(&format!("{base}.")));
+    (named || name.ends_with(".dockerfile")) && !own_kind
 }
 
 fn extension(path: &str) -> Option<String> {

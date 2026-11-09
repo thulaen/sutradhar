@@ -50,7 +50,10 @@ folder; lines start at 1. Code outside any function is in the function
 | `empty_handler` | `path`, `function`, `line` (an `Err(_) => {}` arm) |
 | `uses_try` | `path`, `function`, `line` (a `?`) |
 | `env_declared` | `path`, `name`, `line` (a setting a YAML file declares or reads) |
-| `parse_failure` | `path`, `line`, `reason` |
+| `container` | `path`, `name`, `line`, `image`, `user`, `privileged`, `network_mode`, `read_only`, `mem_limit`, `pids_limit`, `no_new_privileges`, `cap_drop_all` (one service of a compose file) |
+| `container_env` | `path`, `service`, `name`, `written`, `line` (a setting a compose service sets; `written` when its value is in the file) |
+| `docker_stage` | `path`, `line`, `image`, `user`, `alias`, `last` (one `FROM` stage of a Dockerfile, its `AS` name and its last `USER`) |
+| `parse_failure` | `path`, `line`, `reason` (also a compose file that cannot be read, or uses YAML aliases, which a few lines can grow into a huge document) |
 
 A function's `kind` is `test` (a `#[test]`), `test_panics` (a test that
 expects a panic), `test_support` (other code in a test module, a test
@@ -74,6 +77,15 @@ Each rule file starts with comment lines naming its `id`, `title`,
 | S02 | Certificate checks switched off, anywhere | GI-18 |
 | S03 | MD5 or SHA-1, anywhere | GI-18 |
 | T01 | Text cut short, in code: `truncate`, `split_off`, `take` or `drain`, or a slice or `get` from the start, on anything named like content (text, body, post, page, message, title, chunk, token, word and the like). The owner's rule is no truncation anywhere (task #77). Refusing a whole message with an error is allowed. | GI-06 |
+| C01 | A container image not pinned by digest (compose or `FROM`; a `FROM` naming an earlier stage's `AS` name is not an image) | GI-48 |
+| C02 | A container that runs as root (an explicit root user, or a Dockerfile whose last stage sets no `USER`) | GI-18 |
+| C03 | A privileged container | GI-18 |
+| C04 | A container on the host network | GI-18 |
+| C05 | A container with no memory or process limit | GI-20 |
+| C06 | A container that can write its own files (not `read_only`) | GI-18 |
+| C07 | A container without `no-new-privileges` | GI-18 |
+| C08 | A container that keeps its rights (no `cap_drop: [ALL]`) | GI-18 |
+| C09 | A password or token written into a container's settings, as a map or a `- NAME=value` list, including a `${NAME:-default}` that writes its default | GI-46 |
 | H06 | A file mode that lets anyone write, in code | GI-18 |
 | H11 | A file written more than once with no buffer | GI-11 |
 | H22 | SQL that drops, empties or deletes every row, in code | GI-06 |
@@ -98,8 +110,13 @@ since the gate runs a debug build.
 
 ## Limits
 
-- Rust, Markdown and YAML are read so far. The other allowed languages
-  get facts when their code arrives and a rule needs them.
+- Rust, Markdown, YAML and Dockerfiles are read so far. Workflow files
+  are not given container rules: `workflows.sealed` already refuses
+  every outside action and container option in them. Systemd unit
+  files are written by the install scripts, not kept as files, so none
+  are read; a unit kept as a file would need its own rules.
+- The other allowed languages get facts when their code arrives and a
+  rule needs them.
 - R05 sees `std::env::var` and its kin, and `env!`. A setting read
   through a helper of our own, such as `setting("NAME")`, is not seen
   yet, so every program's page lists its settings by hand as well.

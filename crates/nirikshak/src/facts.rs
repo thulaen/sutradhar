@@ -49,7 +49,7 @@ impl Facts {
 }
 
 /// The relations, as listed in the specification.
-pub const RELATIONS: [&str; 16] = [
+pub const RELATIONS: [&str; 19] = [
     "file",
     "function",
     "call",
@@ -58,6 +58,9 @@ pub const RELATIONS: [&str; 16] = [
     "macro_text",
     "doc_code",
     "env_declared",
+    "container",
+    "container_env",
+    "docker_stage",
     "literal",
     "method_receiver",
     "range_cut",

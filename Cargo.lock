@@ -206,6 +206,7 @@ dependencies = [
  "regorus",
  "serde_json",
  "syn",
+ "yaml-rust2",
 ]
 
 [[package]]

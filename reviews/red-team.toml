@@ -1,5 +1,5 @@
 skill = "red-team"
-change = "sha256:2bc66048658adc63d2d1d5907804718b76b91ce35c2e6f3aaf024d535465c043"
+change = "sha256:de327a6f84d03466c86abdb0895ffec1b41eb9101f07c80005fa23d0523c6230"
 verdict = "pass"
 agent = "claude subagents"
-summary = "Four rounds by fresh subagents on task #119 (links never followed, files too large refused, the door's checkout runs no pushed filter). Links to host files, climbing paths, growing files and pushed filters were tried; the last round passed."
+summary = "Five rounds by fresh subagents on task #112 (the fifth checked a pure split of one file into three) (setup-file rules C01 to C09 for compose files and Dockerfiles). Bare images after stages, list-form settings, nested names, one-line files and huge files were tried; the last round passed."
