@@ -108,3 +108,109 @@ fn commit_checks_the_index_git_gives_the_hook() {
     let full = dir.join(".git/alt-index").display().to_string();
     assert_eq!(run(Some(&full)), Some(1));
 }
+
+#[test]
+fn commit_refuses_a_private_word_without_showing_it() {
+    let dir = folder("private");
+    git(&dir, &["init", "-q", "-b", "main"], None);
+    let lists = folder("private-lists");
+    // Built from parts, so this file holds no private-looking word whole.
+    let word = ["my", "forumname"].concat();
+    for (name, text) in [
+        ("deny-list.txt", format!("{word}\n")),
+        ("xenforo-phrases.txt", String::new()),
+        ("xenforo-index.txt", String::new()),
+        ("credential-files.txt", String::new()),
+    ] {
+        fs::write(lists.join(name), text).unwrap();
+    }
+    let pointer = "Read [AGENTS.md](AGENTS.md). It is the only rule file.\n";
+    for (name, text) in [
+        ("AGENTS.md", "# Rules\n".to_owned()),
+        ("CLAUDE.md", pointer.to_owned()),
+        ("GEMINI.md", pointer.to_owned()),
+        ("README.md", format!("# Read me\n\nSee {word} for more.\n")),
+    ] {
+        fs::write(dir.join(name), text).unwrap();
+    }
+    git(&dir, &["add", "-A"], None);
+    let out = Command::new(env!("CARGO_BIN_EXE_aegis"))
+        .current_dir(&dir)
+        .arg("commit")
+        .env_remove("GIT_INDEX_FILE")
+        .env("AEGIS_PRIVATE", &lists)
+        .output()
+        .unwrap();
+    let shown = String::from_utf8_lossy(&out.stderr).to_lowercase();
+    assert_eq!(out.status.code(), Some(1), "{shown}");
+    assert!(shown.contains("secrets.private-lists"), "{shown}");
+    assert!(!shown.contains(&word), "the word was shown");
+    let run = |args: &[&str], lists: &std::path::Path| {
+        let out = Command::new(env!("CARGO_BIN_EXE_aegis"))
+            .current_dir(&dir)
+            .args(args)
+            .env_remove("GIT_INDEX_FILE")
+            .env("AEGIS_PRIVATE", lists)
+            .output()
+            .unwrap();
+        let shown = String::from_utf8_lossy(&out.stderr).to_lowercase();
+        assert!(!shown.contains(&word), "the word was shown");
+        (out.status.code(), shown)
+    };
+    // A clean tree passes; missing lists fail rather than pass unseen.
+    fs::write(dir.join("README.md"), "# Read me\n").unwrap();
+    git(&dir, &["add", "-A"], None);
+    assert_eq!(run(&["commit"], &lists).0, Some(0));
+    assert_eq!(run(&["commit"], &dir.join("no-such-folder")).0, Some(1));
+    // A commit message with the word is refused.
+    let message = dir.join("message");
+    fs::write(&message, format!("{GOOD_MSG}\n{word}\n")).unwrap();
+    let (code, shown) = run(&["msg", "message"], &lists);
+    assert_eq!(code, Some(1));
+    assert!(shown.contains("secrets.private-lists"), "{shown}");
+}
+
+#[test]
+fn push_refuses_a_private_word_left_in_history() {
+    let dir = folder("private-history");
+    git(&dir, &["init", "-q", "-b", "main"], None);
+    git(&dir, &["config", "user.email", "a@example.com"], None);
+    git(&dir, &["config", "user.name", "A"], None);
+    let lists = folder("private-history-lists");
+    let word = ["my", "forumname"].concat();
+    for (name, text) in [
+        ("deny-list.txt", format!("{word}\n")),
+        ("xenforo-phrases.txt", String::new()),
+        ("xenforo-index.txt", String::new()),
+        ("credential-files.txt", String::new()),
+    ] {
+        fs::write(lists.join(name), text).unwrap();
+    }
+    let save = |text: &str| {
+        fs::write(dir.join("notes.md"), text).unwrap();
+        git(&dir, &["add", "-A"], None);
+        git(&dir, &["commit", "-q", "-m", GOOD_MSG], None);
+    };
+    save("# Notes\n");
+    let base = String::from_utf8(
+        Command::new("git")
+            .args(["-C"])
+            .arg(&dir)
+            .args(["rev-parse", "HEAD"])
+            .output()
+            .unwrap()
+            .stdout,
+    )
+    .unwrap();
+    save(&format!("# Notes\n\n{word}\n"));
+    save("# Notes\n");
+    let out = Command::new(env!("CARGO_BIN_EXE_aegis"))
+        .current_dir(&dir)
+        .args(["push", base.trim(), "HEAD"])
+        .env("AEGIS_PRIVATE", &lists)
+        .output()
+        .unwrap();
+    let shown = String::from_utf8_lossy(&out.stderr).to_lowercase();
+    assert!(!shown.contains(&word), "the word was shown");
+    assert!(shown.contains("notes.md (history)"), "{shown}");
+}

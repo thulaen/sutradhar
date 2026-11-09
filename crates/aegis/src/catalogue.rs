@@ -20,7 +20,7 @@ pub const ITEMS: &str = "docs/standards/gate-items.md";
 
 /// Every check the gate can report. A test keeps this list and the code
 /// in step.
-pub const REPORTED: [&str; 26] = [
+pub const REPORTED: [&str; 27] = [
     "commit.message",
     "commit.tdd",
     "commit.test-first",
@@ -34,6 +34,7 @@ pub const REPORTED: [&str; 26] = [
     "code.markers",
     "text.clean",
     "secrets.private-data",
+    "secrets.private-lists",
     "workflows.sealed",
     "shell.format",
     "shell.lint",

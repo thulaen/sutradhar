@@ -10,6 +10,7 @@ pub mod history;
 pub mod limits;
 pub mod markers;
 pub mod patch;
+pub mod private;
 pub mod red_green;
 pub mod repo;
 pub mod rule_file;

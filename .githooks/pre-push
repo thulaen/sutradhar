@@ -7,6 +7,10 @@ command -v cargo >/dev/null 2>&1 || {
   echo "aegis: cargo is missing, so the push is refused" >&2
   exit 1
 }
+# The owner's private lists stay on Dell; this checkout names their
+# folder in its setting `sutradhar.private`.
+private=$(git config --get sutradhar.private || true)
+if [ -n "$private" ]; then export AEGIS_PRIVATE="$private"; fi
 remote="$1"
 # On Dell, the checks wait in the heavy-job queue (AGENTS.md section 11),
 # named in this checkout's own setting `sutradhar.queue`.

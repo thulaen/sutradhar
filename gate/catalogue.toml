@@ -86,6 +86,12 @@ tiers = ["commit", "push"]
 proof = "aegis::secrets::tests::finds_planted_secrets"
 
 [[check]]
+id = "secrets.private-lists"
+partly = ["GI-46"]
+tiers = ["commit", "push"]
+proof = "aegis::command::commit_refuses_a_private_word_without_showing_it"
+
+[[check]]
 id = "workflows.sealed"
 partly = ["GI-18"]
 tiers = ["commit", "push"]

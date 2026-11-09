@@ -33,6 +33,7 @@ fn run(args: &[&str]) -> Result<Vec<Finding>, String> {
             let text = std::fs::read_to_string(file)
                 .map_err(|e| format!("cannot read {file}: {e}"))?;
             let mut out = commit_msg::check(&text);
+            out.extend(aegis::private::check_message(&text));
             let staged = aegis::history::staged_paths(&repo)?;
             out.extend(aegis::tdd::check_paths(&text, &staged));
             Ok(out)

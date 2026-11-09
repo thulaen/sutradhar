@@ -17,4 +17,8 @@ fi
 if [ -n "$tools" ]; then PATH="$tools:$PATH"; fi
 queue=$(git config --get sutradhar.queue || true)
 if [ -x "$queue" ]; then export AEGIS_QUEUE="$queue"; fi
+# The owner's private lists stay on Dell; this checkout names their
+# folder in its setting `sutradhar.private`.
+private=$(git config --get sutradhar.private || true)
+if [ -n "$private" ]; then export AEGIS_PRIVATE="$private"; fi
 exec cargo run --quiet --package aegis -- commit

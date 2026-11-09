@@ -5,4 +5,8 @@ command -v cargo >/dev/null 2>&1 || {
   echo "aegis: cargo is missing, so the commit is refused" >&2
   exit 1
 }
+# The owner's private lists stay on Dell; this checkout names their
+# folder in its setting `sutradhar.private`.
+private=$(git config --get sutradhar.private || true)
+if [ -n "$private" ]; then export AEGIS_PRIVATE="$private"; fi
 exec cargo run --quiet --package aegis -- msg "$1"

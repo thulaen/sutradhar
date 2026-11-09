@@ -22,6 +22,13 @@ pub fn typescript_on(repo: &Repo) -> bool {
 pub fn file_checks(repo: &Repo, paths: &[String]) -> Vec<Finding> {
     let ts = typescript_on(repo);
     let mut out = file_kinds::check(paths.iter().map(String::as_str), ts);
+    let private = match crate::private::Private::from_env() {
+        Ok(private) => private,
+        Err(e) => {
+            out.push(crate::private::unreadable(e));
+            None
+        }
+    };
     let mut scripts = Vec::new();
     for path in paths {
         let (Some(kind), Some(bytes)) =
@@ -30,6 +37,9 @@ pub fn file_checks(repo: &Repo, paths: &[String]) -> Vec<Finding> {
             continue;
         };
         out.extend(crate::text::check(path, kind, &bytes));
+        if let Some(lists) = &private {
+            out.extend(crate::private::check(path, &bytes, lists));
+        }
         let text = String::from_utf8_lossy(&bytes);
         out.extend(limits::check(path, kind, &text));
         out.extend(markers::check(path, kind, &text));
@@ -223,13 +233,25 @@ pub fn push(
     }
     let mut out = Vec::new();
     let commits = crate::history::commits(repo, base, head)?;
+    let lists = crate::private::Private::from_env().unwrap_or_else(|e| {
+        out.push(crate::private::unreadable(e));
+        None
+    });
+    let private = |path: &str, text: &str| {
+        lists.as_ref().map_or_else(Vec::new, |l| {
+            crate::private::check_text(path, text, l)
+        })
+    };
     for commit in &commits {
         out.extend(commit_msg::check(&commit.message));
         out.extend(crate::tdd::check_paths(&commit.message, &commit.paths));
         out.extend(secrets::check("(commit message)", &commit.message));
+        out.extend(private("(commit message)", &commit.message));
     }
     for (path, line) in repo.added_lines(base, head)? {
-        out.extend(secrets::check(&format!("{path} (history)"), &line));
+        let at = format!("{path} (history)");
+        out.extend(secrets::check(&at, &line));
+        out.extend(private(&at, &line));
     }
     let all = repo.tracked_files()?;
     out.extend(file_checks(repo, &all));

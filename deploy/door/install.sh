@@ -9,6 +9,7 @@ set -eu
 # checkout names one in its setting `sutradhar.queue`.
 queue=$(git config --get sutradhar.queue || true)
 tools=$(git config --get sutradhar.tools || true)
+private=$(git config --get sutradhar.private || true)
 cargo_bin=$(dirname "$(command -v cargo)")
 path=${tools:+$tools:}$cargo_bin:/usr/local/bin:/usr/bin:/bin
 door="$1"
@@ -38,6 +39,7 @@ Environment=RUSTUP_HOME=${RUSTUP_HOME:?}
 Environment=RUSTUP_TOOLCHAIN=$toolchain
 Environment=CARGO_HOME=${CARGO_HOME:?}
 ${queue:+Environment=AEGIS_QUEUE=$queue}
+${private:+Environment=AEGIS_PRIVATE=$private}
 Environment=PATH=$path
 ExecStart=$door/bin/aegis-door $door/run/door.sock $door/work
 Restart=always
