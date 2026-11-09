@@ -103,6 +103,30 @@ failed night raises a new alarm, so a problem that stays is seen every
 day. PostgreSQL and the test sites get their own probes once they run
 on Dell.
 
+## Keeping the disk from filling
+
+Builds and caches only grow. Two guards, set by the owner on 9 November
+2026, keep the disk from filling:
+
+- Before a heavy job takes its place, pankti checks the free space on
+  the disk of its working folder. Below 50 GB free it refuses, and says
+  so.
+- Every night at 03:00, `deploy/pankti/sweep.sh` empties any listed
+  build folder over 10 GB, since it holds only output the next build
+  makes again. It also removes the checks' leftover working copies in
+  `aegis-work` older than a day. It touches a folder only when it is a
+  full path, not `/` or a home folder, and holds cargo's own files: a
+  real `CACHEDIR.TAG` (not a link) with the standard mark, and
+  `.rustc_info.json`. Removal never crosses into another disk. It holds
+  both of the queue's places while it works, so no queued job runs
+  meanwhile, and leaves for the next night any folder whose cargo build
+  lock another build holds. If the disk still has under 50 GB free, or
+  anything goes wrong, the night fails and the watchman raises its
+  alarm.
+
+`deploy/pankti/install-nightly.sh` installs both nights; its last
+arguments are the build folders to sweep.
+
 ## Limits
 
 - If pankti itself is killed while its job runs, the job goes on in its
@@ -129,3 +153,7 @@ on Dell.
   the full test suite passes in one (proved live on Dell, and by the
   `a_sealed_job_has_no_network_no_new_rights_and_little_to_write` test
   of its command line).
+- Free space: `check_space` refuses below 50 GB and passes at it, and
+  `free_bytes` reads `df` (tests); the sweep empties a marked folder
+  over its cap, leaves an unmarked folder alone, and fails below the
+  floor (proved live on throwaway folders and on Dell's build folders).

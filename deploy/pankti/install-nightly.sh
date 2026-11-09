@@ -1,15 +1,22 @@
 #!/bin/sh
-# Installs the nightly noisy-neighbour test (see the pankti
-# specification). Run it from the repository's top folder, after
+# Installs the nightly noisy-neighbour test and disk sweep (see the
+# pankti specification). Run it from the repository's top folder, after
 # deploy/pankti/install.sh and deploy/chaukidar/install.sh:
-#   deploy/pankti/install-nightly.sh QUEUE_DIR WATCH_DIR HEADER_FILE
+#   deploy/pankti/install-nightly.sh QUEUE_DIR WATCH_DIR HEADER_FILE \
+#     BUILD_FOLDER...
 # A failed night raises the watchman's alarm through WATCH_DIR's
-# chaukidar, using HEADER_FILE, Forgejo's private sign-in header.
+# chaukidar, using HEADER_FILE, Forgejo's private sign-in header. Each
+# BUILD_FOLDER is a cargo build folder the sweep keeps under 10 GB.
 set -eu
 forgejo=http://127.0.0.1:3000
 dir=$(realpath -m "$1")
 watch=$(realpath -m "$2")
 header=$(realpath -m "$3")
+shift 3
+folders=""
+for folder in "$@"; do
+  folders="$folders \"$(realpath -m "$folder")\""
+done
 install -m 0755 deploy/pankti/noisy-neighbour.sh "$dir/bin/noisy-neighbour"
 cat >"$dir/sutradhar-noisy-neighbour.service" <<UNIT
 [Unit]
@@ -49,10 +56,45 @@ Persistent=true
 [Install]
 WantedBy=timers.target
 UNIT
+install -m 0755 deploy/pankti/sweep.sh "$dir/bin/disk-sweep"
+cat >"$dir/sutradhar-disk-sweep.service" <<UNIT
+[Unit]
+Description=Sutradhar disk sweep: build folders under 10 GB, 50 GB kept free
+OnFailure=sutradhar-disk-sweep-alarm.service
+
+[Service]
+Type=oneshot
+# A sweep stuck behind a lock that is never let go fails, so the alarm
+# is raised, instead of waiting for ever.
+TimeoutStartSec=2h
+User=$(id -un)
+ExecStart="$dir/bin/disk-sweep" "$dir" 10000000000 50000000000$folders
+UNIT
+cat >"$dir/sutradhar-disk-sweep-alarm.service" <<UNIT
+[Unit]
+Description=Raise the alarm when the nightly disk sweep fails
+
+[Service]
+Type=oneshot
+UMask=0077
+User=$(id -un)
+Environment=HOME=$HOME
+Environment=CHAUKIDAR_FORGEJO=$forgejo/api/v1/repos/sutradhar-owner/sutradhar
+Environment="CHAUKIDAR_HEADER=$header"
+Environment=CHAUKIDAR_GITHUB=thulaen/sutradhar
+ExecStart="$watch/bin/chaukidar" raise \\
+  "the nightly disk sweep failed: low disk space or an error, see its log"
+UNIT
+sed -e "s/noisy-neighbour test every night/disk sweep every night/" \
+  -e "s/03:30/03:00/" "$dir/sutradhar-noisy-neighbour.timer" \
+  >"$dir/sutradhar-disk-sweep.timer"
 for unit in sutradhar-noisy-neighbour.service \
-  sutradhar-noisy-neighbour-alarm.service sutradhar-noisy-neighbour.timer; do
+  sutradhar-noisy-neighbour-alarm.service sutradhar-noisy-neighbour.timer \
+  sutradhar-disk-sweep.service sutradhar-disk-sweep-alarm.service \
+  sutradhar-disk-sweep.timer; do
   sudo install -m 0644 "$dir/$unit" "/etc/systemd/system/$unit"
 done
 sudo systemctl daemon-reload
-sudo systemctl enable --quiet --now sutradhar-noisy-neighbour.timer
-echo "pankti: the noisy-neighbour test runs every night at 03:30"
+sudo systemctl enable --quiet --now sutradhar-noisy-neighbour.timer \
+  sutradhar-disk-sweep.timer
+echo "pankti: disk sweep at 03:00, noisy-neighbour test at 03:30"

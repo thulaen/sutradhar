@@ -176,3 +176,22 @@ fn a_writable_path_with_a_space_is_refused() {
         assert!(super::check_writable(&[bad.to_owned()]).is_err(), "{bad}");
     }
 }
+
+#[test]
+fn reads_free_space_from_df() {
+    assert_eq!(
+        super::free_bytes("     Avail\n171000000000\n"),
+        Some(171_000_000_000)
+    );
+    assert_eq!(super::free_bytes("Avail\n"), None);
+    assert_eq!(super::free_bytes("Avail\nlots\n"), None);
+}
+
+#[test]
+fn heavy_work_stops_below_the_floor() {
+    let floor = super::MIN_FREE;
+    assert!(super::check_space(floor.saturating_add(1)).is_ok());
+    assert!(super::check_space(floor).is_ok());
+    let low = super::check_space(floor.saturating_sub(1)).unwrap_err();
+    assert!(low.contains("50 GB"), "{low}");
+}

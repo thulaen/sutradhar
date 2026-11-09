@@ -15,7 +15,8 @@ use std::process::{Command, ExitCode};
 use std::time::Duration;
 
 use pankti::{
-    KEPT, Seal, Size, check_writable, launch, sealed_launch, take, writable,
+    KEPT, Seal, Size, check_space, check_writable, free_bytes, launch,
+    sealed_launch, take, writable,
 };
 
 const USAGE: &str = "usage: pankti run [--both] [--sealed] -- COMMAND...\n";
@@ -94,6 +95,7 @@ fn run(asked: &Asked) -> Result<u8, String> {
         Err(_) => home()?,
     };
     let line = line(asked)?;
+    check_space(free_here()?)?;
     let held = take(&dir, asked.size, Duration::from_secs(1))?;
     let (program, rest) = line.split_first().ok_or("nothing to run")?;
     let status = Command::new(program)
@@ -122,4 +124,14 @@ fn home() -> Result<String, String> {
         .and_then(std::path::Path::parent)
         .map(|p| p.display().to_string())
         .ok_or_else(|| "cannot find the queue's folder".to_owned())
+}
+
+/// The free bytes on the disk of the working folder, where builds go.
+fn free_here() -> Result<u64, String> {
+    let out = Command::new("df")
+        .args(["-B1", "--output=avail", "."])
+        .output()
+        .map_err(|e| format!("cannot run df: {e}"))?;
+    free_bytes(&String::from_utf8_lossy(&out.stdout))
+        .ok_or_else(|| "cannot read the free disk space".to_owned())
 }

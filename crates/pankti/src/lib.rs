@@ -276,6 +276,9 @@ pub fn sealed_launch(
     out
 }
 
+mod space;
+pub use space::{MIN_FREE, check_space, free_bytes};
+
 #[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
