@@ -64,7 +64,8 @@ pub fn file_checks(repo: &Repo, paths: &[String]) -> Vec<Finding> {
 }
 
 /// The checks that always cover the whole project because any change
-/// can break them: every Markdown file and the pointer files.
+/// can break them: every Markdown file and the pointer files, spelling,
+/// leaks, the code analyser, the SBOM and the gate's own lists.
 #[must_use]
 pub fn whole_project_docs(repo: &Repo, all: &[String]) -> Vec<Finding> {
     let lookup = |p: &str| match repo.read(p) {
@@ -85,6 +86,12 @@ pub fn whole_project_docs(repo: &Repo, all: &[String]) -> Vec<Finding> {
     out.extend(tool::run(repo.content(), "text.typos", "typos", &[]));
     out.extend(crate::leaks::files(repo.content()));
     out.extend(crate::analysis::check(repo, all));
+    out.extend(crate::sbom::check(
+        repo.read("Cargo.lock").as_deref(),
+        repo.read("gate/tools.toml").as_deref(),
+        repo.read("Cargo.toml").as_deref(),
+        repo.read(crate::sbom::PATH).as_deref(),
+    ));
     // The gate's own repository keeps its catalogue in step with its code.
     let gate = all.iter().any(|p| p.starts_with("crates/aegis/"));
     if gate || all.iter().any(|p| p == crate::catalogue::PATH) {

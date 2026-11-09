@@ -10,3 +10,5 @@ secrets/
 # proptest's saved seeds of failed runs; each failure found is kept as a
 # plain test instead.
 proptest-regressions/
+# a list `aegis sbom` had not finished writing.
+/gate/sbom.cdx.json.new

@@ -267,6 +267,11 @@ shipped product is built on it. Parts made before Boot exists (the gate,
 - `Cargo.lock` and the add-ons' Composer locks are committed. Dependency
   checks run `cargo-deny`, `cargo-audit` and `cargo-vet`. Container
   images are pinned by digest.
+- `gate/sbom.cdx.json` lists every part we build with and ship: each
+  Rust library from `Cargo.lock` and each tool and image from
+  `gate/tools.toml`, with its hash. Run `aegis sbom` after changing
+  either file or the licence in `Cargo.toml`; the gate refuses a list
+  that is out of date.
 
 ## 6. Code standards
 

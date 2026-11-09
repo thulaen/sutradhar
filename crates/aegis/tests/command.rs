@@ -225,3 +225,64 @@ fn push_refuses_a_private_word_left_in_history() {
     assert!(!shown.contains(&word), "the word was shown");
     assert!(shown.contains("notes.md (history)"), "{shown}");
 }
+
+/// A folder holding copies of the files `aegis sbom` reads, with the
+/// list's path and the kept list's text.
+fn sbom_folder(name: &str) -> (std::path::PathBuf, std::path::PathBuf, String) {
+    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
+    let dir = folder(name);
+    fs::create_dir_all(dir.join("gate")).unwrap();
+    for f in ["Cargo.lock", "Cargo.toml", "gate/tools.toml"] {
+        let _bytes = fs::copy(root.join(f), dir.join(f)).unwrap();
+    }
+    let kept = fs::read_to_string(root.join("gate/sbom.cdx.json")).unwrap();
+    let list = dir.join("gate/sbom.cdx.json");
+    (dir, list, kept)
+}
+
+#[test]
+fn sbom_writes_the_list_and_never_through_a_hard_link() {
+    let (dir, list, kept) = sbom_folder("sbom");
+    let (code, text) = aegis(&dir, &["sbom"]);
+    assert_eq!(code, 0, "{text}");
+    assert_eq!(fs::read_to_string(&list).unwrap(), kept);
+    // A hard link to a file outside: the rename replaces the link, and
+    // the outside file is left as it was.
+    let outside = dir.join("victim");
+    fs::write(&outside, "keep").unwrap();
+    fs::remove_file(&list).unwrap();
+    fs::hard_link(&outside, &list).unwrap();
+    assert_eq!(aegis(&dir, &["sbom"]).0, 0);
+    assert_eq!(fs::read_to_string(&outside).unwrap(), "keep");
+    assert_eq!(fs::read_to_string(&list).unwrap(), kept);
+    let new = dir.join("gate/sbom.cdx.json.new");
+    assert!(!new.exists());
+    // A failed write leaves no new file behind.
+    fs::remove_file(&list).unwrap();
+    fs::create_dir(&list).unwrap();
+    let (code, text) = aegis(&dir, &["sbom"]);
+    assert_eq!(code, 2, "{text}");
+    assert!(!new.exists());
+    let _ = fs::remove_dir_all(&dir);
+}
+
+#[test]
+fn sbom_refuses_a_soft_link() {
+    let (dir, list, _kept) = sbom_folder("sbom-soft");
+    let outside = dir.join("victim");
+    fs::write(&outside, "keep").unwrap();
+    std::os::unix::fs::symlink(&outside, &list).unwrap();
+    let (code, text) = aegis(&dir, &["sbom"]);
+    assert_eq!(code, 2);
+    assert!(text.contains("is a link"), "{text}");
+    assert_eq!(fs::read_to_string(&outside).unwrap(), "keep");
+    fs::remove_file(&list).unwrap();
+    let lock = dir.join("Cargo.lock");
+    fs::rename(&lock, dir.join("lock")).unwrap();
+    std::os::unix::fs::symlink(dir.join("lock"), &lock).unwrap();
+    let (code, text) = aegis(&dir, &["sbom"]);
+    assert_eq!(code, 2);
+    assert!(text.contains("cannot read Cargo.lock"), "{text}");
+    assert!(!list.exists());
+    let _ = fs::remove_dir_all(&dir);
+}

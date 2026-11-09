@@ -25,6 +25,7 @@ pub mod rule_file;
 pub mod run_outcome;
 pub mod rust_steps;
 pub mod rust_tokens;
+pub mod sbom;
 pub mod secrets;
 pub mod shell;
 pub mod tdd;

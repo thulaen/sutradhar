@@ -1,5 +1,5 @@
 skill = "unsafe-patterns"
-change = "sha256:de327a6f84d03466c86abdb0895ffec1b41eb9101f07c80005fa23d0523c6230"
+change = "sha256:f99e5be14e05f86436b18aff8fbb0b12ae6c38a5db5ad7b1c62d9dae59ce460e"
 verdict = "pass"
 agent = "claude subagents"
-summary = "Five rounds by fresh subagents on task #112 (the fifth checked a pure split of one file into three) (setup-file rules C01 to C09 for compose files and Dockerfiles). Files skipped without a word, errors turned into defaults and unbounded reads were looked for; the last round passed."
+summary = "Four rounds by fresh subagents on task #113 (the SBOM). No overflow, panics, open files or weakened tests; errors are refused, not turned into defaults."

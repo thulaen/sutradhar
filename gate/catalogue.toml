@@ -152,6 +152,12 @@ tiers = ["commit", "push"]
 proof = "aegis::planted::a_stale_lock_file_fails_the_fetch"
 
 [[check]]
+id = "supply.sbom"
+partly = ["GI-18"]
+tiers = ["commit", "push"]
+proof = "aegis::sbom::tests::a_missing_or_stale_list_is_refused"
+
+[[check]]
 id = "rust.deny"
 partly = ["GI-18", "GI-29"]
 tiers = ["commit", "push"]

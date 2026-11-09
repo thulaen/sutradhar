@@ -1,5 +1,9 @@
 skill = "defects"
-change = "sha256:de327a6f84d03466c86abdb0895ffec1b41eb9101f07c80005fa23d0523c6230"
+change = "sha256:f99e5be14e05f86436b18aff8fbb0b12ae6c38a5db5ad7b1c62d9dae59ce460e"
 verdict = "pass"
 agent = "claude subagents"
-summary = "Five rounds by fresh subagents on task #112 (the fifth checked a pure split of one file into three) (setup-file rules C01 to C09 for compose files and Dockerfiles). Each rule has a planted and a clean case, and each fix from rounds one to three has its own test; the last round passed."
+summary = "Four rounds by fresh subagents on task #113 (the SBOM). Every staged line read, all aegis tests and clippy run; the command now has tests for writing, links and a failed write."
+
+[[finding]]
+what = "no test covered the aegis sbom command or its link refusal"
+fixed = true

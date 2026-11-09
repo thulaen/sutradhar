@@ -1,5 +1,9 @@
 skill = "architecture"
-change = "sha256:de327a6f84d03466c86abdb0895ffec1b41eb9101f07c80005fa23d0523c6230"
+change = "sha256:f99e5be14e05f86436b18aff8fbb0b12ae6c38a5db5ad7b1c62d9dae59ce460e"
 verdict = "pass"
 agent = "claude subagents"
-summary = "Five rounds by fresh subagents on task #112 (the fifth checked a pure split of one file into three) (setup-file rules C01 to C09 for compose files and Dockerfiles). The new setup_facts reader, the one-pass layout and the file-kind rules were checked; the last round passed; small notes are on task #124."
+summary = "Four rounds by fresh subagents on task #113 (the SBOM). build and check take only text; the command reads through Repo and writes by rename; wiring, catalogue and one-library-per-job rules hold."
+
+[[finding]]
+what = "the aegis sbom command followed links when reading and writing"
+fixed = true

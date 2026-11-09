@@ -1,7 +1,8 @@
 //! The `aegis` command: `aegis msg FILE`, `aegis commit`,
 //! `aegis push BASE HEAD`, `aegis catalogue`, which lists the gate
 //! items no check covers yet, and `aegis fingerprint`, which prints the
-//! staged change's fingerprint for review records.
+//! staged change's fingerprint for review records, and `aegis sbom`,
+//! which writes the list of every part we build with and ship.
 
 use std::io::{self, Write};
 use std::process::ExitCode;
@@ -10,13 +11,17 @@ use aegis::repo::Repo;
 use aegis::{Finding, commit_msg, tiers};
 
 const USAGE: &str = "usage: aegis msg FILE | aegis commit \
-     | aegis push BASE HEAD | aegis catalogue | aegis fingerprint\n";
+     | aegis push BASE HEAD | aegis catalogue | aegis fingerprint \
+     | aegis sbom\n";
 
 fn main() -> ExitCode {
     let args: Vec<String> = std::env::args().skip(1).collect();
     let refs: Vec<&str> = args.iter().map(String::as_str).collect();
     if refs == ["catalogue"] {
         return catalogue();
+    }
+    if refs == ["sbom"] {
+        return sbom();
     }
     if refs == ["fingerprint"] {
         return match aegis::reviews::staged(&Repo::for_hook(".")) {
@@ -102,4 +107,67 @@ fn catalogue() -> ExitCode {
             ExitCode::from(2)
         }
     }
+}
+
+/// Writes the list of every part we build with and ship from the files
+/// in this folder, read as the gate reads them: never through a link,
+/// and capped in size. The list is written to `gate/sbom.cdx.json.new`
+/// and then renamed into place, so it never writes through a link to
+/// the list itself; a failed run removes the new file.
+fn sbom() -> ExitCode {
+    let repo = Repo::for_hook(".");
+    let read = |p: &str| {
+        repo.read(p).ok_or_else(|| {
+            format!("cannot read {p}: missing, a link or too large")
+        })
+    };
+    let path = aegis::sbom::PATH;
+    let written = read("Cargo.lock")
+        .and_then(|lock| {
+            let tools = read("gate/tools.toml")?;
+            aegis::sbom::build(&lock, &tools, &read("Cargo.toml")?)
+        })
+        .and_then(|text| {
+            if repo.is_link(path) {
+                return Err(format!("{path} or its folder is a link"));
+            }
+            replace(&repo.content().join(path), &text)
+        });
+    match written {
+        Ok(()) => {
+            say(&format!("aegis: wrote {path}\n"));
+            ExitCode::SUCCESS
+        }
+        Err(problem) => {
+            say(&format!("aegis: {problem}\n"));
+            ExitCode::from(2)
+        }
+    }
+}
+
+/// Writes `text` to a new file beside `at`, saved to disk, then renames
+/// it over `at`. On any failure the new file is removed.
+fn replace(at: &std::path::Path, text: &str) -> Result<(), String> {
+    let new = at.with_extension("json.new");
+    let shown = new.display();
+    if let Ok(m) = std::fs::symlink_metadata(&new) {
+        if m.is_dir() {
+            return Err(format!("{shown} is a folder; remove it"));
+        }
+        std::fs::remove_file(&new)
+            .map_err(|e| format!("cannot remove {shown}: {e}"))?;
+    }
+    let done = std::fs::OpenOptions::new()
+        .write(true)
+        .create_new(true)
+        .open(&new)
+        .and_then(|mut f| {
+            f.write_all(text.as_bytes())?;
+            f.sync_all()
+        })
+        .and_then(|()| std::fs::rename(&new, at));
+    done.map_err(|e| {
+        let _gone = std::fs::remove_file(&new);
+        format!("cannot write {}: {e}", at.display())
+    })
 }

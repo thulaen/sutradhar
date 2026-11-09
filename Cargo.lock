@@ -9,6 +9,7 @@ dependencies = [
  "nirikshak",
  "proptest",
  "serde",
+ "serde_json",
  "sha2",
  "toml",
  "yaml-rust2",
