@@ -23,7 +23,7 @@ fn every_analyser_rule_falls_in_the_right_part() {
         let got = one("analysis.nirikshak", &format!("{id} Title: x"));
         let want = match id.as_str() {
             "R05" => Part::StyleDocs,
-            "R14" | "H42" => Part::Tests,
+            "R14" | "H42" | "M08" => Part::Tests,
             _ if id.starts_with('M') => Part::Smells,
             _ => Part::Security,
         };

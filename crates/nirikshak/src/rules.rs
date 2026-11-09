@@ -23,7 +23,7 @@ macro_rules! rule {
 }
 
 /// Every rule, in order.
-pub const ALL: [Source; 37] = [
+pub const ALL: [Source; 38] = [
     rule!("r05_environment"),
     rule!("r08_timeouts"),
     rule!("r09_swallowed_errors"),
@@ -41,6 +41,7 @@ pub const ALL: [Source; 37] = [
     rule!("m05_commented_code"),
     rule!("m06_repeated_text"),
     rule!("m07_two_jobs"),
+    rule!("m08_untested_code"),
     rule!("c01_unpinned_images"),
     rule!("c02_runs_as_root"),
     rule!("c03_privileged"),

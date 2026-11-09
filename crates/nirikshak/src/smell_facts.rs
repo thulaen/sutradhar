@@ -1,12 +1,12 @@
-//! Facts for the code-smell rules (task #118), read from one Rust file:
-//! each function's inputs, the numbers written in code, method chains,
-//! the size of each struct and enum, comments on a line of their own,
-//! and text written three or more times in a file's code. Each fact
-//! says whether it is in test code (`kind` is `test`) or not (`code`).
-//! Comments are read from the raw lines, so a `//` line inside a string
-//! counts as a comment.
+//! Facts for the code-smell rules (tasks #118 and #117), read from one
+//! Rust file: each function's inputs, numbers written in code, method
+//! chains, the size of each struct, enum and trait, names used as values
+//! (`fn_ref`), comments on a line of their own, and text written three
+//! or more times in a file's code. Each fact says whether it is in test
+//! code (`kind` is `test`) or not. Comments are read from the raw lines,
+//! so a `//` line inside a string counts as a comment.
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 
 use syn::visit::{self, Visit};
 
@@ -24,6 +24,8 @@ struct Smells<'a> {
     // Whether inside a method chain already recorded.
     in_chain: bool,
     functions: Vec<String>,
+    // The names each function being read binds, such as its locals.
+    locals: Vec<BTreeSet<String>>,
     // The first and last lines of test modules and test functions.
     test_lines: Vec<(usize, usize)>,
     // Each text written in code, and the lines of every copy.
@@ -73,6 +75,7 @@ impl Smells<'_> {
             })
             .count();
         self.functions.push(sig.ident.to_string());
+        self.locals.push(BTreeSet::new());
         let at = number(line_of(sig.ident.span()));
         self.here(
             "signature",
@@ -86,6 +89,7 @@ impl Smells<'_> {
 
     fn leave(&mut self, attrs: &[syn::Attribute]) {
         let _done = self.functions.pop();
+        let _gone = self.locals.pop();
         if attrs.iter().any(is_test_attr) {
             self.test_depth = self.test_depth.saturating_sub(1);
         }
@@ -95,6 +99,13 @@ impl Smells<'_> {
         self.fixed_depth = self.fixed_depth.saturating_add(1);
         inner(self);
         self.fixed_depth = self.fixed_depth.saturating_sub(1);
+    }
+
+    /// Notes a name used as a value, unless it names a local binding.
+    fn named(&mut self, name: String, at: usize) {
+        if !self.locals.last().is_some_and(|l| l.contains(&name)) {
+            self.here("fn_ref", &[("name", text(name)), ("line", number(at))]);
+        }
     }
 
     fn shape(&mut self, name: &syn::Ident, what: &str, size: usize) {
@@ -107,43 +118,6 @@ impl Smells<'_> {
         ];
         self.here("shape", &fields);
     }
-}
-
-/// Whether a type is `bool`.
-fn is_bool(ty: &syn::Type) -> bool {
-    matches!(ty, syn::Type::Path(p) if p.path.is_ident("bool"))
-}
-
-/// An expression with any `?`, `.await` and brackets around it taken
-/// off, so `a()?.b()` is still one chain.
-fn bare(mut at: &syn::Expr) -> &syn::Expr {
-    loop {
-        at = match at {
-            syn::Expr::Try(t) => &t.expr,
-            syn::Expr::Await(a) => &a.base,
-            syn::Expr::Paren(p) => &p.expr,
-            _ => return at,
-        };
-    }
-}
-
-/// How many method calls a chain ends with: `a.b()?.c()` is 2.
-fn chain_length(call: &syn::ExprMethodCall) -> usize {
-    let mut length = 1_usize;
-    let mut at = bare(&call.receiver);
-    while let syn::Expr::MethodCall(inner) = at {
-        length = length.saturating_add(1);
-        at = bare(&inner.receiver);
-    }
-    length
-}
-
-/// The first and last lines of a braced item.
-fn lines_of(
-    open: proc_macro2::Span,
-    close: proc_macro2::Span,
-) -> (usize, usize) {
-    (line_of(open), line_of(close))
 }
 
 impl<'ast> Visit<'ast> for Smells<'_> {
@@ -251,6 +225,38 @@ impl<'ast> Visit<'ast> for Smells<'_> {
         self.in_chain = !outer;
     }
 
+    fn visit_macro(&mut self, mac: &'ast syn::Macro) {
+        // Names in a macro's input count as used; only names are read.
+        if self.functions.is_empty() {
+            return;
+        }
+        for (name, at) in helpers::macro_names(mac) {
+            self.named(name, at);
+        }
+    }
+
+    fn visit_expr_path(&mut self, path: &'ast syn::ExprPath) {
+        // A function named as a value, as in `.any(f)`, is used.
+        if let Some(last) = path.path.segments.last()
+            && !self.functions.is_empty()
+        {
+            self.named(last.ident.to_string(), line_of(last.ident.span()));
+        }
+        visit::visit_expr_path(self, path);
+    }
+
+    fn visit_pat_ident(&mut self, pat: &'ast syn::PatIdent) {
+        if let Some(locals) = self.locals.last_mut() {
+            let _new = locals.insert(pat.ident.to_string());
+        }
+        visit::visit_pat_ident(self, pat);
+    }
+
+    fn visit_item_trait(&mut self, item: &'ast syn::ItemTrait) {
+        self.shape(&item.ident, "trait", item.items.len());
+        visit::visit_item_trait(self, item);
+    }
+
     fn visit_item_struct(&mut self, item: &'ast syn::ItemStruct) {
         self.shape(&item.ident, "struct", item.fields.len());
         visit::visit_item_struct(self, item);
@@ -270,6 +276,7 @@ pub fn read(path: &str, source: &str, file: &syn::File, facts: &mut Facts) {
         fixed_depth: 0,
         in_chain: false,
         functions: Vec::new(),
+        locals: Vec::new(),
         test_lines: Vec::new(),
         texts: BTreeMap::new(),
         facts,
@@ -282,6 +289,11 @@ pub fn read(path: &str, source: &str, file: &syn::File, facts: &mut Facts) {
 
 #[path = "smell_text.rs"]
 mod text_facts;
+
+#[path = "smell_helpers.rs"]
+mod helpers;
+
+use helpers::{bare, chain_length, is_bool, lines_of};
 
 #[cfg(test)]
 #[path = "smell_facts_tests.rs"]

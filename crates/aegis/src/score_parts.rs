@@ -1,9 +1,9 @@
 //! Which part of the score each check, and each analyser rule, falls
 //! in. Every check the gate reports (`catalogue::REPORTED`) is named
 //! here, and a test keeps the list whole, so a new check cannot fall in
-//! a part by chance. Of the analyser's rules, the M rules are smells,
-//! R05, R14 and H42 are named, and every other rule counts as security,
-//! the strictest reading; a test checks every rule.
+//! a part by chance. Of the analyser's rules, R05, R14, H42 and M08
+//! are named, the other M rules are smells, and every other rule counts
+//! as security, the strictest reading; a test checks every rule.
 
 use super::Part;
 use crate::Finding;
@@ -73,10 +73,11 @@ const CHECKS: [(Part, &[&str]); 7] = [
 
 /// Each analyser rule, by its id, and its part. A rule not named here
 /// counts as security, the strictest reading.
-const RULES: [(&str, Part); 3] = [
+const RULES: [(&str, Part); 4] = [
     ("R05", Part::StyleDocs),
     ("R14", Part::Tests),
     ("H42", Part::Tests),
+    ("M08", Part::Tests),
 ];
 
 /// The clippy lints that measure complexity: a function too long, too
@@ -101,15 +102,12 @@ pub fn part(f: &Finding) -> Part {
             let id = f.message.split(' ').next().unwrap_or_default();
             let is_id =
                 id.len() == ID_LEN && id.starts_with(char::is_uppercase);
-            if !is_id {
-                Part::SetUp
-            } else if id.starts_with('M') {
-                Part::Smells
-            } else {
-                RULES
-                    .iter()
-                    .find(|(r, _)| *r == id)
-                    .map_or(Part::Security, |r| r.1)
+            let named = RULES.iter().find(|(r, _)| *r == id).map(|r| r.1);
+            match named {
+                _ if !is_id => Part::SetUp,
+                Some(part) => part,
+                None if id.starts_with('M') => Part::Smells,
+                None => Part::Security,
             }
         }
         "rust.lints" if COMPLEX.iter().any(|l| f.message.contains(l)) => {

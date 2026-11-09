@@ -18,16 +18,45 @@ pub fn is_test_attr(attr: &syn::Attribute) -> bool {
         .is_some_and(|s| s.ident == "test")
 }
 
-/// Whether an attribute is `#[cfg(test)]` or another `cfg` naming test.
+/// Whether an attribute is a `cfg` whose condition is false whenever
+/// `test` is off, such as `cfg(test)` or `cfg(all(test, unix))`, so the
+/// code it marks is built only for tests. `cfg(not(test))` and
+/// `cfg(any(test, unix))` are not.
 #[must_use]
 pub fn is_cfg_test(attr: &syn::Attribute) -> bool {
     attr.path().is_ident("cfg")
-        && attr.meta.require_list().is_ok_and(|list| {
-            list.tokens
-                .to_string()
-                .split(|c: char| !c.is_alphanumeric())
-                .any(|word| word == "test")
-        })
+        && attr
+            .parse_args::<syn::Meta>()
+            .is_ok_and(|m| value_without_test(&m) == Some(false))
+}
+
+/// A `cfg` condition's value when `test` is off: `Some` when it is
+/// known whatever the other settings are, `None` when it depends on them.
+fn value_without_test(meta: &syn::Meta) -> Option<bool> {
+    type List = syn::punctuated::Punctuated<syn::Meta, syn::Token![,]>;
+    let syn::Meta::List(list) = meta else {
+        return meta.path().is_ident("test").then_some(false);
+    };
+    let parts = list.parse_args_with(List::parse_terminated).ok()?;
+    let values: Vec<Option<bool>> =
+        parts.iter().map(value_without_test).collect();
+    if list.path.is_ident("not") {
+        values.first().copied().flatten().map(|v| !v)
+    } else if list.path.is_ident("all") {
+        if values.contains(&Some(false)) {
+            Some(false)
+        } else {
+            values.iter().all(|v| *v == Some(true)).then_some(true)
+        }
+    } else if list.path.is_ident("any") {
+        if values.contains(&Some(true)) {
+            Some(true)
+        } else {
+            values.iter().all(|v| *v == Some(false)).then_some(false)
+        }
+    } else {
+        None
+    }
 }
 
 /// Whether a path is in a test folder, or is a test file of a module.

@@ -104,3 +104,51 @@ fn trait_methods_with_no_body_are_read() {
     assert_eq!(only("M01", code), [2]);
     assert_eq!(only("M07", code), [3]);
 }
+
+#[test]
+fn m08_finds_a_function_no_test_reaches() {
+    let code = "fn used() {}\nfn by_name() {}\nfn in_macro() -> u8 { 1 }\n\
+                fn alone() {}\nfn helper() { used(); }\n\
+                fn main() { started(); }\nfn started() {}\n\
+                impl Drop for S {\n    fn drop(&mut self) { cleanup(); }\n}\n\
+                fn cleanup() {}\n";
+    let tests = "#[test]\nfn t() {\n    helper();\n    \
+                 let _f = [1].iter().map(|_| by_name);\n    \
+                 assert_eq!(in_macro(), 1);\n}\n";
+    let files = [("src/a.rs", code), ("tests/a.rs", tests)];
+    assert_eq!(lines("M08", &files), [4]);
+}
+
+#[test]
+fn m08_is_not_fooled_and_does_not_misreport() {
+    // A local of the same name, a helper in test support, an impl of
+    // the project's own trait, and code under `cfg(not(test))` do not
+    // count as reached.
+    let code = "fn compute() {}\nfn helped() {}\ntrait Own {\n    \
+                fn go(&self);\n}\nimpl Own for S {\n    \
+                fn go(&self) { hidden(); }\n}\nfn hidden() {}\n\
+                #[cfg(not(test))]\nfn live() {}\n\
+                fn shown(&self) {}\nfn inner() -> u8 { 1 }\n";
+    let support = "pub fn setup() {\n    helped();\n}\n";
+    let tests = "#[test]\nfn t() {\n    let compute = 1;\n    \
+                 assert_eq!(compute, 1);\n    \
+                 assert_eq!(S.shown(), vec![format!(\"{}\", inner())]);\n}\n";
+    let files = [
+        ("src/a.rs", code),
+        ("tests/common/mod.rs", support),
+        ("tests/a.rs", tests),
+    ];
+    assert_eq!(lines("M08", &files), [1, 2, 7, 9, 11]);
+}
+
+#[test]
+fn m08_reads_cfg_conditions_and_an_empty_test_reaches_nothing() {
+    let code = "#[cfg(not(test))]\nmod live {\n    fn shipped() {}\n}\n\
+                #[cfg(all(test, not(miri)))]\nmod checks {\n    \
+                fn helper() {}\n}\n\
+                #[cfg(any(test, unix))]\nmod both {\n    fn either() {}\n}\n\
+                fn risky() {}\nfn y() {}\nfn main() {}\n";
+    let tests = "#[test]\nfn risky() {}\n#[test]\nfn u() {\n    y();\n}\n";
+    let files = [("src/a.rs", code), ("tests/a.rs", tests)];
+    assert_eq!(lines("M08", &files), [3, 11, 13]);
+}

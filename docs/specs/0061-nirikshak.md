@@ -56,8 +56,9 @@ folder; lines start at 1. Code outside any function is in the function
 | `signature` | `path`, `function`, `kind`, `line`, `inputs`, `bools` (one function's inputs, and how many are `bool`; trait methods with no body included) |
 | `number` | `path`, `function`, `kind`, `text`, `line` (a number written in a function, outside a `const`, `static`, type or attribute) |
 | `chain` | `path`, `function`, `kind`, `length`, `line` (the outer call of a chain of method calls, counted through `?`, `.await` and brackets, and how many calls it holds) |
-| `shape` | `path`, `function`, `kind`, `name`, `what`, `size`, `line` (a struct and its fields, or an enum and its variants) |
+| `shape` | `path`, `function`, `kind`, `name`, `what`, `size`, `line` (a struct and its fields, an enum and its variants, or a trait and its items) |
 | `comment` | `path`, `kind`, `text`, `line` (a comment on a line of its own that is not a doc comment; `test` in a test file, or inside a test module or test function) |
+| `fn_ref` | `path`, `function`, `kind`, `name`, `line` (the last name of a path used as a value inside a function, such as `.any(is_test_attr)`, or any name in a macro's input; a name bound in the same function, such as a local variable, is left out) |
 | `repeated` | `path`, `kind`, `text`, `copies`, `line` (each copy of text written three or more times in a file's code) |
 | `parse_failure` | `path`, `line`, `reason` (also a compose file that cannot be read, or uses YAML aliases, which a few lines can grow into a huge document) |
 
@@ -110,6 +111,7 @@ Each rule file starts with comment lines naming its `id`, `title`,
 | M05 | Code left in a line comment in code: it ends in `;`, `{` or `}` and holds `(`, `=`, `::`, `->`, `!`, `[` or `&`. Comments are read from the raw lines, so a `//` line inside a string counts | GI-24 |
 | M06 | The same text of eight or more characters written three or more times in one file's code, two copies on one line counting as two | GI-28 |
 | M07 | A function in code whose name holds `_and_`: it does two jobs | GI-16 |
+| M08 | A function in code that no test reaches: no test calls it, names it as a value (in code, or anywhere in a macro's input), or reaches a function that does. Methods of an impl of a trait from outside the project, and `main`, count as reached, as they are called through the trait or by running the program. Names are matched alone, as in R14, so a same-name function, or a name used in a test, counts | GI-58 |
 
 Each has tests that a planted case is found and a clean one passes.
 

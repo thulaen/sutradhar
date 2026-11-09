@@ -1,9 +1,13 @@
 skill = "defects"
-change = "sha256:936fe4e3585e6ecace27eac937395dce7588b63adbada92069ecb51466d072dd"
+change = "sha256:f2f3e0126ff97272af36fd25ab42505267976b346617fc93168849e0d39b394e"
 verdict = "pass"
 agent = "claude subagents"
-summary = "Three rounds by fresh subagents on task #116 (one quality score). The sums and every rule's part are right, and tests cover every check and rule."
+summary = "Four rounds by fresh subagents on task #117 (rule M08, every function reached by a test). The cfg logic, roots and name reading are right, and tests catch each fix being taken out."
 
 [[finding]]
-what = "R14 and H42 counted as security, not tests"
+what = "an empty test named like a function counted it as reached"
+fixed = true
+
+[[finding]]
+what = "cfg(not(test)) code was never checked"
 fixed = true

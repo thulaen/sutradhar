@@ -331,6 +331,12 @@ shipped product is built on it. Parts made before Boot exists (the gate,
     table of like entries, written the same way, names and all, is a
     list, not code, and counts once. No old copies are allowed; only a
     signed owner waiver (section 7.2) may allow one.
+13. Every rule holds for all code, not only new code, unless the rule
+    itself names new or changed files (as item 9 does). The only old
+    problems allowed to stay are the image holes listed in section 5.7
+    and the owner's signed waivers (section 7.2). Every function in code
+    must be reached by a test; rule M08 of the analyser checks this by
+    name, with the limits its specification gives.
 
 ## 7. The gate
 

@@ -1,9 +1,9 @@
 skill = "style-docs"
-change = "sha256:936fe4e3585e6ecace27eac937395dce7588b63adbada92069ecb51466d072dd"
+change = "sha256:f2f3e0126ff97272af36fd25ab42505267976b346617fc93168849e0d39b394e"
 verdict = "pass"
 agent = "claude subagents"
-summary = "Three rounds by fresh subagents on task #116 (one quality score). The docs match the code, including where complexity and rules are counted."
+summary = "Four rounds by fresh subagents on task #117 (rule M08, every function reached by a test). The spec, AGENTS.md item 13 and the code docs say what M08 does and where its limits are."
 
 [[finding]]
-what = "the complexity and rules docs claimed more than the code did"
+what = "docs claimed more than M08 checks"
 fixed = true

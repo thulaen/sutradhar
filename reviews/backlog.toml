@@ -1,9 +1,9 @@
 skill = "backlog"
-change = "sha256:936fe4e3585e6ecace27eac937395dce7588b63adbada92069ecb51466d072dd"
+change = "sha256:f2f3e0126ff97272af36fd25ab42505267976b346617fc93168849e0d39b394e"
 verdict = "pass"
 agent = "claude subagents"
-summary = "Three rounds by fresh subagents on task #116 (one quality score). The change meets task #116; coverage is named as task #135 and later notes are on #136."
+summary = "Four rounds by fresh subagents on task #117 (rule M08, every function reached by a test). Task #117 is met: every rule holds for all code and M08 checks tests reach every function; later notes are on #133."
 
 [[finding]]
-what = "coverage of new lines was not named"
+what = "AGENTS.md item 13 claimed there were no old-problem lists"
 fixed = true

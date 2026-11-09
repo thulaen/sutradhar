@@ -1,9 +1,5 @@
 skill = "security"
-change = "sha256:936fe4e3585e6ecace27eac937395dce7588b63adbada92069ecb51466d072dd"
+change = "sha256:f2f3e0126ff97272af36fd25ab42505267976b346617fc93168849e0d39b394e"
 verdict = "pass"
 agent = "claude subagents"
-summary = "Three rounds by fresh subagents on task #116 (one quality score). No outside input; the score test no longer touches a hook's own git index."
-
-[[finding]]
-what = "the command test leaked the hook's git settings"
-fixed = true
+summary = "Four rounds by fresh subagents on task #117 (rule M08, every function reached by a test). No crafted cfg turns shipped code into test code; deep input is bounded."

@@ -1,9 +1,5 @@
 skill = "architecture"
-change = "sha256:936fe4e3585e6ecace27eac937395dce7588b63adbada92069ecb51466d072dd"
+change = "sha256:f2f3e0126ff97272af36fd25ab42505267976b346617fc93168849e0d39b394e"
 verdict = "pass"
 agent = "claude subagents"
-summary = "Three rounds by fresh subagents on task #116 (one quality score). A typed Part enum, a table tied to catalogue::REPORTED, and one call from main.rs; the design fits the gate's rules."
-
-[[finding]]
-what = "part names were loose text not tied to the reported checks"
-fixed = true
+summary = "Four rounds by fresh subagents on task #117 (rule M08, every function reached by a test). Facts stay in nirikshak's smell modules, the rule only reads them, and the score places M08 under tests."

@@ -216,7 +216,12 @@ fn a_thrown_away_error_fails_the_code_analysis() {
         .join(format!("aegis-planted-analysis-{}", std::process::id()));
     let _ = fs::remove_dir_all(&dir);
     fs::create_dir_all(dir.join("src")).unwrap();
-    let all = ["src/a.rs".to_owned()];
+    fs::create_dir_all(dir.join("tests")).unwrap();
+    // A test reaches `f`, so rule M08 is met and only the planted fault
+    // is found.
+    let test = "#[test]\nfn t() {\n    f();\n    assert_eq!(1, 1);\n}\n";
+    fs::write(dir.join("tests/a.rs"), test).unwrap();
+    let all = ["src/a.rs".to_owned(), "tests/a.rs".to_owned()];
     let run = |d: &Path| {
         let found = tiers::whole_project_docs(&Repo::at(d), &all);
         found

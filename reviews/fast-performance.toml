@@ -1,5 +1,9 @@
 skill = "fast-performance"
-change = "sha256:936fe4e3585e6ecace27eac937395dce7588b63adbada92069ecb51466d072dd"
+change = "sha256:f2f3e0126ff97272af36fd25ab42505267976b346617fc93168849e0d39b394e"
 verdict = "pass"
 agent = "claude subagents"
-summary = "Three rounds by fresh subagents on task #116 (one quality score). The score runs once per gate run over short fixed lists."
+summary = "Four rounds by fresh subagents on task #117 (rule M08, every function reached by a test). M08 runs in under 0.1 s on the repo and grows in step with the code after a one-pass rewrite."
+
+[[finding]]
+what = "M08 grew with the square of the code"
+fixed = true

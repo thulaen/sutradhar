@@ -1,5 +1,13 @@
 skill = "red-team"
-change = "sha256:936fe4e3585e6ecace27eac937395dce7588b63adbada92069ecb51466d072dd"
+change = "sha256:f2f3e0126ff97272af36fd25ab42505267976b346617fc93168849e0d39b394e"
 verdict = "pass"
 agent = "claude subagents"
-summary = "Three rounds by fresh subagents on task #116 (one quality score). No way found to pass under the bar; the score and the exit code come from the same findings."
+summary = "Four rounds by fresh subagents on task #117 (rule M08, every function reached by a test). Macro names, local names, own traits, test helpers and cfg tricks no longer hide untested code; the rest is filed on #133."
+
+[[finding]]
+what = "untested code hid behind any trait impl"
+fixed = true
+
+[[finding]]
+what = "test helpers counted as tests"
+fixed = true
