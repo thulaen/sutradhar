@@ -180,3 +180,9 @@ id = "docs.names"
 partly = ["GI-49"]
 tiers = ["commit", "push"]
 proof = "aegis::names::tests::refuses_a_crate_missing_from_the_glossary"
+
+[[check]]
+id = "proofs.no-tricks"
+partly = ["GI-32"]
+tiers = ["commit", "push"]
+proof = "aegis::proofs::tests::every_known_trick_is_refused"

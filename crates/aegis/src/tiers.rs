@@ -43,6 +43,7 @@ pub fn file_checks(repo: &Repo, paths: &[String]) -> Vec<Finding> {
         let text = String::from_utf8_lossy(&bytes);
         out.extend(limits::check(path, kind, &text));
         out.extend(markers::check(path, kind, &text));
+        out.extend(crate::proofs::check(path, kind, &text));
         out.extend(secrets::check(path, &text));
         if workflows::is_workflow(path) {
             out.extend(workflows::check(path, &text));
