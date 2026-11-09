@@ -188,6 +188,12 @@ tiers = ["commit", "push"]
 proof = "aegis::names::tests::refuses_a_crate_missing_from_the_glossary"
 
 [[check]]
+id = "metrics.no-vanity"
+partly = ["GI-50"]
+tiers = ["commit", "push"]
+proof = "aegis::metrics::tests::a_vanity_name_in_any_spelling_is_refused_with_its_line"
+
+[[check]]
 id = "proofs.no-tricks"
 partly = ["GI-32"]
 tiers = ["commit", "push"]

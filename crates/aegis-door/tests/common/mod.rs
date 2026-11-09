@@ -46,6 +46,11 @@ pub fn setup(name: &str) -> (PathBuf, Door, String) {
     ] {
         fs::write(source.join(file), text).unwrap();
     }
+    // Every project needs the list of allowed numbers.
+    let list = "gate/metrics.toml";
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
+    fs::create_dir_all(source.join("gate")).unwrap();
+    let _bytes = fs::copy(root.join(list), source.join(list)).unwrap();
     let _ = git(&source, &["add", "-A"]);
     let _ = git(&source, &["commit", "-q", "-m", GOOD]);
     let first = git(&source, &["rev-parse", "HEAD"]);

@@ -29,6 +29,7 @@ pub fn file_checks(repo: &Repo, paths: &[String]) -> Vec<Finding> {
             None
         }
     };
+    let vanity = crate::metrics::from_repo(repo, &mut out);
     let mut scripts = Vec::new();
     for path in paths {
         let (Some(kind), Some(bytes)) =
@@ -44,6 +45,7 @@ pub fn file_checks(repo: &Repo, paths: &[String]) -> Vec<Finding> {
         out.extend(limits::check(path, kind, &text));
         out.extend(markers::check(path, kind, &text));
         out.extend(crate::proofs::check(path, kind, &text));
+        out.extend(crate::metrics::check(path, kind, &text, &vanity));
         out.extend(secrets::check(path, &text));
         if workflows::is_workflow(path) {
             out.extend(workflows::check(path, &text));

@@ -7,6 +7,15 @@ use std::process::Command;
 const GOOD_MSG: &str = "docs: start\n\nTDD: none (docs only)\nDefects: none\n\
     Task: bootstrap\nSigned-off-by: A <a@example.com>\n";
 
+/// Gives a test project the real list of allowed numbers, which every
+/// project needs (check metrics.no-vanity).
+fn numbers_list(dir: &std::path::Path) {
+    let list = "gate/metrics.toml";
+    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
+    fs::create_dir_all(dir.join("gate")).unwrap();
+    let _bytes = fs::copy(root.join(list), dir.join(list)).unwrap();
+}
+
 fn aegis(dir: &std::path::Path, args: &[&str]) -> (i32, String) {
     let out = Command::new(env!("CARGO_BIN_EXE_aegis"))
         .current_dir(dir)
@@ -87,6 +96,7 @@ fn commit_checks_the_index_git_gives_the_hook() {
     ] {
         fs::write(dir.join(name), text).unwrap();
     }
+    numbers_list(&dir);
     git(&dir, &["add", "-A"], None);
     let _ =
         fs::copy(dir.join(".git/index"), dir.join(".git/alt-index")).unwrap();
@@ -133,6 +143,7 @@ fn commit_refuses_a_private_word_without_showing_it() {
     ] {
         fs::write(dir.join(name), text).unwrap();
     }
+    numbers_list(&dir);
     git(&dir, &["add", "-A"], None);
     let out = Command::new(env!("CARGO_BIN_EXE_aegis"))
         .current_dir(&dir)

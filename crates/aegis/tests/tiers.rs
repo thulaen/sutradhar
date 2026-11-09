@@ -26,7 +26,7 @@ fn git(dir: &Path, args: &[&str]) -> String {
     String::from_utf8(out.stdout).unwrap().trim().to_owned()
 }
 
-/// A scratch repository holding the two pointer files and a README.
+/// A scratch repository: rule and pointer files, README, numbers list.
 fn scratch(name: &str) -> PathBuf {
     let dir = std::env::temp_dir()
         .join(format!("aegis-tiers-{name}-{}", std::process::id()));
@@ -39,6 +39,10 @@ fn scratch(name: &str) -> PathBuf {
     fs::write(dir.join("GEMINI.md"), POINTER).unwrap();
     fs::write(dir.join("README.md"), "# Read me\n").unwrap();
     fs::write(dir.join("AGENTS.md"), "# Rules\n").unwrap();
+    let list = "gate/metrics.toml";
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
+    fs::create_dir_all(dir.join("gate")).unwrap();
+    let _bytes = fs::copy(root.join(list), dir.join(list)).unwrap();
     let _ = git(&dir, &["add", "-A"]);
     dir
 }
@@ -89,13 +93,20 @@ fn push_tier_checks_every_commit_message() {
     let _ = git(&dir, &["commit", "-q", "-am", "fixed stuff"]);
     let head = git(&dir, &["rev-parse", "HEAD"]);
     let repo = Repo::at(&dir);
-    let all = tiers::push(&repo, NO_COMMIT, &head).unwrap();
+    // The first commit's docs-only TDD line also covers the list of
+    // allowed numbers, which is not a doc; that one finding is set aside.
+    let push = |to: &str| -> Vec<aegis::Finding> {
+        let mut found = tiers::push(&repo, NO_COMMIT, to).unwrap();
+        found.retain(|f| f.path != "gate/metrics.toml");
+        found
+    };
+    let all = push(&head);
     assert!(
         checks(&all).iter().all(|c| *c == "commit.message"),
         "{all:?}"
     );
     assert_eq!(all.len(), 5, "{all:?}");
-    let first_only = tiers::push(&repo, NO_COMMIT, &first).unwrap();
+    let first_only = push(&first);
     assert_eq!(first_only.len(), 0, "{first_only:?}");
 }
 

@@ -1,0 +1,45 @@
+# The only numbers Sutradhar may report (ADR-0013, check metrics.no-vanity).
+# Each needs one source, a real decision it serves and something to compare
+# with. Sources are never added together. The check also refuses the vanity
+# names below in code, settings and scripts, in any spelling.
+sources = [
+    "search-console", "bing", "ga4", "darshak", "own-analytics",
+    "chatbot-record", "test-room", "connected-service-links",
+]
+vanity_names = [
+    "total_visits",
+    "total_visitors",
+    "page_views",
+    "pageviews",
+    "hit_count",
+    "follower_count",
+    "like_count",
+    "total_members",
+    "total_posts",
+    "total_impressions",
+    "domain_authority",
+]
+
+[[metric]]
+id = "clicks_change_after_update"
+source = "search-console"
+decision = "Which pages to review after a Google update lowers their clicks."
+compared_with = "the same pages and searches over the 28 days before the update"
+
+[[metric]]
+id = "position_change_after_update"
+source = "search-console"
+decision = "Whether a fall is real enough to act on, for each page and search."
+compared_with = "the same pages and searches over the 28 days before the update"
+
+[[metric]]
+id = "signup_rate_from_search"
+source = "ga4"
+decision = "Whether search visitors to a section still do what it is for."
+compared_with = "the same section over the 28 days before the update"
+
+[[metric]]
+id = "human_signup_rate_by_section"
+source = "darshak"
+decision = "Whether a fall in sign-ups is real people or only fewer bots."
+compared_with = "the same section over the 28 days before the update"
