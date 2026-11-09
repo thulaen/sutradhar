@@ -26,4 +26,11 @@ extend-ignore-re = [
 ]
 
 [files]
-extend-exclude = ["target", "Cargo.lock", "LICENSE", "LICENSES"]
+# vocabulary.md is a list of Hindi words in Latin letters, not English.
+extend-exclude = [
+    "target",
+    "Cargo.lock",
+    "LICENSE",
+    "LICENSES",
+    "docs/standards/vocabulary.md",
+]

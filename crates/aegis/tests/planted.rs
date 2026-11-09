@@ -165,3 +165,20 @@ fn a_misspelt_word_fails_the_spelling_check() {
     fs::write(dir.join("a.md"), misspelt).unwrap();
     assert_eq!(run(&dir).map(|f| f.check), Some("text.typos"));
 }
+
+#[test]
+fn the_hindi_word_list_is_not_spelling_checked_as_english() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
+    let dir = std::env::temp_dir()
+        .join(format!("aegis-planted-vocab-{}", std::process::id()));
+    let _ = fs::remove_dir_all(&dir);
+    let list = "docs/standards/vocabulary.md";
+    fs::create_dir_all(dir.join("docs/standards")).unwrap();
+    for file in ["_typos.toml", list] {
+        let _bytes = fs::copy(root.join(file), dir.join(file)).unwrap();
+    }
+    let found = tiers::whole_project_docs(&Repo::at(&dir), &[list.to_owned()]);
+    let spelling: Vec<_> =
+        found.iter().filter(|f| f.check == "text.typos").collect();
+    assert!(spelling.is_empty(), "{spelling:?}");
+}
