@@ -4,6 +4,10 @@
 
 use std::fs;
 use std::path::{Path, PathBuf};
+use std::process::Command;
+
+mod lists;
+use lists::{PLANTED_DENY, advisory_list};
 
 use aegis::repo::Repo;
 use aegis::{shell, tiers};
@@ -18,7 +22,7 @@ fn project(name: &str, lib: &str, test: &str) -> PathBuf {
     let files = [
         ("Cargo.toml", "[workspace]\nmembers = [\"demo\"]\n"),
         ("Cargo.lock", LOCK),
-        ("deny.toml", "[licenses]\nallow = [\"MIT\"]\n"),
+        ("deny.toml", PLANTED_DENY),
         (
             "demo/Cargo.toml",
             "[package]\nname = \"demo\"\nversion = \"0.1.0\"\n\
@@ -32,6 +36,7 @@ fn project(name: &str, lib: &str, test: &str) -> PathBuf {
         fs::create_dir_all(path.parent().unwrap()).unwrap();
         fs::write(path, text).unwrap();
     }
+    advisory_list(&dir, &[]);
     dir
 }
 
@@ -76,9 +81,9 @@ fn a_failing_test_fails_only_the_test_check() {
 #[test]
 fn a_stale_lock_file_fails_the_fetch() {
     let dir = project("fetch", GOOD_LIB, GOOD_TEST);
-    assert!(tiers::fetch(&dir).is_none());
+    assert!(tiers::fetch_libraries(&dir).is_none());
     fs::write(dir.join("Cargo.lock"), "version = 4\n").unwrap();
-    let found = tiers::fetch(&dir);
+    let found = tiers::fetch_libraries(&dir);
     assert_eq!(found.map(|f| f.check), Some("rust.fetch"));
 }
 
@@ -227,4 +232,30 @@ fn a_thrown_away_error_fails_the_code_analysis() {
     fs::write(dir.join("src/a.rs"), "fn f( {\n").unwrap();
     assert_eq!(run(&dir).len(), 1);
     fs::remove_dir_all(&dir).unwrap();
+}
+
+#[test]
+fn a_library_with_a_known_hole_fails_only_the_deny_check() {
+    let dir = project("advisory", GOOD_LIB, GOOD_TEST);
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
+    // itoa is already in the workspace, so its files are on hand offline.
+    let lock = fs::read_to_string(root.join("Cargo.lock")).unwrap();
+    let at = lock.find("name = \"itoa\"").unwrap();
+    let version = lock.get(at..).unwrap().lines().nth(1).unwrap();
+    let manifest = dir.join("demo/Cargo.toml");
+    let text = fs::read_to_string(&manifest).unwrap();
+    let pinned = version.replace("version = \"", "itoa = \"=");
+    fs::write(&manifest, format!("{text}\n[dependencies]\n{pinned}\n"))
+        .unwrap();
+    let lib = format!("{GOOD_LIB}\n/// Uses itoa.\npub use itoa::Buffer;\n");
+    fs::write(dir.join("demo/src/lib.rs"), lib).unwrap();
+    let locked = Command::new("cargo")
+        .args(["generate-lockfile", "--offline"])
+        .current_dir(&dir)
+        .status()
+        .unwrap();
+    assert!(locked.success());
+    assert_eq!(checks(&dir), Vec::<&str>::new());
+    advisory_list(&dir, &["itoa"]);
+    assert_eq!(checks(&dir), ["rust.deny"]);
 }

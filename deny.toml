@@ -1,6 +1,7 @@
 # cargo-deny's settings (AGENTS.md section 5.7). The gate runs
-# `cargo deny --offline check licenses bans sources` on every commit and
-# push. Loosening this file needs the owner's signed waiver (section 7.2).
+# `cargo deny --offline check advisories licenses bans sources` on every
+# commit and push, after fetching RustSec's public list of advisories
+# outside the seal. Loosening this file needs the owner's signed waiver (section 7.2).
 
 [graph]
 all-features = true
@@ -33,3 +34,12 @@ allow-wildcard-paths = true
 unknown-registry = "deny"
 unknown-git = "deny"
 allow-registry = ["https://github.com/rust-lang/crates.io-index"]
+
+[advisories]
+# Known security holes, yanked releases and unmaintained libraries, from
+# RustSec's public list, fetched before the checks run.
+yanked = "deny"
+unmaintained = "all"
+# Kept in the build folder: the sealed check may write there (it takes a
+# lock on the list), not in the home folder.
+db-path = "target/advisory-dbs"

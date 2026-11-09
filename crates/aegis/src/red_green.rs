@@ -219,7 +219,7 @@ pub fn check(repo: &Repo, commits: &[Commit], cargo: &[&str]) -> Vec<Finding> {
             if crate::file_kinds::has_cargo_settings(&dest) {
                 return Err("the old tree holds cargo settings".to_owned());
             }
-            match crate::tiers::fetch(&dest) {
+            match crate::tiers::fetch_libraries(&dest) {
                 Some(failed) => Err(failed.message),
                 None => Ok(run(&dest, cargo, &red_target, name, Some(&own))),
             }

@@ -21,6 +21,7 @@ pub mod red_green;
 pub mod repo;
 pub mod rule_file;
 pub mod run_outcome;
+pub mod rust_steps;
 pub mod rust_tokens;
 pub mod secrets;
 pub mod shell;
