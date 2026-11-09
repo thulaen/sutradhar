@@ -42,16 +42,26 @@ fn compile_error(errors: &str, counted: Counted<'_>) -> bool {
     false
 }
 
-/// Reads one `cargo test` run: whether it succeeded, what it wrote to
-/// its output and to its error stream, and which compile errors count.
+/// How a `cargo test` run ended.
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub enum Ran {
+    /// It ended well.
+    Succeeded,
+    /// It ended with an error.
+    Failed,
+}
+
+/// Reads one `cargo test` run: how it ended, what it wrote to its output
+/// and to its error stream, and which compile errors count.
 #[must_use]
 pub fn outcome(
-    succeeded: bool,
+    ran: Ran,
     output: &str,
     errors: &str,
     counted: Counted<'_>,
 ) -> Outcome {
-    if !succeeded {
+    const LINES_SHOWN: usize = 3;
+    if ran == Ran::Failed {
         let ran_and_failed = output
             .lines()
             .any(|l| l.trim().starts_with("test result: FAILED"));
@@ -62,7 +72,7 @@ pub fn outcome(
         let why = errors
             .lines()
             .filter(|l| l.trim_start().starts_with("error"))
-            .take(3)
+            .take(LINES_SHOWN)
             .collect::<Vec<_>>()
             .join("; ");
         return Outcome::Broken(why);

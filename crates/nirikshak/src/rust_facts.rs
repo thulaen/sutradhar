@@ -62,14 +62,14 @@ impl Walker<'_> {
         &mut self,
         attrs: &[syn::Attribute],
         sig: &syn::Signature,
-        block: &syn::Block,
+        last: usize,
     ) {
         let name = sig.ident.to_string();
         let fields = [
             ("path", text(self.path)),
             ("name", text(name.clone())),
             ("first", number(line_of(sig.ident.span()))),
-            ("last", number(line_of(block.brace_token.span.close()))),
+            ("last", number(last)),
             ("kind", text(self.kind(attrs))),
         ];
         self.facts.add("function", &fields);
@@ -98,13 +98,21 @@ impl Walker<'_> {
 
 impl<'ast> Visit<'ast> for Walker<'_> {
     fn visit_item_fn(&mut self, item: &'ast syn::ItemFn) {
-        self.function(&item.attrs, &item.sig, &item.block);
+        self.function(
+            &item.attrs,
+            &item.sig,
+            line_of(item.block.brace_token.span.close()),
+        );
         visit::visit_item_fn(self, item);
         let _done = self.scopes.pop();
     }
 
     fn visit_impl_item_fn(&mut self, item: &'ast syn::ImplItemFn) {
-        self.function(&item.attrs, &item.sig, &item.block);
+        self.function(
+            &item.attrs,
+            &item.sig,
+            line_of(item.block.brace_token.span.close()),
+        );
         if let Some(name) = self.implementing.clone() {
             let at = number(line_of(item.sig.ident.span()));
             self.here("impl_fn", &[("trait", text(name)), ("line", at)]);
@@ -114,8 +122,12 @@ impl<'ast> Visit<'ast> for Walker<'_> {
     }
 
     fn visit_trait_item_fn(&mut self, item: &'ast syn::TraitItemFn) {
+        // A method with no body is left out: as a `function` fact it would
+        // make a same-name test fake in the file count as non-test code.
+        // Its signature is still read, by `smell_facts`.
         if let Some(block) = &item.default {
-            self.function(&item.attrs, &item.sig, block);
+            let last = line_of(block.brace_token.span.close());
+            self.function(&item.attrs, &item.sig, last);
             visit::visit_trait_item_fn(self, item);
             let _done = self.scopes.pop();
         }
@@ -268,6 +280,7 @@ pub fn read(path: &str, source: &str, facts: &mut Facts) {
                 facts,
             };
             walker.visit_file(&file);
+            crate::smell_facts::read(path, source, &file, facts);
         }
         Err(e) => facts.add(
             "parse_failure",

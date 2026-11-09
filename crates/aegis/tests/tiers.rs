@@ -4,6 +4,7 @@
 use std::fs;
 use std::path::{Path, PathBuf};
 
+use aegis::file_kinds::TypeScript;
 use aegis::repo::{NO_COMMIT, Repo};
 use aegis::rule_file::POINTER;
 use aegis::tiers;
@@ -106,11 +107,11 @@ fn git_errors_are_reported() {
 fn typescript_switches_on_with_its_compiler() {
     let dir = scratch("ts");
     let repo = Repo::at(&dir);
-    assert!(!tiers::typescript_on(&repo));
+    assert_eq!(tiers::typescript_on(&repo), TypeScript::Off);
     fs::create_dir_all(dir.join("gate")).unwrap();
     fs::write(dir.join("gate/tools.toml"), "[[tool]]\nname = \"tsgo\"\n")
         .unwrap();
-    assert!(tiers::typescript_on(&repo));
+    assert_eq!(tiers::typescript_on(&repo), TypeScript::On);
 }
 
 #[test]

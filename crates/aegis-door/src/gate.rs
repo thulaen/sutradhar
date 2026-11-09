@@ -8,6 +8,12 @@ use aegis::Finding;
 use aegis::repo::{NO_COMMIT, Repo};
 use aegis::tiers;
 
+/// The check that refuses a push too large to look at.
+const SIZE_CHECK: &str = "door.size";
+
+/// The git command that names a commit or a path.
+const REV_PARSE: &str = "rev-parse";
+
 /// The ref that records the last `main` the door accepted. Every accepted
 /// commit stays in the door's copy for good, and this ref, not Forgejo's
 /// report, is the base for history, the push tier and release tags.
@@ -75,7 +81,7 @@ impl Door {
             let _out = repo.git_with_input(&["unpack-objects", "-q"], pack)?;
         }
         let commit =
-            repo.git(&["rev-parse", "--verify", &commit_of(push.new)])?;
+            repo.git(&[REV_PARSE, "--verify", &commit_of(push.new)])?;
         let commit = commit.trim();
         if push.name == "refs/heads/main" {
             check_main(&repo, push, commit)
@@ -116,20 +122,20 @@ fn check_main(
             .map_or(true, |n| n > MOST_COMMITS)
         {
             return Ok(refused(
-                "door.size",
+                SIZE_CHECK,
                 "a push may bring at most 500 commits; push in smaller parts",
             ));
         }
     }
     if let Some(why) = big_object(repo, base, commit) {
-        return Ok(refused("door.size", &why));
+        return Ok(refused(SIZE_CHECK, &why));
     }
     if let Some(why) = too_big(repo, commit) {
-        return Ok(refused("door.size", &why));
+        return Ok(refused(SIZE_CHECK, &why));
     }
     // git's own override of `.gitattributes`: no filter a pushed project
     // names (such as git-lfs) runs during checkout (task #119).
-    let found = repo.git(&["rev-parse", "--git-path", "info/attributes"])?;
+    let found = repo.git(&[REV_PARSE, "--git-path", "info/attributes"])?;
     let attributes = repo.root().join(found.trim());
     attributes
         .parent()
@@ -180,7 +186,7 @@ fn accepted(repo: &Repo) -> Result<Option<String>, String> {
     if listed.trim().is_empty() {
         return Ok(None);
     }
-    let id = repo.git(&["rev-parse", "--verify", &commit_of(ACCEPTED)])?;
+    let id = repo.git(&[REV_PARSE, "--verify", &commit_of(ACCEPTED)])?;
     Ok(Some(id.trim().to_owned()))
 }
 
@@ -247,52 +253,11 @@ fn commit_of(id: &str) -> String {
     format!("{id}^{{commit}}")
 }
 
-/// True for 40 lowercase hexadecimal characters.
-#[must_use]
-pub fn is_object_id(id: &str) -> bool {
-    id.len() == 40 && id.chars().all(|c| matches!(c, '0'..='9' | 'a'..='f'))
-}
-
-/// True for `refs/tags/v` followed by a digit and then only digits,
-/// letters, `.` or `-`, such as `refs/tags/v1.0.0-rc.1`.
-#[must_use]
-pub fn is_release_tag(name: &str) -> bool {
-    name.strip_prefix("refs/tags/v").is_some_and(|rest| {
-        rest.starts_with(|c: char| c.is_ascii_digit())
-            && rest
-                .chars()
-                .all(|c| c.is_ascii_alphanumeric() || c == '.' || c == '-')
-    })
-}
-
 fn is_ancestor(repo: &Repo, old: &str, new: &str) -> bool {
     repo.git(&["merge-base", "--is-ancestor", old, new]).is_ok()
 }
 
-#[cfg(test)]
-mod tests {
-    use super::{is_object_id, is_release_tag};
+#[path = "gate_names.rs"]
+mod names;
 
-    #[test]
-    fn knows_an_object_id() {
-        assert!(is_object_id(&"a1".repeat(20)));
-        assert!(!is_object_id("a1"));
-        assert!(!is_object_id(&"A1".repeat(20)));
-        assert!(!is_object_id(&"g1".repeat(20)));
-    }
-
-    #[test]
-    fn knows_a_release_tag() {
-        assert!(is_release_tag("refs/tags/v1.0.0"));
-        assert!(is_release_tag("refs/tags/v1.0.0-rc.1"));
-        for name in [
-            "refs/tags/vanity",
-            "refs/tags/v",
-            "refs/tags/v1/x",
-            "refs/heads/v1",
-            "refs/tags/1.0",
-        ] {
-            assert!(!is_release_tag(name), "{name}");
-        }
-    }
-}
+pub use names::{is_object_id, is_release_tag};

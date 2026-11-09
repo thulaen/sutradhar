@@ -1,7 +1,7 @@
 use std::fs;
 use std::path::PathBuf;
 
-use super::{Outcome, is_test_file, judge, outcome, targets};
+use super::{Outcome, Ran, is_test_file, judge, outcome, targets};
 use crate::tdd::Tdd;
 
 fn tree(name: &str) -> PathBuf {
@@ -60,19 +60,19 @@ fn reads_passed_failed_and_absent() {
     let none = "test result: ok. 0 passed; 0 failed; 88 filtered out\n";
     let failed =
         "running 1 test\nF\ntest result: FAILED. 0 passed; 1 failed;\n";
-    assert_eq!(outcome(true, ran, "", None), Outcome::Passed);
-    assert_eq!(outcome(true, none, "", None), Outcome::Absent);
-    assert_eq!(outcome(true, "", "", None), Outcome::Absent);
-    assert_eq!(outcome(false, failed, "", None), Outcome::Failed);
+    assert_eq!(outcome(Ran::Succeeded, ran, "", None), Outcome::Passed);
+    assert_eq!(outcome(Ran::Succeeded, none, "", None), Outcome::Absent);
+    assert_eq!(outcome(Ran::Succeeded, "", "", None), Outcome::Absent);
+    assert_eq!(outcome(Ran::Failed, failed, "", None), Outcome::Failed);
     let new_api = "error[E0425]: cannot find function `add` in crate `demo`\n";
-    assert_eq!(outcome(false, "", new_api, None), Outcome::Failed);
+    assert_eq!(outcome(Ran::Failed, "", new_api, None), Outcome::Failed);
 }
 
 #[test]
 fn a_run_that_could_not_start_is_never_proof() {
     let readonly =
         "error: Read-only file system (os error 30) at path \"/t\"\n";
-    let found = outcome(false, "", readonly, None);
+    let found = outcome(Ran::Failed, "", readonly, None);
     assert!(
         matches!(&found, Outcome::Broken(why) if why.contains("Read-only"))
     );

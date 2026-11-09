@@ -29,18 +29,12 @@ fn main() -> ExitCode {
                 let _ignored = writeln!(io::stdout(), "{change}");
                 ExitCode::SUCCESS
             }
-            Err(problem) => {
-                say(&format!("aegis: {problem}\n"));
-                ExitCode::from(2)
-            }
+            Err(problem) => stop(&problem),
         };
     }
     match run(&refs) {
         Ok(findings) => report(&findings),
-        Err(problem) => {
-            say(&format!("aegis: {problem}\n"));
-            ExitCode::from(2)
-        }
+        Err(problem) => stop(&problem),
     }
 }
 
@@ -77,6 +71,12 @@ fn report(findings: &[Finding]) -> ExitCode {
     ExitCode::FAILURE
 }
 
+/// Says why the command could not run, and gives its exit code, 2.
+fn stop(problem: &str) -> ExitCode {
+    say(&format!("aegis: {problem}\n"));
+    ExitCode::from(2)
+}
+
 fn say(text: &str) {
     let _ignored = io::stderr().write_all(text.as_bytes());
 }
@@ -102,10 +102,7 @@ fn catalogue() -> ExitCode {
             ));
             ExitCode::SUCCESS
         }
-        Err(problem) => {
-            say(&format!("aegis: {problem}\n"));
-            ExitCode::from(2)
-        }
+        Err(problem) => stop(&problem),
     }
 }
 
@@ -138,10 +135,7 @@ fn sbom() -> ExitCode {
             say(&format!("aegis: wrote {path}\n"));
             ExitCode::SUCCESS
         }
-        Err(problem) => {
-            say(&format!("aegis: {problem}\n"));
-            ExitCode::from(2)
-        }
+        Err(problem) => stop(&problem),
     }
 }
 

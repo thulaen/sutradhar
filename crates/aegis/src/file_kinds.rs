@@ -61,10 +61,20 @@ pub fn has_cargo_settings(folder: &std::path::Path) -> bool {
     })
 }
 
+/// Whether TypeScript is switched on: it is when its compiler is
+/// pinned.
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub enum TypeScript {
+    /// The compiler is pinned, so TypeScript files are allowed.
+    On,
+    /// It is not, so they are not.
+    Off,
+}
+
 /// Works out the kind of a path, or `None` when it is not allowed at
-/// all. `typescript_on` says whether the TypeScript compiler is pinned.
+/// all; `typescript` says whether TypeScript is switched on.
 #[must_use]
-pub fn kind_of(path: &str, typescript_on: bool) -> Option<Kind> {
+pub fn kind_of(path: &str, typescript: TypeScript) -> Option<Kind> {
     // Cargo settings in the tree could change how checks run, so they
     // are never allowed.
     if path.starts_with(".cargo/") || path.contains("/.cargo/") {
@@ -80,7 +90,7 @@ pub fn kind_of(path: &str, typescript_on: bool) -> Option<Kind> {
         "css" if path.starts_with("ui/") || path.starts_with("crates/") => {
             Some(Kind::Css)
         }
-        "ts" if typescript_on && path.starts_with("ui/ts/") => {
+        "ts" if typescript == TypeScript::On && path.starts_with("ui/ts/") => {
             Some(Kind::TypeScript)
         }
         "php" if is_addon(path) => Some(Kind::Php),
@@ -162,11 +172,11 @@ pub fn too_large(repo: &crate::repo::Repo, paths: &[String]) -> Vec<Finding> {
 #[must_use]
 pub fn check<'a>(
     paths: impl IntoIterator<Item = &'a str>,
-    typescript_on: bool,
+    typescript: TypeScript,
 ) -> Vec<Finding> {
     paths
         .into_iter()
-        .filter(|p| kind_of(p, typescript_on).is_none())
+        .filter(|p| kind_of(p, typescript).is_none())
         .map(|p| {
             Finding::new(
                 CHECK,
@@ -180,7 +190,7 @@ pub fn check<'a>(
 
 #[cfg(test)]
 mod tests {
-    use super::{Kind, check, kind_of};
+    use super::{Kind, TypeScript, check, kind_of};
 
     #[test]
     fn knows_each_allowed_kind() {
@@ -210,15 +220,18 @@ mod tests {
             ("addons/xenforo/composer.lock", Kind::Lock),
         ];
         for (path, kind) in cases {
-            assert_eq!(kind_of(path, false), Some(kind), "{path}");
+            assert_eq!(kind_of(path, TypeScript::Off), Some(kind), "{path}");
         }
     }
 
     #[test]
     fn typescript_needs_the_compiler_and_its_folder() {
-        assert_eq!(kind_of("ui/ts/a.ts", true), Some(Kind::TypeScript));
-        assert_eq!(kind_of("ui/ts/a.ts", false), None);
-        assert_eq!(kind_of("src/a.ts", true), None);
+        assert_eq!(
+            kind_of("ui/ts/a.ts", TypeScript::On),
+            Some(Kind::TypeScript)
+        );
+        assert_eq!(kind_of("ui/ts/a.ts", TypeScript::Off), None);
+        assert_eq!(kind_of("src/a.ts", TypeScript::On), None);
     }
 
     #[test]
@@ -243,11 +256,11 @@ mod tests {
             ".cargo/config.toml",
             "crates/a/.cargo/config.toml",
         ];
-        assert_eq!(check(planted, true).len(), planted.len());
+        assert_eq!(check(planted, TypeScript::On).len(), planted.len());
     }
 
     #[test]
     fn passes_clean_files() {
-        assert_eq!(check(["a.rs", "b.md"], false).len(), 0);
+        assert_eq!(check(["a.rs", "b.md"], TypeScript::Off).len(), 0);
     }
 }

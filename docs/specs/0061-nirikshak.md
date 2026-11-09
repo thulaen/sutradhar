@@ -53,6 +53,12 @@ folder; lines start at 1. Code outside any function is in the function
 | `container` | `path`, `name`, `line`, `image`, `user`, `privileged`, `network_mode`, `read_only`, `mem_limit`, `pids_limit`, `no_new_privileges`, `cap_drop_all` (one service of a compose file) |
 | `container_env` | `path`, `service`, `name`, `written`, `line` (a setting a compose service sets; `written` when its value is in the file) |
 | `docker_stage` | `path`, `line`, `image`, `user`, `alias`, `last` (one `FROM` stage of a Dockerfile, its `AS` name and its last `USER`) |
+| `signature` | `path`, `function`, `kind`, `line`, `inputs`, `bools` (one function's inputs, and how many are `bool`; trait methods with no body included) |
+| `number` | `path`, `function`, `kind`, `text`, `line` (a number written in a function, outside a `const`, `static`, type or attribute) |
+| `chain` | `path`, `function`, `kind`, `length`, `line` (the outer call of a chain of method calls, counted through `?`, `.await` and brackets, and how many calls it holds) |
+| `shape` | `path`, `function`, `kind`, `name`, `what`, `size`, `line` (a struct and its fields, or an enum and its variants) |
+| `comment` | `path`, `kind`, `text`, `line` (a comment on a line of its own that is not a doc comment; `test` in a test file, or inside a test module or test function) |
+| `repeated` | `path`, `kind`, `text`, `copies`, `line` (each copy of text written three or more times in a file's code) |
 | `parse_failure` | `path`, `line`, `reason` (also a compose file that cannot be read, or uses YAML aliases, which a few lines can grow into a huge document) |
 
 A function's `kind` is `test` (a `#[test]`), `test_panics` (a test that
@@ -97,8 +103,28 @@ Each rule file starts with comment lines naming its `id`, `title`,
 | H44 | Local clock time in code | GI-44 |
 | H53 | Memory leaked on purpose, in code | GI-20 |
 | H56 | A drive letter or a `/Users/` folder written into code | GI-56 |
+| M01 | A function with a `bool` input, in code: it does two things, and `f(true)` does not say which | GI-28 |
+| M02 | A number other than 0, 1 or 2 written in code, outside a `const`, a `static`, a type or an attribute | GI-13 |
+| M03 | A chain of more than eight method calls, in code | GI-29 |
+| M04 | A struct with more than 12 fields, or an enum with more than 30 variants, in code | GI-51 |
+| M05 | Code left in a line comment in code: it ends in `;`, `{` or `}` and holds `(`, `=`, `::`, `->`, `!`, `[` or `&`. Comments are read from the raw lines, so a `//` line inside a string counts | GI-24 |
+| M06 | The same text of eight or more characters written three or more times in one file's code, two copies on one line counting as two | GI-28 |
+| M07 | A function in code whose name holds `_and_`: it does two jobs | GI-16 |
 
 Each has tests that a planted case is found and a clean one passes.
+
+Some smells from task #118 are blocked by the workspace lints, not by
+rules here: more than 5 inputs to a function (`too_many_arguments`),
+nesting deeper than 4 (`excessive_nesting`), a function over 60 lines
+(`too_many_lines`), many `bool` inputs (`fn_params_excessive_bools`),
+code that is never used (`dead_code`, under deny warnings), a match
+with one real arm and an empty `_` arm (`single_match`), a match with
+only `_` (`match_single_binding`), and an empty `Err(_)` arm (R09). An
+empty arm for cases that need nothing is allowed: it says so plainly.
+A catch-all `_ =>` arm that holds code is not checked:
+`wildcard_enum_match_arm` was tried, but it fires on matches over
+`syn`'s enums, which are open to new variants and cannot be listed in
+full (task #133).
 
 ## Library choice
 

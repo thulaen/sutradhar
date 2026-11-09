@@ -50,21 +50,29 @@ pub struct Copied {
     pub tokens: usize,
 }
 
+/// What `/* */` is in a language: a comment, dropped, or plain text,
+/// kept (as in a shell script, where `/*` is a file pattern).
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum Blocks {
+    Dropped,
+    Kept,
+}
+
 /// The tokens of a file in a language other than Rust: words and
 /// symbols, dropping comments (those `marks` start, to the end of the
-/// line, and `/* */` when `block` is set) and quoted text. Names are
+/// line, and `/* */` when `block` is `Dropped`) and quoted text. Names are
 /// kept as written.
 fn other_tokens(
     text: &str,
     marks: &[&str],
-    block: bool,
+    block: Blocks,
 ) -> Vec<(String, usize)> {
     let mut out = Vec::new();
     let mut lex = Lexer {
         rest: text,
         line: 1,
         marks,
-        block,
+        block: block == Blocks::Dropped,
     };
     while let Some(c) = lex.rest.chars().next() {
         if c.is_alphanumeric() || c == '_' {
@@ -152,12 +160,14 @@ fn tokens(
 ) -> Option<Vec<Token>> {
     let raw = match kind {
         Kind::Rust => rust::code(text),
-        Kind::Shell => other_tokens(text, &["#"], false),
+        Kind::Shell => other_tokens(text, &["#"], Blocks::Kept),
         // Rego comments start with `#`, Cedar ones with `//`.
-        Kind::Policy => other_tokens(text, &["#", "//"], false),
-        Kind::Sql => other_tokens(text, &["--"], true),
-        Kind::Css => other_tokens(text, &[], true),
-        Kind::TypeScript | Kind::Php => other_tokens(text, &["//"], true),
+        Kind::Policy => other_tokens(text, &["#", "//"], Blocks::Kept),
+        Kind::Sql => other_tokens(text, &["--"], Blocks::Dropped),
+        Kind::Css => other_tokens(text, &[], Blocks::Dropped),
+        Kind::TypeScript | Kind::Php => {
+            other_tokens(text, &["//"], Blocks::Dropped)
+        }
         _ => return None,
     };
     let mut id = |t: String| {

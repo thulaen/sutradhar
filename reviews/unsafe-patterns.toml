@@ -1,5 +1,5 @@
 skill = "unsafe-patterns"
-change = "sha256:e66efeefb7f4a0cb2daccc2093a292f765aed9f24174e95600db0ac91665abe1"
+change = "sha256:bd7ba4bb5286159c7d098f20c2d876334df0c2b904b3b6fcb0225a07bca1913d"
 verdict = "pass"
 agent = "claude subagents"
-summary = "Two rounds by fresh subagents on the allowed-holes list for task #114. No panics or unchecked sums; a clock before 9 November is an error, not day zero."
+summary = "Six rounds by fresh subagents on task #118 (the code-smell rules). No panics, unchecked sums or swallowed errors; the date maths uses checked steps."

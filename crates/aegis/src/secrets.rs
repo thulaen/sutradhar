@@ -4,6 +4,12 @@
 
 use crate::Finding;
 
+/// What a GitHub token is called in a finding.
+const GITHUB_TOKEN: &str = "a GitHub token";
+
+/// How a block of key text starts.
+const BEGIN: &str = "-----BEGIN";
+
 const CHECK: &str = "secrets.private-data";
 
 /// How a pattern is matched.
@@ -20,9 +26,9 @@ enum Matcher {
 fn patterns() -> Vec<(Matcher, &'static str)> {
     let text = |parts: [&str; 2]| Matcher::Contains(parts.concat());
     vec![
-        (text(["gh", "p_"]), "a GitHub token"),
-        (text(["gh", "o_"]), "a GitHub token"),
-        (text(["github", "_pat_"]), "a GitHub token"),
+        (text(["gh", "p_"]), GITHUB_TOKEN),
+        (text(["gh", "o_"]), GITHUB_TOKEN),
+        (text(["github", "_pat_"]), GITHUB_TOKEN),
         (Matcher::PrivateKey, "a private key"),
         (Matcher::AwsKey, "an AWS key"),
         (text(["/srv", "/data"]), "a private path on Dell"),
@@ -56,19 +62,22 @@ pub fn check(path: &str, text: &str) -> Vec<Finding> {
 }
 
 fn hit(line: &str, matcher: &Matcher) -> bool {
+    const KEY_TAIL: usize = 16;
+    const KEY_HEAD: usize = 4;
     match matcher {
         Matcher::Contains(text) => line.contains(text.as_str()),
         Matcher::PrivateKey => line
-            .split_once(&["-----BEGIN", " "].concat())
+            .split_once(&[BEGIN, " "].concat())
             .is_some_and(|(_, rest)| rest.contains("PRIVATE KEY")),
         Matcher::AwsKey => {
             line.match_indices(&["AK", "IA"].concat()).any(|(at, _)| {
-                let rest = line.get(at.saturating_add(4)..).unwrap_or("");
+                let rest =
+                    line.get(at.saturating_add(KEY_HEAD)..).unwrap_or("");
                 rest.chars()
-                    .take(16)
+                    .take(KEY_TAIL)
                     .filter(|c| c.is_ascii_uppercase() || c.is_ascii_digit())
                     .count()
-                    == 16
+                    == KEY_TAIL
             })
         }
     }
@@ -76,11 +85,11 @@ fn hit(line: &str, matcher: &Matcher) -> bool {
 
 #[cfg(test)]
 mod tests {
-    use super::check;
+    use super::{BEGIN, check};
 
     #[test]
     fn finds_planted_secrets() {
-        let begin = ["-----BEGIN", " "].concat();
+        let begin = [BEGIN, " "].concat();
         let planted = [
             ["token = gh", "p_abc"].concat(),
             ["gh", "o_abc"].concat(),
@@ -103,7 +112,7 @@ mod tests {
 
     #[test]
     fn passes_clean_text() {
-        let begin = ["-----BEGIN", " "].concat();
+        let begin = [BEGIN, " "].concat();
         let text = format!(
             "AKIA is a prefix\nhttp://127.0.0.1:3000\nhome/page\n\
              {begin}PUBLIC KEY-----"

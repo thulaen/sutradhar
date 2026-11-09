@@ -49,7 +49,7 @@ impl Facts {
 }
 
 /// The relations, as listed in the specification.
-pub const RELATIONS: [&str; 19] = [
+pub const RELATIONS: [&str; 25] = [
     "file",
     "function",
     "call",
@@ -69,6 +69,12 @@ pub const RELATIONS: [&str; 19] = [
     "empty_handler",
     "uses_try",
     "parse_failure",
+    "signature",
+    "number",
+    "chain",
+    "shape",
+    "comment",
+    "repeated",
 ];
 
 /// A text value.

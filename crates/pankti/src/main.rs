@@ -90,6 +90,7 @@ fn line(asked: &Asked) -> Result<Vec<String>, String> {
 }
 
 fn run(asked: &Asked) -> Result<u8, String> {
+    const SIGNAL_BASE: i32 = 128;
     let dir = match std::env::var("PANKTI_DIR") {
         Ok(dir) => dir,
         Err(_) => home()?,
@@ -107,7 +108,7 @@ fn run(asked: &Asked) -> Result<u8, String> {
     // the signal's number, as a shell would report it.
     let code = status
         .code()
-        .or_else(|| status.signal().map(|s| s.saturating_add(128)))
+        .or_else(|| status.signal().map(|s| s.saturating_add(SIGNAL_BASE)))
         .unwrap_or(1);
     Ok(u8::try_from(code).unwrap_or(1))
 }

@@ -19,7 +19,12 @@ pub fn answer(
     mut stream: impl Read + Write,
 ) -> std::io::Result<()> {
     let (ok, text) = decide(door, &mut stream);
-    http::write_answer(stream, ok, &text)
+    let answer = if ok {
+        http::Answer::Allow
+    } else {
+        http::Answer::Refuse
+    };
+    http::write_answer(stream, answer, &text)
 }
 
 fn decide(door: &Door, stream: impl Read) -> (bool, String) {

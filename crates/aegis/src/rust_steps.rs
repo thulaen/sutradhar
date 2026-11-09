@@ -4,12 +4,14 @@
 use crate::repo::Repo;
 use crate::{Finding, tool};
 
+/// The check for licences, advisories and banned libraries.
+const CHECK: &str = "rust.deny";
+
 /// Fetches the libraries named in `folder`'s lock file, and nothing else.
 #[must_use]
 pub fn fetch(folder: &std::path::Path) -> Option<Finding> {
-    fetch_libraries(folder).or_else(|| {
-        tool::run(folder, "rust.deny", "cargo", &["deny", "fetch", "db"])
-    })
+    fetch_libraries(folder)
+        .or_else(|| tool::run(folder, CHECK, "cargo", &["deny", "fetch", "db"]))
 }
 
 /// Fetches only the exact libraries in the lock file.
@@ -68,7 +70,7 @@ pub fn rust_checks_using(repo: &Repo, cargo: &[&str]) -> Vec<Finding> {
     let mut out = Vec::new();
     if repo.read("deny.toml").is_none() {
         out.push(Finding::new(
-            "rust.deny",
+            CHECK,
             "deny.toml",
             0,
             "a Rust project needs deny.toml, its library rules",
@@ -93,7 +95,7 @@ pub fn rust_checks_using(repo: &Repo, cargo: &[&str]) -> Vec<Finding> {
     // list, which the seal would keep read-only.
     // The command's last word is cargo itself, without the seal.
     let direct = cargo.last().copied().unwrap_or("cargo");
-    out.extend(tool::run(repo.content(), "rust.deny", direct, &deny));
+    out.extend(tool::run(repo.content(), CHECK, direct, &deny));
     out.extend(tool::run(
         repo.content(),
         "rust.unused-deps",

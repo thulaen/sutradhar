@@ -15,6 +15,9 @@ use serde_json::{Map, Value, json};
 
 use crate::Finding;
 
+/// The name of the whole project, the top part of the list.
+const TOP: &str = "sutradhar";
+
 /// Where the list lives.
 pub const PATH: &str = "gate/sbom.cdx.json";
 
@@ -216,7 +219,7 @@ pub fn build(lock: &str, tools: &str, root: &str) -> Result<String, String> {
         .map(str::to_owned)
         .ok_or("Cargo.toml must name the licence in [workspace.package]")?;
     let mut all = gather(&lock, &tools, Some(&license))?;
-    let _top = all.needs.insert("sutradhar".to_owned(), all.ours);
+    let _top = all.needs.insert(TOP.to_owned(), all.ours);
     let dependencies: Vec<Value> = all
         .needs
         .into_iter()
@@ -224,8 +227,8 @@ pub fn build(lock: &str, tools: &str, root: &str) -> Result<String, String> {
         .collect();
     let top = json!({
         "type": "application",
-        "bom-ref": "sutradhar",
-        "name": "sutradhar",
+        "bom-ref": TOP,
+        "name": TOP,
     });
     let bom = json!({
         "$schema": "http://cyclonedx.org/schema/bom-1.6.schema.json",

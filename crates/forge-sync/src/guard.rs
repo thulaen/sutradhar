@@ -6,6 +6,12 @@ use crate::fetch::Config;
 use crate::plan::is_private;
 use crate::run::Run;
 
+/// The gitleaks flag that leaves out its banner.
+const NO_BANNER: &str = "--no-banner";
+
+/// The gitleaks flag that hides secrets in what it prints.
+const REDACT: &str = "--redact";
+
 /// Checks text that would go to GitHub.
 ///
 /// # Errors
@@ -23,7 +29,7 @@ pub fn text(
     let all = texts.join("\n");
     run.run(
         &config.gitleaks,
-        &["stdin", "--no-banner", "--redact"],
+        &["stdin", NO_BANNER, REDACT],
         all.as_bytes(),
     )
     .map(|_| ())
@@ -37,14 +43,15 @@ pub fn text(
 /// the urgent task once, not once a minute.
 #[must_use]
 pub fn steady(report: &str) -> String {
+    const FAILED: &str = "failed:";
     strip_colours(report)
         .lines()
         .map(|l| {
             // A count of what was scanned changes every run; the words
             // before it, such as `... failed:`, stay.
-            let l = l.find("failed:").map_or(l, |at| {
+            let l = l.find(FAILED).map_or(l, |at| {
                 if l.contains("scanned") {
-                    l.get(..at.saturating_add(7)).unwrap_or(l)
+                    l.get(..at.saturating_add(FAILED.len())).unwrap_or(l)
                 } else {
                     l
                 }
@@ -98,8 +105,8 @@ fn scan_commits(
         &config.gitleaks,
         &[
             "git",
-            "--no-banner",
-            "--redact",
+            NO_BANNER,
+            REDACT,
             "--ignore-gitleaks-allow",
             &format!("--gitleaks-ignore-path={ignore}"),
             log_opts,
@@ -175,7 +182,7 @@ pub fn code(run: &dyn Run, config: &Config) -> Result<(), String> {
     let _scanned = run
         .run(
             &config.gitleaks,
-            &["stdin", "--no-banner", "--redact"],
+            &["stdin", NO_BANNER, REDACT],
             tags.as_bytes(),
         )
         .map_err(|e| {

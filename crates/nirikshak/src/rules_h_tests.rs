@@ -87,6 +87,16 @@ fn h44_h53_and_h56_find_local_time_leaks_and_one_machine_paths() {
 }
 
 #[test]
+fn h44_lets_a_test_fake_of_a_trait_declaration_pass() {
+    let code = "use chrono::Local;\ntrait Clock {\n    fn now(&self);\n}\n\
+                #[cfg(test)]\nmod tests {\n    struct F;\n    \
+                impl super::Clock for F {\n        \
+                fn now(&self) {\n            let _t = Local::now();\n        \
+                }\n    }\n}\n";
+    assert_eq!(lines("H44", &[("src/a.rs", code)]), NONE);
+}
+
+#[test]
 fn t01_finds_text_cut_short_and_lets_whole_refusals_pass() {
     let cut = "fn first(text: &str) -> String {\n    \
                text.chars().take(400).collect()\n}\n\

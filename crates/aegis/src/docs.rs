@@ -224,8 +224,9 @@ fn is_numbered(anchor: &str, base: &str) -> bool {
 /// The text of an ATX heading (`#` to `######`, then a space), without
 /// any closing `#` marks.
 fn heading_text(line: &str) -> Option<&str> {
+    const MOST_HASHES: usize = 6;
     let hashes = line.chars().take_while(|c| *c == '#').count();
-    if !(1..=6).contains(&hashes) {
+    if !(1..=MOST_HASHES).contains(&hashes) {
         return None;
     }
     let rest = line.get(hashes..)?.strip_prefix(' ')?;

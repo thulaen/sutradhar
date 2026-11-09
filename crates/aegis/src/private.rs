@@ -70,6 +70,7 @@ fn entries(text: &str) -> impl Iterator<Item = &str> {
 /// a `NAME=value` or `user:password` line. Values under 8 characters are
 /// skipped, since they would match everyday text.
 fn secret_values(text: &str) -> Vec<String> {
+    const SHORTEST: usize = 8;
     let mut out = Vec::new();
     for line in text.lines().map(str::trim) {
         let after_equals = line.split_once('=').map(|(_, v)| v.trim());
@@ -78,7 +79,7 @@ fn secret_values(text: &str) -> Vec<String> {
             .into_iter()
             .flatten()
         {
-            if value.len() >= 8 && !out.iter().any(|v| v == value) {
+            if value.len() >= SHORTEST && !out.iter().any(|v| v == value) {
                 out.push(value.to_owned());
             }
         }
@@ -101,7 +102,7 @@ impl Private {
             .collect();
         let hashes = entries(&index?)
             .filter_map(|l| l.split_whitespace().nth(1))
-            .filter(|h| h.len() == 64)
+            .filter(|h| h.len() == crate::tools_list::HEX_LEN)
             .map(str::to_lowercase)
             .collect();
         let mut secrets = Vec::new();
@@ -141,7 +142,7 @@ impl Private {
 #[must_use]
 pub fn sha256(bytes: &[u8]) -> String {
     Sha256::digest(bytes).iter().fold(
-        String::with_capacity(64),
+        String::with_capacity(crate::tools_list::HEX_LEN),
         |mut hex, b| {
             let _written = write!(hex, "{b:02x}");
             hex

@@ -1,9 +1,9 @@
 skill = "architecture"
-change = "sha256:e66efeefb7f4a0cb2daccc2093a292f765aed9f24174e95600db0ac91665abe1"
+change = "sha256:bd7ba4bb5286159c7d098f20c2d876334df0c2b904b3b6fcb0225a07bca1913d"
 verdict = "pass"
 agent = "claude subagents"
-summary = "Two rounds by fresh subagents on the allowed-holes list for task #114. The list is a private child of the image check, read once per scan, and kept to the known holes in code."
+summary = "Six rounds by fresh subagents on task #118 (the code-smell rules). Rust gathers the smell facts in their own files, the Rego rules only read them, and the spec, catalogue and relations agree."
 
 [[finding]]
-what = "nothing in code stopped the list from growing"
+what = "doc comments were split by the refactor"
 fixed = true

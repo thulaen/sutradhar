@@ -42,6 +42,7 @@ fn usage() -> ExitCode {
 }
 
 fn listen(socket: &str, work: &str, count: usize) -> Result<(), String> {
+    const SOCKET_MODE: u32 = 0o660;
     let _old = fs::remove_file(socket);
     let listener = UnixListener::bind(socket)
         .map_err(|e| format!("cannot listen on {socket}: {e}"))?;
@@ -49,7 +50,7 @@ fn listen(socket: &str, work: &str, count: usize) -> Result<(), String> {
     // folder gives Forgejo's account a default access entry (see
     // deploy/door/install.sh), which the socket inherits; 0o660 keeps
     // that entry in force and shuts everyone else out.
-    fs::set_permissions(socket, fs::Permissions::from_mode(0o660))
+    fs::set_permissions(socket, fs::Permissions::from_mode(SOCKET_MODE))
         .map_err(|e| format!("cannot open up {socket}: {e}"))?;
     say(&format!("aegis-door: listening on {socket}\n"));
     let door = Door::new(work);

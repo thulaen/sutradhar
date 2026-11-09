@@ -129,16 +129,28 @@ fn read_body(reader: impl Read, length: usize) -> Result<Vec<u8>, String> {
     }
 }
 
-/// Writes one answer: `200 OK` when `ok`, else `403 Forbidden`.
+/// The door's answer to one push.
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub enum Answer {
+    /// `200 OK`: the push may go in.
+    Allow,
+    /// `403 Forbidden`: it may not.
+    Refuse,
+}
+
+/// Writes one answer: `200 OK` to allow, `403 Forbidden` to refuse.
 ///
 /// # Errors
 /// When the answer cannot be written.
 pub fn write_answer(
     mut stream: impl Write,
-    ok: bool,
+    answer: Answer,
     text: &str,
 ) -> std::io::Result<()> {
-    let status = if ok { "200 OK" } else { "403 Forbidden" };
+    let status = match answer {
+        Answer::Allow => "200 OK",
+        Answer::Refuse => "403 Forbidden",
+    };
     let head = format!(
         "HTTP/1.1 {status}\r\nContent-Type: text/plain; charset=utf-8\r\n\
          Content-Length: {}\r\nConnection: close\r\n\r\n",
@@ -151,7 +163,9 @@ pub fn write_answer(
 
 #[cfg(test)]
 mod tests {
-    use super::{Deadline, MAX_BODY, MAX_LINE, read_request, write_answer};
+    use super::{
+        Answer, Deadline, MAX_BODY, MAX_LINE, read_request, write_answer,
+    };
     use std::time::Duration;
 
     #[test]
@@ -216,12 +230,12 @@ mod tests {
     #[test]
     fn writes_both_kinds_of_answer() {
         let mut out = Vec::new();
-        write_answer(&mut out, true, "fine").unwrap();
+        write_answer(&mut out, Answer::Allow, "fine").unwrap();
         let text = String::from_utf8(out).unwrap();
         assert!(text.starts_with("HTTP/1.1 200 OK\r\n"));
         assert!(text.ends_with("\r\n\r\nfine"));
         let mut out = Vec::new();
-        write_answer(&mut out, false, "no").unwrap();
+        write_answer(&mut out, Answer::Refuse, "no").unwrap();
         assert!(String::from_utf8(out).unwrap().contains("403 Forbidden"));
     }
 }

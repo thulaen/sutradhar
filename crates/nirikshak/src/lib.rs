@@ -10,6 +10,7 @@ pub mod rules;
 pub mod rust_facts;
 pub mod setup_facts;
 pub mod shapes;
+pub mod smell_facts;
 pub mod uses;
 pub mod yaml_facts;
 

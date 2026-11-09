@@ -13,11 +13,12 @@ pub const GLOSSARY: &str = "docs/glossary.md";
 /// The names in the first column of the `## Module names` table, in lower
 /// case, without its header row.
 fn names(glossary: &str) -> Vec<String> {
-    glossary
+    let section = glossary
         .lines()
         .skip_while(|l| l.trim() != "## Module names")
         .skip(1)
-        .take_while(|l| !l.starts_with("## "))
+        .take_while(|l| !l.starts_with("## "));
+    section
         .filter(|l| !l.starts_with("| Name |"))
         .filter_map(|l| l.strip_prefix("| "))
         .filter_map(|rest| rest.split(" |").next())

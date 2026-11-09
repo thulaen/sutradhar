@@ -19,7 +19,7 @@ use crate::history::{Commit, fresh_folder, parent_with_tests};
 use crate::repo::Repo;
 use crate::tdd::{self, Tdd};
 
-pub use crate::run_outcome::{Counted, Outcome, outcome};
+pub use crate::run_outcome::{Counted, Outcome, Ran, outcome};
 
 const CHECK: &str = "commit.test-first";
 
@@ -79,7 +79,11 @@ pub fn run(
             .output();
         seen.push(match result {
             Ok(o) => outcome(
-                o.status.success(),
+                if o.status.success() {
+                    Ran::Succeeded
+                } else {
+                    Ran::Failed
+                },
                 &String::from_utf8_lossy(&o.stdout),
                 &String::from_utf8_lossy(&o.stderr),
                 counted,

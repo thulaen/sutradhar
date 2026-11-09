@@ -71,7 +71,8 @@ const MOST_PATH_BYTES: usize = 512;
 /// measured as quoted, so it can only be refused early, never let in;
 /// one that is not valid text counts as too long.
 fn name_bytes(line: &[u8]) -> usize {
-    let name = line.get(6..).unwrap_or_default();
+    const MARK_LEN: usize = "+++ b/".len();
+    let name = line.get(MARK_LEN..).unwrap_or_default();
     let name = name.strip_suffix(b"\t").unwrap_or(name);
     // A name that is not valid text grows when it is read, so it cannot
     // be measured honestly and is refused.
@@ -92,6 +93,7 @@ pub fn added_lines(
     base: &str,
     head: &str,
 ) -> Result<Vec<(String, String)>, String> {
+    const HEADER_EXTRA: usize = 16;
     let range = crate::repo::range(base, head);
     let args = [
         // Names as they are, not as escape codes, so a short name in
@@ -133,7 +135,9 @@ pub fn added_lines(
             // or `+++` lines, so the line holding both names is measured
             // too: `diff --git a/NAME b/NAME` is twice the name plus 16
             // bytes of its own. A line that is not valid text is refused.
-            let both = MOST_PATH_BYTES.saturating_mul(2).saturating_add(16);
+            let both = MOST_PATH_BYTES
+                .saturating_mul(2)
+                .saturating_add(HEADER_EXTRA);
             if line.len() > both || std::str::from_utf8(line).is_err() {
                 return Err(format!(
                     "the push names a file longer than {MOST_PATH_BYTES} bytes"
@@ -271,9 +275,10 @@ fn lay_over(
 /// # Errors
 /// When no new folder can be made.
 pub fn fresh_folder(base: &Path) -> Result<std::path::PathBuf, String> {
+    const MOST_ATTEMPTS: u32 = 100;
     fs::create_dir_all(base)
         .map_err(|e| format!("cannot make {}: {e}", base.display()))?;
-    for attempt in 0_u32..100 {
+    for attempt in 0..MOST_ATTEMPTS {
         let nanos = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
             .map_or(0, |d| d.subsec_nanos());

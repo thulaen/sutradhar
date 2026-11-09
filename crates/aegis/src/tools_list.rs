@@ -41,10 +41,13 @@ pub struct Tool {
     pub note: Option<String>,
 }
 
-/// Whether `text` is 64 hex characters.
+/// How many hex characters a SHA-256 has.
+pub const HEX_LEN: usize = 64;
+
+/// Whether `text` is [`HEX_LEN`] hex characters.
 #[must_use]
 pub fn is_hex64(text: &str) -> bool {
-    text.len() == 64 && text.bytes().all(|b| b.is_ascii_hexdigit())
+    text.len() == HEX_LEN && text.bytes().all(|b| b.is_ascii_hexdigit())
 }
 
 /// The tools in the list.

@@ -55,9 +55,10 @@ fn starts(before: &[u32], old: usize, after: &[u32], new: usize) -> bool {
 /// `step` places on, for a `step` under a fifth of `least`, keeps only
 /// its first `step` tokens.
 fn squeezed(file: &[Token], least: usize) -> Vec<Token> {
+    const STEP_SHARE: usize = 5;
     let written: Vec<u32> = file.iter().map(|t| t.1).collect();
     let mut gone = vec![false; file.len()];
-    for step in 1..least / 5 {
+    for step in 1..least / STEP_SHARE {
         let mut from = 0_usize;
         for at in 0..=written.len() {
             let more = at.checked_add(step).and_then(|n| written.get(n));

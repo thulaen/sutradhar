@@ -123,6 +123,7 @@ pub fn commit_entries(repo: &Repo, id: &str) -> Result<Vec<Entry>, String> {
 /// # Errors
 /// When git fails or the listing is too long.
 pub fn tree_totals(repo: &Repo, id: &str) -> Result<(usize, u64, u64), String> {
+    const SIZE_FIELD: usize = 3;
     let mut command = repo.command();
     let _args = command.args(["ls-tree", "-r", "-l", "-z", "--full-tree", id]);
     let raw = crate::git_env::read_capped(&mut command, LARGEST_TREE)?;
@@ -131,7 +132,7 @@ pub fn tree_totals(repo: &Repo, id: &str) -> Result<(usize, u64, u64), String> {
         let front = item.split(|b| *b == b'\t').next().unwrap_or_default();
         let size = std::str::from_utf8(front)
             .ok()
-            .and_then(|f| f.split_whitespace().nth(3))
+            .and_then(|f| f.split_whitespace().nth(SIZE_FIELD))
             .and_then(|s| s.parse::<u64>().ok())
             // Only a submodule has no size, and checkout writes none.
             .unwrap_or(0);
@@ -220,6 +221,7 @@ pub fn of_pushed(
     base: &str,
     id: &str,
 ) -> Result<Vec<Finding>, String> {
+    const SHORT_ID: usize = 10;
     let mut needed = base != NO_COMMIT && has_check(repo, base)?;
     for parent in parents(repo, id)? {
         needed = needed || has_check(repo, &parent)?;
@@ -229,7 +231,7 @@ pub fn of_pushed(
     }
     let entries = commit_entries(repo, id)?;
     let read = |p: &str| read_blob(repo, &format!("{id}:{p}"));
-    let short = id.get(..10).unwrap_or(id);
+    let short = id.get(..SHORT_ID).unwrap_or(id);
     let change = fingerprint(&entries);
     let at = format!("commit {short}");
     Ok(review_record::check(&change, &entries, &read, &at))

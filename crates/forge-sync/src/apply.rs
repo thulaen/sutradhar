@@ -90,7 +90,7 @@ fn one(t: &mut Target<'_>, action: &Action) -> Result<String, String> {
         }
         Action::CreateIssue(i) => create_issue(t, i),
         Action::UpdateIssue(n, i) => {
-            let body = issue_json(t, i, true);
+            let body = with_state(issue_json(t, i), i);
             gh(t, "PATCH", &format!("issues/{n}"), &body)
                 .map(|_| format!("updated the copy of task #{}", i.number))
         }
@@ -109,18 +109,22 @@ fn milestone_json(m: &Milestone) -> Value {
     json!({"title": m.title, "description": m.description, "state": m.state})
 }
 
-fn issue_json(t: &Target<'_>, i: &Issue, with_state: bool) -> Value {
+fn issue_json(t: &Target<'_>, i: &Issue) -> Value {
     let milestone = i.milestone.as_ref().and_then(|m| t.milestones.get(m));
-    let mut body = json!({"title": i.title, "body": i.body,
-        "labels": i.labels, "milestone": milestone});
-    if with_state && let Some(map) = body.as_object_mut() {
+    json!({"title": i.title, "body": i.body,
+        "labels": i.labels, "milestone": milestone})
+}
+
+/// `body` with the task's state, open or closed, added.
+fn with_state(mut body: Value, i: &Issue) -> Value {
+    if let Some(map) = body.as_object_mut() {
         let _old = map.insert("state".to_owned(), json!(i.state));
     }
     body
 }
 
 fn create_issue(t: &mut Target<'_>, i: &Issue) -> Result<String, String> {
-    let made = gh(t, "POST", "issues", &issue_json(t, i, false))?;
+    let made = gh(t, "POST", "issues", &issue_json(t, i))?;
     let number =
         made.get("number").and_then(Value::as_u64).ok_or_else(|| {
             "GitHub did not say the new issue's number".to_owned()

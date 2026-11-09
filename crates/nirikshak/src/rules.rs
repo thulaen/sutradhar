@@ -12,125 +12,55 @@ use crate::facts::Facts;
 /// One rule: its file name and text.
 pub type Source = (&'static str, &'static str);
 
+/// One rule's file name and text, from `rules/`.
+macro_rules! rule {
+    ($name:literal) => {
+        (
+            concat!($name, ".rego"),
+            include_str!(concat!("../rules/", $name, ".rego")),
+        )
+    };
+}
+
 /// Every rule, in order.
-pub const ALL: [Source; 30] = [
-    (
-        "r05_environment.rego",
-        include_str!("../rules/r05_environment.rego"),
-    ),
-    (
-        "r08_timeouts.rego",
-        include_str!("../rules/r08_timeouts.rego"),
-    ),
-    (
-        "r09_swallowed_errors.rego",
-        include_str!("../rules/r09_swallowed_errors.rego"),
-    ),
-    (
-        "r14_tests_prove_nothing.rego",
-        include_str!("../rules/r14_tests_prove_nothing.rego"),
-    ),
-    (
-        "r18_unbounded_channels.rego",
-        include_str!("../rules/r18_unbounded_channels.rego"),
-    ),
-    (
-        "r19_sql_from_strings.rego",
-        include_str!("../rules/r19_sql_from_strings.rego"),
-    ),
-    (
-        "s01_shell_commands.rego",
-        include_str!("../rules/s01_shell_commands.rego"),
-    ),
-    (
-        "s02_tls_checks.rego",
-        include_str!("../rules/s02_tls_checks.rego"),
-    ),
-    (
-        "s03_weak_hashes.rego",
-        include_str!("../rules/s03_weak_hashes.rego"),
-    ),
-    (
-        "t01_text_cut_short.rego",
-        include_str!("../rules/t01_text_cut_short.rego"),
-    ),
-    (
-        "c01_unpinned_images.rego",
-        include_str!("../rules/c01_unpinned_images.rego"),
-    ),
-    (
-        "c02_runs_as_root.rego",
-        include_str!("../rules/c02_runs_as_root.rego"),
-    ),
-    (
-        "c03_privileged.rego",
-        include_str!("../rules/c03_privileged.rego"),
-    ),
-    (
-        "c04_host_network.rego",
-        include_str!("../rules/c04_host_network.rego"),
-    ),
-    (
-        "c05_no_limits.rego",
-        include_str!("../rules/c05_no_limits.rego"),
-    ),
-    (
-        "c06_writable_root.rego",
-        include_str!("../rules/c06_writable_root.rego"),
-    ),
-    (
-        "c07_new_privileges.rego",
-        include_str!("../rules/c07_new_privileges.rego"),
-    ),
-    (
-        "c08_rights_kept.rego",
-        include_str!("../rules/c08_rights_kept.rego"),
-    ),
-    (
-        "c09_secret_in_settings.rego",
-        include_str!("../rules/c09_secret_in_settings.rego"),
-    ),
-    (
-        "h06_open_permissions.rego",
-        include_str!("../rules/h06_open_permissions.rego"),
-    ),
-    (
-        "h11_unbuffered_writes.rego",
-        include_str!("../rules/h11_unbuffered_writes.rego"),
-    ),
-    (
-        "h22_destructive_sql.rego",
-        include_str!("../rules/h22_destructive_sql.rego"),
-    ),
-    (
-        "h23_check_then_set.rego",
-        include_str!("../rules/h23_check_then_set.rego"),
-    ),
-    (
-        "h25_cache_never_cleared.rego",
-        include_str!("../rules/h25_cache_never_cleared.rego"),
-    ),
-    (
-        "h35_panic_in_drop.rego",
-        include_str!("../rules/h35_panic_in_drop.rego"),
-    ),
-    (
-        "h39_writes_outside_transaction.rego",
-        include_str!("../rules/h39_writes_outside_transaction.rego"),
-    ),
-    (
-        "h42_too_few_cases.rego",
-        include_str!("../rules/h42_too_few_cases.rego"),
-    ),
-    (
-        "h44_local_clock.rego",
-        include_str!("../rules/h44_local_clock.rego"),
-    ),
+pub const ALL: [Source; 37] = [
+    rule!("r05_environment"),
+    rule!("r08_timeouts"),
+    rule!("r09_swallowed_errors"),
+    rule!("r14_tests_prove_nothing"),
+    rule!("r18_unbounded_channels"),
+    rule!("r19_sql_from_strings"),
+    rule!("s01_shell_commands"),
+    rule!("s02_tls_checks"),
+    rule!("s03_weak_hashes"),
+    rule!("t01_text_cut_short"),
+    rule!("m01_flag_inputs"),
+    rule!("m02_magic_numbers"),
+    rule!("m03_long_chains"),
+    rule!("m04_large_types"),
+    rule!("m05_commented_code"),
+    rule!("m06_repeated_text"),
+    rule!("m07_two_jobs"),
+    rule!("c01_unpinned_images"),
+    rule!("c02_runs_as_root"),
+    rule!("c03_privileged"),
+    rule!("c04_host_network"),
+    rule!("c05_no_limits"),
+    rule!("c06_writable_root"),
+    rule!("c07_new_privileges"),
+    rule!("c08_rights_kept"),
+    rule!("c09_secret_in_settings"),
+    rule!("h06_open_permissions"),
+    rule!("h11_unbuffered_writes"),
+    rule!("h22_destructive_sql"),
+    rule!("h23_check_then_set"),
+    rule!("h25_cache_never_cleared"),
+    rule!("h35_panic_in_drop"),
+    rule!("h39_writes_outside_transaction"),
+    rule!("h42_too_few_cases"),
+    rule!("h44_local_clock"),
     ("h53_leaks.rego", include_str!("../rules/h53_leaks.rego")),
-    (
-        "h56_platform_paths.rego",
-        include_str!("../rules/h56_platform_paths.rego"),
-    ),
+    rule!("h56_platform_paths"),
 ];
 
 /// What a rule says about itself.
@@ -181,10 +111,11 @@ pub fn about(name: &str, text: &str) -> Result<About, String> {
 }
 
 fn found(rule: &About, item: &Value) -> Option<Found> {
+    const FIELDS: usize = 3;
     let path = item.get("path")?.as_str()?.to_owned();
     let line = usize::try_from(item.get("line")?.as_u64()?).ok()?;
     let what = item.get("what")?.as_str()?.to_owned();
-    (item.as_object()?.len() == 3).then(|| Found {
+    (item.as_object()?.len() == FIELDS).then(|| Found {
         rule: rule.clone(),
         path,
         line,
@@ -274,3 +205,7 @@ mod tests;
 #[cfg(test)]
 #[path = "rules_h_tests.rs"]
 mod h_tests;
+
+#[cfg(test)]
+#[path = "rules_m_tests.rs"]
+mod m_tests;

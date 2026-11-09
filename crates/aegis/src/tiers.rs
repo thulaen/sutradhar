@@ -2,6 +2,9 @@
 
 use crate::docs::{self, Lookup};
 use crate::repo::Repo;
+
+/// The workspace's own settings file.
+const CARGO_TOML: &str = "Cargo.toml";
 pub use crate::rust_steps::{
     cargo_command, fetch, fetch_libraries, rust_checks_using,
 };
@@ -13,9 +16,15 @@ use crate::{
 /// Whether the TypeScript compiler is pinned, which switches TypeScript
 /// on.
 #[must_use]
-pub fn typescript_on(repo: &Repo) -> bool {
-    repo.read("gate/tools.toml")
-        .is_some_and(|t| t.lines().any(|l| l.trim() == "name = \"tsgo\""))
+pub fn typescript_on(repo: &Repo) -> file_kinds::TypeScript {
+    let pinned = repo
+        .read("gate/tools.toml")
+        .is_some_and(|t| t.lines().any(|l| l.trim() == "name = \"tsgo\""));
+    if pinned {
+        file_kinds::TypeScript::On
+    } else {
+        file_kinds::TypeScript::Off
+    }
 }
 
 /// The checks for a set of files: kind, clean text, size, markers,
@@ -98,7 +107,7 @@ pub fn whole_project_docs(repo: &Repo, all: &[String]) -> Vec<Finding> {
     out.extend(crate::sbom::check(
         repo.read("Cargo.lock").as_deref(),
         repo.read("gate/tools.toml").as_deref(),
-        repo.read("Cargo.toml").as_deref(),
+        repo.read(CARGO_TOML).as_deref(),
         repo.read(crate::sbom::PATH).as_deref(),
     ));
     // The gate's own repository keeps its catalogue in step with its code.
@@ -118,7 +127,7 @@ pub fn whole_project_docs(repo: &Repo, all: &[String]) -> Vec<Finding> {
         let glossary = repo.read(crate::names::GLOSSARY);
         out.extend(crate::names::check(glossary.as_deref(), all));
         let list = repo.read(crate::packages::PATH);
-        let root = repo.read("Cargo.toml");
+        let root = repo.read(CARGO_TOML);
         out.extend(crate::packages::check(
             list.as_deref(),
             root.as_deref(),
@@ -146,7 +155,7 @@ pub fn rust_checks(repo: &Repo) -> Vec<Finding> {
         )];
     }
     let mut out = Vec::new();
-    if repo.read("Cargo.toml").is_some() {
+    if repo.read(CARGO_TOML).is_some() {
         // The checks run offline, so the exact libraries in the lock file
         // and the advisory list are fetched first, outside any seal;
         // fetching runs no build code.

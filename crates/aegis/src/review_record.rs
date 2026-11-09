@@ -112,6 +112,7 @@ pub fn check(
     read: &Reader<'_>,
     at: &str,
 ) -> Vec<Finding> {
+    const MOST_SHOWN: usize = 200;
     let mut out = Vec::new();
     for skill in REQUIRED {
         let path = format!("{FOLDER}{skill}.toml");
@@ -138,7 +139,7 @@ pub fn check(
                 Ok(Ok(record)) => judge(skill, change, &record),
                 Ok(Err(e)) => {
                     let why: String =
-                        clean(e.message()).chars().take(200).collect();
+                        clean(e.message()).chars().take(MOST_SHOWN).collect();
                     Some(format!("the record cannot be read: {why}"))
                 }
                 Err(_) => Some("the record is not UTF-8 text".to_owned()),

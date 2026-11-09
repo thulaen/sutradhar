@@ -67,8 +67,15 @@ impl MarkedEventReceiver for FirstTag {
     }
 }
 
+/// Where a workflow runs.
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum Host {
+    Forgejo,
+    Elsewhere,
+}
+
 /// Walks one node, adding a problem for each refused key or value.
-fn walk(node: &Yaml, forgejo: bool, out: &mut Vec<String>) {
+fn walk(node: &Yaml, host: Host, out: &mut Vec<String>) {
     match node {
         Yaml::Hash(map) => {
             for (key, value) in map {
@@ -84,15 +91,15 @@ fn walk(node: &Yaml, forgejo: bool, out: &mut Vec<String>) {
                     ));
                 }
                 let dell = matches!(value, Yaml::String(v) if v == "dell");
-                if forgejo && name == "runs-on" && !dell {
+                if host == Host::Forgejo && name == "runs-on" && !dell {
                     out.push("a Forgejo workflow runs only on `dell`".into());
                 }
-                walk(value, forgejo, out);
+                walk(value, host, out);
             }
         }
         Yaml::Array(items) => {
             for item in items {
-                walk(item, forgejo, out);
+                walk(item, host, out);
             }
         }
         Yaml::BadValue => out.push("a value cannot be read".to_owned()),
@@ -128,7 +135,12 @@ pub fn check(path: &str, text: &str) -> Vec<Finding> {
         return found(0, "a workflow must be exactly one document".to_owned());
     };
     let mut problems = Vec::new();
-    walk(doc, on_forgejo(path), &mut problems);
+    let host = if on_forgejo(path) {
+        Host::Forgejo
+    } else {
+        Host::Elsewhere
+    };
+    walk(doc, host, &mut problems);
     problems
         .into_iter()
         .map(|message| Finding::new(CHECK, path, 0, message))

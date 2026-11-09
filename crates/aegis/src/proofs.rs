@@ -25,6 +25,9 @@ const CHECK: &str = "proofs.no-tricks";
 
 use crate::rust_tokens::{Token, tokens};
 
+/// The word that ends the names of trusting proof markers.
+const SPEC: &str = "specification";
+
 fn word(parts: [&str; 2]) -> String {
     parts.concat()
 }
@@ -32,10 +35,10 @@ fn word(parts: [&str; 2]) -> String {
 /// The words that are tricks anywhere in code.
 fn tricky_words() -> [String; 5] {
     [
-        word(["external_fn_", "specification"]),
-        word(["external_type_", "specification"]),
-        word(["external_trait_", "specification"]),
-        word(["assume_", "specification"]),
+        word(["external_fn_", SPEC]),
+        word(["external_type_", SPEC]),
+        word(["external_trait_", SPEC]),
+        word(["assume_", SPEC]),
         word(["extern_", "spec"]),
     ]
 }
@@ -116,12 +119,12 @@ fn is_zero(w: &str) -> bool {
 /// Whether assume at `i` is used as a value, such as `let f = assume;`,
 /// so a later call through the new name would hide a trick. Inside a
 /// `use` it is only brought in, which is fine.
-fn bound_to_name(t: &[Token], i: usize, in_use: bool) -> bool {
+fn bound_to_name(t: &[Token], i: usize) -> bool {
     let next = at(t, i.saturating_add(1));
     let method = i > 0 && at(t, i.wrapping_sub(1)) == ".";
     let path = next == ":" && at(t, i.saturating_add(2)) == ":";
     let skip = matches!(next, "(" | "<" | "!" | "as" | ":") && !path;
-    !in_use && !method && !skip
+    !method && !skip
 }
 
 /// The tricks in plain code, as (line, what it does).
@@ -140,7 +143,7 @@ fn find_words(t: &[Token], out: &mut Vec<(usize, &'static str)>) {
             _ => {}
         }
         let after = i.saturating_add(1);
-        if *w == assume_w && bound_to_name(t, i, in_use) {
+        if *w == assume_w && !in_use && bound_to_name(t, i) {
             out.push((*line, "binds assume to a name, which hides tricks"));
         }
         let false_given = (*w == assume_w || *w == requires)
@@ -164,6 +167,8 @@ fn find_words(t: &[Token], out: &mut Vec<(usize, &'static str)>) {
 
 /// The tricks in attributes, as (line, what it does).
 fn find_attributes(t: &[Token], out: &mut Vec<(usize, &'static str)>) {
+    const CLOSE_AT: usize = 3;
+    const KANI_BACK: usize = 3;
     let words = tricky_attribute_words();
     let unwind = word(["unw", "ind"]);
     let mut i = 0_usize;
@@ -182,14 +187,14 @@ fn find_attributes(t: &[Token], out: &mut Vec<(usize, &'static str)>) {
                 "]" => depth.saturating_sub(1),
                 _ => depth,
             };
-            let kani = at(t, j.wrapping_sub(3)) == "kani"
+            let kani = at(t, j.wrapping_sub(KANI_BACK)) == "kani"
                 && at(t, j.wrapping_sub(1)) == ":";
             if words.contains(w) || kani && *w == word(["should_", "panic"]) {
                 out.push((*line, "trusts or skips code in the proof"));
             }
             let zero = at(t, j.saturating_add(1)) == "("
                 && is_zero(at(t, j.saturating_add(2)))
-                && at(t, j.saturating_add(3)) == ")";
+                && at(t, j.saturating_add(CLOSE_AT)) == ")";
             if *w == unwind && zero {
                 out.push((*line, "skips loops in the proof"));
             }

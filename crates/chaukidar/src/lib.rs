@@ -68,7 +68,8 @@ pub fn parse(list: &str) -> Result<Vec<Watched>, String> {
 }
 
 fn is_label(label: &str) -> bool {
-    (1..=40).contains(&label.len())
+    const LONGEST_LABEL: usize = 40;
+    (1..=LONGEST_LABEL).contains(&label.len())
         && label
             .chars()
             .all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '-')

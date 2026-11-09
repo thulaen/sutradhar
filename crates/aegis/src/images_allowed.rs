@@ -56,34 +56,58 @@ pub struct Entry {
     pub until: String,
 }
 
-/// The day number of a `YYYY-MM-DD` date (days since 1970-01-01).
+/// The day number of a `YYYY-MM-DD` date (days since 1970-01-01), by
+/// Howard Hinnant's days-from-civil: years run from March, so the leap
+/// day comes last, and 400 years always hold the same days.
 #[must_use]
 pub fn day_of(date: &str) -> Option<i64> {
-    let mut parts = date.splitn(3, '-').map(str::parse::<i64>);
+    const FORM: &str = "YYYY-MM-DD";
+    const PARTS: usize = 3;
+    const MONTHS: i64 = 12;
+    const LONGEST_MONTH: i64 = 31;
+    const ERA_YEARS: i64 = 400;
+    const ERA_DAYS: i64 = 146_097;
+    const YEAR_DAYS: i64 = 365;
+    const LEAP_EVERY: i64 = 4;
+    const NO_LEAP_EVERY: i64 = 100;
+    const MARCH: i64 = 3;
+    const TO_MARCH: i64 = 9;
+    // Days in the months from March, as (153 * month + 2) / 5.
+    const MONTH_STEP: i64 = 153;
+    const MONTH_ROUND: i64 = 2;
+    const MONTH_SPLIT: i64 = 5;
+    // Days from 0000-03-01 to 1970-01-01.
+    const EPOCH: i64 = 719_468;
+    let mut parts = date.splitn(PARTS, '-').map(str::parse::<i64>);
     let (Some(Ok(y)), Some(Ok(m)), Some(Ok(d))) =
         (parts.next(), parts.next(), parts.next())
     else {
         return None;
     };
-    if date.len() != 10 || !(1..=12).contains(&m) || !(1..=31).contains(&d) {
+    let whole = date.len() == FORM.len()
+        && (1..=MONTHS).contains(&m)
+        && (1..=LONGEST_MONTH).contains(&d);
+    if !whole {
         return None;
     }
-    // Howard Hinnant's days-from-civil.
-    let y = if m <= 2 { y.checked_sub(1)? } else { y };
-    let era = y.div_euclid(400);
-    let yoe = y.checked_sub(era.checked_mul(400)?)?;
-    let mp = if m > 2 {
-        m.checked_sub(3)?
+    let y = if m < MARCH { y.checked_sub(1)? } else { y };
+    let era = y.div_euclid(ERA_YEARS);
+    let yoe = y.checked_sub(era.checked_mul(ERA_YEARS)?)?;
+    let mp = if m >= MARCH {
+        m.checked_sub(MARCH)?
     } else {
-        m.checked_add(9)?
+        m.checked_add(TO_MARCH)?
     };
-    let doy = mp.checked_mul(153)?.checked_add(2)?.checked_div(5)?;
+    let doy = mp
+        .checked_mul(MONTH_STEP)?
+        .checked_add(MONTH_ROUND)?
+        .checked_div(MONTH_SPLIT)?;
     let doy = doy.checked_add(d)?.checked_sub(1)?;
-    let doe = yoe.checked_mul(365)?.checked_add(yoe / 4)?;
-    let doe = doe.checked_sub(yoe / 100)?.checked_add(doy)?;
-    era.checked_mul(146_097)?
+    let doe = yoe.checked_mul(YEAR_DAYS)?.checked_add(yoe / LEAP_EVERY)?;
+    let doe = doe.checked_sub(yoe / NO_LEAP_EVERY)?.checked_add(doy)?;
+    era.checked_mul(ERA_DAYS)?
         .checked_add(doe)?
-        .checked_sub(719_468)
+        .checked_sub(EPOCH)
 }
 
 /// Why one entry is refused, if it is: not a known hole of a pinned
@@ -154,10 +178,11 @@ pub fn read(
 /// # Errors
 /// When the clock reads before the list was made, so it is set back.
 pub fn today() -> Result<i64, String> {
+    const DAY_SECONDS: u64 = 86_400;
     let secs = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
         .map_or(0, |d| d.as_secs());
-    let day = i64::try_from(secs / 86_400).unwrap_or(i64::MAX);
+    let day = i64::try_from(secs / DAY_SECONDS).unwrap_or(i64::MAX);
     if day < day_of(FIRST_DAY).unwrap_or(0) {
         return Err(format!(
             "the clock reads before {FIRST_DAY}; set it right"

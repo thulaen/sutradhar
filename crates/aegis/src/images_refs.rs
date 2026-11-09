@@ -156,11 +156,14 @@ pub fn problem(image: &str, pinned: &[(String, String)]) -> Option<String> {
 /// The `sha256:` digests in any text that are not among `pinned`.
 #[must_use]
 pub fn loose_digests(text: &str, pinned: &[(String, String)]) -> Vec<String> {
+    const PREFIX: &str = "sha256:";
     let mut out = Vec::new();
     let mut rest = text;
-    while let Some(at) = rest.find("sha256:") {
-        let tail = rest.get(at.saturating_add(7)..).unwrap_or_default();
-        let hex = tail.get(..64).unwrap_or_default();
+    while let Some(at) = rest.find(PREFIX) {
+        let tail = rest
+            .get(at.saturating_add(PREFIX.len())..)
+            .unwrap_or_default();
+        let hex = tail.get(..crate::tools_list::HEX_LEN).unwrap_or_default();
         if is_hex64(hex) && !pinned.iter().any(|(_, p)| p.ends_with(hex)) {
             out.push(format!("sha256:{hex}"));
         }

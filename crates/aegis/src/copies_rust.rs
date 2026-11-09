@@ -23,6 +23,8 @@ pub fn code(text: &str) -> Vec<(String, usize)> {
 
 /// Whether an item may start after the tokens kept so far.
 fn item_starts(before: &[(String, usize)]) -> bool {
+    // How far back a `pub(...)` may start.
+    const LOOK_BACK: usize = 8;
     let last = |n: usize| {
         before
             .len()
@@ -30,10 +32,11 @@ fn item_starts(before: &[(String, usize)]) -> bool {
             .and_then(|i| before.get(i))
             .map(|t| t.0.as_str())
     };
+
     match last(1) {
         None | Some(";" | "{" | "}" | "]" | "pub") => true,
         // `pub(crate)`, `pub(super)` or `pub(in path)`.
-        Some(")") => (2..8).any(|n| {
+        Some(")") => (2..LOOK_BACK).any(|n| {
             last(n) == Some("(") && last(n.saturating_add(1)) == Some("pub")
         }),
         _ => false,

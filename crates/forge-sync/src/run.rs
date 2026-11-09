@@ -33,10 +33,13 @@ pub struct System {
     pub gap: Duration,
 }
 
+/// The most seconds one program runs unless told otherwise.
+const DEFAULT_SECONDS: u64 = 300;
+
 impl Default for System {
     fn default() -> Self {
         Self {
-            limit: 300,
+            limit: DEFAULT_SECONDS,
             gap: Duration::from_secs(1),
         }
     }
