@@ -7,14 +7,16 @@
 //! - renaming assume, by `as` or by binding it to a name, so a later
 //!   trick hides behind the new name;
 //! - an attribute (outer, inner, by path or inside `cfg_attr`) naming
-//!   external, external body, trusted, should panic, the no-decreases
-//!   allowance, a stub, or unwinding loops zero times;
+//!   external, external body, trusted, Kani's should panic (a plain
+//!   test's should panic is fine), the no-decreases allowance, a stub,
+//!   or unwinding loops zero times in any spelling;
 //! - Verus's and Creusot's ways of stating a specification for code
 //!   that is not proved, and admitting a goal.
 //!
 //! The words are built from parts, so this file does not match itself.
 //! An always-false condition written another way, such as `1 == 2`,
-//! needs a solver and is a review matter.
+//! needs a solver and is a review matter, and so is assume hidden inside
+//! a helper function or closure that is later given false.
 
 use crate::Finding;
 use crate::file_kinds::Kind;
@@ -39,12 +41,11 @@ fn tricky_words() -> [String; 5] {
 }
 
 /// The words that are tricks inside an attribute.
-fn tricky_attribute_words() -> [String; 6] {
+fn tricky_attribute_words() -> [String; 5] {
     [
         word(["exter", "nal"]),
         word(["external_", "body"]),
         word(["trust", "ed"]),
-        word(["should_", "panic"]),
         word(["exec_allows_no_", "decreases_clause"]),
         word(["st", "ub"]),
     ]
@@ -55,11 +56,43 @@ fn at(t: &[Token], i: usize) -> &str {
     t.get(i).map_or("", |(w, _)| w.as_str())
 }
 
-/// Whether the tokens from `i` are `( false` or `! ( false`.
+/// Whether the tokens from `i` are `( false`, `! ( false`, or the same
+/// with more brackets, such as `((false))`.
 fn called_with_false(t: &[Token], i: usize) -> bool {
-    let bang = usize::from(at(t, i) == "!");
-    at(t, i.saturating_add(bang)) == "("
-        && at(t, i.saturating_add(bang).saturating_add(1)) == "false"
+    let mut j = i.saturating_add(usize::from(at(t, i) == "!"));
+    if at(t, j) != "(" {
+        return false;
+    }
+    while at(t, j) == "(" {
+        j = j.saturating_add(1);
+    }
+    at(t, j) == "false"
+}
+
+/// Whether a requires clause from `i` has a bare `false` as any of its
+/// parts, such as `requires x > 0, false,`. The clause ends at `{`,
+/// `;` or `]`, or when its own brackets close.
+fn requires_false(t: &[Token], i: usize) -> bool {
+    let top = usize::from(at(t, i) == "(");
+    let mut depth = 0_usize;
+    let mut j = i;
+    while let Some((w, _)) = t.get(j) {
+        let part_start =
+            j == i || at(t, j.wrapping_sub(1)) == "," && depth == top;
+        let part_end = matches!(at(t, j.saturating_add(1)), "," | ")" | "{");
+        if w == "false" && part_start && part_end {
+            return true;
+        }
+        match w.as_str() {
+            "(" => depth = depth.saturating_add(1),
+            ")" if depth == 0 => return false,
+            ")" => depth = depth.saturating_sub(1),
+            "{" | ";" | "]" => return false,
+            _ => {}
+        }
+        j = j.saturating_add(1);
+    }
+    false
 }
 
 /// Whether a number word is zero in any spelling: `0`, `00`, `0x0`,
@@ -86,7 +119,9 @@ fn is_zero(w: &str) -> bool {
 fn bound_to_name(t: &[Token], i: usize, in_use: bool) -> bool {
     let next = at(t, i.saturating_add(1));
     let method = i > 0 && at(t, i.wrapping_sub(1)) == ".";
-    !in_use && !method && !matches!(next, "(" | "<" | "!" | "as" | ":")
+    let path = next == ":" && at(t, i.saturating_add(2)) == ":";
+    let skip = matches!(next, "(" | "<" | "!" | "as" | ":") && !path;
+    !in_use && !method && !skip
 }
 
 /// The tricks in plain code, as (line, what it does).
@@ -110,7 +145,7 @@ fn find_words(t: &[Token], out: &mut Vec<(usize, &'static str)>) {
         }
         let false_given = (*w == assume_w || *w == requires)
             && called_with_false(t, after)
-            || *w == requires && at(t, after) == "false";
+            || *w == requires && requires_false(t, after);
         if false_given {
             out.push((*line, "assumes false, so any proof passes"));
         }
@@ -147,7 +182,9 @@ fn find_attributes(t: &[Token], out: &mut Vec<(usize, &'static str)>) {
                 "]" => depth.saturating_sub(1),
                 _ => depth,
             };
-            if words.contains(w) {
+            let kani = at(t, j.wrapping_sub(3)) == "kani"
+                && at(t, j.wrapping_sub(1)) == ":";
+            if words.contains(w) || kani && *w == word(["should_", "panic"]) {
                 out.push((*line, "trusts or skips code in the proof"));
             }
             let zero = at(t, j.saturating_add(1)) == "("

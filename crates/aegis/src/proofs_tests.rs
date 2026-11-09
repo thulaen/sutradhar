@@ -118,6 +118,12 @@ fn zero_in_any_spelling_and_a_bound_assume_are_refused() {
         t("#[kani::unw", "ind(0b0usize)]"),
         t("let f = kani::ass", "ume;"),
         t("g(kani::ass", "ume, x);"),
+        t("kani::r#ass", "ume(false);"),
+        t("let f = kani::ass", "ume::<>;"),
+        t("requ", "ires x > 0, false,"),
+        t("#[kani::requ", "ires(x > 0, false)]"),
+        t("kani::ass", "ume((false));"),
+        format!("let q = cr\"\\\";\n{}\nlet r = \"\";\n", t("adm", "it();")),
     ];
     for trick in tricks {
         assert!(found(&trick) >= 1, "{trick}");
@@ -126,6 +132,10 @@ fn zero_in_any_spelling_and_a_bound_assume_are_refused() {
         t("use kani::{any, ass", "ume};"),
         t("#[kani::unw", "ind(10)]"),
         t("#[kani::unw", "ind(0x10)]"),
+        "#[test]\n#[should_panic]\nfn t() {}\n".to_owned(),
+        "let r#type = 1;\nlet s = \"\\\"#\";\n".to_owned(),
+        t("requ", "ires f(false) > 0,"),
+        t("requ", "ires f(a, false),"),
     ];
     for text in honest {
         assert_eq!(found(&text), 0, "{text}");

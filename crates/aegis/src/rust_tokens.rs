@@ -121,11 +121,16 @@ impl Reader {
             .iter()
             .collect();
         let next = self.at(0);
-        if matches!(word.as_str(), "r" | "br")
-            && matches!(next, Some('#' | '"'))
-        {
+        let raw_prefix = matches!(word.as_str(), "r" | "br" | "cr");
+        if word == "r" && next == Some('#') && self.at(1).is_some_and(is_word) {
+            // A raw name such as `r#type` is the plain name `type`.
+            self.step();
+            self.word(out);
+        } else if raw_prefix && matches!(next, Some('#' | '"')) {
             self.raw();
-        } else if !(word == "b" && matches!(next, Some('"' | '\''))) {
+        } else if !(matches!(word.as_str(), "b" | "c")
+            && matches!(next, Some('"' | '\'')))
+        {
             out.push((word, line));
         }
     }
@@ -178,10 +183,12 @@ mod tests {
     #[test]
     fn drops_comments_and_every_kind_of_literal() {
         let text = "a // b\n/* c /* d */ e */ f \"g\" r\"h\\\" i r#\"j\"k\"# \
-                    l b\"m\" n '\"' o b'\"' p '\\'' q";
+                    l b\"m\" n '\"' o b'\"' p '\\'' q \
+                    cr\"s\\\" r#type c\"t\" u";
         assert_eq!(
             words(text),
-            ["a", "f", "i", "l", "n", "o", "p", "q"].map(str::to_owned)
+            ["a", "f", "i", "l", "n", "o", "p", "q", "type", "u"]
+                .map(str::to_owned)
         );
     }
 
