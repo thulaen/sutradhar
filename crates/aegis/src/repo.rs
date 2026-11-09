@@ -8,6 +8,11 @@ use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 use std::time::{SystemTime, UNIX_EPOCH};
 
+/// The largest file the gate reads, in bytes: far above any source file,
+/// low enough that a file cannot use up the memory. The door refuses
+/// any file over 1 MiB before this is reached.
+pub const MOST_READ: u64 = 8 * 1024 * 1024;
+
 /// A git repository on disk. Git runs in `root`; files are read from
 /// `content`, which is `root` itself or a copy of the staged files.
 #[derive(Debug, Clone)]
@@ -227,23 +232,10 @@ impl Repo {
         Ok(patch::nul_list(&self.git(&args)?))
     }
 
-    /// The text of a file, or `None` when it cannot be read.
-    #[must_use]
-    pub fn read(&self, path: &str) -> Option<String> {
-        let bytes = fs::read(self.content.join(path)).ok()?;
-        Some(String::from_utf8_lossy(&bytes).into_owned())
-    }
-
-    /// The bytes of a file, or `None` when it cannot be read.
-    #[must_use]
-    pub fn read_bytes(&self, path: &str) -> Option<Vec<u8>> {
-        fs::read(self.content.join(path)).ok()
-    }
-
     /// True when the path is a folder.
     #[must_use]
     pub fn is_folder(&self, path: &str) -> bool {
-        self.content.join(path).is_dir()
+        !self.is_link(path) && self.content.join(path).is_dir()
     }
 }
 
@@ -255,7 +247,10 @@ pub(crate) fn range(base: &str, head: &str) -> String {
     }
 }
 
-/// The added lines in a patch, with the file each was added to.
+// Reading files from disk: never through a link, never too large.
+#[path = "repo_files.rs"]
+mod files;
+
 #[cfg(test)]
 mod tests {
     use super::Repo;

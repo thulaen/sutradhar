@@ -127,6 +127,15 @@ fn check_main(
     if let Some(why) = too_big(repo, commit) {
         return Ok(refused("door.size", &why));
     }
+    // git's own override of `.gitattributes`: no filter a pushed project
+    // names (such as git-lfs) runs during checkout (task #119).
+    let found = repo.git(&["rev-parse", "--git-path", "info/attributes"])?;
+    let attributes = repo.root().join(found.trim());
+    attributes
+        .parent()
+        .map_or(Ok(()), std::fs::create_dir_all)
+        .and_then(|()| std::fs::write(&attributes, "* -filter\n"))
+        .map_err(|e| format!("cannot switch filters off: {e}"))?;
     let _out = repo.git(&["checkout", "-q", "--detach", "--force", commit])?;
     let _out =
         repo.git(&["clean", "-q", "-f", "-d", "-x", "-e", "/target/"])?;

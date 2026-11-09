@@ -222,3 +222,19 @@ fn a_big_file_in_an_earlier_commit_of_the_push_is_refused_too() {
     let found = door.check(main_push(&first, &head), &body).unwrap();
     assert!(found.iter().any(|f| f.check == "door.size"), "{found:?}");
 }
+
+#[test]
+fn a_filter_named_by_a_pushed_project_never_runs_at_checkout() {
+    let (source, door, first) = setup("filter");
+    let work = door_work("filter");
+    let marker = work.join("filter-ran");
+    let run = format!("touch {}", marker.display());
+    let _ = git(&work, &["config", "filter.evil.smudge", &run]);
+    let _ = git(&work, &["config", "filter.evil.required", "true"]);
+    std::fs::write(source.join(".gitattributes"), "*.md filter=evil\n")
+        .unwrap();
+    let next = commit(&source, "c.md", "# C\n", GOOD);
+    let body = pack(&source, &first, &next);
+    let _found = door.check(main_push(&first, &next), &body).unwrap();
+    assert!(!marker.exists(), "the pushed filter ran");
+}

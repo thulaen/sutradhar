@@ -1,5 +1,5 @@
 skill = "backlog"
-change = "sha256:0a485de92d6b2718ba92436bf2706debf7ef322f1a7a8cba51424639d2c4c80e"
+change = "sha256:2bc66048658adc63d2d1d5907804718b76b91ce35c2e6f3aaf024d535465c043"
 verdict = "pass"
 agent = "claude subagents"
-summary = "Ten rounds by fresh subagents. The change does task #111 and fixes #123 found by its own red team; follow-ups are tasks #119, #121, #122 and #124 in Later or Phase 2; the last round (eleven) passed."
+summary = "Four rounds by fresh subagents on task #119 (links never followed, files too large refused, the door's checkout runs no pushed filter). The change does task #119 and nothing more; small notes went to task #124; the last round passed."

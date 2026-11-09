@@ -25,6 +25,8 @@ pub fn typescript_on(repo: &Repo) -> bool {
 pub fn file_checks(repo: &Repo, paths: &[String]) -> Vec<Finding> {
     let ts = typescript_on(repo);
     let mut out = file_kinds::check(paths.iter().map(String::as_str), ts);
+    out.extend(file_kinds::links(repo, paths));
+    out.extend(file_kinds::too_large(repo, paths));
     let private = match crate::private::Private::from_env() {
         Ok(private) => private,
         Err(e) => {

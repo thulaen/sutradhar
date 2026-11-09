@@ -50,6 +50,18 @@ tiers = ["commit", "push"]
 proof = "aegis::docs::tests::refuses_status_words"
 
 [[check]]
+id = "files.too-large"
+partly = ["GI-20"]
+tiers = ["commit", "push"]
+proof = "aegis::links::a_file_too_large_to_check_is_refused_not_skipped"
+
+[[check]]
+id = "files.no-links"
+partly = ["GI-03", "GI-18"]
+tiers = ["commit", "push"]
+proof = "aegis::links::a_link_is_refused_and_never_read"
+
+[[check]]
 id = "files.allowed-kind"
 partly = ["GI-51"]
 tiers = ["commit", "push"]

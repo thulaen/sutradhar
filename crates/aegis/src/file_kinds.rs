@@ -117,6 +117,47 @@ fn is_addon(path: &str) -> bool {
     path.starts_with("addons/xenforo/") || path.starts_with("addons/wordpress/")
 }
 
+/// Every path among `paths` that is a link, or passes through one: links
+/// are refused, since a pushed link could point anywhere on the computer
+/// that checks it (task #119).
+#[must_use]
+pub fn links(repo: &crate::repo::Repo, paths: &[String]) -> Vec<Finding> {
+    paths
+        .iter()
+        .filter(|p| repo.is_link(p))
+        .map(|p| {
+            Finding::new(
+                "files.no-links",
+                p,
+                0,
+                "links are not allowed; commit the file itself",
+            )
+        })
+        .collect()
+}
+
+/// Every path among `paths` that is too large to read: refused, so its
+/// checks are never skipped without a word.
+#[must_use]
+pub fn too_large(repo: &crate::repo::Repo, paths: &[String]) -> Vec<Finding> {
+    paths
+        .iter()
+        .filter(|p| repo.too_large(p))
+        .map(|p| {
+            Finding::new(
+                "files.too-large",
+                p,
+                0,
+                format!(
+                    "this file is over {} bytes, too large to check; keep \
+                     it out",
+                    crate::repo::MOST_READ
+                ),
+            )
+        })
+        .collect()
+}
+
 /// Checks that every path is an allowed kind of file.
 #[must_use]
 pub fn check<'a>(
