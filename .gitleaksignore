@@ -1,0 +1,8 @@
+# False alarms the leak scan (secrets.gitleaks) may pass. Each line names
+# one finding exactly: commit, file, rule and line, so nothing else is
+# let through. Adding a line needs a review that the value is not real.
+#
+# Made-up values in a test for the private-lists check; the test now
+# builds them from parts.
+22d45af8d7ca948b0136c16a7bd4f45df5d13166:crates/aegis/src/private_tests.rs:generic-api-key:100
+22d45af8d7ca948b0136c16a7bd4f45df5d13166:crates/aegis/src/private_tests.rs:generic-api-key:108

@@ -80,6 +80,12 @@ tiers = ["commit", "push"]
 proof = "aegis::text::tests::hidden_and_control_characters_fail"
 
 [[check]]
+id = "secrets.gitleaks"
+partly = ["GI-46"]
+tiers = ["commit", "push"]
+proof = "aegis::planted::a_planted_token_fails_the_leak_scan_and_an_allow_note_does_not_help"
+
+[[check]]
 id = "secrets.private-data"
 partly = ["GI-46"]
 tiers = ["commit", "push"]

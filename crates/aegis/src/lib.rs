@@ -7,6 +7,7 @@ pub mod docs;
 pub mod file_kinds;
 pub mod finding;
 pub mod history;
+pub mod leaks;
 pub mod limits;
 pub mod markers;
 pub mod names;

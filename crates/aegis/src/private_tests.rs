@@ -97,15 +97,21 @@ fn the_lists_never_show_in_debug_output() {
 fn every_line_and_value_of_a_secret_file_counts() {
     let dir = lists("many-lines");
     let env = dir.join("env");
-    fs::write(&env, "API_KEY=abcdef123456\nuser:host:pw987654321\nshort\n")
-        .unwrap();
+    // The made-up value is built from parts, so no leak scan mistakes
+    // this file for one holding a real key.
+    let value = ["abc", "def123456"].concat();
+    fs::write(
+        &env,
+        format!("API_KEY={value}\nuser:host:pw987654321\nshort\n"),
+    )
+    .unwrap();
     fs::write(
         dir.join("credential-files.txt"),
         format!("{}\n", env.display()),
     )
     .unwrap();
     let private = Private::load(&dir).unwrap();
-    for text in ["key: abcdef123456", "pass pw987654321 here"] {
+    for text in [format!("key: {value}"), "pass pw987654321 here".to_owned()] {
         assert_eq!(check("a.rs", text.as_bytes(), &private).len(), 1, "{text}");
     }
     assert_eq!(check("a.rs", b"short and sweet", &private), Vec::new());

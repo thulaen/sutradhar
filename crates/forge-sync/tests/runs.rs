@@ -21,7 +21,10 @@ fn copies_everything_github_lacks() {
     assert_eq!(problems.len(), 0, "{problems:?}");
     assert_eq!(done.len(), 6, "{done:?}");
     assert!(fake.called("gitleaks stdin"));
-    assert!(fake.called("gitleaks git --no-banner --redact --log-opts="));
+    assert!(fake.called(
+        "gitleaks git --no-banner --redact --ignore-gitleaks-allow \
+         --gitleaks-ignore-path="
+    ));
     assert!(fake.called("git -C /m push --quiet github main refs/tags/v0.1.0"));
     assert!(fake.called("PATCH repos/g/r/issues/5"));
     assert!(fake.called("POST repos/g/r/releases"));

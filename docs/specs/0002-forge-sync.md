@@ -20,6 +20,11 @@ checks everything, and only then sends anything:
    message and changes), every tag message, and all the text above,
    with gitleaks, the secrets check and the private word lists. If
    anything is flagged, or a check cannot run, nothing is sent that run.
+   gitleaks runs exactly as the gate's `secrets.gitleaks` check does:
+   `gitleaks:allow` notes do not count, and the only false alarms it
+   passes are the ones listed by commit, file, rule and line in the
+   reviewed `.gitleaksignore` on `main`. A problem is told in the urgent
+   task once; the same problem on later runs adds nothing.
 4. Only then does it push `main` and the tags on `main`, and make the
    changes. A release is made only for a tag it has just sent.
 

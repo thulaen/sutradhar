@@ -29,7 +29,8 @@ pub enum Kind {
     Markdown,
     /// A licence text.
     Licence,
-    /// `.gitignore` or `.gitattributes`.
+    /// `.gitignore`, `.gitattributes`, or `.gitleaksignore` (the leak
+    /// scan's reviewed false alarms).
     Git,
     /// A lock file written by a tool.
     Lock,
@@ -93,7 +94,7 @@ pub fn kind_of(path: &str, typescript_on: bool) -> Option<Kind> {
 fn by_name(path: &str, name: &str) -> Option<Kind> {
     match name {
         "LICENSE" if path == "LICENSE" => Some(Kind::Licence),
-        ".gitignore" | ".gitattributes" => Some(Kind::Git),
+        ".gitignore" | ".gitattributes" | ".gitleaksignore" => Some(Kind::Git),
         "Cargo.lock" if path == "Cargo.lock" => Some(Kind::Lock),
         "composer.lock" if is_addon(path) => Some(Kind::Lock),
         "Dockerfile" => Some(Kind::Docker),
@@ -159,6 +160,7 @@ mod tests {
             ("LICENSES/GPL-2.0-or-later.txt", Kind::Licence),
             (".gitignore", Kind::Git),
             (".gitattributes", Kind::Git),
+            (".gitleaksignore", Kind::Git),
             ("Cargo.lock", Kind::Lock),
             ("addons/xenforo/composer.lock", Kind::Lock),
         ];

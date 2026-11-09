@@ -76,6 +76,7 @@ pub fn whole_project_docs(repo: &Repo, all: &[String]) -> Vec<Finding> {
     }
     // Spelling, in British English, across the whole project.
     out.extend(tool::run(repo.content(), "text.typos", "typos", &[]));
+    out.extend(crate::leaks::files(repo.content()));
     // The gate's own repository keeps its catalogue in step with its code.
     let gate = all.iter().any(|p| p.starts_with("crates/aegis/"));
     if gate || all.iter().any(|p| p == crate::catalogue::PATH) {
@@ -268,6 +269,7 @@ pub fn push(
         out.extend(secrets::check(&at, &line));
         out.extend(private(&at, &line));
     }
+    out.extend(crate::leaks::history(repo.root(), base, head));
     let all = repo.tracked_files()?;
     out.extend(file_checks(repo, &all));
     out.extend(whole_project_docs(repo, &all));

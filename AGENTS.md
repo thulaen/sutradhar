@@ -493,8 +493,10 @@ report gets a first reply within 7 days.
 - After each push to `main`, the sync sends code, tags, releases,
   milestones and issues to GitHub.
 - Only fields on an allow-list are sent. Private names and secrets are
-  removed, and gitleaks scans everything before it leaves. If the sync is
-  unsure, it sends nothing and raises an urgent task.
+  removed, and gitleaks scans everything before it leaves. The gate runs
+  the same gitleaks on every commit and push, so what the gate lets in
+  can always leave. If the sync is unsure, it sends nothing and raises an
+  urgent task.
 - The sync uses a fine-grained GitHub token limited to this repository.
   Until the owner makes one, only agents on Dell use the owner's
   signed-in `gh` tool, never runner jobs.

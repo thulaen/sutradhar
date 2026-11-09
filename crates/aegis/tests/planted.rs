@@ -182,3 +182,25 @@ fn the_hindi_word_list_is_not_spelling_checked_as_english() {
         found.iter().filter(|f| f.check == "text.typos").collect();
     assert!(spelling.is_empty(), "{spelling:?}");
 }
+
+#[test]
+fn a_planted_token_fails_the_leak_scan_and_an_allow_note_does_not_help() {
+    let dir = std::env::temp_dir()
+        .join(format!("aegis-planted-leaks-{}", std::process::id()));
+    let _ = fs::remove_dir_all(&dir);
+    fs::create_dir_all(&dir).unwrap();
+    let all = ["a.md".to_owned()];
+    let run = |d: &Path| {
+        let found = tiers::whole_project_docs(&Repo::at(d), &all);
+        found.into_iter().find(|f| f.check == "secrets.gitleaks")
+    };
+    fs::write(dir.join("a.md"), "Nothing secret here.\n").unwrap();
+    assert!(run(&dir).is_none());
+    // Built from parts, so this file holds no token.
+    let token = format!("{}{}", "gh", "p_aB3dE6gH9jK2mN5pQ8sT1vW4yZ7bC0eF3hJ6");
+    let allow = ["gitleaks", ":allow"].concat();
+    fs::write(dir.join("a.md"), format!("token {token} {allow}\n")).unwrap();
+    assert_eq!(run(&dir).map(|f| f.check), Some("secrets.gitleaks"));
+    fs::write(dir.join(".gitleaksignore"), "a.md:github-pat:1\n").unwrap();
+    assert!(run(&dir).is_none());
+}
