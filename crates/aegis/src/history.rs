@@ -104,9 +104,25 @@ pub fn parent_with_tests(
         return Err(format!("cannot unpack the parent of {}", commit.id));
     }
     for path in commit.paths.iter().filter(|p| is_test_file(p)) {
-        lay_over(repo, &commit.id, path, dest)?;
+        if !in_new_crate(dest, path) {
+            lay_over(repo, &commit.id, path, dest)?;
+        }
     }
     Ok(true)
+}
+
+/// Whether `path` is in a crate the parent tree in `dest` lacks, such as
+/// `crates/new/tests/x.rs` when `crates/new/Cargo.toml` is not there.
+/// Its tests cannot run on the parent, and laying them over would leave a
+/// crate folder with no manifest, which stops cargo for the whole tree.
+fn in_new_crate(dest: &Path, path: &str) -> bool {
+    let mut parts = path.split('/');
+    match (parts.next(), parts.next()) {
+        (Some("crates"), Some(name)) => {
+            !dest.join("crates").join(name).join("Cargo.toml").exists()
+        }
+        _ => false,
+    }
 }
 
 /// Refuses a path that passes through, or ends at, a link inside `dest`,

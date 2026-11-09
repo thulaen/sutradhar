@@ -140,3 +140,61 @@ fn a_link_in_the_old_tree_cannot_send_a_write_outside() {
     );
     assert_eq!(fs::read_dir(&outside).unwrap().count(), 0);
 }
+
+#[test]
+fn a_commit_that_adds_a_crate_with_tests_can_still_prove_test_first() {
+    let dir = workspace("new-crate");
+    let base = save(
+        &dir,
+        &[
+            ("Cargo.toml", "[workspace]\nmembers = [\"crates/*\"]\n"),
+            (
+                "Cargo.lock",
+                "version = 4\n\n[[package]]\nname = \"demo\"\n\
+                 version = \"0.1.0\"\n",
+            ),
+            (
+                "crates/demo/Cargo.toml",
+                "[package]\nname = \"demo\"\nversion = \"0.1.0\"\n\
+                 edition = \"2024\"\n",
+            ),
+            (
+                "crates/demo/src/lib.rs",
+                "pub fn add(a: i32, b: i32) -> i32 { a - b }\n",
+            ),
+        ],
+        "feat(demo): start",
+    );
+    let fixed = save(
+        &dir,
+        &[
+            (
+                "crates/demo/src/lib.rs",
+                "pub fn add(a: i32, b: i32) -> i32 { a + b }\n",
+            ),
+            (
+                "crates/demo/tests/sum.rs",
+                "#[test]\nfn adds() { assert_eq!(demo::add(1, 2), 3); }\n",
+            ),
+            (
+                "crates/extra/Cargo.toml",
+                "[package]\nname = \"extra\"\nversion = \"0.1.0\"\n\
+                 edition = \"2024\"\n",
+            ),
+            ("crates/extra/src/lib.rs", "//! x\n"),
+            ("crates/extra/tests/x.rs", "#[test]\nfn x() {}\n"),
+            (
+                "Cargo.lock",
+                "version = 4\n\n[[package]]\nname = \"demo\"\n\
+                 version = \"0.1.0\"\n\n[[package]]\nname = \"extra\"\n\
+                 version = \"0.1.0\"\n",
+            ),
+        ],
+        &message("demo::sum::adds"),
+    );
+    let repo = Repo::at(&dir);
+    let found =
+        check(&repo, &commits(&repo, &base, &fixed).unwrap(), &["cargo"]);
+    assert_eq!(found, Vec::new());
+    fs::remove_dir_all(&dir).unwrap();
+}
