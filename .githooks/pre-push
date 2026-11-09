@@ -11,6 +11,10 @@ command -v cargo >/dev/null 2>&1 || {
 # folder in its setting `sutradhar.private`.
 private=$(git config --get sutradhar.private || true)
 if [ -n "$private" ]; then export AEGIS_PRIVATE="$private"; fi
+# The image scanner's list of holes lives outside the checkout, in the
+# folder this checkout names in its setting `sutradhar.grypedb`.
+grype_db=$(git config --get sutradhar.grypedb || true)
+if [ -n "$grype_db" ]; then export AEGIS_GRYPE_DB="$grype_db"; fi
 remote="$1"
 # On Dell, the checks wait in the heavy-job queue (AGENTS.md section 11),
 # named in this checkout's own setting `sutradhar.queue`.

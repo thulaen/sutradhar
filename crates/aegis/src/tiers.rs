@@ -217,6 +217,18 @@ pub fn push(
         out.extend(private(&at, &line));
     }
     out.extend(crate::leaks::history(repo.root(), base, head));
+    // The set-up files whose images must be the scanned ones.
+    let used: Vec<(String, String)> = repo
+        .tracked_files()?
+        .into_iter()
+        .filter(|p| p.starts_with("docker/") || p.starts_with("deploy/"))
+        .filter_map(|p| repo.read(&p).map(|t| (p, t)))
+        .collect();
+    out.extend(crate::images::scan(
+        repo.root(),
+        repo.read(crate::tools_list::PATH).as_deref(),
+        &used,
+    ));
     let all = repo.tracked_files()?;
     out.extend(file_checks(repo, &all));
     out.extend(whole_project_docs(repo, &all));

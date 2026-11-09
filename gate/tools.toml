@@ -17,6 +17,7 @@ sha256 = "b6d8368292fabbbc739eb366f006edf1c2f06ba3919051743e8d610beab72ca6"
 name = "forgejo"
 version = "15.0.11"
 source = "codeberg.org/forgejo/forgejo"
+image = "codeberg.org/forgejo/forgejo"
 digest = "sha256:3cd6bc2b74c87cbde0a0fd527c9665cb416f5a0540dee54fe5afb3fa2df9f40c"
 
 [[tool]]
@@ -48,6 +49,7 @@ note = "Forgejo's runner on Dell; see docs/specs/0060-runner.md"
 name = "ubuntu-image"
 version = "26.04"
 source = "docker.io/library/ubuntu:26.04 (official image)"
+image = "docker.io/library/ubuntu"
 digest = "sha256:6a06111c3b0a8600feadb270aec771dc239bf407b25625f93f44ab00e11f4d3c"
 note = "the container each runner job starts from"
 
@@ -71,3 +73,10 @@ version = "1.52.0"
 source = "crates.io typos-cli 1.52.0, built with cargo install --locked"
 sha256 = "d901ffe46bf0a211105e7d596003fd34e43498dc496a37a4d61d64c73e39c691"
 note = "gate check text.typos; settings in _typos.toml"
+
+[[tool]]
+name = "grype"
+version = "0.121.0"
+source = "https://github.com/anchore/grype/releases/tag/v0.121.0"
+sha256 = "bd511334178bc3002eb9eb58880f89e01e35f7fed7cfbe671171127a8afa3596"
+note = "gate check images.holes; its list of holes is fetched outside the seal"

@@ -1,17 +1,13 @@
 skill = "defects"
-change = "sha256:f374f227497c168f8478438978a16755d76b9d898bae40fb179c6bb7b880df5f"
+change = "sha256:a55207be33b03b18c78afd7c60b282e1a6254473d6a35b4d2b7b28a489818b40"
 verdict = "pass"
 agent = "claude subagents"
-summary = "Six rounds by fresh subagents on task #115 (the copy check). Every staged line read and every probe run; exact line ranges are tested, and new tests fail on the old code."
+summary = "Nine rounds by fresh subagents on task #114 (the image check). Every staged line read; mutations of each rule fail a test, and a clean report passes."
 
 [[finding]]
-what = "a shell glob was read as a comment and hid code"
+what = "a clean image could never pass"
 fixed = true
 
 [[finding]]
-what = "two tables in a row hid a copy"
-fixed = true
-
-[[finding]]
-what = "use items swallowed code after use<'a> and r#use"
+what = "tests did not check the scanner's arguments"
 fixed = true

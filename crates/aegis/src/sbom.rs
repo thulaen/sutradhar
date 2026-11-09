@@ -37,22 +37,6 @@ struct Locked {
     dependencies: Vec<String>,
 }
 
-#[derive(Deserialize)]
-struct Tools {
-    tool: Vec<Tool>,
-}
-
-#[derive(Deserialize)]
-#[serde(deny_unknown_fields)]
-struct Tool {
-    name: String,
-    version: String,
-    source: String,
-    sha256: Option<String>,
-    digest: Option<String>,
-    note: Option<String>,
-}
-
 fn crate_ref(name: &str, version: &str) -> String {
     format!("cargo:{name}@{version}")
 }
@@ -132,21 +116,25 @@ fn library(p: &Locked, license: Option<&str>) -> Result<Value, String> {
 
 /// One pinned tool, as a component: a container image when it is
 /// pinned by digest, a program when it is pinned by file hash.
-fn tool(t: &Tool) -> Result<(String, Value), String> {
+fn tool(t: &crate::tools_list::Tool) -> Result<(String, Value), String> {
     let (kind, hex) = match (t.digest.as_deref(), t.sha256.as_deref()) {
         (Some(d), None) => ("container", d.strip_prefix("sha256:")),
         (None, Some(h)) => ("application", Some(h)),
         _ => return Err(format!("tool `{}` needs one hash", t.name)),
     };
-    let hex = hex
-        .filter(|h| h.len() == 64 && h.bytes().all(|b| b.is_ascii_hexdigit()))
-        .ok_or_else(|| {
-            format!("tool `{}` needs one SHA-256 hash or digest", t.name)
-        })?;
+    let hex =
+        hex.filter(|h| crate::tools_list::is_hex64(h))
+            .ok_or_else(|| {
+                format!("tool `{}` needs one SHA-256 hash or digest", t.name)
+            })?;
     let what = t
         .note
         .as_ref()
         .map_or_else(|| t.source.clone(), |n| format!("{}; {n}", t.source));
+    let what = t
+        .image
+        .as_ref()
+        .map_or(what.clone(), |image| format!("image {image}; {what}"));
     let id = format!("tool:{}@{}", t.name, t.version);
     Ok((
         id.clone(),
@@ -179,7 +167,7 @@ impl Parts {
 
 fn gather(
     lock: &Lock,
-    tools: &Tools,
+    tools: &[crate::tools_list::Tool],
     license: Option<&str>,
 ) -> Result<Parts, String> {
     let mut all = Parts::default();
@@ -198,7 +186,7 @@ fn gather(
             return Err(format!("Cargo.lock holds `{}` twice", p.name));
         }
     }
-    for t in &tools.tool {
+    for t in tools {
         let (id, c) = tool(t)?;
         all.ours.push(id.clone());
         if !all.add(id, c, Vec::new()) {
@@ -216,9 +204,7 @@ fn gather(
 pub fn build(lock: &str, tools: &str, root: &str) -> Result<String, String> {
     let lock: Lock = toml::from_str(lock)
         .map_err(|e| format!("Cargo.lock cannot be read: {}", e.message()))?;
-    let tools: Tools = toml::from_str(tools).map_err(|e| {
-        format!("gate/tools.toml cannot be read: {}", e.message())
-    })?;
+    let tools = crate::tools_list::read(tools)?;
     let root: toml::Table = toml::from_str(root)
         .map_err(|e| format!("Cargo.toml cannot be read: {}", e.message()))?;
     let license = root

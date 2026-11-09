@@ -10,6 +10,7 @@ pub mod file_kinds;
 pub mod finding;
 pub mod git_env;
 pub mod history;
+pub mod images;
 pub mod leaks;
 pub mod limits;
 pub mod markers;
@@ -33,6 +34,8 @@ pub mod tdd;
 pub mod text;
 pub mod tiers;
 pub mod tool;
+pub mod tools_list;
 pub mod workflows;
+pub mod yaml_safe;
 
 pub use finding::Finding;

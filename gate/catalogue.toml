@@ -158,6 +158,12 @@ tiers = ["commit", "push"]
 proof = "aegis::copies::tests::a_copy_with_new_names_is_found"
 
 [[check]]
+id = "images.holes"
+partly = ["GI-18"]
+tiers = ["push"]
+proof = "aegis::images::tests::a_planted_hole_is_refused_and_a_clean_image_passes"
+
+[[check]]
 id = "supply.sbom"
 partly = ["GI-18"]
 tiers = ["commit", "push"]

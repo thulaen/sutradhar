@@ -785,7 +785,7 @@
     },
     {
       "bom-ref": "tool:forgejo@15.0.11",
-      "description": "codeberg.org/forgejo/forgejo",
+      "description": "image codeberg.org/forgejo/forgejo; codeberg.org/forgejo/forgejo",
       "hashes": [
         {
           "alg": "SHA-256",
@@ -821,6 +821,19 @@
       "name": "gitleaks",
       "type": "application",
       "version": "8.30.1"
+    },
+    {
+      "bom-ref": "tool:grype@0.121.0",
+      "description": "https://github.com/anchore/grype/releases/tag/v0.121.0; gate check images.holes; its list of holes is fetched outside the seal",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "bd511334178bc3002eb9eb58880f89e01e35f7fed7cfbe671171127a8afa3596"
+        }
+      ],
+      "name": "grype",
+      "type": "application",
+      "version": "0.121.0"
     },
     {
       "bom-ref": "tool:rust@1.99.1",
@@ -876,7 +889,7 @@
     },
     {
       "bom-ref": "tool:ubuntu-image@26.04",
-      "description": "docker.io/library/ubuntu:26.04 (official image); the container each runner job starts from",
+      "description": "image docker.io/library/ubuntu; docker.io/library/ubuntu:26.04 (official image); the container each runner job starts from",
       "hashes": [
         {
           "alg": "SHA-256",
@@ -1261,6 +1274,7 @@
         "tool:forgejo@15.0.11",
         "tool:gh@2.46.0",
         "tool:gitleaks@8.30.1",
+        "tool:grype@0.121.0",
         "tool:rust@1.99.1",
         "tool:shellcheck@0.11.0",
         "tool:shfmt@3.12.0",
@@ -1292,6 +1306,10 @@
     {
       "dependsOn": [],
       "ref": "tool:gitleaks@8.30.1"
+    },
+    {
+      "dependsOn": [],
+      "ref": "tool:grype@0.121.0"
     },
     {
       "dependsOn": [],

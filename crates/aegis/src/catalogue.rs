@@ -20,7 +20,7 @@ pub const ITEMS: &str = "docs/standards/gate-items.md";
 
 /// Every check the gate can report. A test keeps this list and the code
 /// in step.
-pub const REPORTED: [&str; 38] = [
+pub const REPORTED: [&str; 39] = [
     "commit.message",
     "commit.tdd",
     "commit.test-first",
@@ -51,6 +51,7 @@ pub const REPORTED: [&str; 38] = [
     "rust.deny",
     "rust.unused-deps",
     "supply.sbom",
+    "images.holes",
     "text.typos",
     "push.clean-tree",
     "proofs.no-tricks",

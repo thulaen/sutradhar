@@ -272,6 +272,20 @@ shipped product is built on it. Parts made before Boot exists (the gate,
   `gate/tools.toml`, with its hash. Run `aegis sbom` after changing
   either file or the licence in `Cargo.toml`; the gate refuses a list
   that is out of date.
+- Every image pinned in `gate/tools.toml` is scanned at the push tier
+  with the pinned Grype. A high or critical hole that has a fix blocks
+  the push, by the owner's decision of 9 November 2026, until a fixed
+  image is pinned. Every image the set-up files under `docker/` and
+  `deploy/` name must be an image and digest `gate/tools.toml` pins:
+  - an `image:` value and a `docker://` runner label;
+  - any `sha256:` digest in any file, scripts included.
+
+  In those files, compose's `build`, `extends`, `include`, `provider` and
+  `models`, a `type` of `image` or one set by a variable, YAML tags,
+  anchors and aliases are refused (JSON files are read as YAML too).
+  So is any build file until task #132 gives the gate a reader that
+  matches Docker's: any name, in any case, holding `dockerfile` or
+  `containerfile`, or starting with `docker-bake`.
 
 ## 6. Code standards
 
