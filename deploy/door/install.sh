@@ -8,6 +8,9 @@ set -eu
 # The checks wait in the heavy-job queue (AGENTS.md section 11) when this
 # checkout names one in its setting `sutradhar.queue`.
 queue=$(git config --get sutradhar.queue || true)
+tools=$(git config --get sutradhar.tools || true)
+cargo_bin=$(dirname "$(command -v cargo)")
+path=${tools:+$tools:}$cargo_bin:/usr/local/bin:/usr/bin:/bin
 door="$1"
 forgejo_uid="$2"
 here=$(pwd)
@@ -35,7 +38,7 @@ Environment=RUSTUP_HOME=${RUSTUP_HOME:?}
 Environment=RUSTUP_TOOLCHAIN=$toolchain
 Environment=CARGO_HOME=${CARGO_HOME:?}
 ${queue:+Environment=AEGIS_QUEUE=$queue}
-Environment=PATH=$(dirname "$(command -v cargo)"):/usr/local/bin:/usr/bin:/bin
+Environment=PATH=$path
 ExecStart=$door/bin/aegis-door $door/run/door.sock $door/work
 Restart=always
 RestartSec=2

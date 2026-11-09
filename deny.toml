@@ -1,0 +1,35 @@
+# cargo-deny's settings (AGENTS.md section 5.7). The gate runs
+# `cargo deny --offline check licenses bans sources` on every commit and
+# push. Loosening this file needs the owner's signed waiver (section 7.2).
+
+[graph]
+all-features = true
+
+[licenses]
+# The licences AGENTS.md section 5.7 allows, and our own.
+allow = [
+    "MIT",
+    "Apache-2.0",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "ISC",
+    "Zlib",
+    "Unicode-3.0",
+    "MPL-2.0",
+    "AGPL-3.0-or-later",
+    "GPL-2.0-or-later",
+]
+confidence-threshold = 0.95
+
+[bans]
+# One version of each library, and no wildcard versions. Links between
+# our own crates, which are never published, are allowed.
+multiple-versions = "deny"
+wildcards = "deny"
+allow-wildcard-paths = true
+
+[sources]
+# Libraries come from crates.io only: no other registry, no git.
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]

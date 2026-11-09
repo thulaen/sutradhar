@@ -194,7 +194,7 @@ fn a_finding_made_some_other_way_fails_the_scan() {
 
 /// The real catalogue in this repository passes its own check.
 #[test]
-fn this_repositorys_catalogue_passes() {
+fn the_catalogue_of_this_repository_passes() {
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
     let read = |p: &str| std::fs::read_to_string(root.join(p)).ok();
     let folders: Vec<std::path::PathBuf> =

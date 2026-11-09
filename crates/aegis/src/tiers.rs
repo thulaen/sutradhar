@@ -63,6 +63,8 @@ pub fn whole_project_docs(repo: &Repo, all: &[String]) -> Vec<Finding> {
     for path in rule_file::POINTER_FILES {
         out.extend(rule_file::check(path, repo.read(path).as_deref()));
     }
+    // Spelling, in British English, across the whole project.
+    out.extend(tool::run(repo.content(), "text.typos", "typos", &[]));
     // The gate's own repository keeps its catalogue in step with its code.
     let gate = all.iter().any(|p| p.starts_with("crates/aegis/"));
     if gate || all.iter().any(|p| p == crate::catalogue::PATH) {
@@ -142,11 +144,23 @@ pub fn rust_checks_using(repo: &Repo, cargo: &[&str]) -> Vec<Finding> {
         "warnings",
     ];
     let tests = ["test", "--workspace", "--quiet", "--target-dir", &target];
-    let steps: [(&'static str, &[&str]); 3] = [
+    let deny = ["deny", "--offline", "check", "licenses", "bans", "sources"];
+    let steps: [(&'static str, &[&str]); 4] = [
         ("rust.format", &["fmt", "--all", "--check"]),
         ("rust.lints", &lints),
         ("rust.tests", &tests),
+        ("rust.deny", &deny),
     ];
+    // The library rules (AGENTS.md section 5.7) must be written down.
+    let mut out = Vec::new();
+    if repo.read("deny.toml").is_none() {
+        out.push(Finding::new(
+            "rust.deny",
+            "deny.toml",
+            0,
+            "a Rust project needs deny.toml, its library rules",
+        ));
+    }
     let Some((program, before)) = cargo.split_first() else {
         return vec![Finding::new(
             "rust.tests",
@@ -155,14 +169,20 @@ pub fn rust_checks_using(repo: &Repo, cargo: &[&str]) -> Vec<Finding> {
             "no command was given to run the Rust checks".to_owned(),
         )];
     };
-    steps
-        .iter()
-        .filter_map(|(check, args)| {
-            let all: Vec<&str> =
-                before.iter().chain(args.iter()).copied().collect();
-            tool::run(repo.content(), check, program, &all)
-        })
-        .collect()
+    out.extend(steps.iter().filter_map(|(check, args)| {
+        let all: Vec<&str> =
+            before.iter().chain(args.iter()).copied().collect();
+        tool::run(repo.content(), check, program, &all)
+    }));
+    // Unused libraries: the tool only reads files and runs no project
+    // code, so it runs directly.
+    out.extend(tool::run(
+        repo.content(),
+        "rust.unused-deps",
+        "cargo-machete",
+        &["--skip-target-dir"],
+    ));
+    out
 }
 
 /// The commit tier: the staged files, every doc, and the Rust checks,

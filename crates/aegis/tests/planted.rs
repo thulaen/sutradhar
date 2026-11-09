@@ -18,10 +18,11 @@ fn project(name: &str, lib: &str, test: &str) -> PathBuf {
     let files = [
         ("Cargo.toml", "[workspace]\nmembers = [\"demo\"]\n"),
         ("Cargo.lock", LOCK),
+        ("deny.toml", "[licenses]\nallow = [\"MIT\"]\n"),
         (
             "demo/Cargo.toml",
             "[package]\nname = \"demo\"\nversion = \"0.1.0\"\n\
-             edition = \"2024\"\n",
+             edition = \"2024\"\nlicense = \"MIT\"\n",
         ),
         ("demo/src/lib.rs", lib),
         ("demo/tests/t.rs", test),
@@ -105,4 +106,62 @@ fn a_shell_lint_breach_fails_only_the_shell_lint_check() {
         script("clean", "#!/bin/sh\necho \"$1\"\n"),
         Vec::<&str>::new()
     );
+}
+
+#[test]
+fn a_library_under_a_licence_not_allowed_fails_only_the_deny_check() {
+    let dir = project("deny", GOOD_LIB, GOOD_TEST);
+    let manifest = dir.join("demo/Cargo.toml");
+    let text = fs::read_to_string(&manifest).unwrap();
+    fs::write(&manifest, text.replace("\"MIT\"", "\"SSPL-1.0\"")).unwrap();
+    assert_eq!(checks(&dir), ["rust.deny"]);
+}
+
+#[test]
+fn an_unused_library_fails_only_the_unused_check() {
+    let dir = project("unused", GOOD_LIB, GOOD_TEST);
+    fs::create_dir_all(dir.join("helper/src")).unwrap();
+    fs::write(
+        dir.join("helper/Cargo.toml"),
+        "[package]\nname = \"helper\"\nversion = \"0.1.0\"\n\
+         edition = \"2024\"\nlicense = \"MIT\"\n",
+    )
+    .unwrap();
+    fs::write(dir.join("helper/src/lib.rs"), "//! Helps.\n").unwrap();
+    let manifest = dir.join("demo/Cargo.toml");
+    let text = fs::read_to_string(&manifest).unwrap();
+    let with = format!(
+        "{text}\n[dependencies]\nhelper = {{ path = \"../helper\" }}\n"
+    );
+    fs::write(&manifest, with).unwrap();
+    fs::write(
+        dir.join("Cargo.toml"),
+        "[workspace]\nmembers = [\"demo\", \"helper\"]\n",
+    )
+    .unwrap();
+    let lock = format!(
+        "{LOCK}dependencies = [\"helper\"]\n\n[[package]]\n\
+         name = \"helper\"\nversion = \"0.1.0\"\n"
+    );
+    fs::write(dir.join("Cargo.lock"), lock).unwrap();
+    assert_eq!(checks(&dir), ["rust.unused-deps"]);
+}
+
+#[test]
+fn a_misspelt_word_fails_the_spelling_check() {
+    let dir = std::env::temp_dir()
+        .join(format!("aegis-planted-typos-{}", std::process::id()));
+    let _ = fs::remove_dir_all(&dir);
+    fs::create_dir_all(&dir).unwrap();
+    fs::write(dir.join("a.md"), "The colour is fine.\n").unwrap();
+    let all = ["a.md".to_owned()];
+    let run = |d: &Path| {
+        let found = tiers::whole_project_docs(&Repo::at(d), &all);
+        found.into_iter().find(|f| f.check == "text.typos")
+    };
+    assert!(run(&dir).is_none());
+    // Built from parts, so this file passes its own spelling check.
+    let misspelt = format!("{}{} colour is fine.\n", "T", "eh");
+    fs::write(dir.join("a.md"), misspelt).unwrap();
+    assert_eq!(run(&dir).map(|f| f.check), Some("text.typos"));
 }

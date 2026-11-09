@@ -1,0 +1,29 @@
+# The spelling check's settings (typos; gate check text.typos). Prose is
+# British English (AGENTS.md section 1). The patterns below are fixed
+# names from other projects and standards, and deliberate misspellings
+# in tests; they are allowed exactly as written, never as prose.
+
+[default]
+locale = "en-gb"
+extend-ignore-re = [
+    "Authorization:",
+    "NO_COLOR",
+    "--no-color",
+    "oauth/authorize",
+    "authorize_url",
+    "\\bCENTER\\b",
+    "\\bCOLOR\\b",
+    "authorization_code",
+    "Merchant Center",
+    "AppArmor",
+    "Canva",
+    "Organization data",
+    "serde::Serialize",
+    "unicode-normalization",
+    "linking\\.thred",
+    "[Rr]aspbery",
+    "caf\\\\xe9",
+]
+
+[files]
+extend-exclude = ["target", "Cargo.lock", "LICENSE", "LICENSES"]

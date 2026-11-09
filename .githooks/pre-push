@@ -10,6 +10,14 @@ command -v cargo >/dev/null 2>&1 || {
 remote="$1"
 # On Dell, the checks wait in the heavy-job queue (AGENTS.md section 11),
 # named in this checkout's own setting `sutradhar.queue`.
+# The pinned tools (gate/tools.toml) are found in this checkout's
+# setting `sutradhar.tools`.
+tools=$(git config --get sutradhar.tools || true)
+if [ -n "$tools" ] && [ ! -d "$tools" ]; then
+  echo "aegis: sutradhar.tools names $tools, which is not a folder" >&2
+  exit 1
+fi
+if [ -n "$tools" ]; then PATH="$tools:$PATH"; fi
 queue=$(git config --get sutradhar.queue || true)
 if [ -x "$queue" ]; then export AEGIS_QUEUE="$queue"; fi
 zero=0000000000000000000000000000000000000000

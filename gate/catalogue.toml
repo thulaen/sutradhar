@@ -128,6 +128,24 @@ tiers = ["commit", "push"]
 proof = "aegis::planted::a_stale_lock_file_fails_the_fetch"
 
 [[check]]
+id = "rust.deny"
+partly = ["GI-18", "GI-29"]
+tiers = ["commit", "push"]
+proof = "aegis::planted::a_library_under_a_licence_not_allowed_fails_only_the_deny_check"
+
+[[check]]
+id = "rust.unused-deps"
+partly = ["GI-24"]
+tiers = ["commit", "push"]
+proof = "aegis::planted::an_unused_library_fails_only_the_unused_check"
+
+[[check]]
+id = "text.typos"
+partly = ["GI-49"]
+tiers = ["commit", "push"]
+proof = "aegis::planted::a_misspelt_word_fails_the_spelling_check"
+
+[[check]]
 id = "rust.cargo-settings"
 partly = ["GI-18"]
 tiers = ["commit", "push"]

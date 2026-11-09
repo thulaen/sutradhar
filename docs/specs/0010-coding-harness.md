@@ -510,7 +510,7 @@ Tests live in `crates/aegis/tests/` unless named otherwise.
 - The phone notice service is replaced by `status/urgent` tasks.
 - The old commit freeze, baseline exception and status reports at task
   start are dropped as process notes.
-- Sanitizer checks of native libraries are dropped: there is no unsafe
+- Sanitiser checks of native libraries are dropped: there is no unsafe
   or native code.
 
 Source: `docs/specifications/coding-harness/README.md`,

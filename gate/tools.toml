@@ -50,3 +50,24 @@ version = "26.04"
 source = "docker.io/library/ubuntu:26.04 (official image)"
 digest = "sha256:6a06111c3b0a8600feadb270aec771dc239bf407b25625f93f44ab00e11f4d3c"
 note = "the container each runner job starts from"
+
+[[tool]]
+name = "cargo-deny"
+version = "0.20.2"
+source = "crates.io cargo-deny 0.20.2, built with cargo install --locked"
+sha256 = "aa8639d74e82f1725c4efecb7b533424a52aa6f9ce5d783388a37c15c3906e68"
+note = "gate check rust.deny; settings in deny.toml"
+
+[[tool]]
+name = "cargo-machete"
+version = "0.9.2"
+source = "crates.io cargo-machete 0.9.2, built with cargo install --locked"
+sha256 = "fca70f8b4641c9243d9186e3857586d8b6e857a4335d0919f488ec807bd1dff9"
+note = "gate check rust.unused-deps"
+
+[[tool]]
+name = "typos"
+version = "1.52.0"
+source = "crates.io typos-cli 1.52.0, built with cargo install --locked"
+sha256 = "d901ffe46bf0a211105e7d596003fd34e43498dc496a37a4d61d64c73e39c691"
+note = "gate check text.typos; settings in _typos.toml"

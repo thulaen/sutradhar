@@ -962,8 +962,8 @@ features from the check behind Range 4, each in the section it fits.
 487. Google Tag Manager audit: Checks the site's Google Tag Manager set-up.
 488. Cloudflare analytics and purge: Imports Cloudflare analytics and purges the
      Cloudflare cache.
-489. Google Merchant Center feeds: Makes product feeds for Google Merchant
-     Center. [WP]
+489. Google Merchant Center feeds: Makes product feeds for
+     Google Merchant Center. [WP]
 490. Google Drive report storage: Stores reports in Google Drive.
 491. Dropbox integration: Connects Sutradhar to Dropbox.
 492. OneDrive integration: Connects Sutradhar to OneDrive.
@@ -1930,7 +1930,7 @@ features from the check behind Range 4, each in the section it fits.
 1109. Plain-English interface text: Rewrites interface text in plain English.
 1110. Notification tone pass: Adjusts the tone of notification text.
 1111. Cookie banner text: Writes the text for the cookie banner.
-1112. Confirmation dialog copy: Writes the text for confirmation dialogs.
+1112. Confirmation box copy: Writes the text for confirmation boxes.
 1113. Success messages: Writes messages shown when an action succeeds.
 1114. Loading and progress messages: Writes messages shown while something loads
       or runs.
