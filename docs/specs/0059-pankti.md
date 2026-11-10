@@ -9,9 +9,9 @@ Phase 1 item 7.
 ## What it does
 
 - There are two places. A job takes one place, with 4 GB of memory and
-  8 CPU threads. A benchmark takes both places, with 8 GB and 16
-  threads, so it runs alone.
-- A third job waits until a place is free. A benchmark waits until both
+  8 CPU threads. A timed benchmark takes both places, with 8 GB and 16
+  threads, so it runs alone; a counted one takes one place.
+- A third job waits until a place is free. A timed benchmark waits until both
   are free, and jobs that come after it wait behind it, so it is never
   starved.
 - Each job runs in its own systemd scope inside `sutradhar-heavy.slice`,
@@ -144,8 +144,8 @@ arguments are the build folders to sweep.
 ## Tests
 
 - A third job waits for a free place, and starts when one is freed.
-- A benchmark takes both places, so no other job runs beside it.
-- A benchmark waits for both places, and a later job cannot jump ahead
+- A timed benchmark takes both places, so no other job runs beside it.
+- A timed benchmark waits for both places, and a later job cannot jump ahead
   of it.
 - Places are free again after jobs end.
 - A missing folder is an error.

@@ -910,7 +910,8 @@ Acceptance tests (Rust):
     boundaries, counted and shown; every character is in a piece.
 49. An extra of 5,000 characters is read in full, split like body text
     with the overlap setting; no character of it is dropped.
-50. Reading a 16 MiB post, measured with a counting allocator, peaks
+50. Reading a 16 MiB post, measured with the counting allocator in a
+    benchmark program (AGENTS.md section 6 rule 8), peaks
     under the reading row (48 MB under 16 GB), at about 33 MB with an
     ordinary batch beside it; the message buffer is freed when reading
     ends.

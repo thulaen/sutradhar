@@ -981,10 +981,12 @@ needs its own manual page.
   0022's limit, about 0.5 MB) bring reading's peak to about 33 MB.
   That is under its row in spec 0024's memory table (48 MB under
   16 GB, 128 MB at 16 GB or more), with no change to it.
-  Each figure is checked with a counting allocator.
+  Each figure is checked with the counting allocator, in a benchmark
+  program (AGENTS.md section 6 rule 8).
 - Memory for `parse` (the whole `Document`) is used only to place or
-  undo a link in one post, never for reading. It is measured with a
-  counting allocator and counts in the staff suggestions budget (0028).
+  undo a link in one post, never for reading. It is measured with the
+  counting allocator in a benchmark program and counts in the staff
+  suggestions budget (0028).
 - Budgets: 5 seconds per call in the service, 1 second in the preview.
 - Speed targets on the 4-core reference machine, each a hard check:
   - preview of a 150,000-character post within 1 second, the preview
@@ -1214,22 +1216,22 @@ Starred (★) cases block any release they touch.
 - No text cut: SH103 a piece size under 1,024 is SUT-430 naming
   `reading.pieces.tokens`; at 1,024 and at 2,048 no piece passes the
   size; SH104 overlaps are whole sentences within
-  `reading.pieces.overlap_tokens` at 0, 64 and 128, whole words when
-  one sentence is longer, and a value over a quarter of the piece size
-  is SUT-430; SH105 a 40 MiB WordPress post read by `ReadStream` in
-  three parts gives the same segments, readable text and pieces as a
-  test build reading it whole; no character is dropped, no part is
-  refused, tags open across a part edge close correctly, and peak
-  memory stays within one 16 MiB part's bound; SH106 a 5,000-character
-  `alt` text is one never-anchor extra, read in full; SH107 reading a
-  16 MiB post, BBCode and HTML, peaks under 48 MB measured with the
-  counting allocator, each part under its line in the worked peak,
-  and the message buffer is freed when reading ends; SH108
-  `ReadStream` gives the same readable text, zones, links and pieces
-  as `parse` with `readable` on the conformance corpus; SH109 no
-  piece holds over 64 KiB of text, a 70 KiB word splits at grapheme
-  boundaries and is counted; SH110 a part whose checksum fails is not
-  parsed and nothing from it is stored.
+  `reading.pieces.overlap_tokens` at 0, 64 and 128, whole words when one
+  sentence is longer, and a value over a quarter of the piece size is
+  SUT-430; SH105 a 40 MiB WordPress post read by `ReadStream` in three
+  parts gives the same segments, readable text and pieces as a test
+  build reading it whole; no character is dropped, no part is refused,
+  tags open across a part edge close correctly, and peak memory stays
+  within one 16 MiB part's bound; SH106 a 5,000-character `alt` text is
+  one never-anchor extra, read in full; SH107 reading a 16 MiB post,
+  BBCode and HTML, peaks under 48 MB measured with the counting
+  allocator in a benchmark program, each part under its line in the
+  worked peak, and the message buffer is freed when reading ends; SH108
+  `ReadStream` gives the same readable text, zones, links and pieces as
+  `parse` with `readable` on the conformance corpus; SH109 no piece
+  holds over 64 KiB of text, a 70 KiB word splits at grapheme boundaries
+  and is counted; SH110 a part whose checksum fails is not parsed and
+  nothing from it is stored.
 
 ### Link reconstruction and model choice
 

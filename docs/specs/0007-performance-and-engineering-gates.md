@@ -40,10 +40,127 @@ For each candidate the speed check reports one of:
    for example reading a typical post within 20 microseconds, or a
    preview within 1 second.
 2. **Baselines.** A slowdown blocks when the median of at least 30 runs
-   is more than 5% slower than the baseline kept in the repository and
-   the difference is larger than the spread of the runs. A baseline may
-   become faster with any commit (a faster result updates it, with the
-   candidate's tree), and slower only through an owner waiver.
+   is more than 5% slower than the time baseline in the door's speed
+   store and the difference is larger than the spread of the runs. How a better
+   baseline is recorded, and how a worse one needs an owner waiver, is
+   in AGENTS.md section 6 rule 8 and "Forced speed" item 7 below.
+
+### Forced speed
+
+The owner asked on 10 November 2026 for checks that force fast code,
+not only stop slow code. The rules, their numbers and their tiers are
+in [AGENTS.md section 6](../../AGENTS.md#6-code-standards) rule 8; this
+section says how they are measured. Words used here:
+
+- A **hot path** is a piece of the product whose speed matters most,
+  listed with its own benchmark program in `gate/speed.toml`.
+- The **measured loop** is the part of a benchmark that does the work
+  being judged, between its **start and stop marks**; set-up and
+  clean-up outside the marks are not counted.
+- **cachegrind** is part of Valgrind. It runs a program on a model of
+  the processor and counts every machine instruction, so the count does
+  not move with load.
+- The **toolchain and lock** are the pinned Rust compiler and the
+  `Cargo.lock` file of exact library versions.
+- A **counting allocator** wraps the memory allocator in a benchmark
+  program and counts each request for memory.
+- **p50, p95 and p99** are the times that 50, 95 and 99 runs in 100
+  finish within.
+
+1. **Hot paths.** `gate/speed.toml` lists each hot path: its benchmark
+   in `benches/`, its inputs, its reference, its baselines and time
+   limits, and any reviewed reason it may allocate. A new hot path's
+   reference and first baseline are accepted by an agent of another
+   product, with the performance review.
+2. **Which hot paths a change reaches.** Until nirikshak has a call
+   graph (spec 0061), the gate takes every hot path whose benchmark
+   depends, through Cargo, on a crate the change touches, and every hot
+   path whose benchmark build lists a changed file in Cargo's dependency
+   record (which catches `include_bytes!` and `include_str!`). A change
+   to a workspace-level build file (the root `Cargo.toml`, `Cargo.lock`,
+   `rust-toolchain` or `rust-toolchain.toml`) or to a pin in
+   `gate/tools.toml` reaches every hot path. Once the call graph exists,
+   a call it cannot follow (a trait object, a function pointer, a stored
+   closure, a macro) counts as reaching every hot path.
+3. **Counting.** The base commit and the change are each built in their
+   own folder and counted in separate sealed jobs, base first, with one
+   toolchain, lock and machine, using the base commit's benchmark,
+   inputs and `gate/tools.toml` pins; the pinned sources, the toolchain
+   and Valgrind are read-only to both builds. The base side's build and
+   count run first, each in its own sealed job; no folder holding the
+   base folder, nor the base folder itself, is writable to the change's
+   jobs. Valgrind runs from an empty folder the gate owns, with
+   `VALGRIND_OPTS` cleared and every option given in full, so no
+   `.valgrindrc` in the tree is read. A count is trusted only when the
+   gate can show it came from a complete Valgrind run of one process
+   (any number of threads) that exited with code 0, written to a file
+   the gate owns and read after the count job's service has fully
+   stopped; never from what the job printed. A missing, malformed or
+   cut-short count, or a run killed by a signal, refuses. Only the
+   pinned marks crate may send requests to Valgrind; such a request
+   anywhere else in the built benchmark refuses. Each benchmark must use
+   the pinned counting allocator and marks crate, which the gate checks.
+   A hot path that is not in the base commit's `gate/speed.toml` is new:
+   it is counted with the change's benchmark and judged against its
+   reference and first baseline (item 1). For an existing hot path whose
+   base benchmark does not build, the base commit is counted with the
+   change's benchmark if that builds against it, and compared as usual;
+   if no pair can be counted, the change is a loosening and needs the
+   owner's signature. Only the measured loop is counted, with fixed hash
+   seeds, and each side is counted twice. If the change's side gives two
+   different counts and the base's does not, the change is refused. If
+   the base was already unstable, a task is raised, and the allocation
+   check and the timed checks still block.
+4. **Recorded counts** are keyed to the benchmark, its inputs, the
+   toolchain, the lock, the processor model and the cachegrind version.
+   A change to the toolchain or lock carries fresh counts written by
+   `ganit-evolve baseline`, which the door accepts only when they equal
+   its own count; any fresh count worse than the old one needs a signed
+   owner waiver, as AGENTS.md section 6 rule 8 says. The door and
+   GitHub always count again; they never trust a count the pushed tree
+   carries.
+5. **Changing a benchmark.** A change to a hot path's benchmark, its
+   marks or its inputs that keeps or tightens the check is accepted by
+   an agent of another product; one that loosens it needs the owner's
+   signature (AGENTS.md section 7.2). Either way it is still counted
+   against the base commit's benchmark, except as item 3 says.
+6. **Timing.** The median rule runs at the door on the hot paths a
+   change reaches. The p50, p95 and p99 limits and the timed race run
+   at release, alone in the heavy-job queue holding both places, with
+   the load recorded. Noisy runs follow Measurement item 4; at release
+   a still-noisy run also raises a task.
+7. **Recording a better baseline.** For counts, `ganit-evolve baseline`
+   on Dell writes the new count, and the door accepts it only when it
+   equals its own count of that tree. For times, the door writes its own
+   measurement into its speed store (spec 0001) and ignores any time in
+   the pushed tree. A new hot path's first time is the door's first
+   measurement of it. A worse time goes in only with a signed owner
+   waiver naming the hot path, the time it replaces and the new time;
+   the door checks the signature against `gate/owner-key.pub` on its own
+   accepted `main`, keeps the hash of every waiver it has applied, and
+   refuses one it has seen before or whose replaced time is not the
+   stored one. A missing or unreadable store makes the door refuse to
+   record or accept times, never start again from nothing; pushes that
+   need no time still go in.
+8. **The race** means beating the reference on the same inputs, on the
+   measured loop only. A C reference runs as its own program, built
+   sealed and offline from source pinned by hash with a pinned compiler
+   and flags; its program's hash is checked before each run. A
+   reference made slow on purpose is refused, as in "Baselines" item 2.
+9. **The profile** is the cachegrind output of the measured run,
+   size-capped, with host paths removed.
+10. **Sealing and tools.** On Dell, counted and timed runs go through
+    `pankti run --sealed`, and a speed check with no queue there refuses
+    rather than run unsealed. GitHub CI is a second wall, in a throwaway
+    job with read-only rights and no secrets; its counts never record or
+    accept a baseline, and compare only the base with the change.
+    cachegrind is the only counting tool, pinned in `gate/tools.toml`.
+    The counting allocator and the marks crate are pinned there by hash,
+    with criterion, the timing harness, and the door builds them only
+    from those pins. A pushed tree that patches or replaces any of them
+    (`[patch]`, `[replace]`, `rustc-wrapper`, `runner`) is refused, and
+    an empty or zero count is refused; no `perf`, root or kernel
+    settings for code under check.
 
 ### Baselines
 
@@ -54,21 +171,24 @@ For each candidate the speed check reports one of:
 2. Baseline review refuses references made slow on purpose: added
    sleeps, worse algorithms, caches turned off that the real system
    would have, or unrealistic inputs.
-3. A recorded baseline never changes without a new review.
+3. A recorded baseline changes only as "Forced speed" items 4 and 7
+   say: the door records a better one, and a worse one needs a signed
+   owner waiver.
 
 ### Measurement
 
 1. Baseline and candidate run in the runner's boxes on Dell, with the
-   same runtime, dependency lock, settings and inputs, under the
-   performance governor, and the runner signs the results. Benchmarks
-   run alone, holding both heavy-job places (AGENTS.md section 11).
-2. Cores are pinned, and the frequency governor, the load and other
-   work on Dell are recorded. Baseline and candidate runs take turns
-   (baseline, candidate, baseline and so on) so they share the noise.
+   same runtime, dependency lock, settings and inputs, and the runner
+   signs the results. Timed runs go alone, holding both heavy-job
+   places (AGENTS.md section 11); counted runs take one place.
+2. The frequency setting, the load and other work on Dell are
+   recorded; no kernel setting is changed for a run. Baseline and
+   candidate runs take turns (baseline, candidate, baseline and so on)
+   so they share the noise.
 3. Warm-up runs are thrown away. At least 30 measured pairs are taken.
 4. Reports give the median, interquartile range, 95% bootstrap interval
    and coefficient of variation. A coefficient over 10% makes the run
-   noisy, which blocks.
+   noisy: it is run again up to three times; still noisy, it blocks.
 5. Peak memory is recorded for both.
 6. Outputs must match:
    - for unchanged behaviour, baseline and candidate outputs are the
@@ -93,10 +213,11 @@ benchmark.
 
 ### Reuse and invalidation
 
-Evidence is keyed by the hashes of the measured units and their call
-dependencies, the scenario definitions, inputs, dependency lock, runtime
-and a fingerprint of Dell. Unchanged units reuse it. A change to any key
-part measures again.
+Timing evidence is keyed by the hashes of the measured units and their
+call dependencies, the scenario definitions, inputs, dependency lock,
+runtime and a fingerprint of Dell. Unchanged units reuse it. A change to
+any key part measures again. Instruction counts are never reused from
+the pushed tree ("Forced speed" item 4).
 
 ### Tiers
 
@@ -199,9 +320,9 @@ for the author, not a gate check, and never admits a commit or push.
 
 - Speed report inputs: 8 MiB per file and 32 MiB per command, by
   default.
-- Benchmarks run alone on Dell. Other heavy jobs run at most two at
-  once, each held to 4 GB and 8 CPU threads, with no swap, on the
-  approved SSD.
+- Timed benchmarks run alone on Dell. Other heavy jobs, counted
+  benchmarks among them, run at most two at once, each held to 4 GB and
+  8 CPU threads, with no swap, on the approved SSD.
 - Memory budgets of the specifications apply to every measured run,
   within AGENTS.md section 5.6.
 
@@ -220,9 +341,10 @@ Rust tests in aegis, each with a planted fault:
   baseline changed without review is refused.
 - A scenario over its specification target fails.
 - A median more than 5% slower than the baseline, with a difference
-  beyond the spread, fails; one within 5% passes; a faster result
-  updates the baseline with the candidate's tree.
-- A coefficient of variation over 10% is reported as noisy and blocks.
+  beyond the spread, fails; one within 5% passes; a faster result is
+  recorded by the door in its own store.
+- A coefficient of variation over 10% is noisy: it is run again up to
+  three times; still noisy, it blocks.
 - An output mismatch between baseline and candidate fails, whatever the
   speed. A bug fix passes when unchanged inputs match the baseline and
   changed inputs match the reviewed new reference.
@@ -231,6 +353,27 @@ Rust tests in aegis, each with a planted fault:
   with changed code is BLOCKED.
 - A speed fix that does not name the profiled hot spot fails.
 - Model inference time is reported apart from application time.
+- A change whose build tries to rewrite the base side's built benchmark
+  fails to write it, and a process left running by the change's build
+  cannot change the change's own count; the base count stands. A
+  benchmark that forks or runs another program, prints a count line,
+  ships a `.valgrindrc`, writes a fake count file and ends itself, or
+  stops Valgrind writing its file cannot change its own count either:
+  the count refuses. Product code that sends its own stop-counting
+  request around its work is refused.
+- Forced speed, one planted fault each: a hot path whose instruction
+  count rises 1.5% is refused at commit; one allocation in a measured loop
+  is refused; a hot path using more instructions than its reference is
+  refused; a recorded count better than but not equal to the door's own
+  count is refused; a worse baseline without a signed waiver is
+  refused; a change that drops a hot path from `gate/speed.toml` is
+  refused as a loosening; a toolchain or lock change without fresh
+  baselines is refused; the counting allocator or the marks crate under
+  `[dependencies]`, or used outside `benches/`, is refused; a counted
+  run with no queue on Dell refuses; two identical runs giving
+  different counts mark the hot path unstable; at the release tier, a
+  p99 over its limit and a median slower than the reference are
+  refused.
 - Input bounds: a file of exactly 8 MiB passes when the command has room
   left; one more byte refuses. Combined limits, growing and trickling
   readers, real byte counting, zero and overflow settings, bad and
@@ -257,9 +400,12 @@ Rust tests in aegis, each with a planted fault:
 
 - The 20x speed goal, its limit report and its progress dashboard are
   replaced by the 5% median rule of AGENTS.md section 6 rule 8.
-- The "best recorded result" ratchet becomes the baseline kept in the
-  repository, slower only through an owner waiver.
-- Measurement and profiling use Rust and PHP tools only.
+- The "best recorded result" ratchet becomes the count baselines in
+  `gate/speed.toml` and the time baselines in the door's speed store,
+  slower only through an owner waiver.
+- Measurement and profiling use Rust and PHP tools, plus Valgrind's
+  cachegrind and the pinned reference libraries (AGENTS.md section 6
+  rule 8).
 - Model inference is pure-Rust models, measured apart.
 - The heavy-job limits follow AGENTS.md section 11, not the old 3.5 GB
   and two-compile limit.

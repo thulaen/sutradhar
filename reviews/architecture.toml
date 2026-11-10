@@ -1,13 +1,5 @@
 skill = "architecture"
-change = "sha256:2b524ecaa0463a30a1f6ea957ced8a274ca93ac8b1ca96c98f89a0c3551e523c"
+change = "sha256:901e350f73b3521e9b2a09de48c34a39bbe5772d5b45e5198a7fc5ea11fe3259"
 verdict = "pass"
 agent = "claude subagents"
-summary = "After round 13 the hook tests were split into hooks.rs, hooks_copy.rs and common/hooks.rs to stay under 300 lines, with no change to any test. Thirteen rounds by fresh subagents on task #143 (agents working at once on main: the lock check in both hooks, and the push check on a clean, marked copy beside the checkout). The copy sits beside the checkout, the gate keeps one worktree (spec 0010 item 8), and AGENTS.md 8.2 names the copy and its lock; follow-ups are on #144."
-
-[[finding]]
-what = "spec 0010 said the gate makes no worktrees"
-fixed = true
-
-[[finding]]
-what = "the copy folder and its lock were not documented"
-fixed = true
+summary = "Also a quick round on the gate fix in crates/aegis/src/tdd.rs (a docs-only commit may carry the eight review records); all eight passed it. The last speed-rule edits (the Valgrind-request sentence, exit code 0, two different counts) were red-team's own proposed wording. Fourteen rounds (A to M) by fresh subagents on task #157: the owner's forced-speed rules (AGENTS.md section 6 rules 8 and 9; specs 0001, 0007, 0012, 0013, 0022, 0026 and 0059; the roadmap), with the owner's four answers of 10 November 2026 (counts at every tier, the allocator in benchmarks only, C references outside our code, counts only on GitHub). The rules start only when their tools are pinned; later items are on #158. The tier split fits the gate and the door; counts live in gate/speed.toml and times in the door's speed store (spec 0001)."

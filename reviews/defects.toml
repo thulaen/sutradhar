@@ -1,25 +1,5 @@
 skill = "defects"
-change = "sha256:2b524ecaa0463a30a1f6ea957ced8a274ca93ac8b1ca96c98f89a0c3551e523c"
+change = "sha256:901e350f73b3521e9b2a09de48c34a39bbe5772d5b45e5198a7fc5ea11fe3259"
 verdict = "pass"
 agent = "claude subagents"
-summary = "After round 13 the hook tests were split into hooks.rs, hooks_copy.rs and common/hooks.rs to stay under 300 lines, with no change to any test. Thirteen rounds by fresh subagents on task #143 (agents working at once on main: the lock check in both hooks, and the push check on a clean, marked copy beside the checkout). A subfolder push, broken lists, broken HEADs, hidden files and copied settings are refused or put right, each with a test that fails when its fix is removed."
-
-[[finding]]
-what = "a subfolder push put the copy inside the checkout"
-fixed = true
-
-[[finding]]
-what = "tests would not notice unset_git removed"
-fixed = true
-
-[[finding]]
-what = "every push after the first was refused by the advisory database repo in target/"
-fixed = true
-
-[[finding]]
-what = "sparse-checkout disable changed the shared .git/config"
-fixed = true
-
-[[finding]]
-what = "graft settings flooded each push with advice"
-fixed = true
+summary = "Also a quick round on the gate fix in crates/aegis/src/tdd.rs (a docs-only commit may carry the eight review records); all eight passed it. The last speed-rule edits (the Valgrind-request sentence, exit code 0, two different counts) were red-team's own proposed wording. Fourteen rounds (A to M) by fresh subagents on task #157: the owner's forced-speed rules (AGENTS.md section 6 rules 8 and 9; specs 0001, 0007, 0012, 0013, 0022, 0026 and 0059; the roadmap), with the owner's four answers of 10 November 2026 (counts at every tier, the allocator in benchmarks only, C references outside our code, counts only on GitHub). The rules start only when their tools are pinned; later items are on #158. No docs-check refusal; the old ratchet, pinned-core and one-job wording is gone, and the noise rule is written once."

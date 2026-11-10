@@ -98,7 +98,7 @@ failure, and the failure becomes feedback in the next packet.
 4. **Measuring.** For a `speed` problem, GanitEvolve times an optimised
    build, outside the candidate, three times, keeping the median. A run
    whose spread is over the limit is repeated, never accepted. Timing
-   uses the bench container's pinned cores and fingerprint. ganit keeps
+   runs alone in the heavy-job queue, with its fingerprint (0007). ganit keeps
    a gain only if it beats the noise at 95% confidence and the 5% rule
    of 0007. A `score` problem runs its scoring step here instead. Guards
    are checked in this step (below).
@@ -249,22 +249,31 @@ Each problem lives in its own folder under the GanitEvolve crate:
 
 ### A receipt for every source change
 
-1. Every new or changed source file in a commit must be the exact
-   program a GanitEvolve run proved. The proof is a receipt in
+1. Every new or changed shipped source file in a commit must be the
+   exact program a GanitEvolve run proved. The proof is a receipt in
    `receipts/` whose `target` is the file and whose `tested` is the
-   SHA-256 of its new bytes. There is no exception list.
-2. Source files are Rust, TypeScript, CSS, PHP and SQL files, anywhere
-   in the tree except `receipts/` (whose copies 0013 checks) and the
-   `.git` and `target` folders.
+   SHA-256 of its new bytes.
+2. A shipped source file is a Rust, TypeScript, CSS, PHP or SQL file
+   that any build target other than a test or a benchmark, under any
+   feature set, compiles or
+   includes (through `mod`, `#[path]` or `include!`), as the gate reads
+   it from the build, whatever folder it sits in. Every other source
+   file (tests, benchmarks, test data) goes with the receipt of the
+   code it tests (AGENTS.md section 6 rule 9).
 3. A deleted file needs nothing. A change to documents only is not
    affected.
-4. The gate rule `every-change`, in `ganit-evolve gate`, blocks at the
-   commit, push and release tiers. The door runs it on the receiving
-   side, so skipping local hooks cannot avoid it.
-5. Each change needs a run, a review by an agent of another product and
-   a matching receipt. For kernels, the owner also reviews the evidence.
-   For other files, the review and the receipt are the proof; the owner
-   may tighten this.
+4. The gate check `ganit.every-change`, run by aegis through
+   `ganit-evolve gate`, blocks at the commit, push and release tiers.
+   The door runs it on the receiving side, so skipping local hooks
+   cannot avoid it.
+5. Each change needs a King Solomon research card (0013, "Research
+   first"), a run sized by that card, a review by an agent of another
+   product and a matching receipt that names the card by hash. The run
+   takes the speed measures of AGENTS.md section 6 rule 8 for every hot
+   path the file reaches.
+   For kernels, the owner also reviews the evidence. For other files,
+   the review and the receipt are the proof; the owner may tighten
+   this.
 6. A language with no safety parse cannot be evolved, so its source
    files cannot change until its parse exists. Rust has one; TypeScript,
    CSS, PHP and SQL each need theirs.
@@ -272,16 +281,21 @@ Each problem lives in its own folder under the GanitEvolve crate:
 ### Hard to skip
 
 1. `gate-wiring`, in `ganit-evolve gate`: once the protected catalogue
-   lists the `ganitevolve` check, a commit may not remove or change that
+   lists the `ganit.every-change` check, a commit may not remove or change that
    entry, drop a tier it runs at, or lower its severity from `block`.
    Adding checks or tiers is allowed. Only an owner-signed change under
    AGENTS.md section 7.2 can loosen it.
-2. `every-change` covers GanitEvolve's own source too, so weakening it
+2. `ganit.every-change` covers GanitEvolve's own source too, so weakening it
    needs a proved, reviewed receipt.
+3. The same wiring protects the forced-speed checks of AGENTS.md
+   section 6 rule 8: no commit may remove them, take them off a tier
+   they run at, or lower them from `block`. This is the guard. chaukidar
+   (0058), which already watches the door's program on Dell, is a
+   second line: a change to it made outside git raises an urgent task.
 
 ### Build order
 
-1. The `every-change` rule, test first.
+1. The `ganit.every-change` check, test first.
 2. The whole-file problem, so any Rust file can be evolved.
 3. `judge` and judgements in packets; then `score` problems; then helper
    submissions and the agent prompt for fan-out.
@@ -357,9 +371,9 @@ Rust tests in the GanitEvolve crate and ganit:
   in submission order.
 - A commit changing a source file without a matching receipt is refused,
   naming the file; with one, it passes.
-- A deleted source file, a changed document and the receipts folder's
-  own copies need no receipt.
-- Removing or changing the `ganitevolve` entry, dropping a tier or
+- A deleted source file, a changed document, a test, benchmark or
+  fixture, and the receipts folder's own copies need no receipt.
+- Removing or changing the `ganit.every-change` entry, dropping a tier or
   lowering its severity is refused; adding is not.
 
 ## Changes from the source

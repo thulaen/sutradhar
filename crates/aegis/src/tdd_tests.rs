@@ -62,6 +62,19 @@ fn docs_only_commits_may_touch_only_markdown() {
 }
 
 #[test]
+fn a_docs_only_commit_may_carry_its_review_records() {
+    let m = "docs: x\n\nTDD: none (docs only)\n";
+    let paths = [
+        "AGENTS.md".to_owned(),
+        "reviews/defects.toml".to_owned(),
+        "reviews/red-team.toml".to_owned(),
+    ];
+    assert_eq!(check_paths(m, &paths), Vec::new());
+    let other = ["reviews/notes.toml".to_owned()];
+    assert_eq!(check_paths(m, &other).len(), 1);
+}
+
+#[test]
 fn a_named_test_may_touch_any_path() {
     let m = "feat: x\n\nTDD: a::b\n";
     assert_eq!(check_paths(m, &["src/lib.rs".to_owned()]), Vec::new());

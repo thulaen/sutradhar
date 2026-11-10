@@ -54,7 +54,8 @@ pub fn value(message: &str) -> Option<String> {
 }
 
 /// Checks that a commit saying `TDD: none (docs only)` touches only
-/// Markdown files.
+/// Markdown files and the required review records, which every commit
+/// carries (AGENTS.md section 7.1).
 #[must_use]
 pub fn check_paths(message: &str, paths: &[String]) -> Vec<Finding> {
     if value(message).as_deref().and_then(parse) != Some(Tdd::DocsOnly) {
@@ -66,6 +67,7 @@ pub fn check_paths(message: &str, paths: &[String]) -> Vec<Finding> {
             !std::path::Path::new(p)
                 .extension()
                 .is_some_and(|e| e.eq_ignore_ascii_case("md"))
+                && !crate::reviews::is_record(p.as_bytes())
         })
         .map(|p| {
             Finding::new(

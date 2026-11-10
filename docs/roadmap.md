@@ -39,7 +39,7 @@ Forgejo milestone: `Phase 1: Forgejo home`.
    `status/ready`, `status/working`, `status/blocked` and
    `status/urgent` labels.
 7. The heavy-job queue with its systemd limits, with tests that a third
-   job waits and that a benchmark holds both places.
+   job waits and that a timed benchmark holds both places.
 8. Carry over earlier work:
    1. Rewrite every earlier task and idea as a task in this repository.
       Each is placed as

@@ -308,19 +308,67 @@ shipped product is built on it. Parts made before Boot exists (the gate,
    default, more at the release tier through `PROPTEST_CASES`. Text the
    gate shows people is kept as a snapshot in `tests/snapshots`; a
    deliberate change is accepted with `AEGIS_UPDATE_SNAPSHOTS=1`.
-6. Write safe Rust only. No `unsafe` in our code.
+6. Write safe Rust only. No `unsafe` in our code. The one exception is
+   the speed-counting crates of rule 8, in benchmark programs only.
 7. No dead code, no commented-out code and no unused dependencies.
-8. Performance is measured at the push tier on Dell, against baselines
-   kept in the repository, using the median time of at least 30 runs.
-   A slowdown blocks when the median is more than 5% slower and the
-   difference is larger than the spread of the runs. A baseline may
-   become faster with any commit, but slower only through an owner
-   waiver. Benchmarks run alone, as section 11 sets out.
-9. Every new or changed source file carries a GanitEvolve speed receipt
-   in `receipts/`, made by the GanitEvolve tool described in its
-   specification. Source files are Rust, TypeScript, CSS, PHP and SQL
-   files.
+8. Speed is checked against baselines (spec 0007): instruction counts
+   kept in `gate/speed.toml`, and times kept by the door in its speed
+   store on Dell (spec 0001). The hot paths are listed in
+   `gate/speed.toml`. The gate works out which of them a change
+   reaches; a change may not decide that for itself. These checks
+   block: a failure refuses the change.
+   - **At every commit, push and release:** each hot path the change
+     reaches is counted, before and after the change, in separate
+     sealed jobs, base first, on one machine (spec 0007), under
+     Valgrind's cachegrind. The change is refused if its count of
+     machine instructions in the measured loop rises more than 1% over
+     the count before it, or over the hot path's recorded baseline count
+     taken with the same toolchain and lock, or if it allocates memory
+     inside the measured loop.
+   - **At the push tier** (the door, on Dell): the median of at least 30
+     runs is more than 5% slower than the baseline, and the difference
+     is larger than the spread of the runs.
+   - **At the release tier:** a hot path passes its written p50, p95 or
+     p99 time limit (p95 means 95 runs in 100 end within it), measured
+     on Dell alone in the heavy-job queue, with the load recorded.
+   - **The race:** each hot path must also beat a reference doing the
+     same job, an established library, on the instruction count at
+     every tier on Dell, and on the median and p95 time at release. The
+     reference may be a Rust library, or a C library run as its own
+     outside program for measuring only: never linked into our code,
+     with no `-sys` crate, `build.rs` or C compiler in our build (owner,
+     10 November 2026).
+   - **The baseline only gets stricter:** a better count is recorded
+     only when it equals the door's own count of that tree, and better
+     times are recorded by the door itself. Recording anything worse
+     needs a signed owner waiver.
+   - **The profile:** each speed receipt keeps the cachegrind profile of
+     its run, so a reviewer can see where the time went.
+   Counting needs a counting allocator and cachegrind's start and stop
+   marks, which use `unsafe` and one global (rules 6 and 10). The owner
+   allows two pinned outside crates for them, as development
+   dependencies used only from `benches/`, never in shipped code (owner,
+   10 November 2026); a check keeps them there. On Dell, benchmarks run
+   sealed (`pankti run --sealed`; with no queue there, the check refuses
+   rather than run unsealed), with no `perf`, root or kernel settings. GitHub CI
+   counts our hot paths but runs no race and no timings, which need
+   Dell.
+9. Every new or changed shipped source file carries a GanitEvolve speed
+   receipt in `receipts/`, made by the GanitEvolve tool (spec 0012), and
+   the receipt names, by hash, the accepted King Solomon research card
+   (spec 0013, "Research first") whose scope lists the file. Tests,
+   benchmarks and fixtures need no receipt of their own; they go with
+   the receipt of the code they test. Agents must run GanitEvolve: the
+   gate check `ganit.every-change` refuses a source change with no
+   receipt or no card at every commit, push and release (owner,
+   10 November 2026). Source files are Rust, TypeScript, CSS, PHP and
+   SQL files.
+   The checks in rules 8 and 9 are wired in: a change may not remove
+   them, take them off a tier or set them below "block" without a
+   signed owner waiver (section 7.2; spec 0012, "Hard to skip").
 10. No globals, singletons, monkey patching or shared mutable state.
+    The one exception is the counting allocator's static in a benchmark
+    program (rule 8).
 11. A source file has at most 300 lines and a function at most 60 lines.
     A function takes at most 5 arguments, nests at most 4 levels deep and
     stays under a complexity score of 15.
@@ -420,11 +468,13 @@ The owner's signing key never lives on Dell. Its public key is pinned in
 signed with that key. Until that key exists, no waiver is possible.
 
 These files are protected: `gate/owner-key.pub`, everything in
-`gate/waivers/`, and any change to `gate/catalogue.toml` or
-`gate/tools.toml` that removes or loosens a check. The gate refuses a
-change to them unless it is signed with the owner's key. Adding a check
-or making one stricter needs no signature. The checksum guard watches
-these files too.
+`gate/waivers/`, and any change to `gate/catalogue.toml`,
+`gate/tools.toml` or `gate/speed.toml` (its hot paths, limits,
+baselines, references and allocation reasons), or to the benchmarks in
+`benches/` and their inputs, that removes or loosens a check.
+The gate refuses a change to them unless it is signed with the owner's
+key. Adding a check or making one stricter needs no signature. The
+checksum guard watches these files too.
 
 ### 7.3 Bootstrap
 
@@ -446,10 +496,16 @@ Until Phase 2 is finished:
   closed.
 - The rule that a language is switched on with its checks starts at
   Phase 2 item 2, which switches on every language already in use.
-- Rules 2, 3, 4, 8 and 9 of section 6 apply to all code written before
-  Phase 2 is finished from the day the style guides and rule matrix,
-  the MC/DC tool, the benchmark runner and GanitEvolve each arrive. A
-  task on that roadmap item brings each part up to the rule.
+- Rules 2, 3 and 4 of section 6 apply to all code written before
+  Phase 2 is finished from the day the style guides and rule matrix and
+  the MC/DC tool each arrive. A task on that roadmap item brings each
+  part up to the rule.
+- Each check in rule 8 of section 6 blocks from the commit that pins
+  its tool in `gate/tools.toml` and passes its planted test (task #157).
+- Rule 9 of section 6 blocks from the commit that turns on
+  `ganit.every-change`, which lands only once GanitEvolve can make a
+  receipt for any Rust file and cards can be written (task #157). Files
+  nobody changes need no receipt until they change.
 - Until Phase 1 item 9 builds the sync, agents copy to GitHub by hand
   with `gh` for step 11 of section 8, and write a failed copy on the task
   instead of raising an urgent task.
@@ -604,7 +660,8 @@ for A2A, the open agent-to-agent protocol, on Dell).
 ### 9.3 GitHub CI
 
 - GitHub CI re-runs the full gate on every push from the sync, as a
-  second wall.
+  second wall, except the timings and the race of section 6 rule 8,
+  which need Dell; it runs the instruction and allocation counts.
 - GitHub CI never runs code from pull requests. Outside code reaches
   `main` only through section 9.2.
 - Workflows never use `pull_request_target` or `workflow_run`, and never
@@ -641,12 +698,15 @@ for A2A, the open agent-to-agent protocol, on Dell).
   and the test sites 3 GB together; the agents the remaining 3 GB.
 - Heavy jobs (builds, full test runs, runner jobs) wait in one queue.
   At most 2 run at once, each held by a systemd limit to 4 GB of memory
-  and 8 CPU threads. A benchmark takes both places, so it runs alone.
+  and 8 CPU threads. A timed benchmark takes both places, so it runs
+  alone; a counted one takes one place.
 - The release tier's memory, load and soak tests run on two test
   machines that match both sizes of the owner's PC (under 16 GB, and
   16 GB or more), outside the Dell job limits.
 - One writer per file. Take a lock in the mailbox before editing, and
   release it after.
+- Agents never change the door's speed store (`speed` in the door's
+  folder). Only the door writes it (spec 0001).
 - Forgejo's runner jobs run in containers that cannot reach the release
   key, the GitHub tokens or the private notes on Dell.
 - Agents have sudo. Agents never change Forgejo's hooks or settings, or
