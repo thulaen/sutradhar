@@ -50,7 +50,8 @@ embedding providers (spec 0025).
 ### Design
 
 `sutradhar-bhandar` (the storage crate) gains these modules, each
-behind a trait with a fake in `sutradhar-pariksha`:
+behind a trait with a fake in development-only `sutradhar-test-support`
+(spec 0014):
 
 - `SearchIndex`: `upsert`, `delete`, `query`, `begin_generation`,
   `switch_to` and `health`.

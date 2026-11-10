@@ -12,7 +12,8 @@ additions are in [0042](0042-coach-additions.md).
 
 The Coach reads and presents what Sutradhar already holds. It adds no
 second drafting route, overlap check, connector or test system. Feature
-numbers below are those of the archive's feature register.
+numbers below are those of the archive's feature register, except
+features 36 and 235, which are numbered as in features.md.
 
 | Coach task | Reuses |
 | --- | --- |
@@ -32,7 +33,8 @@ and the five tools.
 1. Each tip shows the exact page version, the passage, the proposed
    wording, live evidence, dates, data freshness, sample size, and the
    explanations it kept or ruled out.
-2. It shows the deciding reasons, never one score.
+2. It shows the deciding reasons, never one score of its own (feature
+   235 in features.md, a separate approved measure, spec 0042).
 3. A forecast the data cannot support is hidden. Example: 60 clicks from
    3,000 views, where similar pages get 3%, is a gap of 30 clicks to
    look at, not a promise of 30 more.
@@ -152,6 +154,13 @@ against the Cedar rules, and wraps an existing feature.
 | `check_draft` | Read-only warnings and a preview | Content checks, 252 |
 | `compare_edit_outcomes` | Plan or results, with uncertainty | 20, 21 |
 
+For feature 36 in features.md, `prepare_writing_brief` needs enough
+eligible source posts or pages to support the brief. An eligible source
+is distinct, guest-visible and qualified under the
+[research rules](0013-research-rules.md). Our own lab runs set the
+minimum; until it is recorded, no brief is made. Below it, the tool
+reports "not enough evidence" and makes no brief.
+
 Later additions, keeping the same five tools:
 
 - `check_draft` takes pasted and uploaded input and the new checks.
@@ -214,6 +223,9 @@ Rust tests for each point:
   owners.
 - EC13: the Coach stays off until the recorded blind test passes.
 - EC14: a Coach warning never blocks a draft; a hard check still does.
+- With no recorded minimum, no brief is made. A brief is refused with
+  one fewer eligible source than the lab minimum. At the minimum, it can
+  proceed when other checks pass.
 - An MCP draft is stored only as a suggestion and is never applied
   without a moderator's acceptance.
 

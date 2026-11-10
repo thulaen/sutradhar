@@ -307,7 +307,7 @@ Relevance ideas only after their own admission (rule 6): 1332 journey
 stage agreement; 1343 a pair's next-page rate, never alone past the
 gate; 1356 query-to-anchor agreement, like feature 58.
 
-None: 1000, 1284, 1285, 1313, 1315, 1316, 1317, 1318 (member-only pages
+None: 1313, 1315, 1316, 1317, 1318 (member-only pages
 are never targets), 1319, 1321, 1323, 1324, 1325, 1326 (none new; it
 keeps target facts current), 1330, 1331, 1334, 1335, 1336, 1337 (the lab
 may use it to check fairness by segment), 1338, 1339, 1340, 1342 (it

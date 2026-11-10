@@ -92,8 +92,10 @@ and feature crate may depend on it; core never imports feature modules.
 - `error`: `SettingsError`, one thiserror enum with SUT codes.
 - `api` and `cli`: thin adapters; no rules live in them.
 
-Swappable parts are traits, each with a test fake in the testing kit
-crate pariksha ("test"):
+Swappable parts are traits. A fake used by one crate lives in that
+crate's tests; a shared fake lives in `sutradhar-test-support`, a
+development dependency only. The production evaluation crate pariksha
+(spec 0056) holds no platform fakes:
 
 | Trait | Production | Test fake |
 | --- | --- | --- |
@@ -184,7 +186,8 @@ spec 0020, rule 5.
    - Actor `agent`: refused unless the `ConfirmationCheck` trait
      confirms that the draft's `instruction_ref` names the owner's live
      confirmation of this plan, unexpired and not used before. vinyas
-     declares the trait, with a fake in pariksha for tests; the actions
+     declares the trait, with a fake in `sutradhar-test-support` for
+     tests; the actions
      module implements it (spec 0020, rule 5), so vinyas depends on no
      other module. The confirmation is used up in the same transaction
      as the write, so a second draft naming it is refused and a refused

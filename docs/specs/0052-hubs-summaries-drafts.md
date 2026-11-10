@@ -78,6 +78,12 @@ approved.
 3. The agent submits a draft with the evidence ids it used. The draft is
    stored, checked (length, novelty, links, forbidden content) and shown
    to staff.
+   The site policy lists words and claims barred from drafts. The
+   shared forbidden-content check uses that policy on every saved
+   version of every draft, including feature 714, and again on the
+   exact version being approved. A version goes to staff approval only
+   after a completed check finds no match; a match, a missing policy or
+   a check that fails or times out keeps it back.
 4. Staff edit, approve or reject it in the app. A rejected draft goes to
    the trash bin, restorable for 90 days, then removed for ever. An
    erasure request removes it at once.
@@ -281,6 +287,12 @@ Rust tests in `content`:
 - With two authorised publishing accounts, staff can choose either in the
   app; publishing uses it and records the approver.
 - An account no longer authorised blocks approval with SUT-705.
+- A word or claim barred by site policy prevents a draft from going to
+  staff approval through either platform. An edit by staff or
+  `update_draft` that adds a barred word after a passing check blocks
+  approval of that version, and so does a missing policy or a check that
+  fails or times out. A draft that passes still needs staff approval
+  before it can be published.
 - A draft repeating a thread's paragraph reports the overlap share and
   the thread.
 - For any draft, no path edits an existing post's text.

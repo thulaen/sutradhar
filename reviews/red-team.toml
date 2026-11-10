@@ -1,33 +1,29 @@
 skill = "red-team"
-change = "sha256:7496b694e63da18a20b08e9563ec72ca7bcef80af9e28d5ee9dd8c24cc638413"
+change = "sha256:1a608cfaf80a6c059c812c967e085d31b57aa8b9ae3fee28874c2d77982aa377"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 13 of task #64. Three red agents (get round it, break it, abuse it) attacked the staged 0064 and 0055 text, focusing on the round 12 fix: the policy fixing each run's purpose, passing gate, nightly and soak attempts not making a release ledger stale, and the replay refusing when the reader check refuses. Checked each report against the staged text. No sequence raises a qualified count or hides a test failure: the cell block covers every run of the candidate, refused and interrupted runs and release or pilot failures still make the ledger stale, and the ledger names the head it was built from. The reader check being candidate code is already Later item 40 in #180. The remaining reports either refuse too much or ask for clearer wording, so they are Later."
+summary = "Round 3 of task #149 batch 1 (staged docs only). Three red agents ran on the staged diff: break it (cross-reference, alias, glossary and test-ID consistency), get round it (literal-wording loopholes in the barred-content check, editor score, brief minimum, test-support crate, dwarpal/tijori split) and abuse it (outsider-controlled posts, drafts and requests). I checked each report against the staged text with git show. The aliases 1000/1284/1285 to 933/1283/1165 are the task's decision; glossary rows agree with spec 0064 and 0050; 0052 binds the check to every saved version and the exact approved version, keeping a version back on a match, missing policy, failure or timeout. No staged defect blocks; the gaps below are later build or wording work."
 
 [[finding]]
-what = "Later: the replay now refuses when the reader check on the previous ledger refuses (0064 lines 345-346), and that check refuses every ledger whose run kind is not release (lines 31-32). The fixture's 'Replay a previously accepted run to prove idempotence' (line 391), its stale-evidence replay (lines 466-467) and the pilot's replay (line 476) can therefore never pass. This refuses too much and gains no count. Say that a fixture or pilot replay runs the same check but expects its own run kind, or that these cases build a release ledger from the test catalogue with the QualifyTrust fake."
+what = "Later: docs/specs/0052-hubs-summaries-drafts.md step 3 and step 4: the text binds the barred-content check to the version approved but does not say publishing sends exactly that approved version and that a later saved version cancels the approval. Pre-existing approval-to-publish gap, not made worse."
 fixed = true
 
 [[finding]]
-what = "Later: 0064 lines 247-254 and 264 never require the counted run's purpose to be qualification. A release-kind nightly run with runner-signed passes matches the policy and could be submitted as the counted run. The cell block (lines 261-262) stops it from hiding a failure, so no count is gained unless the policy gives nightly runs a narrower check matrix. Say that only a run whose policy purpose is qualification can build a ledger."
+what = "Later: docs/specs/0052 barred-content check: define text normalisation (NFKC, invisible characters, case), the fields checked (title, body, link text, alt text) and treat an empty policy like a missing one."
 fixed = true
 
 [[finding]]
-what = "Later: 0064 line 352 gives the replay ledger 'the new run-ledger head' without saying it is the head its history read reached (lines 17-18 say 'built from'). If an implementation took the head at publication, a pilot failure recorded between the history read and publication would fall before the head and be missed. Say the head is the one the history read ended at, read after the replay's own attempts."
+what = "Later: docs/specs/0042-coach-additions.md Editor content score display: say how a draft held only in the app (spec 0052) appears in the WordPress or XenForo editor, what guest-visible means for an unpublished WordPress draft (public type, no password, not private), that the service re-checks visibility itself, who may see the panel and its evidence, that panel polling and editor autosave do not trigger scoring, and bind the stored score to the version's content hash."
 fixed = true
 
 [[finding]]
-what = "Later: 0064 line 253 says the replay's history check skips passing gate, nightly and soak attempts, but the replay paragraph (lines 347-349) refuses 'if that history has changed' without repeating the skip. Read literally, one passing nightly blocks every later replay. Repeat the skip in the replay paragraph."
+what = "Later: docs/specs/0041-editorial-coach.md feature 36 brief minimum: define 'distinct' (different threads and authors, near-duplicates merged) and apply the minimum to any path that makes a brief, not only prepare_writing_brief. The new test bullet has no EC id, like the existing unnumbered MCP-draft bullet; number both (EC15, EC16)."
 fixed = true
 
 [[finding]]
-what = "Later: the policy issues every run id, kind and purpose (0064 lines 247-249), and readers refuse a ledger whose policy digest differs from the current one (lines 33 and 39). If issuing a run changes the policy digest, every passing nightly would make the release ledger refused, which contradicts the planted fault at lines 424-425. Say that run issuance records are not part of the pinned policy digest."
+what = "Later: docs/specs/0021-forum-contracts-ingestion.md:67 diagram still says 'dwarpal signs' and line 601 lists dwarpal.sign; consistent with dwarpal building signed messages through tijori, but say 'dwarpal signs through tijori' to avoid the old reading."
 fixed = true
 
 [[finding]]
-what = "Later: 0064 lines 233-238 resolve authors to principals through the signer registry, but do not say that an author key the registry does not know refuses the member. A principal who commits with an unregistered key and reviews with a registered one could then pass the 'differs from every author' test. Line 197 refuses unknown keys for signatures in general. Say it applies to author provenance too, and add the planted fault."
-fixed = true
-
-[[finding]]
-what = "Later: in 0064 lines 144-146, 'a reviewer who is not one of its authors' can be read as the row's authors rather than the member's. Say 'not an author of the member or of the row'."
+what = "Later: docs/specs/0014 and 0056: 'product dependencies never include that test-support crate' should say it appears only under [dev-dependencies] and in no shipped binary's tree; a vastu check can enforce it. docs/standards/vocabulary.md still labels shikhar 'Trends' while the glossary and spec 0050 say votes, usefulness formulas, sorting and flags (pre-existing)."
 fixed = true

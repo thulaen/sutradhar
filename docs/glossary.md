@@ -12,6 +12,56 @@ Plain meanings of the names and terms used in Sutradhar.
 | shodhan | Hindi: "refining" | The text engine that reads posts and finds links |
 | ganit | Hindi: "mathematics" | Shared maths and statistics |
 | GanitEvolve | ganit + English "evolve" | The speed search that writes a receipt for each source file |
+| King Solomon | Research framework name | The research cards, evaluator checks and proof standard in spec 0013 |
+| King David | Earlier research-memory name | The research memory and concept map in spec 0013, not a second store |
+| mandali | Hindi: "assembly" | The module registry and lifecycle manager |
+| sanyojan | Hindi: "coordination" | The composition root that wires the modules together |
+| vinyas | Hindi: "configuration" | Typed settings, profiles, validation and change history |
+| sanchar | Hindi: "communication" | Typed events and durable outbox delivery |
+| karya | Hindi: "work" | Durable product jobs, recovery and shared progress |
+| bhandar | Hindi: "store" | Search, object storage, archives and safe exports |
+| abhilekh | Hindi: "record" | Audit events, private details and erasure; replaces the earlier name lekha, which older specs still use |
+| drishti | Hindi: "view" | Health, metrics, diagnostics and visual data |
+| dwarpal | Hindi: "gatekeeper" | Authorisation and, separately, the signed-message guard; tijori holds the keys |
+| sampark | Hindi: "contact" | The signed site client and guest-visible readers |
+| pariksha | Hindi: "test" | The production evaluation library in spec 0056; not the shared fake toolkit |
+| test-support | English name | Shared test fakes in a development-only crate, separate from pariksha |
+| agvani | Hindi: "reception, welcome" | The example module and extension used by the developer guides; replaces the earlier name namaste, which older specs still use |
+| sujhav | Hindi: "suggestion" | Moderator review, approved link insertion and undo |
+| kavach | Hindi: "armour" | The module that supplies spam evidence through `SpamSignal` |
+| RankMedulla | Ranking design name | The ranking model owned by `shodhan.rank`, not a second ranking path |
+| SpamGuard | Spam design name | kavach's spam model, used as a ranking signal (spec 0027) |
+| Factledger | Earlier coach name | The contradiction tip in spec 0042; no list of facts is stored |
+| Shraddar, Shraddha | Earlier memory-store name | The research memory store in spec 0013 |
+| Pixie | Research method name | A graph-walk method candidate the lab may admit (specs 0049 and 0056) |
+| NetworkX | Outside library name | A public reference for graph operations; no code is copied |
+| sanket | Hindi: "signal" | SEO signals, the shared crawler and health reports |
+| Leviathan | Crawler reference name | The shared crawler and block-page handling in specs 0044 and 0045 |
+| MachineMirror | Earlier test-room name | The `mirror` reader test room in spec 0039 |
+| Subramanian | Link-study module name | The `subramanian` reports in spec 0046; it does no crawling |
+| QuarryView | Earlier search-charts name | The `quarry` charts, indicators, alerts and filters in spec 0043 |
+| Narada | Editorial check module name | The passage checks used by the Editorial Coach in spec 0042 |
+| graph | English module name | Stores the knowledge graph and applies ganit's graph results |
+| work_graph | Internal module name | The site's Fix list, with claims, rechecks and recurrence |
+| shikhar | Hindi: "peak" | Votes, usefulness formulas, sorting and flags |
+| pratishtha | Hindi: "reputation" | Member reputation, overall and per forum; replaces the earlier name karma, which older specs still use |
+| panchayat | Hindi: "village council" | Moderation hints and their review queue |
+| uttar | Hindi: "answer" | Optional expert routing |
+| content | English module name | Hubs, summaries and content drafts |
+| tuning | English module name | Bounded feedback learning, activation and rollback |
+| Chayan | Ganit engine name | Selection and optimisation, such as review order and anchor variety |
+| Mapan | Ganit engine name | Measurement and calibration, such as uncertainty and relevance thresholds |
+| Shiksha | Ganit engine name | Learning, such as supervised models and feature importance |
+| Anuman | Ganit engine name | Inference, such as priors and exploration estimates |
+| Samanjan | Ganit engine name | Parameter adjustment, such as retrieval tuning |
+| Mulyankan | Ganit engine name | Evaluation statistics and comparisons |
+| Vikalp | Ganit engine name | Alternative outcomes, such as offline policy evaluation |
+| Bahav | Ganit engine name | Distribution drift and recalibration signals |
+| Gati | Ganit engine name | Dynamics, such as attention decay and freshness |
+| Jaal | Ganit engine name | Graph analysis: graph algorithms and graph-based signals |
+| Varnakram | Ganit engine name | Spectral analysis of graphs |
+| Sannidhya | Ganit engine name | Embedding geometry, such as near-duplicate clusters |
+| Padbandh | Ganit engine name | Phrase statistics, such as generic-anchor detection |
 | darshak | Hindi: "viewer" | Visitor statistics that resist bots |
 | tijori | Hindi: "strongbox" | Keys, signing and the release key guard |
 | hisaab | Hindi: "accounts" | Books and reports |

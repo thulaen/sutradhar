@@ -16,8 +16,9 @@ Phase 3 item 1.
   own crate, settings section, jobs, routes and tables.
 - Core: the crates every module may use and that cannot be switched
   off: settings (vinyas), events (sanchar), jobs (karya), storage
-  (bhandar), audit (lekha), health and metrics (drishti), signing
-  (dwarpal), the site link (sampark) and this registry (mandali).
+  (bhandar), audit (lekha), health and metrics (drishti), authorisation
+  and signed-message guards (dwarpal), key custody and signing
+  (tijori), the site link (sampark) and this registry (mandali).
 - Descriptor: a module's fixed facts.
 - Registrar: the object a module uses at start-up to declare its
   settings, jobs, event handlers, routes and commands.
@@ -33,7 +34,7 @@ Phase 3 item 1.
 1. The binary `sutradhar` holds the composition root. It uses feature
    crates (`sutradhar-setu`, `-sanket`, `-karma`, `-namaste` and so
    on), which use core crates (`-mandali`, `-karya`, `-sanchar`,
-   `-vinyas`, `-sampark`, `-dwarpal`, `-bhandar`, `-lekha`,
+   `-vinyas`, `-sampark`, `-dwarpal`, `-tijori`, `-bhandar`, `-lekha`,
    `-drishti`), which use `sutradhar-base`.
 2. `sutradhar-base` (an English placeholder name) holds the shared base
    types: the `Clock` trait, the SUT error code type, typed ids.

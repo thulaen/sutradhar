@@ -73,8 +73,11 @@ progress part); installation; visitor statistics.
    Anything the add-on has to report waits in its own tables until the
    service's next call.
 2. The engine never runs on the site's server.
-3. `dwarpal`: keys, signing and checking, nonces, rotation. It knows
-   nothing of XenForo. Its keys are held by tijori.
+3. `dwarpal`'s signed-message guard: signed-message construction and
+   checking, nonces and rotation. It knows nothing of XenForo and
+   uses tijori for key custody and signing. Its signature checks are
+   separate from the Cedar authorisation module in spec 0020:
+   proving the sender never grants permission for an action.
 4. `sampark`: the readers, the visibility rules, the outbox reader,
    reconciliation and the client for the add-on's routes. It depends
    on dwarpal, sanchar and the module registry. It is the shared site

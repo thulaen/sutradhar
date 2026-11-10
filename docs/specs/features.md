@@ -59,8 +59,10 @@ Tags at the end of a feature:
 Features 19, 33, 35, 42, 43, 46 and 55, and features 107 to 112, also
 change public pages and need footprint budgets.
 
-Features 1000, 1284 and 1285 once held repeats. They now hold three
-features from the check behind Range 4, each in the section it fits.
+Numbers 1000, 1284 and 1285 are historical references to features
+933, 1283 and 1165. The work once placed in those slots belongs to
+editor scoring (235, task #56), the draft intake (714, task #57), and
+the writing brief (36, task #54).
 
 ## Range 1: features 1 to 112
 
@@ -161,7 +163,8 @@ features from the check behind Range 4, each in the section it fits.
     point linked to its source post and approved by staff. This needs a
     public-page exception.
 36. Blog briefs: Draft article outlines for WordPress authors from questions
-    asked on the forum.
+    asked on the forum. The brief needs enough eligible source posts or
+    pages, as [spec 0041](0041-editorial-coach.md) sets out.
 
 ### Technical health
 
@@ -564,8 +567,13 @@ features from the check behind Range 4, each in the section it fits.
 
 ### Content optimisation and editorial
 
-235. Live WordPress content scoring: Score content live in the WordPress editor.
-     [WP]
+235. Editor content scoring: Show the same approved content score for
+     the saved draft in the WordPress editor and in a small panel in the
+     XenForo editor, for guest-visible drafts only, never conversation
+     drafts. The service scores the saved version when it next calls the
+     site and stores it through the add-on's or plugin's own contract;
+     typing sends no requests to Sutradhar or their routes. [Spec
+     0042](0042-coach-additions.md) owns the display.
 236. Readability analysis: Analyse sentence length, passive voice and reading
      age.
 237. Term coverage: Compare term coverage with the site's own best-performing
@@ -1348,7 +1356,9 @@ features from the check behind Range 4, each in the section it fits.
 713. Separate MCP content section: Gives the MCP server a separate content
      section with its own permissions, kept apart from admin tools.
 714. Create draft tool: create_draft starts a draft of any supported content
-     type, for XenForo or WordPress.
+     type, for XenForo or WordPress. The shared draft flow checks words
+     and claims barred by site policy before approval. See
+     [spec 0052](0052-hubs-summaries-drafts.md).
 715. Update draft tool: update_draft changes a draft and keeps a version history
      of every change.
 716. List and get drafts: list_drafts and get_draft find and read drafts, with
@@ -1762,9 +1772,7 @@ features from the check behind Range 4, each in the section it fits.
 998. Member photo collages: Makes collages of member photos, with their
      permission.
 999. Before-and-after pairs: Makes before-and-after image pairs.
-1000. Editor score panel: Shows a draft's content score as a small panel
-      inside the XenForo editor. The score is worked out when the editor
-      opens, so typing sends no requests. [XF]
+1000. Historical reference. See 933, Static maps.
 1001. Brand icon sets: Makes icon sets from the brand library.
 1002. Slide decks from articles: Turns articles into slide decks.
 1003. Social media carousels: Makes image carousels for social media.
@@ -2211,11 +2219,8 @@ features from the check behind Range 4, each in the section it fits.
 
 1283. No member impersonation: Assistants never impersonate members. AI-assisted
       content appears only under labelled staff or system accounts.
-1284. Banned words and claims: Keeps a list of words and claims a draft
-      must never use, and checks every draft against it before approval.
-1285. Enough sources for a brief: Refuses to make a brief when too few
-      source posts or pages back it. The lowest number comes from lab
-      runs.
+1284. Historical reference. See 1283, No member impersonation.
+1285. Historical reference. See 1165, AI-assistance labels.
 1286. Prompt-injection defence: Forum text used as a source can never give the
       assistant instructions.
 1287. Untrusted text as data: Every MCP resource marks untrusted text as data.
@@ -2266,8 +2271,7 @@ tools against this list. Each line says what the feature does, in our own
 words. The analytics features work only on server logs, darshak's own
 first-party counts, signed-in member activity and imports such as Search
 Console and GA4. They need no third-party tracking, no cross-device
-identity and no customer records. Features 1000, 1284 and 1285 also come
-from this check; they sit in Range 3, in the sections they fit.
+identity and no customer records.
 
 ### Crawler and audit additions
 
@@ -2413,7 +2417,6 @@ design, as set out here.
   refresh; no add-in for another company's office programs.
 - 1355 Content trait analysis: the traits come from shodhan's own text
   measures; no vendor's list of traits.
-- 1285 Enough sources for a brief: the lowest number comes from our own
-  lab runs, not from any product's documents.
+- 36 Blog briefs: the minimum source count comes from our own lab runs.
 - 1330 IndexNow pings and 1335 Agent-readable site guide: open, public
   protocols, built from their published specifications.

@@ -62,6 +62,9 @@ run shows the same result as a chart.
   per-case outcomes and their Arrow exports, and probe sets. It
   produces counts and per-case outcomes; ganit computes the ranges and
   verdicts. Ranking and tuning use it. It never imports `lab`.
+  Shared platform fakes belong to the development-only
+  `sutradhar-test-support` crate (spec 0014), not this library. Product
+  dependencies never include that test-support crate.
 - `lab`: one binary per experiment in `crates/lab/src/bin/`, plus
   `lab::support` (runner, context, results). It imports production
   crates directly; production crates never import it, and an

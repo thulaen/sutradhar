@@ -52,6 +52,8 @@ Those parts declare their actions here.
 - `sutradhar-actions`: the `Action` trait, the registry and the runner.
 - `sutradhar-dwarpal` ("gatekeeper"): who the caller is and what they
   may do, through the Cedar rules. Trait `Authoriser`.
+  This authorisation module is separate from its signed-message guard
+  in spec 0021. A valid message signature never grants permission.
 - `sutradhar-lekha`: audit. Trait `AuditSink`.
 - `sutradhar-mcp`: MCP messages and the mapping from actions to MCP
   tools and resources, on the official Rust MCP SDK (rmcp), pinned.

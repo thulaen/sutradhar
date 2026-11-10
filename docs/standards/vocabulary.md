@@ -446,8 +446,8 @@ Screens show the English label; the code may use the word.
 | sujhav | Suggestions |
 | abhilekh | Audit log |
 | drishti | Health and monitoring |
-| dwarpal | Sign-in and permissions |
-| pariksha | Test utilities |
+| dwarpal | Permissions and message checks |
+| pariksha | Evaluation library |
 | sampark | Platform connections |
 | shodhan | Text processing |
 | agvani | Welcome |
@@ -462,7 +462,7 @@ Screens show the English label; the code may use the word.
 | nirikshak | Code analysis |
 | hisaab | Books and reports |
 | prahari | Edit safety |
-| tijori | Release signing |
+| tijori | Keys and signing |
 | vastu | Architecture checks |
 | ganit | Numerical analysis |
 | chayan | Selection and optimisation |

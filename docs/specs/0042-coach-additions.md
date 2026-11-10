@@ -17,7 +17,8 @@ and a thread answers that, so link it". Nothing changes by itself.
 
 ### Reuse
 
-No second checker, workspace or score.
+No second checker or workspace, and the Coach adds no score of its
+own; feature 235's score is a separate, approved measure.
 
 | New part | Reuses |
 | --- | --- |
@@ -59,6 +60,24 @@ covered elsewhere. These eight are new:
 - Media tips apply to staff pages and guides first, not member posts.
 - No waivers: nothing blocks, so nothing needs one. An editor may set a
   tip aside; it is noted in history, needs no reason and hides nothing.
+
+### Editor content score display
+
+Feature 235 shows the same approved draft content score in both site
+editors. The measure is one the method lab admits (spec 0056). The
+service scores only saved drafts of guest-visible content: drafts the
+content module holds (spec 0052) and posts a staff member sends for
+scoring through the signed contract of spec 0021. Conversation drafts
+and other private text are never read. It scores a saved version when
+it next calls the site and stores the result through each platform's
+own contract, in the XenForo add-on's or the WordPress plugin's tables,
+since the site never calls the service. Both editors show that stored
+score for the saved version and measure version, and say when it is
+older than the text on screen. Typing sends no requests to Sutradhar,
+the add-on's routes or the plugin's routes. The panel displays only the named
+measure with evidence for the draft version. Coach tips still show
+reasons and have no overall score. The panel does not change the draft
+or publish anything.
 
 ### Saved runs
 
@@ -403,6 +422,11 @@ Rust tests for each point:
 - EA11: where a competing page owns the case, the related-question tip
   is quiet.
 - EA12: phone and desktop previews say "not measured" until admitted.
+- EA13: both editors show the same stored score for the same saved
+  version and measure version, and mark it as older once the text on
+  screen changes. Typing sends no requests to Sutradhar, the add-on's
+  routes or the plugin's routes and changes nothing on the site. A
+  conversation draft is never scored.
 - EB01: the list is walked in order and never reaches an unlisted
   service.
 - EB02: every move shows on the tip and in the audit trail.

@@ -70,7 +70,8 @@ owner accepted on 31 October 2026 with "Accept all (Recommended)").
   authors.
 - `namaste`: the sample extension used by the tests and the developer
   guide.
-- Traits, each with a fake in `sutradhar-pariksha`: `SandboxRuntime`
+- Traits, each with a fake in development-only `sutradhar-test-support`
+  (spec 0014): `SandboxRuntime`
   (`start`, `stop` with a grace period, `remove`, `stats`),
   `PackageVerifier` (`verify` a package to its digest) and `GrantPolicy`
   (`allows(extension, call) -> bool`).
