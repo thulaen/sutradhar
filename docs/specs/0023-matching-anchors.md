@@ -205,8 +205,9 @@ keeping the higher scores.
   pieces' room, three-eighths of the window (3,072 reranker tokens);
   then summary pieces.
 - Pieces are sized in embedder tokens (spec 0022), and the reranker
-  counts in its own. The largest piece size, 3,072 embedder tokens,
-  maps to a reranker count measured on the corpus and recorded with
+  counts in its own. The piece size has no fixed top (the owner, 10
+  November 2026: "No fixed top"); the piece size in use maps to a
+  reranker count measured on the corpus and recorded with
   the generation; the measured figure, not an estimate, is used. So
   that no piece fits nowhere, the best-scoring piece always enters. If
   it is over the pieces' room in reranker tokens, it is split at
@@ -471,8 +472,7 @@ content.
   measured difference is zero or better and its interval's lower end is
   no lower than −1 point (a measurement tolerance, not leave to get
   worse); and it stays within the memory cap and the 30-second target
-  on the reference hardware. A retrained version of the chosen model
-  needs only a lower end above zero.
+  on the reference hardware.
 - The report names exact revisions and stays on Dell; a public summary
   needs a privacy review. A clear win is only a proposal: replacing a
   model needs the owner's approval, as would a window under 1,024 or
@@ -512,8 +512,8 @@ Signing and schemas are spec 0021's.
 - Queue figures: queue depth and oldest age, processing rate, and both
   coverages, as metrics and on the live stream.
 - `ReviewDecision` (add-on to service, collected by the service):
-  approve, reject or remove with any reason, for learning and
-  retraining.
+  approve, reject or remove with any reason, for learning in the small
+  networks (spec 0024).
 
 ### Settings and defaults
 
@@ -595,9 +595,8 @@ missing is invented or counted as zero.
   peak at a full 8,192-token pair is measured.
 - The comparison test is a lab comparison run on Dell. It goes through
   the heavy-job queue (spec 0059) as `pankti run -- CMD` and takes one
-  place: 4 GB and 8 CPU threads (AGENTS.md section 11). Only retraining
-  takes both places (spec 0024). The chosen set is also measured under
-  the production cap on both sizes of PC.
+  heavy-job place (AGENTS.md section 11). The chosen set
+  is also measured under the production cap on both sizes of PC.
 - Reranker input at most 8,192 tokens; query side at most 1,024.
 - At most 1,000 hits per piece, 50 pairs per post, 5 destinations per
   phrase, 20 keyphrases per post, 200 reverse sources per new thread.
@@ -766,11 +765,13 @@ Acceptance tests (Rust):
     while they fit, the first post at most half that room. No piece is
     cut, none repeats, and the destination's summary vector comes from
     all 1,001 posts.
-43. At a piece size of 3,072 embedder tokens, the measured reranker
-    count is recorded. A best piece over the pieces' room is split
+43. At a piece size whose pieces exceed the pieces' room, the measured
+    reranker count is recorded. A best piece over the pieces' room is split
     into parts at sentences, each scored in its own pair within 8,192
     tokens; the parts together hold every character of the piece, and
-    the destination's score is the highest part's.
+    the destination's score is the highest part's. A piece size whose
+    measured run misses the first-suggestion limit is refused, and the
+    old size stays.
 44. A source sentence of 3,000 tokens gives a query of the anchor and
     the same number of whole words on each side, where the text allows,
     within 1,024 tokens;
@@ -783,8 +784,8 @@ Acceptance tests (Rust):
   production forms.
 - The site never calls the owner's PC: the service sends suggestions
   and readiness to the add-on and collects review decisions from it.
-- The old speed goal and its limit report are replaced by the 5%
-  median rule; the 30-second service level still blocks release.
+- Speed follows the 5% median rule, and the 20x goal and its limit
+  report are kept (spec 0007); the 30-second level still blocks release.
 - Paid embeddings come through AWS Bedrock (spec 0025).
 - Memory follows the limits in AGENTS.md section 5.6.
 - The document side holds whole pieces only, in place of summary text

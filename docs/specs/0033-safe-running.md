@@ -245,6 +245,26 @@ Values marked "by research" are measured before the build.
 - Undo, trash and safe mode (specs 0028 and 0018): generalised, not cut.
 - The action layer (spec 0020): each change writes a journal entry.
 
+### Not built
+
+These were turned down when the owner chose this design, and are not
+built here; a later page may ask the owner again:
+
+- From the old runtime candidate: a separate worker tier in another
+  language; our own async runtime; an allocator shim and a
+  zero-allocation core; separate settings files (spec 0014 holds
+  settings); time-limited exceptions and a switch to turn off jitter;
+  deadlines that may only shorten, jitter, single-flight, a retry
+  budget stack, a full graph runner, a simulation harness and a browser
+  layer; rows for several machines; and its build-first order.
+- From the old storage candidate: automatic deletion jobs, guessing
+  what is a cache, a fixed cache cap, disk-image and seed-failure
+  rules, byte layouts and the copy census.
+- From the old memory candidate: its baseline figure and its start and
+  stop duties (spec 0019).
+- Also: percentage feature switches, automatic rollback beyond the
+  existing undo, and a standby database.
+
 ## Limits
 
 - Memory: room is judged against each part's budget and the memory
@@ -302,6 +322,9 @@ Rust tests, unless named otherwise:
   of the old checker.
 - "Restart its container or worker" becomes restart its worker.
 - The memory total follows AGENTS.md section 5.6.
+- The old candidates' project names are left out of the "Not built"
+  list; its 12 GB baseline and 60 GB cache cap are given as "a
+  baseline figure" and "a fixed cache cap".
 
 Source: `docs/specifications/platform/safe-running.md` and
 `docs/specifications/platform/safe-running-2.md` in the archive

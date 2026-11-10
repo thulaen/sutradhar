@@ -6,7 +6,9 @@ item 9, and follows [AGENTS.md section 9.1](../../AGENTS.md#91-the-sync).
 ## What it does
 
 A system timer on Dell runs `forge-sync once` every minute, so a push
-reaches GitHub within about a minute. Each run reads everything first,
+reaches GitHub within about a minute, unless the sync is paused for its
+campaign (spec 0006, "The sync's steps for `main`", step 1). Each run
+reads everything first,
 checks everything, and only then sends anything:
 
 1. It fetches `main` and every tag from Forgejo into a private mirror,

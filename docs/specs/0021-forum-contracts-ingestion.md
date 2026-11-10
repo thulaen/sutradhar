@@ -801,7 +801,7 @@ guest rule and signing text within the gate's time.
 - The add-on is GPL-2.0-or-later, as AGENTS.md 5.7 sets.
 - Disagreements and overdue checks write fault records instead of
   filing issues by themselves.
-- The 20-times speed goal is replaced by the 5% median rule; old per
+- Speed follows the 5% median rule and the 20x goal is kept (0007); old per
   container memory estimates are replaced by the service slice.
 
 Source: `docs/specifications/platform/forum.md`, `platform/forum-2.md`,

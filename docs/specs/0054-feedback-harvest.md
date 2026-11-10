@@ -121,6 +121,12 @@ moderator event contract, compare them with job 146, set uncertainty and
 support rules, and derive the expected test answers independently. Use
 verified citations. Reading a paper gives no licence to its code.
 
+Checked sources only: the full text of the Agarwal paper and of the
+Wang paper on personal search is read and its method checked before
+either is used. The old source mixed up titles, years and venues in
+another citation; cite each paper by its checked title, authors, year
+and venue, never by the old source's wording.
+
 - https://www.cs.cornell.edu/~tj/publications/joachims_etal_17a.pdf
 - https://arxiv.org/abs/1812.05161
 

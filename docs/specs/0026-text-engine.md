@@ -932,9 +932,21 @@ needs its own manual page.
   MultiNERD, the NRC emotion lexicon, MPQA, the Stanford Sentiment
   Treebank, WikiANN, PreCo, the Bing Liu lexicon and SentiWordNet.
 - Share-alike sets are allowed; each model trained on them is
-  published apart from the code, under the same licence, with credits.
-  Each dataset's licence, version, hash and notice go in
-  `models.lock`'s data section and the public notices file.
+  published apart from the code, under the same licence, with credits
+  (the owner, 6 November 2026, Q-SH12). Each dataset's licence,
+  version, hash and notice go in `models.lock`'s data section and the
+  public notices file.
+- Data-rights cautions: whether share-alike terms reach weights trained
+  on such data is legally unsettled. Creative Commons says its terms
+  apply only where copyright permission is needed, and an IViR study
+  (Szkalej and Senftleben, 2024) finds "adapted material" unclear.
+  Legal clearance needs a lawyer's view; it is never taken from
+  reading a licence or a paper. Before a dataset is downloaded, its
+  licence is checked again at its source.
+- Share-alike data may teach the language layer's models, under the
+  rights checks above (the owner, 10 November 2026: "Yes, for teaching
+  models"). Spec 0029's "published papers and the owner's own text"
+  covers the language layer's own rules and word lists.
 - No real post is training data. Staff may mark about 3,000 words of
   guest-visible posts on Dell after a privacy review, for held-out
   evaluation only, reported as aggregates. Moderator acceptance data
@@ -958,9 +970,10 @@ needs its own manual page.
   never grows the call stack.
 - Work: time and memory grow linearly with input (plus output for
   matching). Doubling a hostile input at most multiplies time by 2.5.
-- Memory for reading one message, the worked peak for 16 MiB with the
-  largest piece size (3,072 tokens) and the hard cap of 64 KiB of text
-  per piece:
+- Memory for reading one message, the worked peak for 16 MiB at the
+  hard cap of 64 KiB of text per piece, which bounds a piece whatever
+  the piece size (no fixed top in tokens; the owner, 10 November 2026:
+  "No fixed top"):
 
   | Part | Most |
   |---|---|
@@ -1297,8 +1310,8 @@ Starred (★) cases block any release they touch.
 - The independent second edit validator is Rust with proofs, not a
   separate language.
 - Training and statistics run in ganit, the Rust numerical engine.
-- The 20x speed goal and the 5% best-result ratchet are replaced by
-  the 5% median rule of AGENTS.md 6.8; absolute speed targets stay.
+- The 5% best-result ratchet becomes the 5% median rule of AGENTS.md
+  6.8; absolute speed targets stay; the 20x goal is kept (spec 0007).
 - Coverage is 100% of lines, branches and MC/DC for the whole crate and
   100% of mutants killed, with no reviewed-reason exceptions.
 - The old gate names and toolchain-only runs are replaced by the push

@@ -6,9 +6,10 @@ is tested. How specifications are named and approved is in
 [AGENTS.md section 12](../../AGENTS.md#12-docs).
 
 The feature list, features 1 to 1357, is in [features.md](features.md).
-Specifications 0003 to 0057 are rewritten from the private archive
-`archive-2026-11-08-old-repo` on Dell; each names its source files at
-its end. Specifications 0001, 0002 and 0058 to 0060 were written fresh.
+Specifications 0003 to 0057, 0061 and 0063 are rewritten from the
+private archive `archive-2026-11-08-old-repo` on Dell; the table below
+names each one's source files. Specifications 0001, 0002, 0058 to 0060 and
+0062 were written fresh.
 
 | No. | Title | Roadmap item | Archive source (under `docs/specifications/`) |
 |---|---|---|---|
@@ -74,3 +75,4 @@ its end. Specifications 0001, 0002 and 0058 to 0060 were written fresh.
 | [0060](0060-runner.md) | Forgejo's runner on Dell | Phase 1 item 2 | written fresh |
 | [0061](0061-nirikshak.md) | nirikshak, the code analyser | Phase 2 item 2 | `findings/nirikshak-2026-11-07.md`, rewritten for Rust and Rego |
 | [0062](0062-forgejo-server.md) | Forgejo on Dell and its settings | Phase 1 item 1 | written fresh |
+| [0063](0063-autoissues.md) | autoissues, the fault tracker | Later (task #23) | `autoissues/*.md` |

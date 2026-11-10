@@ -23,7 +23,7 @@ Plain meanings of the names and terms used in Sutradhar.
 | aegis-door | aegis + English "door" | The gate on Forgejo's side: checks every push before it lands |
 | nirikshak | Hindi: "inspector" | The code analyser used by the gate |
 | prahari | Hindi: "guard" | The outside tester that checks the gate itself |
-| autoissues | English name | Turns findings into Forgejo tasks |
+| autoissues | English name | Keeps the list of faults found, apart from Forgejo tasks; a fault is linked to a task only when an agent takes it on |
 | forge-sync | English name | Copies Forgejo to GitHub and brings GitHub issues back |
 
 ## Terms

@@ -187,7 +187,10 @@ On by default. A moderator approves each change. AI never rewords a post.
   never corrects), keyphrases, a name finder and a word tagger chosen in
   the lab, plus a spelling candidate list, an abbreviation pairing and
   word types. It is clean room: built only from published papers and the
-  owner's own text, with no copied code or models. The old toolkit's name
+  owner's own text, with no copied code or models. That line covers the
+  rules and word lists; admitted share-alike data may teach its models
+  (the owner, 10 November 2026: "Yes, for teaching models"; spec 0026,
+  "Clean room, rights and data"). The old toolkit's name
   stays off screens. A fuller language-layer design may replace this set
   once the owner approves it.
 - Research, through GanitEvolve under the one proof standard, must answer

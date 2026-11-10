@@ -359,7 +359,7 @@ headless-browser test:
 
 - The maths jobs run in ganit, the Rust numerical engine.
 - Moderator pages are Dioxus app screens built from SDS components.
-- The 20x speed goal is replaced by the 5% median rule.
+- Speed follows the 5% median rule; the 20x goal is kept (spec 0007).
 - Browser-side tests are Rust tests driving a headless browser.
 
 Source: `docs/specifications/signals/ranking.md` and

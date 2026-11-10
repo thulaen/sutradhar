@@ -608,7 +608,7 @@ without conversion.
 - Defects and overdue batch jobs write held fault records (0018 item G)
   instead of filing issues by themselves.
 - Every event and job row carries its site, as AGENTS.md 5.2 requires.
-- The 20-times speed goal is replaced by the 5% median rule; old per
+- Speed follows the 5% median rule and the 20x goal is kept (0007); old per
   container memory estimates are replaced by the service slice.
 
 Source: `docs/specifications/platform/jobs.md`, `platform/jobs-2.md`,

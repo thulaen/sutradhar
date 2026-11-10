@@ -929,6 +929,15 @@ install, pair, suggest, approve, update and uninstall on each row from
 scratch; the nightly run does smoke coverage of all rows. Licensed
 copies come only from official sources.
 
+The release and nightly campaigns also cover the supported XenForo and
+WordPress versions and their latest beta candidates, Xon's Redis cache,
+XenForo Enhanced Search, the major theme vendors and Redis Object
+Cache. Each vendor group needs named editions and versions before it is
+admitted. Each campaign records the exact beta it ran; a beta that
+passes is never turned on for real sites without its own
+qualification. A missing licensed copy or test setting blocks its
+campaign (archive `installation-platforms/non-invasive.md`).
+
 - CO-01: engine and health traffic stay within rates, batches, CPU,
   memory, timeouts and concurrency on a busy site.
 - CO-02: 403, 429, Retry-After, clock changes and restarts: back-off
@@ -1019,7 +1028,7 @@ Speed is checked by the 5% median rule on Dell baselines.
 - XenForo facts come through the add-on's read-only reads over the
   signed HTTPS contract, not a direct database link from the service.
 - The editor round trip runs in a headless browser.
-- Speed goals use the 5% median rule, replacing the 20x goal and ratchets.
+- Speed uses the 5% median rule in place of ratchets; the 20x goal is kept.
 - Heavy Dell runs use the heavy-job queue (AGENTS.md 11), replacing the
   old 3.5 GB governor.
 - Old milestone, requirement and capability mapping tables are dropped;

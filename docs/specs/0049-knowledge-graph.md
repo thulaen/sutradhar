@@ -247,7 +247,7 @@ Rust tests in the `graph` module:
 
 - The graph maths runs in ganit, the Rust numerical engine.
 - The preview page is a Dioxus app screen built from SDS components.
-- The 20x speed goal is replaced by the 5% median rule.
+- Speed follows the 5% median rule; the 20x goal is kept (spec 0007).
 
 Source: `docs/specifications/signals/graph.md` in the archive
 `archive-2026-11-08-old-repo`.

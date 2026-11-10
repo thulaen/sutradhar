@@ -308,7 +308,7 @@ Rust tests in `content`:
 
 - The maths jobs run in ganit, the Rust numerical engine.
 - Staff pages are Dioxus app screens built from SDS components.
-- The 20x speed goal is replaced by the 5% median rule.
+- Speed follows the 5% median rule; the 20x goal is kept (spec 0007).
 - A local model in the drafting list is a pure-Rust model.
 
 Source: `docs/specifications/signals/content.md` and

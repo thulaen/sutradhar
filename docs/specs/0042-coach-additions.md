@@ -131,19 +131,31 @@ cached by the draft's outline, not by the clock.
 
 ### Wording order, with a shown fallback
 
-The owner sets an ordered list of wording routes. The default is:
+The owner sets an ordered list of wording routes. The default is the
+owner's order (archive `signals/coach-additions-2.md`):
 
-1. The local pure-Rust model on the owner's PC.
-2. The paid route (AWS Bedrock with the owner's key), only with a key
+1. The owner's own AI agent (such as Claude, Codex or Gemini),
+   connected through Sutradhar's MCP server (spec 0020). The Coach asks
+   it for wording through a wording-route trait that the MCP server
+   implements as an MCP sampling request on the owner's live
+   `sutra mcp` session for the draft's own site; the composition root
+   wires it in. It is used
+   only while the owner has turned that route on (AGENTS.md section
+   5.5) and such a session is open and allows sampling.
+2. The local pure-Rust model on the owner's PC.
+3. The paid route (AWS Bedrock with the owner's key), only with a key
    and a spending cap.
 
-A move is allowed only along this list, and it is always shown.
+This is the owner's stated exception to "no fallbacks": a move is
+allowed only along this list, and it is always shown.
 
-- Move down only when the current route errors, runs past its time
-  limit or has hit its cap. Never up, never sideways, never to an
+- Move down only when the current route is not connected or not turned
+  on, errors, runs past its time limit or has hit its cap. The agent
+  counts as available while it is connected and answers within the time
+  limit. Never up, never sideways, never to an
   unlisted service.
-- Every move shows on the tip ("Written by: paid route, because the
-  local model did not answer") and in the audit trail.
+- Every move shows on the tip ("Written by: local model, because your
+  agent is not connected") and in the audit trail.
 - The notice shows first, every time. A move to a route that leaves the
   PC shows it again, naming that route.
 - A paid route with no key or cap is skipped and never called. A cap
@@ -151,10 +163,9 @@ A move is allowed only along this list, and it is always shown.
 - If the whole list fails, evidence and the original passage still show,
   and no wording is invented.
 - One job uses one route. Words from two routes are never mixed.
-- An AI tool the owner connects through the MCP server is not on the
-  list. It may read the evidence and draft wording through the Coach's
-  tools; each draft is a suggestion a moderator must accept, labelled
-  with its source.
+- Wording from the agent, like every route's, is a suggestion a
+  moderator must accept, labelled with its source. The agent may also
+  read the evidence and draft wording through the Coach's tools.
 - The list serves Coach wording, suggested questions, readability tests
   and drafting. Chatbot checks never use it, as a swap would change what
   is measured.
@@ -297,7 +308,7 @@ is shared between sites or installs.
 | `coach.upload.max_bytes` | set by research | above zero, safe top |
 | `coach.upload.types` | text, Markdown, Word | may only be narrowed |
 | `coach.draft.keep_days` | set by research | at least 1, safe top |
-| `coach.ai.order` | local, paid | reorder or remove entries |
+| `coach.ai.order` | owner's agent, local, paid | reorder or remove entries |
 | `coach.ai.spend_cap_day` | none, so paid stays off | above zero, safe top |
 | `coach.ai.spend_cap_month` | none, so paid stays off | above zero, safe top |
 | `coach.ai.reply_seconds` | set by research | above zero, safe top |
@@ -418,6 +429,9 @@ Rust tests for each point:
 - EB16: the kill switch stops drafting; tips and evidence continue.
 - EB17: an MCP-drafted wording is stored only as a suggestion and is
   applied only after a moderator accepts it.
+- EB18: with the owner's agent route turned off, disconnected or past
+  its time limit, the job moves to the local model, the notice names
+  the reason, and no paid call is made while the local model answers.
 - ED01: only an admin in the desktop app starts a run; MCP can read,
   not start.
 - ED02: a run whose estimate passes the cap is refused before any call.
@@ -443,9 +457,11 @@ Rust tests for each point:
 
 ## Changes from the source
 
-- The wording order holds the local pure-Rust model and the paid route
-  (AWS Bedrock, owner's key). The owner's MCP tool drafts only as a
-  suggestion a moderator accepts, off the list (AGENTS.md 5.5).
+- The wording order keeps the owner's three routes. The staff member's
+  own agent becomes the owner's agent, connected through the owner-only
+  MCP server and used only when the owner turns that route on; the
+  local model is the pure-Rust model; the paid route is AWS Bedrock
+  with the owner's key (AGENTS.md section 5.5).
 - Outside local model runtimes, including one on another named
   computer, are replaced by pure-Rust models in the service slice.
 - Decision logic, maths and adapters are rewritten as Rust (ganit for

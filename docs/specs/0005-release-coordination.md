@@ -80,11 +80,14 @@ the door like any other commit, never an unrelated fix forward.
    invalidation rules (0007). Any new dependency is admitted through the
    licence rules of AGENTS.md section 5.7.
 3. Each group lands as one commit through the normal session steps.
-4. A group that fails any check is not pushed, and autoissues turns its
-   findings into Forgejo tasks.
+4. A group that fails any check is not pushed, and autoissues records
+   its findings. They become Forgejo tasks only when an agent takes one
+   on, linked to it (the owner, 10 November 2026: "Keep apart, link
+   when taken"; spec 0063, "Where faults go").
 5. Security findings from GitHub's dependency alerts, cargo-audit,
    `composer audit` and the container image scanner feed autoissues. A
-   finding of the two highest severities becomes an urgent task at once.
+   finding of the two highest severities is filed in autoissues as P0
+   or P1, with a Forgejo task only when an agent takes it on.
 6. No dependency step makes a branch or a pull request.
 
 ## The release steps
@@ -176,7 +179,8 @@ scratch Forgejo repositories:
 - The release step crashes after making an artefact: recovery finishes
   once and makes no duplicate.
 - A dependency group that fails a check is not pushed, and its findings
-  become Forgejo tasks.
+  are filed in autoissues, with no Forgejo task until an agent takes
+  one on.
 - No release or dependency step makes a branch or a pull request.
 
 ## Changes from the source
@@ -197,7 +201,8 @@ scratch Forgejo repositories:
   tool for another language is dropped.
 - The speed check is the 5% median rule of AGENTS.md section 6, not the
   old 20x gate.
-- High-severity security findings become urgent Forgejo tasks.
+- High-severity security findings are filed in autoissues as P0 or P1,
+  with a Forgejo task only when an agent takes one on.
 
 Source: `docs/specifications/agent-release-coordination.md` and
 `docs/specifications/release-main-only.md` in the archive

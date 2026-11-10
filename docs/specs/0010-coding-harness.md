@@ -40,7 +40,7 @@ are in [AGENTS.md sections 6 and 7](../../AGENTS.md#7-the-gate).
    trusted. The release tier always runs fresh.
 6. Reports come in plain English, JSON, SARIF, generated HTML and
    Prometheus form, with steps to reproduce and links to the autoissues
-   tasks.
+   records (spec 0063).
 7. The `aegis` command offers: run a tier, check the catalogue, verify a
    result, show where a run stands, and reproduce a finding.
 8. The commit hook checks the staged content, and the push hook checks
@@ -75,6 +75,18 @@ are in [AGENTS.md sections 6 and 7](../../AGENTS.md#7-the-gate).
   required test must pass.
 - The required reviews of AGENTS.md section 7.1 run at commit and release and
   block like any check.
+- Nightly campaign: every night, and at the commit count in
+  [AGENTS.md section 9.1](../../AGENTS.md#91-the-sync), the release
+  tier's long checks run on the newest `main` on Dell. A published
+  commit is one that reaches Forgejo's `main`; the count starts from
+  the commit that turns the campaign on. The
+  campaign runs full mutation, long fuzzing, soak, memory leaks, chaos,
+  the browser set, the dynamic web security scan, container scans and
+  the planted-defect canaries. It is a schedule for the release tier's
+  checks, not a fourth tier. At that count, the sync to GitHub pauses
+  until that commit's campaign passes (AGENTS.md section 9.1; spec 0006,
+  step 1; archive `coding-harness/README.md`: "Pause after the tenth
+  published commit until its campaign is green").
 
 ### Nirikshak analysis
 
@@ -157,11 +169,13 @@ are in [AGENTS.md sections 6 and 7](../../AGENTS.md#7-the-gate).
    unreachable paths, and reported locations matched to the source.
    Short-circuiting, compiler lowering, optimisation and left-out
    regions are checked. A compiler accepting a flag proves nothing.
-4. A substitute check keeps the original gate item ID, its inventory,
+4. A tool whose support is missing stays blocked; a substitute is used
+   only once the owner approves it and evidence qualifies it.
+5. A substitute check keeps the original gate item ID, its inventory,
    generated and explicit cases, every planted fault and outcome, seed,
    scope and gaps. Property tests are not reported as coverage or fuzz
    tools.
-5. A mapping to a tool does not prove the tool covers every construct,
+6. A mapping to a tool does not prove the tool covers every construct,
    dialect or report field.
 
 ### Link safety rules and proofs
@@ -204,9 +218,10 @@ are in [AGENTS.md sections 6 and 7](../../AGENTS.md#7-the-gate).
    kept and the owner is told.
 6. GitHub CI runs the public source on made-up data with the same
    catalogue and pinned images. Private inputs and final performance
-   runs stay on Dell. CI failures become autoissues tasks with stable
-   fingerprints; retries are merged; full evidence is kept; outages and
-   recovery are tested.
+   runs stay on Dell. CI failures become autoissues records, not Forgejo
+   tasks until an agent takes one on (the owner, 10 November 2026:
+   "Keep apart, link when taken"), with stable fingerprints; retries
+   are merged; full evidence is kept; outages and recovery are tested.
 7. Urgent notices go to Forgejo as `status/urgent` tasks, shown first.
    Delivery cursors are durable. Failed notices are retried and a
    notifier's own failures are shown.
@@ -388,7 +403,9 @@ dependency intake.
   new kept storage a campaign, with a five-second stop reserve.
 - The bootstrap compiler route runs one job at a time and ends at the
   earlier of the native queue being admitted or 24 hours after its first
-  trial, bound to the boot and a monotonic clock.
+  trial, bound to the boot and a monotonic clock. Starting it again after
+  it ends needs a fresh owner answer. An ended route refuses new work
+  and keeps its evidence.
 - The gate runs on Dell; the memory limits in AGENTS.md section 5.6
   apply to the product on the owner's PC, not to the gate.
 
@@ -492,9 +509,10 @@ Tests live in `crates/aegis/tests/` unless named otherwise.
   language.
 - Old formal models become stateright model checks and Rust trust-model
   checks.
-- The tiers are the three of AGENTS.md section 7; the old nightly
-  campaign moves to the release tier, and its pause after ten commits
-  is dropped.
+- The tiers are the three of AGENTS.md section 7; the old continuous
+  tier becomes the nightly campaign, which runs the release tier's long
+  checks; at the count in AGENTS.md section 9.1 it pauses the sync to
+  GitHub, not pushes, until that commit's campaign passes.
 - The old AI review becomes the required reviews of AGENTS.md section 7.1.
 - The old 45-minute push budget is replaced by the 30-minute speed-task
   rule.
@@ -504,8 +522,8 @@ Tests live in `crates/aegis/tests/` unless named otherwise.
   names become `crates/aegis` and `crates/aegis-door`.
 - Waivers and inline suppressions need the owner's signed record in
   `gate/waivers/`.
-- The old 20x speed goal is replaced by the 5% median rule of AGENTS.md
-  section 6.8.
+- Speed follows the 5% median rule of AGENTS.md section 6 rule 8, and
+  the 20x goal is kept (spec 0007, "The 20x goal").
 - The handoff state file is replaced by Forgejo task proofs.
 - Old Dell job limits (one job, 3.5 GB, or three jobs in 12 GB) are
   replaced by AGENTS.md section 11.

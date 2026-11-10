@@ -1051,8 +1051,8 @@ logged.
 - With the live queue full, the service stops taking posts from the site
   instead of refusing calls from it, since the site never calls the PC.
 - Alerts appear in the app, not in site staff alerts.
-- The 20x speed goal and the 5% best-result ratchet are replaced by the
-  5% median rule.
+- The 5% best-result ratchet becomes the 5% median rule, and
+  the 20x goal is kept (spec 0007, "The 20x goal").
 - Rewritten as Rust; the local embedder runs in pure Rust.
 
 Source: `docs/specifications/linking/paid-embeddings.md`,

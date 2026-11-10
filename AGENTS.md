@@ -222,14 +222,26 @@ shipped product is built on it. Parts made before Boot exists (the gate,
   free public lists. They are fetched weekly and checked by hash.
 - Paid embeddings through AWS Bedrock are optional, off by default, and
   use the owner's own key. Local models always work without them.
-- Writing tips (the Editorial Coach) come from the pure-Rust models.
+- Writing tips (the Editorial Coach) come, in order, from the owner's
+  own AI agent through MCP when the owner has turned that on, then the
+  pure-Rust models, then the paid route (spec 0042).
 - Sutradhar offers an MCP server for AI tools the owner connects. It is
   reached only on the owner's PC, through the owner-only socket or a
   program the owner starts, never a network port. Every request is
   checked against the Cedar permission rules. Each session sees one
   site only, and never credentials, keys or audit logs. A tool may read
   and may draft wording, such as writing tips; every draft is only a
-  suggestion that a moderator must accept.
+  suggestion that a moderator must accept. A tool may also change a
+  setting within its token's limits, but only when the owner says so:
+  the owner-made token has the settings scope, and the owner gives a
+  live confirmation of that one plan, shown with every key it changes,
+  clicked in the app or typed at `sutra`'s own prompt. A plan waits at
+  most one hour for it. `--yes`, `--json`, MCP and scripts never
+  confirm it, and no token may call the confirm step. History keeps
+  that confirmation (owner, 10 November 2026: "Agents apply when I
+  say"; spec 0020). No tool may change anything that lets site text leave the PC
+  (the MCP grading setting included), tokens, the Cedar rules, the
+  agent rules, the confirm step, or the history and audit settings.
 - Suggestion quality may be graded by Bedrock or by an AI tool connected
   through MCP, only when the owner turns that on.
 - Site text leaves the owner's PC only through Bedrock, cloud helpers or
@@ -353,7 +365,7 @@ shipped product is built on it. Parts made before Boot exists (the gate,
    rather than run unsealed), with no `perf`, root or kernel settings. GitHub CI
    counts our hot paths but runs no race and no timings, which need
    Dell.
-9. Every new or changed shipped source file carries a GanitEvolve speed
+9. Every new or changed source file carries a GanitEvolve speed
    receipt in `receipts/`, made by the GanitEvolve tool (spec 0012), and
    the receipt names, by hash, the accepted King Solomon research card
    (spec 0013, "Research first") whose scope lists the file. Tests,
@@ -361,8 +373,9 @@ shipped product is built on it. Parts made before Boot exists (the gate,
    the receipt of the code they test. Agents must run GanitEvolve: the
    gate check `ganit.every-change` refuses a source change with no
    receipt or no card at every commit, push and release (owner,
-   10 November 2026). Source files are Rust, TypeScript, CSS, PHP and
-   SQL files.
+   10 November 2026). Source files are Rust, TypeScript, CSS, PHP,
+   SQL, shell, Cedar and Rego files, whether they ship or not (owner,
+   10 November 2026: "Every source file").
    The checks in rules 8 and 9 are wired in: a change may not remove
    them, take them off a tier or set them below "block" without a
    signed owner waiver (section 7.2; spec 0012, "Hard to skip").
@@ -504,11 +517,16 @@ Until Phase 2 is finished:
   its tool in `gate/tools.toml` and passes its planted test (task #157).
 - Rule 9 of section 6 blocks from the commit that turns on
   `ganit.every-change`, which lands only once GanitEvolve can make a
-  receipt for any Rust file and cards can be written (task #157). Files
-  nobody changes need no receipt until they change.
+  receipt for any Rust file and cards can be written (task #157). For
+  each other language it blocks from the commit that adds that
+  language's safety parse (spec 0012). Files nobody changes need no
+  receipt until they change.
 - Until Phase 1 item 9 builds the sync, agents copy to GitHub by hand
   with `gh` for step 11 of section 8, and write a failed copy on the task
   instead of raising an urgent task.
+- The campaign pause in section 9.1 starts with the commit that turns
+  on the nightly campaign (spec 0010). Until then neither the sync nor
+  the by-hand copy pauses.
 
 ## 8. How a session works
 
@@ -536,9 +554,12 @@ other branches. Each change is small, complete and safe to ship.
 10. Forgejo's door gate runs the push tier before it accepts the push.
     If any check fails, the push is refused and `main` stays as it was.
 11. Check that the sync has copied the push to GitHub. If it has not,
-    raise an urgent task.
+    raise an urgent task. A sync paused for its campaign (section 9.1)
+    is not a failure; name the commit whose campaign holds the pause.
 12. Post the proof on the task: checks, reviews, commit and GitHub
-    link. Close it.
+    link, or, while the sync is paused, the commit whose campaign
+    holds it. Close it, except a task made for an autoissues fault,
+    which autoissues closes (spec 0063).
 13. Release any locks still held.
 14. The stop check refuses to end the session until the task carries a
     proof comment or a blocked reason.
@@ -552,7 +573,11 @@ If the push is refused, or the session must stop early:
 - Never leave a task assigned with no comment.
 
 A session that finds work not in Forgejo creates the task in the "Later"
-milestone. Only the owner moves a task out of "Later".
+milestone. Only the owner moves a task out of "Later". Faults, however
+found, are not such work: they go to autoissues' own list, and a
+Forgejo task is made only when an agent takes a fault on to fix it,
+with the two linked (owner, 6 and 10 November 2026; spec 0063). Until
+autoissues runs, a fault is recorded on the task that found it.
 
 An urgent task is a task in the current phase's milestone with the
 `status/urgent` label. Agents raise one only for a broken rule, a failed
@@ -634,7 +659,11 @@ for A2A, the open agent-to-agent protocol, on Dell).
 ### 9.1 The sync
 
 - After each push to `main`, the sync sends code, tags, releases,
-  milestones and issues to GitHub.
+  milestones and issues to GitHub, within about a minute, unless it is
+  paused for its campaign: after every ten published commits, it waits
+  until that commit's nightly campaign passes (spec 0010). The pause
+  lifts when the campaign of that commit or a later one passes. A
+  pause longer than one day raises an urgent task.
 - Only fields on an allow-list are sent. Private names and secrets are
   removed, and gitleaks scans everything before it leaves. The gate runs
   the same gitleaks on every commit and push, so what the gate lets in

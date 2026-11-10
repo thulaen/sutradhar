@@ -95,6 +95,20 @@ the sampled traces stored in Sutradhar's database for 7 days.
 - Tests and manual screenshots use the synthetic fixture site,
   processed by the real system.
 
+### One-click Grafana export
+
+The owner's answer D-PG03 was "ship prometheus too, prometheus should
+also be used for progress and otel shipped too for traces and showing
+error logs on the gui"; it was recorded as R127, which includes a
+one-click Grafana export. One action on the operations screens writes
+Grafana dashboard files that match those screens and read the bundled
+metrics store, for an owner who runs Grafana. The files hold queries
+and layout only, never member text or credentials, and the export opens
+no network port. Test AT-VL159: the exported dashboards load in Grafana
+in a test container on Dell with no errors, each panel's query equals
+the matching screen's, and the files hold no member name, post text or
+key.
+
 ### Live updates and grouping
 
 - Live visuals use the stream of spec 0016: at most four updates a
@@ -925,7 +939,7 @@ headless browser checks the site pages.
   fails review holds back its item and a replacement goes to the owner.
 - The register's five progress states (old AT-VL20) are dropped: status
   lives in Forgejo.
-- The 20-times speed goal is replaced by the 5% median rule.
+- Speed follows the 5% median rule; the 20x goal is kept (spec 0007).
 
 Source: `docs/specifications/platform/visuals.md`,
 `docs/specifications/platform/visuals-2.md`,

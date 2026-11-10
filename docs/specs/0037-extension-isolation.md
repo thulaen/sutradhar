@@ -49,7 +49,9 @@ isolation; the Extensions screens and `sutra extension` commands; the
 developer contract and a sample extension.
 
 Out of scope: first-party modules, which are crates; community models
-(spec 0024), which an extension gets only through that spec's checks.
+(spec 0024), which an extension gets only through that spec's checks;
+and WebAssembly plug-ins, which are never offered (Q-EX03, which the
+owner accepted on 31 October 2026 with "Accept all (Recommended)").
 
 ### Design
 

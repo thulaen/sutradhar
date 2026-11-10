@@ -127,8 +127,11 @@ gauge, a late-checkpoint alert and one new error code.
 
 Before any build, research answers:
 
-1. Does the threat justify it? "The chain plus an outside head is
-   enough" is a valid result.
+1. Does the threat justify it? The advice of 4 November 2026, which
+   the owner told agents to follow, was not to build this for
+   version 1. "The chain plus an outside head is enough" is a valid
+   result; if research finds it, this part is not built for version 1,
+   and the roadmap change this needs is put to the owner.
 2. Which forward-secure scheme: a fresh key per period signed by a
    parent, or a key hashed forward each period; its size and speed.
 3. Block and proof size at 10 million events, and check speed; one

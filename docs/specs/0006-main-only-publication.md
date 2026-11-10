@@ -27,22 +27,28 @@ and follows [AGENTS.md section 9](../../AGENTS.md#9-git-and-github).
 
 After each push accepted on Forgejo, the sync:
 
-1. Takes the new commits from the door's accepted copy and checks that
+1. Checks the campaign pause of
+   [AGENTS.md section 9.1](../../AGENTS.md#91-the-sync) (spec 0010,
+   "Nightly campaign"). While paused it sends nothing; when the pause
+   lifts it sends everything waiting. A long pause raises the urgent
+   task that section 9.1 sets. A pause is not a failure (AGENTS.md
+   section 8, step 11).
+2. Takes the new commits from the door's accepted copy and checks that
    they form a straight line from the base, the GitHub `main` it last
    wrote. Each commit must carry the door's acceptance record.
-2. Reads live GitHub `main`. If it is not the base, it refuses the push
+3. Reads live GitHub `main`. If it is not the base, it refuses the push
    as stale or unexpected and raises an urgent task.
-3. Applies the allow-list and the gitleaks scan of AGENTS.md section
+4. Applies the allow-list and the gitleaks scan of AGENTS.md section
    9.1. If it is unsure, it sends nothing and raises an urgent task.
-4. Uploads the commits in order and checks that each identifier GitHub
+5. Uploads the commits in order and checks that each identifier GitHub
    returns equals the local one.
-5. Final check, repeated on every attempt, recovery included: within 10
+6. Final check, repeated on every attempt, recovery included: within 10
    minutes before the update, it reads `main` again and reads the active
    GitHub rules. If the rules differ from the approved settings below,
    it stops and raises an urgent task.
-6. Moves `main` with a non-forced update, so GitHub refuses anything
+7. Moves `main` with a non-forced update, so GitHub refuses anything
    but a fast-forward.
-7. Reads `main` and the tree back, writes an unchangeable publication
+8. Reads `main` and the tree back, writes an unchangeable publication
    receipt, and adds the gate's latest journal head to an anchor log
    that the gate may add to but never rewrite.
 
@@ -57,7 +63,7 @@ GitHub:
 
 - if `main` already equals the new tip, it checks it and writes the
   receipt;
-- if `main` equals the base, it resumes at step 5, never later;
+- if `main` equals the base, it resumes at step 6, never later;
 - anything else stops for a person to look at, with an urgent task.
 
 A retry never moves `main` twice. A broken `main` is mended by a revert
@@ -158,7 +164,11 @@ repositories and a fake GitHub server:
 - A crash after each journal step recovers with no double update and
   always repeats the final check.
 - A revert goes through the same route and checks.
-- A rule changed after step 3 stops the update at step 5.
+- At the commit count in AGENTS.md section 9.1, nothing reaches GitHub
+  until that commit's campaign passes; a pause past section 9.1's limit
+  raises one urgent task, and a passing campaign sends everything
+  waiting.
+- A rule changed after step 4 stops the update at step 6.
 - A protected change with a signature from another key, over another
   tree, or naming a different digest, is refused by the door.
 - An early commit without its bootstrap record is refused; a check is

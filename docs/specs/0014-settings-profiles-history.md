@@ -20,8 +20,8 @@ nothing in Sutradhar is hardcoded. It is roadmap Phase 3 item 1.
   "restart needed".
 - Each version records who asked for it, why, what was expected to get
   better or worse, and later the measured before-and-after results.
-- Agents may change settings only when a person told them to, and the
-  version records that instruction.
+- Agents may change settings only with the owner's live confirmation of
+  that one plan (spec 0020, rule 5), and the version records it.
 
 Example: an administrator lowers "links per thread" from 5 to 3 with
 the reason "fewer links on short threads". The screen shows the one
@@ -125,7 +125,10 @@ settings_section! {
 2. A declaration may carry: type (bool, integer, float, text from a
    fixed list, duration, byte size, or a list of these); bound;
    `positive` (never zero or below: such a weight can never be turned
-   off); `tunable` with its step rule; apply class; `secret`; and
+   off); `tunable` with its step rule; apply class; `secret`;
+   `owner_only` (a setting in the never-changeable class of spec 0020,
+   rule 5); `route_out` (the setting can let site text leave the PC,
+   and so must also be `owner_only`); and
    cross-key rules as small named functions, such as "chunk overlap is
    below chunk size" and "chunk size is at least 1,024".
 
@@ -171,8 +174,18 @@ settings_section! {
 3. Change rules, applied before any write:
    - Every key is declared, of the right type and inside its bound.
    - A `positive` key is never zero or below.
-   - Actor `agent`: refused unless the draft names a recorded
-     instruction from a person, kept in lekha (the audit record).
+   - Actor `agent`: refused unless the `ConfirmationCheck` trait
+     confirms that the draft's `instruction_ref` names the owner's live
+     confirmation of this plan, unexpired and not used before. vinyas
+     declares the trait, with a fake in pariksha for tests; the actions
+     module implements it (spec 0020, rule 5), so vinyas depends on no
+     other module. The confirmation is used up in the same transaction
+     as the write, so a second draft naming it is refused and a refused
+     draft leaves it unspent. lekha, the audit record, only records
+     it.
+   - Actor `agent`: refused with SUT-120 when the resolved diff, after
+     reverts and presets are expanded, touches any `owner_only` key,
+     even with a live confirmation.
    - Actor `tuner`: only `tunable` keys, inside their bounds; continuous
      values move by at most 5% of the current value a version, discrete
      values by their declared step. The tuner never turns a module or
@@ -197,7 +210,9 @@ settings_section! {
    Readers clone the `Arc`; the watcher replaces it; the old snapshot is
    freed when its last reader lets go.
 3. A job takes its snapshot when claimed and keeps it to the end; the
-   job row records the version ID.
+   job row records the version ID. A job may run for days on an old
+   version; its snapshot is one of those held at once (see Limits), and
+   the settings screen shows which jobs hold which snapshot.
 4. `live` keys, such as the backlog pause switch or the log level, are
    read through the handle each time. A key may be `live` only if its
    declaration says why that is safe mid-job.
@@ -208,7 +223,9 @@ settings_section! {
    restarts without a person.
 6. If the service cannot use a new version (for example, an older build
    meets an unknown key), it keeps its snapshot, reports "not applied:
-   unknown key" with SUT-118, and readiness warns.
+   unknown key" with SUT-118, and readiness warns. A downgrade never
+   silently reinterprets a key: an older build reads a key only as the
+   version that wrote it means it, or refuses it.
 7. Hot paths read typed snapshots only: no database read or settings
    lookup per token, word or maths step.
 
@@ -252,7 +269,7 @@ table carries the site ID.
 | `resolved_hash` | bytea (32) | BLAKE3 of the resolved document |
 | `actor_kind` | text, checked | person, agent, tuner, system |
 | `actor_ref` | uuid | a pseudonymous ID; the person is in lekha |
-| `instruction_ref` | uuid, null | the instruction an agent acted on |
+| `instruction_ref` | uuid, null | the owner's confirmation an agent acted on |
 | `group_id` | uuid, null | linked changes that revert together |
 | `reason` | text | why, in the actor's words |
 | `benefits`, `drawbacks` | text, null | what was expected |
@@ -335,7 +352,7 @@ Each has a SUT code, a plain-English message and a manual page:
 | SUT-105 | Profile file missing |
 | SUT-106 | A secret in a file, variable or draft; key or file named, never the value |
 | SUT-107 | A test profile points at a database that is not the test one |
-| SUT-108 | Agent change with no instruction reference |
+| SUT-108 | Agent change with no live owner confirmation of this plan |
 | SUT-109 | Tuner change outside its bound or bigger than its step |
 | SUT-110 | A `positive` key would be zero or below |
 | SUT-111 | The active version changed since the draft |
@@ -347,6 +364,7 @@ Each has a SUT code, a plain-English message and a manual page:
 | SUT-117 | A debugging switch set under `prod` |
 | SUT-118 | This process cannot use the active version; it keeps its own |
 | SUT-119 | An environment variable names a runtime setting |
+| SUT-120 | Agent change touches an `owner_only` key |
 
 - Start-up collects every problem from every layer before stopping.
 - Database unreachable at start-up: retry with backoff (backon) up to
@@ -515,8 +533,10 @@ and MC/DC, and every mutant is killed.
   restart.
 - AT-CF16 (`tests/apply_class.rs`): a `live` key is seen at the next
   read, within the propagation target.
-- AT-CF17 (`tests/rules.rs`): an agent draft with no instruction gets
-  SUT-108; with one, it activates and shows the instruction.
+- AT-CF17 (`tests/rules.rs`): an agent draft with no owner
+  confirmation, or with one that expired, was used before or names
+  another plan, gets SUT-108; with a live one, it activates and shows
+  the confirmation.
 - AT-CF18 (`tests/prop_tuner.rs`, property): every accepted tuner change
   stays in bound and within 5%; every other gets SUT-109.
 - AT-CF19 (`tests/prop_positive.rs`, property): no accepted version holds
@@ -576,6 +596,13 @@ and MC/DC, and every mutant is killed.
 - AT-CF39: history, job-to-version binding, secret exclusion, and help
   reachable by keyboard, touch and without hovering, restart keys
   included.
+- AT-CF40 (`tests/rules.rs`): a confirmed agent draft that sets
+  `coach.ai.order`, a Bedrock spending cap, the MCP grading switch, a
+  backup route or `actions.confirm_wait`, directly, by a revert or by a
+  preset, gets SUT-120; the owner's own draft of the same keys passes.
+  A test fails when any `route_out` key lacks `owner_only`, and
+  compares the `route_out` keys and the `owner_only` keys each both
+  ways with a reviewed list kept in the test.
 - Benchmarks `bench_bootstrap_5000`, `bench_snapshot_get`,
   `bench_draft_check_50` and `bench_history_page`, and the load test
   `load_activation`, hold the speed targets under the 5% median rule.
@@ -604,8 +631,8 @@ and MC/DC, and every mutant is killed.
   reaches it.
 - Secrets come from files only the service account can read.
 - A failed hash check raises a health alert, not a gate task.
-- The three-run median ratchet and the 20x goal are replaced by the 5%
-  median rule of AGENTS.md section 6.8.
+- The three-run median ratchet becomes the 5% median rule of AGENTS.md
+  section 6 rule 8; the 20x goal is kept (spec 0007, "The 20x goal").
 - The old 5.6 GB and 85% memory figures are replaced by AGENTS.md
   section 5.6.
 - MC/DC is measured by our own tool, and every mutant is killed.

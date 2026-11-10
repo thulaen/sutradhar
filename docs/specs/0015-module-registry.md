@@ -454,7 +454,7 @@ tables are involved.
 - ganit's separate containers became a ganit module in the service.
 - Health routes and module routes are served on the local management
   socket, checked with Cedar.
-- The 20-times speed goal is replaced by the 5% median rule.
+- Speed follows the 5% median rule; the 20x goal is kept (spec 0007).
 
 Source: `docs/specifications/platform/modules.md`,
 `docs/specifications/platform/modules-2.md` and

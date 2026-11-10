@@ -528,8 +528,8 @@ Beacons, joins, storage and the rest:
 - Beacons reach the add-on on the site, since the site never calls the
   owner's PC; the service collects them over the signed link. The
   address is still used in memory only and dropped after labelling.
-- Speed: the 5% median rule of AGENTS.md 6.8 replaces the old ratchet
-  and the 20x goal.
+- Speed: the 5% median rule of AGENTS.md 6.8 replaces the old ratchet;
+  the 20x goal is kept (spec 0007, "The 20x goal").
 - Screens are the Dioxus app built from SDS components.
 - Browser tests drive a headless browser; screen tests are Rust tests.
 - The old serve and worker roles are parts of the one service in the service

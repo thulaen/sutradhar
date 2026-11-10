@@ -894,7 +894,7 @@ Acceptance tests (Rust):
 - Lab notebooks become Rust lab runs with recorded inputs and outputs.
 - The situations count runs with Cargo, not a separate task runner.
 - ganit's own job tests are Rust tests.
-- The old speed goals are replaced by the 5% median rule.
+- Speed follows the 5% median rule; the 20x goal is kept (spec 0007).
 - Memory budgets follow the limits in AGENTS.md section 5.6, with
   ganit's live service and nightly batch made to fit a PC under 16 GB.
 

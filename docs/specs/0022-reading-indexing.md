@@ -48,7 +48,7 @@ owner's PC. It is roadmap Phase 4 item 3.
   the hub module is on.
 - Out of scope here: search, reranking, anchors and blocking
   suggestions (spec 0023); model files, `models.lock`, community
-  models, retraining, the uninstall table and the memory table
+  models, the rule against retraining, the uninstall table and the memory table
   (spec 0024); paid embeddings (spec 0025); progress and the live
   stream (spec 0016); visuals (spec 0017); the parser and position map
   (spec 0026); the signed contract (spec 0021); jobs (spec 0019);
@@ -146,18 +146,24 @@ stored message.
   checksums) is part of the generation key, so pieces cut for one model
   are never read by another.
 - Piece size: `reading.pieces.tokens`, in the embedder's tokens, 1,024
-  by default. It is never below 1,024; the owner may set it up to
-  3,072. Spec 0023 records the reranker tokens this maps to, measured,
-  and always lets the best piece into the reranker.
+  by default. It is never below 1,024; the owner may set it higher,
+  with no fixed top (the owner, 31 October 2026: "1024 or higher"; and
+  10 November 2026: "No fixed top"). The top is set only by the
+  embedder's window, the 64 KiB text cap per piece and the memory check
+  below. Spec 0023 records the
+  reranker tokens this maps to, measured, and always lets the best
+  piece into the reranker.
 - A piece size larger than the active embedder's window is refused
   with a plain message, such as "This piece size is longer than the
   embedder can read" (spec 0024, MF-C07).
 - A size above 1,024 is allowed only once a measured run on that PC
   shows the embedder stays within its row in spec 0024's memory table
-  (1,300 MB under 16 GB, 1,400 MB at 16 GB or more) at that size.
-  Otherwise the setting is refused with a plain message, such as "This
-  piece size needs more memory than the embedder has", and the old
-  size stays.
+  (1,300 MB under 16 GB, 1,400 MB at 16 GB or more) at that size, and
+  that the time from saving a post to its first suggestion still meets
+  spec 0023's limit at that size. Otherwise the setting is refused
+  with a plain message, such as "This piece size needs more memory
+  than the embedder has" or "This piece size makes the first
+  suggestion too slow", and the old size stays.
 - A piece is the thread title, a blank line, then body text, all
   within the piece size and within 64 KiB of UTF-8 text, a hard cap.
   Whichever limit comes first ends the piece, by the same split rules.
@@ -550,7 +556,7 @@ thread-level index first; the views-and-recency order.
 
 | Setting | Default |
 |---|---|
-| `reading.pieces.tokens` | 1,024 (1,024 to 3,072) |
+| `reading.pieces.tokens` | 1,024 (1,024 or more; no fixed top) |
 | `reading.pieces.overlap_tokens` | 64 (0 to a quarter of the piece size) |
 | `reading.summary.title_weight` | 0.4 (tuned on Dell) |
 | `reading.summary.first_post_weight` | 0.25 (tuned on Dell) |
@@ -686,8 +692,8 @@ treated as zero.
 - At most 64 threads are being read at once across both lanes, each
   holding one running sum of 8 KiB, so the sums take at most 512 KiB.
   A thread waits for a free place before its first post is read.
-- Pieces of the piece size (1,024 tokens by default, never fewer, at
-  most 3,072); a batch at most 30 seconds of model
+- Pieces of the piece size (1,024 tokens by default, never fewer, with
+  no fixed top); a batch at most 30 seconds of model
   work; at most one minute of repeated work per worker after a crash.
 - Index size: ceiling `reading.index.budget_gb` (25 GB), warning at
   80%.
@@ -939,13 +945,21 @@ Acceptance tests (Rust):
 - Paid embeddings come through AWS Bedrock with the owner's own key
   (spec 0025).
 - Pieces are 1,024 tokens by default and never fewer, with an overlap
-  setting of 64 tokens by default, in place of a fixed overlap of about
-  15%.
+  setting of 64 tokens by default, in place of R101's fixed overlap of
+  about 15%. The owner set this on 31 October 2026 (R168): "make 1024
+  default ... should be 1024 or higher, and there must be zero
+  truncation content bodies must be read in full".
 - The summary vector reads every post in full, by a running sum, in
-  place of 20 chosen posts cut to 400 characters. Extras are no longer
-  cut to 200 characters.
+  place of 20 chosen posts cut to 400 characters, by the owner's answers
+  of 31 October 2026: "No truncation anywhere" and R170 ("the thread
+  vector is now a weighted aggregate of all its posts' chunk vectors").
+  Q-RD05's answer, all reactions counted equally with Sad and Angry
+  included, chose the "highest-reacted" posts of the old summary; with
+  every post read, no post is chosen by reactions. P-RD11's half weight
+  for extras is kept; its cut to 200 characters is dropped under the
+  same "No truncation anywhere".
 - A WordPress post over 16 MiB is read in full, in 16 MiB parts.
-- The old speed goal is replaced by the 5% median rule.
+- Speed follows the 5% median rule; the 20x goal is kept (spec 0007).
 - Memory follows the limits in AGENTS.md section 5.6.
 - Message contracts are checked by Rust shape checks.
 

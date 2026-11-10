@@ -86,10 +86,16 @@ pub trait Criterion: Send + Sync {
 ```
 
 - `RuleJudge` checks each suggestion against the rubric's written rules
-  over the parsed text (0026); `ModelJudge` grades it with the pinned
-  pure-Rust models (the reranker and the entity model of 0024), with
-  its own thresholds. They share no code beyond the pack reader, so
-  each judges independently.
+  over the parsed text (0026); `ModelJudge` grades it with its own
+  thresholds and a pinned pure-Rust grading model (role `judge` in 0024)
+  that plays no part in making suggestions: never the embedder, the
+  reranker or the first pass that chose them, so a judge never marks the
+  ranking's own work. They share no code beyond the pack reader, so each
+  judges independently, as the owner's two independent judges (R061)
+  require; the packs follow R062: each pack holds only the anchor
+  sentence with a little context around it, the target title and a short
+  excerpt, with names and other identifying details removed, and each
+  judge answers in a fixed format.
 - `BedrockJudge` sends a pack through the provider client of 0025 with
   the owner's key; `McpJudge` offers a pack to the owner's connected AI
   tool as a read-only MCP resource and takes its verdicts back as a
@@ -452,6 +458,9 @@ Paths are under `tools/eval/` unless they say otherwise.
 - QJ-23: the two local judges give the same verdicts for the same pack
   and share no grading code. `tests/local_judges.rs`, unit and
   property.
+- QJ-24: `ModelJudge` loads only the `judge` model; asked to load the
+  embedder, the reranker or the first-pass model, it refuses.
+  `tests/local_judges.rs`, unit.
 - QJ-14: a branch name or untagged commit is refused with SUT-858.
   `tests/candidate.rs`, unit.
 - QJ-15: with each criterion failing or missing in turn, the release is
@@ -560,11 +569,13 @@ soak (BT-06, BT-07).
 - Memory follows the limits in AGENTS.md section 5.6, not the old
   5.6 GB with headroom.
 - Local pure-Rust judges are the default, in place of two outside AI
-  command-line judges in containers. AI judges come only through
+  command-line judges in containers. They stay independent of the
+  ranking, as R061's two providers were: neither uses a model that
+  makes suggestions. AI judges come only through
   Bedrock or an MCP-connected tool, when the owner turns that on.
 - The soak and full load test run on the pinned test machine, not on
   Dell with borrowed room.
-- The old 20x goal and 5% ratchet become the 5% median slowdown rule.
+- The 5% ratchet becomes the 5% median rule; the 20x goal is kept (0007).
 - Static analysis and audit tools are those of the allowed languages.
 - Battle testing covers the WordPress plugin as well as the XenForo
   add-on.

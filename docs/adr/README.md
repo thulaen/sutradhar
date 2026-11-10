@@ -18,3 +18,4 @@ it. Rules themselves are in [AGENTS.md](../../AGENTS.md).
 | [0011](0011-fresh-start.md) | Fresh start |
 | [0012](0012-other-choices.md) | Other version 1 choices |
 | [0013](0013-no-vanity-numbers.md) | No vanity numbers |
+| [0016](0016-faults-kept-apart.md) | Faults kept apart from the work list |

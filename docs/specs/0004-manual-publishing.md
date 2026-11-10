@@ -44,6 +44,11 @@ Phase 7 item 2 (the public manual on GitHub Pages).
 5. There is no API reference in the user manual.
 6. Generators read only admitted safe definitions. They never start
    product services or touch live forum credentials.
+7. Every build also writes `llms.txt`, a plain-text index of the
+   manual's pages with a one-line summary each, so AI tools can read
+   the manual (the source's `mkdocs-llmstxt`). It is made by the build
+   from the pages, never written by hand, and holds nothing a page does
+   not.
 
 ### Screenshots
 
@@ -196,7 +201,8 @@ site:
 
 ## Changes from the source
 
-- The site generator and its plug-ins are replaced by mdBook.
+- The site generator and its plug-ins are replaced by mdBook; the
+  `llms.txt` index is kept, made by our own build step.
 - Settings, command and error pages come from Rust types and the `sutra`
   command, not from the old model and command libraries.
 - Screenshots come from the Dioxus app, captured with a headless

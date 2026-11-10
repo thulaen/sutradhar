@@ -1,5 +1,9 @@
 skill = "fast-performance"
-change = "sha256:901e350f73b3521e9b2a09de48c34a39bbe5772d5b45e5198a7fc5ea11fe3259"
+change = "sha256:44c3c3f150a18726bac9b28e35bb6f77e8faee491d86ad971e3e372d2e63bcc1"
 verdict = "pass"
-agent = "claude subagents"
-summary = "Also a quick round on the gate fix in crates/aegis/src/tdd.rs (a docs-only commit may carry the eight review records); all eight passed it. The last speed-rule edits (the Valgrind-request sentence, exit code 0, two different counts) were red-team's own proposed wording. Fourteen rounds (A to M) by fresh subagents on task #157: the owner's forced-speed rules (AGENTS.md section 6 rules 8 and 9; specs 0001, 0007, 0012, 0013, 0022, 0026 and 0059; the roadmap), with the owner's four answers of 10 November 2026 (counts at every tier, the allocator in benchmarks only, C references outside our code, counts only on GitHub). The rules start only when their tools are pinned; later items are on #158. Counts at every tier, the median at the door and timings at release keep commits fair on the shared Dell; counted runs take one heavy-job place."
+agent = "claude subagent"
+summary = "Read the staged docs-only diff for task #146 round 7 (AGENTS.md, ADR-0016, specs 0012, 0014, 0020, 0022, 0023, 0024, 0042, 0056, 0063 and the rest) for performance rules: piece size with no fixed top is still bounded by the embedder window, the 64 KiB piece cap, the measured memory row and now the first-suggestion time limit (0022, 0023 test 43); reranker input stays within 8,192 tokens by splitting, never cutting text; plan confirmation waits are bounded at one hour; the 0063 outbox worker never blocks a claim, has per-call time limits and growing waits; the Coach agent route has a time limit before moving to the local model; no truncation is introduced and the 20x goal is kept."
+
+[[finding]]
+what = "Later: docs/specs/0042-coach-additions.md wording routes: when the owner's agent keeps timing out, each tip waits the full time limit again before moving to the local model; nothing says a route that just ran past its limit is skipped for a short while. Not made worse by this change."
+fixed = true

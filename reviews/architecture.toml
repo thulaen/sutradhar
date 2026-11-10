@@ -1,5 +1,13 @@
 skill = "architecture"
-change = "sha256:901e350f73b3521e9b2a09de48c34a39bbe5772d5b45e5198a7fc5ea11fe3259"
+change = "sha256:44c3c3f150a18726bac9b28e35bb6f77e8faee491d86ad971e3e372d2e63bcc1"
 verdict = "pass"
-agent = "claude subagents"
-summary = "Also a quick round on the gate fix in crates/aegis/src/tdd.rs (a docs-only commit may carry the eight review records); all eight passed it. The last speed-rule edits (the Valgrind-request sentence, exit code 0, two different counts) were red-team's own proposed wording. Fourteen rounds (A to M) by fresh subagents on task #157: the owner's forced-speed rules (AGENTS.md section 6 rules 8 and 9; specs 0001, 0007, 0012, 0013, 0022, 0026 and 0059; the roadmap), with the owner's four answers of 10 November 2026 (counts at every tier, the allocator in benchmarks only, C references outside our code, counts only on GitHub). The rules start only when their tools are pinned; later items are on #158. The tier split fits the gate and the door; counts live in gate/speed.toml and times in the door's speed store (spec 0001)."
+agent = "claude subagent"
+summary = "Round 7 of task #146 (docs only): read the staged AGENTS.md (5.5, 6 rule 9, 7.3, 8, 9.1), ADR-0016 and specs 0012, 0014, 0020, 0022, 0024, 0037, 0042, 0056 and 0063, checking module walls, the composition root, dependency direction, outbox data flow and single writers. The round-6 fixes hold: vinyas declares ConfirmationCheck, actions implements it and the composition root wires it, so there is no module loop; the confirmation is spent in the same transaction as the settings write; AT-CF40 checks route_out and owner_only both ways; the Coach's wording route is a trait wired at the root; 0022's second refusal message and 0024's 7-day wording agree with 0023 and 0056. No new blocking defect; remaining gaps are already in #165."
+
+[[finding]]
+what = "Checked (round 6): docs/specs/0014-settings-profiles-history.md change rules and docs/specs/0020-screens-actions-sutra-mcp.md rule 5 agree: vinyas declares ConfirmationCheck (fake in pariksha), actions implements it from action_plans, the composition root wires it, lekha only records. Dependency runs actions -> vinyas only."
+fixed = true
+
+[[finding]]
+what = "Later: docs/specs/0014-settings-profiles-history.md change rules say the confirmation is used up in the same transaction as the settings write, but not how: ConfirmationCheck should take vinyas's open transaction so actions' own store marks the plan used inside it, rather than vinyas writing action_plans. Not made worse by this batch; add to #165."
+fixed = true

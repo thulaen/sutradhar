@@ -1,5 +1,37 @@
 skill = "red-team"
-change = "sha256:901e350f73b3521e9b2a09de48c34a39bbe5772d5b45e5198a7fc5ea11fe3259"
+change = "sha256:44c3c3f150a18726bac9b28e35bb6f77e8faee491d86ad971e3e372d2e63bcc1"
 verdict = "pass"
-agent = "claude subagents"
-summary = "Also a quick round on the gate fix in crates/aegis/src/tdd.rs (a docs-only commit may carry the eight review records); all eight passed it. The last speed-rule edits (the Valgrind-request sentence, exit code 0, two different counts) were red-team's own proposed wording. Fourteen rounds (A to M) by fresh subagents on task #157: the owner's forced-speed rules (AGENTS.md section 6 rules 8 and 9; specs 0001, 0007, 0012, 0013, 0022, 0026 and 0059; the roadmap), with the owner's four answers of 10 November 2026 (counts at every tier, the allocator in benchmarks only, C references outside our code, counts only on GitHub). The rules start only when their tools are pinned; later items are on #158. Three red agents each round. Swapped counters, broken base benchmarks, replayed waivers, fake count files, printed counts, .valgrindrc, forks and raw Valgrind requests are all refused by the text; the mechanics are on #158."
+agent = "claude subagent"
+summary = "Round 7 of task #146 (staged docs only). Three red agents ran, one each to break it, get round it and abuse it. I checked each report against the staged text, the owner's decisions and #165. The round 6 fixes hold: the 0012 receipt test now waits for each language's parse (item 6), 0014 uses up the confirmation in the write's transaction, AT-CF40 checks route_out and owner_only both ways, and 0042 samples only on the draft's own site. No report showed a contradiction or defect that needs fixing before commit. The reports already in #165 (items 1, 12, 14, 19, 22, 27, 29) or settled by owner decisions were dropped. The new gaps are recorded as Later items, because this change does not make them worse."
+
+[[finding]]
+what = "Later: spec 0063:32-34 and 307-309. If a create-issue call reaches its time limit after Forgejo has already made the issue, a retry makes a second task. The outbox key cannot see this. Say that before creating a task, the worker looks in Forgejo for an existing task by the fault id."
+fixed = true
+
+[[finding]]
+what = "Later: spec 0063:27-35. If a task is deleted or locked in Forgejo, its row fails every time and blocks every later row for that fault, because rows are handled in order and retried for ever. Add a dead-letter step or a way to re-create the task, beyond showing the row after a day."
+fixed = true
+
+[[finding]]
+what = "Later: spec 0063:37-41 and 314-317. The task's 'link' is on no closed list, and the leak test does not cover it. A Dell URL there would be copied to GitHub. Say the link is the fault id in a fixed form, not a Dell address. Also, nothing stops an agent (possibly under the owner's login) from editing the task title to free text after the worker makes it. This extends #165 item 19 from comments to title edits."
+fixed = true
+
+[[finding]]
+what = "Later: spec 0063:113-117. 'Each new head is recorded in Forgejo' does not say where or when. Say the record is made off the claim path, never on it (line 34), that it is batched so repeated occurrences do not each make a Forgejo write, and where it is kept, given that Forgejo issues are copied to GitHub."
+fixed = true
+
+[[finding]]
+what = "Later: spec 0042:137-143. The Coach's MCP sampling request should not carry the agent's other context (MCP includeContext 'none'). It should mark evidence as data, and the reply should be checked before it is stored. Otherwise a post on site B could steer the owner's agent into repeating text it holds from elsewhere. This is related to #165 items 12 and 27, but here Sutradhar pushes the text into the agent itself."
+fixed = true
+
+[[finding]]
+what = "Later: spec 0012:253-256 and 275. The commit check asks only for a receipt's target, hash and card. The signing at line 197 is for promotion, so a hand-written receipt would pass ganit.every-change. Require the receipt to carry a GanitEvolve run's signature, and add a test that refuses a forged receipt."
+fixed = true
+
+[[finding]]
+what = "Later: spec 0020:233-234. This text was there before the change. 'The database's monotonic time' does not exist in PostgreSQL, so moving the clock back can lengthen the one-hour wait for confirmation (AGENTS.md 5.5). Name the clock, or use a monotonic deadline set when the plan is made (see #165 item 24)."
+fixed = true
+
+[[finding]]
+what = "Later: spec 0063:218-219 and 283-286. A fault filed by an agent with no reproducer still counts as open. That lets a feature change through the repair lane by tying every hunk with 'Refs: AI-n' to it, with only a second reviewer standing in the way. The repair lane should accept only faults that have a reproducer or an adapter signal."
+fixed = true

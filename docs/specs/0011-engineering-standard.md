@@ -255,7 +255,9 @@ it: unit, property, integration, failure-injection and regression tests.
   languages; analysers and maths once written in other languages are
   rewritten as Rust (nirikshak, ganit).
 - Thresholds live in the gate's TOML settings.
-- "P0 AutoIssue" becomes an urgent Forgejo task raised by autoissues.
+- "P0 AutoIssue" stays a P0 in autoissues (spec 0063). It becomes a
+  Forgejo task only when an agent takes it on, linked to it (the owner,
+  10 November 2026: "Keep apart, link when taken").
 - The heavy-job limits follow AGENTS.md section 11, not the old three
   jobs sharing 12 GB.
 - Plans and walkthroughs go on the Forgejo task, not into `docs/work/`,

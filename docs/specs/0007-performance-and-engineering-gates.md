@@ -203,6 +203,26 @@ section says how they are measured. Words used here:
 8. Time inside model inference (the pure-Rust models) is measured and
    reported apart from application code.
 
+### The 20x goal
+
+The owner brought this goal back on 10 November 2026 ("Bring it back").
+It is tracked, not a gate, and sits on top of the blocking speed checks
+of AGENTS.md section 6 rule 8.
+
+- Each hot path aims to be 20 times faster than the first committed
+  Rust version of its benchmark, never a version written to be slow.
+- It is worked one change at a time: profile, change the single
+  hottest part, measure, and keep the change only if it is faster and
+  link-reconstruction accuracy is unchanged within its confidence
+  range.
+- A path stops when three tries in a row each gain under 5%. A limit
+  report then says where it ended and what holds it back, such as
+  memory bandwidth or model inference.
+- Time inside model inference is left out of the ratio and reported
+  apart.
+- The speed dashboard shows each hot path's speed-up against its 20x
+  goal.
+
 ### Profiling
 
 Before any speed work, read the current bottlenecks list and profile
@@ -398,8 +418,9 @@ Rust tests in aegis, each with a planted fault:
 
 ## Changes from the source
 
-- The 20x speed goal, its limit report and its progress dashboard are
-  replaced by the 5% median rule of AGENTS.md section 6 rule 8.
+- The 20x speed goal, its limit report and its dashboard are kept
+  ("The 20x goal", above), on top of the speed rules of AGENTS.md
+  section 6 rule 8.
 - The "best recorded result" ratchet becomes the count baselines in
   `gate/speed.toml` and the time baselines in the door's speed store,
   slower only through an owner waiver.

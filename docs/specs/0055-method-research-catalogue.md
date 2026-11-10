@@ -476,7 +476,7 @@ to MC20).
   outputs, not the old notebooks.
 - The Methods screen is a Dioxus app screen built from SDS components.
 - The count command is `sutra methods count`, built with Cargo.
-- The old 20x goal for the runner is replaced by the 5% median rule.
+- Speed follows the 5% median rule; the 20x goal is kept (spec 0007).
 - Memory is set against the limits in AGENTS.md section 5.6, and the
   sweep runs in Dell's heavy-job queue.
 - One run state is renamed "finished", to keep status words out.

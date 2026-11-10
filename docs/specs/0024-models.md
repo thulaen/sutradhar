@@ -2,10 +2,11 @@
 
 This part covers every model Sutradhar runs: the lock file that pins
 them, installing and checking their files, loading them in pure Rust,
-updates and rollback, community models chosen per site, retraining in
-the Dell lab, and what stopping and removal do to every stored item. It
-is roadmap Phase 4 item 3. Reading and indexing are in 0022, matching
-and anchors in 0023, progress in 0016 and the visual layer in 0017.
+updates and rollback, community models chosen per site, why the
+transformer models are never retrained, and what stopping and removal
+do to every stored item. It is roadmap Phase 4 item 3. Reading and
+indexing are in 0022, matching and anchors in 0023, progress in 0016
+and the visual layer in 0017.
 
 ## What it does
 
@@ -38,8 +39,6 @@ and anchors in 0023, progress in 0016 and the visual layer in 0017.
      owner for one site only, pinned in that site's overlay lock, with
      the badge "community, untested by Sutradhar".
    - Not supported: fails the check, shown with the reason.
-   - Site-trained: retrained in the Dell lab, approved by the owner,
-     pinned in that site's overlay.
 2. Each lock entry has one role, and exactly one model is active per
    role per site:
    - `embedder`: reads every eligible post and builds the index
@@ -54,6 +53,8 @@ and anchors in 0023, progress in 0016 and the visual layer in 0017.
      and shipped as safetensors. Verified only.
    - `lab_only`: pinned with `ship = false` for lab comparisons, such
      as 0023's challengers, and never installed on the owner's PC.
+   - `judge`: the grading model of 0057's `ModelJudge`. Verified only,
+     and never loaded for matching, ranking or the first pass.
 3. Any other model a later specification needs, such as a language
    identifier for 0022, is pinned in `models.lock` and follows every
    rule here.
@@ -121,7 +122,7 @@ and anchors in 0023, progress in 0016 and the visual layer in 0017.
 
 1. `<data directory>/models/<site>/site-models.lock` is runtime data,
    not a repository file. It has the `models.lock` schema plus `tier`
-   (`community` or `site-trained`), `added_at`, `check_id`,
+   (`community`), `added_at`, `check_id`,
    `licence_accept_event` and each large file's Hub-published SHA-256
    beside Sutradhar's own.
 2. Only the service writes it. Its own SHA-256 is kept in the
@@ -296,7 +297,7 @@ and anchors in 0023, progress in 0016 and the visual layer in 0017.
    or secrets.
 2. Statuses are exactly: not installed, downloading (with progress),
    verifying, loaded, degraded, failed, update available, index
-   mismatch. Community and site-trained rows add their badge. The
+   mismatch. Community rows add their badge. The
    Models screen's lifecycle labels (checking, added (inactive), trial
    running, rebuilding, active, previous) are separate.
 3. Self-test (`sutra models self-test [<id>]`) runs the inputs fixed
@@ -503,83 +504,34 @@ and anchors in 0023, progress in 0016 and the visual layer in 0017.
     on a connected machine, carrying the recorded Hub metadata so the
     same check runs offline.
 
-### Retraining in the Dell lab
+### No retraining of the transformer models
 
-1. Retraining runs only in the Dell lab, in the runner's sandbox with no
-   network, never on the owner's PC. It goes through the heavy-job queue
-   (spec 0059) as `pankti run --both -- CMD`. It takes both heavy-job
-   places: 8 GB and 16 CPU threads for the whole job, so it runs alone,
-   like a benchmark (AGENTS.md section 11). Lab comparison runs take one
-   place: 4 GB and 8 threads.
-2. It retrains the embedder or the reranker from moderators' approve,
-   reject and remove decisions on guest-visible content. The reranker
-   goes first, and the embedder only once reranker retraining stops
-   improving.
-3. Base weights come from the lab's verified cache, checked against
-   `models.lock`. The embedder's safetensors are read into a trainable
-   copy of the same architecture and the result is written back as
-   safetensors at the published precision; both conversions are
-   checked by comparing outputs.
-4. Data: an authorised export of decisions to Dell, carrying the
-   guest-visible text needed. Eligible only if source and destination
-   were guest-visible when decided and still are at export; training
-   starts within 7 days of export. Labels: approved is positive;
-   removed after insertion, or rejected for relevance, is negative;
-   other rejections and expired suggestions are left out. The
-   reason-to-label table goes in the manifest. Never included:
-   moderator identities, authors' account details, private messages,
-   analytics and staff-only content. Inputs are built with the
-   production reading and matching code (the lab uses production code,
-   never the reverse). Split by thread and time: the newest 20% are
-   held out, and no held-out thread is in training.
-5. A run starts when at least 2,000 new decisions exist since the last
-   version (`lab.retrain.min_decisions`), checked monthly.
-6. Method, in pure Rust: the reranker is fine-tuned in full; the embedder with
-   LoRA (small added weight matrices trained while the base is frozen), merged
-   back into ordinary weights. Both use gradient checkpointing, a measured batch
-   size, and shrink batches before the ceiling. Full fine-tuning of the embedder
-   (about 0.6 billion numbers) would need about 9.6 GB before working memory,
-   more than the 8 GB of both places, which is why LoRA is used. Planned
-   figures, in the 8 GB group: the frozen embedder at 16-bit, about 1.2 GB;
-   LoRA of rank 16 on the attention and feed-forward weights, with its
-   optimiser state, under 0.3 GB; batches of at most 16 pieces of up to
-   512 tokens, with gradient checkpointing, under 2 GB. The reranker
-   needs about 2.4 GB for weights, gradients and optimiser state, plus
-   batches of at most 8 pairs, under 2.5 GB. The two never train at
-   once, so a run's peak stays under 7 GB, leaving 1 GB below the cap.
-   Both are measured before a run is accepted. New training libraries
-   need admission records.
-7. Outputs: a data-only model folder in its base's format, same
-   architecture, no custom code; and a TOML manifest with base entry,
-   revision and digests, a SHA-256 over the sorted decision ids and
-   content hashes (no text), counts per label, split rule, settings,
-   seed, code commit, lock digest, peak memory, duration and output
-   digests.
-8. Comparison, fixed before training (its digest in the manifest; a
-   later change voids the run): 0023's challenger method, with paired
-   95% bootstrap intervals by thread; recall at 5 better with the lower
-   end above zero; anchor agreement and reconstruction recall with a
-   measured change of at least zero and a lower end no lower than
-   minus 1 point; no subgroup worse with 95% confidence; hard safety
-   rules at 100%; latency and memory within budget. It measures
-   held-out decisions and a reconstruction sample of member-written
-   guest-visible links. The lab signs the report, failures included.
-9. Route into use: the signed report goes to the owner. The approval
-   record names the model's SHA-256, manifest digest and report digest;
-   without it no release command proceeds (MF-E20). The model is
-   site-trained for that site only and never published: `sutra models
-   release-site <manifest>` builds a bundle signed with the lab key;
-   `sutra models import` on the owner's PC checks the signature against
-   the lab public key recorded at setup and every SHA-256, then adds a
-   site-trained overlay entry. Self-test, trial, activation and
-   rollback follow the community flow.
-10. Training data, manifests and reports stay on Dell. An erasure that
-    touches a training decision purges it from the lab and flags every
-    model trained on it; a flagged model stays in use and is replaced
-    by the next retraining within 30 days.
-11. Lab commands: `sutra models retrain --role <role>`, `sutra models
-    compare <manifest>`, `sutra models release-site <manifest>`, each
-    with progress and a signed result.
+1. The embedder and the reranker are never fine-tuned or retrained.
+   This rests on the owner's answer Q-LB03: "No fine-tuning of the
+   transformer models themselves on this hardware". Sutradhar has no
+   job that fine-tunes them anywhere, so a request to fine-tune either
+   finds no such job and is refused (0056, AT-LB25).
+2. Learning from moderators' decisions happens only in the small
+   networks of 0056 ("Small neural networks: trained in ganit, served
+   by the service"): the embedding adapter of job 273 and the neural
+   classifier heads. They are trained in ganit on Dell, take their
+   labels from 0053, and are shadow-tested, activated and rolled back
+   as ganit outputs, never as entries in `models.lock`.
+3. The entity model is our own and is trained in the Dell lab (0026);
+   it ships as a Verified model in `models.lock`.
+4. Training data for the small networks: an authorised export of
+   decisions to Dell, carrying the guest-visible text needed. Eligible
+   only if source and destination were guest-visible when decided and
+   still are at export. Never included: moderator identities, authors'
+   account details, private messages, analytics and staff-only content.
+   Training starts within 7 days of export. Training data, manifests
+   and reports stay on Dell. An erasure that touches a training
+   decision purges it from the lab and flags every network trained on
+   it; a flagged network stays in use and is replaced by its next
+   training within 30 days.
+5. The quality judge's grading model (0057) is pinned in `models.lock`
+   under the `judge` role in item 2 of "Tiers and roles". No matching
+   model is loaded as a judge.
 
 ### Stopping and disabling
 
@@ -685,7 +637,7 @@ index and model files always, with no keep option and no export.
    not an environment variable; never written to logs, audit, errors,
    metrics, progress, diagnostics bundles, URLs or disk. Every log and
    bundle path scrubs anything shaped like a Hub access token.
-7. Trials and retraining use guest-visible content only; member text
+7. Trials use guest-visible content only; member text
    appears only on the owner's screens. A community model cannot run
    code but can rank badly; every link still needs a moderator, and the
    trial, badge, rollback and audit log limit the harm. Repository files
@@ -716,7 +668,7 @@ Model failures never touch the sites' pages.
 - MF-E09 index mismatch: new suggestions blocked, earlier ones
   approvable; rebuild offered.
 - MF-E10 installed revision in no lock: never loaded.
-- MF-E11 overlay digest mismatch: community and site-trained models
+- MF-E11 overlay digest mismatch: community models
   refused; an active role they held becomes unavailable and readiness
   "not ready"; alert.
 - MF-E12 an installed file fails re-verification: failed; re-install
@@ -729,10 +681,10 @@ Model failures never touch the sites' pages.
   new suggestions resume on the old index, the candidate stays
   inactive, the partial generation is kept.
 - MF-E16 rollback impossible: refused; the active model is unchanged.
-- MF-E17 service not stopped in time; MF-E18 interrupted removal; MF-E19
-  lab training near its 8 GB cap: batches shrink, then the run is
-  refused and reported, never a silent crash; MF-E20 lab release
-  without an owner approval record: refused.
+- MF-E17 service not stopped in time; MF-E18 interrupted removal. MF-E19
+  and MF-E20 are not used: there is no transformer retraining and no
+  site-trained release. Small-network training failures are handled by
+  ganit (0056).
 
 ### Settings
 
@@ -839,9 +791,8 @@ non-zero on failure. Help text starts with the meaning of the name.
    line, 85% of the service slice cap (3,825 MB under 16 GB, 5,950 MB
    with 16 GB or more), at the release-tier test, on both sizes of PC;
    a load over its row is refused.
-4. Lab: a retraining job's whole process tree runs in one 8 GB memory
-   group on Dell, holding both heavy-job places through pankti, alone.
-   A lab comparison run holds one place, 4 GB.
+4. Lab: a lab comparison run holds one heavy-job place (AGENTS.md
+   section 11), through pankti.
 5. Time: the first install downloads several gigabytes, with the expected time
    shown. The full re-hash of about 2 GB adds seconds to tens of seconds per
    model host start, measured. A compatibility check should finish within 10
@@ -1005,17 +956,13 @@ revision. Tests read the same `models.lock` as the product.
   batches; a load over its row is refused; a process ended by the
   operating system recovers. The check refuses a community model whose
   estimate does not fit its row.
-- Lab: retraining on tiny synthetic data with a tiny model in an 8 GB
-  group, started with `pankti run --both`, gives a manifest and a signed
-  report, records its peak, shrinks batches near the ceiling and
-  refuses rather than crashing.
-  An export holds only guest-visible decisions; a fixture post made
-  staff-only before export, moderator identities and non-relevance
-  rejections are absent. A model without a passing report under the
-  fixed rule, or without an owner approval naming its SHA-256, cannot
-  be released or imported; a bundle with a bad signature or checksum
-  is refused. Erasing content in a training set purges it and flags
-  every model trained on it.
+- Lab: a request to fine-tune the embedder or the reranker is refused,
+  and a small network's training runs in one heavy-job place. An export
+  holds only guest-visible decisions; a fixture post made staff-only
+  before export and moderator identities are absent. Training that has
+  not begun within 7 days of its export is refused. Erasing content in a
+  training set purges it and flags every network trained on it, and a
+  flagged network still in use after 30 days raises a failure.
 - Every long operation emits start, advance and finish progress events
   (0016's enforcement test covers these jobs). The nightly run includes
   the graph operator and external-weight checks on a graph-format
@@ -1058,7 +1005,10 @@ duration, each with candidate, lock entry and host profile.
   the service slice; the table fits the smaller PC's cap, and larger
   settings apply only on 16 GB PCs. Separate monitoring allowances are
   dropped.
-- The 20x speed goal is replaced by the 5% median rule.
+- Speed follows the 5% median rule; the 20x goal is kept (spec 0007).
+- Retraining the embedder and the reranker, and the site-trained tier,
+  are dropped: the owner ruled out fine-tuning the transformer models
+  on this hardware (Q-LB03, archive `linking/lab-3.md`).
 - Health endpoints become Sutradhar Boot health and readiness checks;
   alerts appear in the app, not in site staff alerts.
 

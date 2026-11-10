@@ -23,7 +23,7 @@ Weeks later a theme update undoes it. The next crawl finds 40 wrong:
 | List | Holds | Where |
 | --- | --- | --- |
 | Fix list (this part) | Faults in a registered site | Product, per site |
-| autoissues | Faults in Sutradhar itself | Scrubbed, made into Forgejo tasks |
+| autoissues | Faults in Sutradhar itself | Scrubbed and held on Dell (spec 0063) |
 | Forgejo | The project's own plans and tasks | Dell |
 
 1. One question sorts them: is it wrong with the owner's site, or with
@@ -573,8 +573,10 @@ property tests where noted:
   run by the Rust rule engine.
 - XLSX import and export wait for a Rust library pinned as AGENTS.md
   section 4 sets out.
-- Faults in Sutradhar itself go to autoissues, which makes Forgejo tasks;
-  Forgejo stays the project's own task list.
+- Faults in Sutradhar itself go to autoissues (spec 0063); Forgejo
+  stays the project's own task list. A fault becomes a Forgejo task
+  only when an agent takes it on, linked to it (the owner, 10 November
+  2026: "Keep apart, link when taken").
 
 Source: `docs/specifications/signals/work-graph.md`, `work-graph-2.md`,
 `work-graph-3.md` and `work-graph-4.md` (all in

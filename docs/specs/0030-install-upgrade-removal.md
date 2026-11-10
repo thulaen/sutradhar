@@ -93,8 +93,12 @@ Each check passes, warns or fails, in plain English with its code.
 9. The smoke test runs on synthetic data inside the new install, including
    one ganit call and, with ganit stopped, the degraded mode (top-k with
    the hard rules).
-10. The first backlog run starts in the background, and the app moves to
-    its normal screens.
+10. The app asks the owner to approve the first backlog run, and it
+    starts in the background only once approved; the app then moves to
+    its normal screens. No setup test writes real content without
+    approval (archive `installation-platforms/lifecycle.md`: "Do not
+    write real content as an unapproved setup test or start a backlog
+    run before its approval").
 
 Every step can resume: a failure at step 7 restarts at step 7.
 

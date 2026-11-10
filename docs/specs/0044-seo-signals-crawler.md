@@ -451,7 +451,7 @@ Rust tests in `sanket`, with a made-up site served by wiremock:
   rule, retention and checks) is rewritten as Rust, proved with Kani.
 - The maths jobs run in ganit, the Rust numerical engine.
 - Report screens are a Dioxus app built from SDS components.
-- The 20x speed goal is replaced by the 5% median rule.
+- Speed follows the 5% median rule; the 20x goal is kept (spec 0007).
 - "Forum" now reads "registered site" throughout.
 - The browser's admission follows AGENTS.md section 4 pinning.
 

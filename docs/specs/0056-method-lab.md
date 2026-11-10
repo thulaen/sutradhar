@@ -104,8 +104,8 @@ run shows the same result as a chart.
 ### The evaluation kit, one copy for everyone
 
 Link reconstruction is run once, in `pariksha`, and its statistics are
-computed once, in Mulyankan. The model comparison, the retraining test,
-the measure, the ranking experiments and the tuner all use them.
+computed once, in Mulyankan. The model comparison, the small networks'
+competitions, the measure, the ranking experiments and the tuner all use them.
 
 - Splits by thread and by time: the newest share of decisions or links
   is held out, and no held-out thread appears in tuning.
@@ -118,8 +118,8 @@ the measure, the ranking experiments and the tuner all use them.
 - Statistics in Mulyankan: recall intervals (job 127), paired
   comparisons (128), bootstrap differences (129), false-discovery
   control (130), early stopping (131) and "no worse than" decisions
-  (132). The model comparison's "clearly wins" and retraining's
-  "better" rules are protocol parameters for these jobs.
+  (132). The model comparison's "clearly wins" rule and each small
+  network's "better" rule are protocol parameters for these jobs.
 - One proof standard for the lab and GanitEvolve: the frozen protocol
   states the unit, the stopping rule, the smallest gain and the largest
   harm. Where this page words a test differently, the research rules of
@@ -153,10 +153,10 @@ the measure, the ranking experiments and the tuner all use them.
 ### Where the lab runs
 
 - Only on Dell, as heavy jobs in Dell's heavy-job queue (spec 0059),
-  started as `pankti run -- CMD`. A lab comparison run takes one place:
-  4 GB and 8 CPU threads (AGENTS.md section 11), one lab job at a time.
-  Retraining (spec 0024) takes both places, 8 GB and 16 threads, with
-  `pankti run --both`, so it runs alone.
+  started as `pankti run -- CMD`. A lab comparison run takes one
+  heavy-job place (AGENTS.md section 11), one lab job at a time.
+  Training a small network is a lab job of the same size. The
+  transformer models are never retrained (spec 0024).
 - Private tiers are mounted read-only into the runner only. Arrow
   exports carry no text. Lab jobs have no network route outside Dell.
 - Models used by experiments load through the production model host at
@@ -367,16 +367,15 @@ the full run fails.
 - A reconstruction run over 2,000 links on the 50,000-thread tier,
   excluding time inside the models and in ganit: at most 10 minutes;
   ganit's verdict on it within 2 minutes.
-- Every lab comparison job fits one 4 GB heavy-job place, one at a
-  time, with no swap. Retraining fits both places, 8 GB, and runs
-  alone.
+- Every lab comparison job and every small network's training fits one
+  heavy-job place (AGENTS.md section 11), one at a time, with no swap.
 - The first phase and the ganit phase never overlap; the runner frees
   its working set before calling ganit (about 1 to 1.5 GB).
 - The embedder and the reranker together need about 2 GB,
   so an experiment that loads both leaves little room; the vector index
   is memory-mapped. This is measured, not assumed. The runner refuses
   an experiment whose declared peak exceeds the limit before it starts.
-- Network training runs on the CPU inside the same one place of 4 GB,
+- Network training runs on the CPU inside the same one heavy-job place,
   one job at a time, checkpointed. Served networks are small: at most
   64 MB of weights in the inference worker in all, inside the service
   slice and the memory limits in
@@ -505,7 +504,7 @@ LB25).
 - Lab jobs run in Dell's heavy-job queue rather than their own
   containers.
 - Model time is excluded as time inside the pure-Rust models.
-- The old 20x goals are replaced by the 5% median rule.
+- Speed follows the 5% median rule; the 20x goal is kept (spec 0007).
 
 Source: `docs/specifications/linking/lab.md`,
 `docs/specifications/linking/lab-2.md` and

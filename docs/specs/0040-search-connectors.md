@@ -656,7 +656,7 @@ Speed, at the push tier on Dell against fakes (provider time excluded):
   fake API.
 - Events travel through the outbox in place of the old event bus.
 - "Forum" becomes "site", so WordPress sites are covered too.
-- The 20x speed goal is replaced by the 5% median rule.
+- Speed follows the 5% median rule; the 20x goal is kept (spec 0007).
 - Speed targets run at the push tier on Dell.
 
 Source: `docs/specifications/signals/connectors.md`,

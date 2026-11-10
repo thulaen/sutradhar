@@ -257,7 +257,17 @@ add-ons' own logs and notes; screens; daily mission reports.
 - For the seven data classes with no retention rule yet (W1 to W7), one
   rule per class is drafted for the owner's approval, starting with
   backups: keep 7 nightly, 4 weekly and 3 monthly, plus each
-  pre-upgrade backup until the next successful upgrade.
+  pre-upgrade backup until the next successful upgrade. The classes,
+  each with the part that keeps it:
+  - W1: backups (the backup store, spec 0030);
+  - W2: support-bundle files and their previews (spec 0032);
+  - W3: visual datasets: weekly snapshots, daily reports, the error log
+    and the feed buffer (spec 0017);
+  - W4: doctor runs and resolved alerts (spec 0032);
+  - W5: the connector pull log (spec 0040);
+  - W6: darshak's per-thread features and salt events (spec 0034);
+  - W7: expired action plans and agent tokens, whose validity is set but
+    not how long they are kept (spec 0020).
 - Checking the books against the provider's bill (W8): the
   administrator types each month's bill total from the provider's
   console, and hisaab compares it with the books. No new network call

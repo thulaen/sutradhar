@@ -8,6 +8,9 @@ Decided by the owner on 8 November 2026.
   versions in [AGENTS.md section 5.4](../../AGENTS.md#54-the-site-link).
 - The service on the owner's PC calls the site over HTTPS. The site
   never calls the owner's PC.
+- This replaces the old plan's read-only database client for XenForo.
+  Both platforms are reached only through the signed HTTPS calls to
+  their add-on.
 - Every message is signed and protected against replay, as set out in
   [AGENTS.md section 5.4](../../AGENTS.md#54-the-site-link).
 - Moderators accept or refuse suggestions in the site's own admin pages.

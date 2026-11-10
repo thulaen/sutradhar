@@ -4,10 +4,11 @@ GanitEvolve searches for better code the way DeepMind's AlphaEvolve
 does: a language model proposes changes to marked parts of a program,
 automatic evaluators score each change, and an archive of good, varied
 programs supplies the parents and examples for the next proposals. It
-also writes the speed receipt that every new or changed source file
-must carry ([AGENTS.md section 6](../../AGENTS.md#6-code-standards)
-rule 9). It is roadmap Phase 2 item 6. The proof standard it shares
-with the lab is in 0013.
+also writes the speed receipt that every new or changed source
+file must carry
+([AGENTS.md section 6](../../AGENTS.md#6-code-standards) rule 9). It
+is roadmap Phase 2 item 6. The proof standard it shares with the lab
+is in 0013.
 
 ## What it does
 
@@ -249,17 +250,20 @@ Each problem lives in its own folder under the GanitEvolve crate:
 
 ### A receipt for every source change
 
-1. Every new or changed shipped source file in a commit must be the
+1. Every new or changed source file in a commit must be the
    exact program a GanitEvolve run proved. The proof is a receipt in
    `receipts/` whose `target` is the file and whose `tested` is the
    SHA-256 of its new bytes.
-2. A shipped source file is a Rust, TypeScript, CSS, PHP or SQL file
-   that any build target other than a test or a benchmark, under any
-   feature set, compiles or
-   includes (through `mod`, `#[path]` or `include!`), as the gate reads
-   it from the build, whatever folder it sits in. Every other source
-   file (tests, benchmarks, test data) goes with the receipt of the
-   code it tests (AGENTS.md section 6 rule 9).
+2. A source file is a Rust, TypeScript, CSS, PHP, SQL, shell, Cedar or
+   Rego file, whether it ships or not. Tests, benchmarks and test data
+   go with the receipt of the code they test (AGENTS.md section 6
+   rule 9). A file counts as a test, benchmark or test data only when
+   nothing but test or benchmark targets include, load or run it, as
+   the gate reads it from the build: a Rust file that only a test or
+   benchmark target compiles, or a file of another kind under a
+   `tests/`, `benches/` or `fixtures/` folder that only tests read.
+   A file a hook, the gate, CI, an install step or a shipped build
+   runs or loads needs its own receipt, wherever it sits.
 3. A deleted file needs nothing. A change to documents only is not
    affected.
 4. The gate check `ganit.every-change`, run by aegis through
@@ -274,9 +278,11 @@ Each problem lives in its own folder under the GanitEvolve crate:
    For kernels, the owner also reviews the evidence. For other files,
    the review and the receipt are the proof; the owner may tighten
    this.
-6. A language with no safety parse cannot be evolved, so its source
-   files cannot change until its parse exists. Rust has one; TypeScript,
-   CSS, PHP and SQL each need theirs.
+6. A language with no safety parse cannot be evolved. Until its parse
+   exists its files need no receipt, and `ganit.every-change` covers
+   it from the commit that adds the parse (AGENTS.md section 7.3).
+   Rust has one; TypeScript, CSS, PHP, SQL, shell, Cedar and Rego each
+   need theirs.
 
 ### Hard to skip
 
@@ -300,7 +306,7 @@ Each problem lives in its own folder under the GanitEvolve crate:
 3. `judge` and judgements in packets; then `score` problems; then helper
    submissions and the agent prompt for fan-out.
 4. Guards; then hints; then parallel checks.
-5. Safety parses for TypeScript, CSS, PHP and SQL.
+5. Safety parses for TypeScript, CSS, PHP, SQL, shell, Cedar and Rego.
 6. A first architecture problem, once the architecture checks exist.
 
 ## Limits
@@ -369,8 +375,15 @@ Rust tests in the GanitEvolve crate and ganit:
 - With `parallel = 3`, at most three candidates are in steps 1 to 3 at
   once, the measuring step never overlaps another, and results are recorded
   in submission order.
-- A commit changing a source file without a matching receipt is refused,
-  naming the file; with one, it passes.
+- A commit changing a source file without a matching receipt is
+  refused, naming the file; with one, it passes.
+- Once that language's safety parse exists (item 6), a changed shell,
+  Cedar or Rego file outside `tests/`, `benches/` and `fixtures/`, with
+  no receipt, is refused. A Rust file only a test
+  target compiles, and a shell file under `tests/` that only tests
+  read, need none. A SQL file under `fixtures/` that a shipped build
+  includes with `include_str!` needs its own receipt, and so does a
+  shell file under `tests/` that a git hook runs.
 - A deleted source file, a changed document, a test, benchmark or
   fixture, and the receipts folder's own copies need no receipt.
 - Removing or changing the `ganit.every-change` entry, dropping a tier or
@@ -386,9 +399,16 @@ Rust tests in the GanitEvolve crate and ganit:
 - The run screen and briefing come from the Dioxus app.
 - Receipts live in `receipts/`, and source files are the kinds AGENTS.md
   section 6 rule 9 lists; safety parses are needed for those kinds.
+- The owner's instruction of 8 November 2026 ("wire ganitevolve into
+  every coding task such that it's used without exceptions making it
+  mandatory") had no exception list and covered shell files too. The
+  owner confirmed on 10 November 2026 ("Every source file") that shell,
+  Cedar and Rego files need receipts too. Tests, benchmarks and
+  fixtures go with the receipt of the code they test. AGENTS.md
+  section 6 rule 9 holds the list.
 - The heavy-job limit follows AGENTS.md section 11, not one job of
   3.5 GB.
-- The old 20x goal for hot paths is replaced by the 5% median rule.
+- Speed follows the 5% median rule; the 20x goal is kept (spec 0007).
 - Spring Boot-style checks become Sutradhar Boot's rules.
 - `gate-wiring` may be loosened only by an owner-signed change.
 - The door runs the gate on the receiving side.

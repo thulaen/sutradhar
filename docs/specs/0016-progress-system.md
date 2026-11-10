@@ -546,7 +546,7 @@ and a recording listener; PHP tests cover the add-on's side.
   to keep status words out of docs.
 - The per-person stream limit (5) is dropped, since the app has one
   user.
-- The 20-times speed goal is replaced by the 5% median rule.
+- Speed follows the 5% median rule; the 20x goal is kept (spec 0007).
 
 Source: `docs/specifications/platform/progress.md`,
 `docs/specifications/platform/progress-2.md`,

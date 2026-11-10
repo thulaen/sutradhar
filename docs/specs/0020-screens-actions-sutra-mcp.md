@@ -69,9 +69,10 @@ pub trait Action: Send + Sync + 'static {
 ```
 
 `ActionSpec` holds: id, capability ids, permission, kind (read, change,
-dangerous or long-running), agent rule (allowed, propose only or
-refused), idempotent or not, summary, help text, examples, manual page,
-error codes and the progress job it starts, if any. Read actions skip
+dangerous or long-running), agent rule (allowed, propose only, owner
+confirms, or refused), idempotent or not, summary, help text,
+examples, manual page, error codes and the progress job it starts, if
+any. Read actions skip
 `plan`.
 
 ### The runner
@@ -131,9 +132,43 @@ error codes and the progress job it starts, if any. Read actions skip
    once, stored only as SHA-256 hashes, scoped, expiring and revocable
    at once. A token whose account loses staff rights is refused at its
    next call.
-5. Agent rules: a tool may read and may draft. Settings changes are
-   plans the owner applies, with the effect shown, checks run and
-   history kept. Ranking changes are proposed and tested only.
+5. Agent rules: a tool may read and may draft. It may change a setting
+   only when the owner says so, within the token's limits (Q047, "apply
+   when I instruct"; confirmed by the owner on 10 November 2026:
+   "Agents apply when I say"; AGENTS.md section 5.5). Such a change has
+   the agent rule "owner confirms". "The owner says so" means both: the
+   token, made by the owner, carries the settings scope; and the owner
+   gives a live confirmation of that one plan, shown with its effect:
+   clicked in the app, or typed at `sutra`'s own prompt.
+   - `--yes`, `--json`, MCP and scripts never confirm an agent's
+     settings change. The confirm step is its own action, which no
+     token may call.
+   - A plan waiting for the owner's confirmation has its own expiry,
+     `actions.confirm_wait`, at most the one hour of AGENTS.md section
+     5.5. Each confirmation is tied to one plan, shown with every key
+     it changes, and used once.
+   - The confirmation must come from the owner's own account. The
+     actions runner alone checks that it is from that account, live
+     and used once, from `action_plans`, and implements the
+     `ConfirmationCheck` trait that spec 0014 declares; the composition
+     root wires it in. The confirmation becomes the version's
+     `instruction_ref`, and history and lekha record the agent, the
+     account and the confirmation.
+   - Agents may run under the owner's own login (owner, 10 November
+     2026: "no drop the rule"). The confirmation then rests on the
+     owner's own attention: an agent with a shell could reach the
+     owner's prompt or window.
+   - No tool may ever change, even with a confirmation, anything in this
+     class: any setting, grant or extension permission that lets site
+     text leave the PC (Bedrock, cloud helpers, MCP tools, MCP grading,
+     extensions with `network.internet` (spec 0037) and backup routes
+     (spec 0018)); tokens; the Cedar rules; the agent rules
+     themselves; the confirm step and its settings; and the history
+     and audit settings. Each such setting is declared `owner_only`
+     (spec 0014), and vinyas's change check refuses an agent's draft
+     that touches one (SUT-120).
+
+   Ranking changes are proposed and tested only.
    Moderation and link approval are recommendations only. Every draft
    is a suggestion a moderator must accept.
 6. Content: guest-visible by default; a private section only with an
@@ -193,7 +228,9 @@ them, and reads only its own site's rows.
 - `action_runs`: run id, action id, door, caller id, token id (or
   null), plan id, outcome, started, finished, error code. Kept 90 days.
 - `action_plans`: plan id, action id, caller, input hash (blake3),
-  preview, expiry (15 minutes), applied flag. Applying an expired,
+  preview, owner confirmation (who and when, for a plan with the agent
+  rule "owner confirms"), expiry (15 minutes, or
+  `actions.confirm_wait` for such a plan), applied flag. Applying an expired,
   changed or already applied plan is refused. Expiry uses the
   database's monotonic time.
 - `agent_tokens`: id, name, site, account id, scopes, action allow list,
@@ -335,8 +372,12 @@ of the agency edition) carry that feature's ids.
   the event fan-out. The nightly peak-memory check writes a fault record
   if a share is passed. Event replay holds at most 10 minutes or 10,000
   events.
-- Plans expire after 15 minutes. Tokens expire after 30 days by
-  default. Action runs are kept 90 days.
+- Plans expire after 15 minutes, except a plan waiting for the owner's
+  confirmation, which uses `actions.confirm_wait`. That setting is
+  declared in the actions module's settings section (spec 0014): a
+  duration from 1 minute to the hour in AGENTS.md section 5.5, that
+  hour by default in every profile, `owner_only`. Tokens expire after
+  30 days by default. Action runs are kept 90 days.
 
 ## Footprint budget
 
@@ -358,8 +399,15 @@ proofs.
 3. MCP calling `setu.suggestion.approve` with the owner's agent token is
    refused with SUT-805 and nothing changes.
 4. An agent with the settings scope plans a settings change; the plan
-   shows the effect and checks; it applies only when the owner applies
-   it, and history records the agent and the account.
+   shows the effect and checks. With the owner's live confirmation,
+   clicked in the app or typed at `sutra`'s prompt, it applies, and
+   history and lekha record the agent, the account and the
+   confirmation as `instruction_ref`. Refused, with nothing changed:
+   no confirmation; a confirmation through `--yes`, `--json`, MCP or a
+   script; any token calling the confirm step; a confirmation after
+   the plan's wait expired, or used a second time, or given for another
+   plan; a confirmation from any account but the owner's; and any
+   change in the never-changeable class, even confirmed.
 5. An agent's ranking change is stored as a proposal with its measured
    effect; nothing is activated.
 6. Property and Kani proof: a token can never do what its account
@@ -368,8 +416,12 @@ proofs.
    is not guest-visible, no private conversation and no email address;
    a session sees one site only and never credentials, keys or audit
    logs (unit and property).
-8. A plan applied twice, after 15 minutes, or after its input changed is
-   refused with SUT-807 or SUT-803 (unit and property); Kani proof that
+8. A plan applied twice, after 15 minutes (or, for a plan waiting for
+   the owner's confirmation, after `actions.confirm_wait`: refused at
+   one hour and one second, accepted at 59 minutes and at exactly one
+   hour), or after its
+   input changed is refused with SUT-807 or SUT-803 (unit and
+   property); Kani proof that
    no apply runs without a matching, unexpired, unapplied plan.
 9. Two approvals within 10 ms: one succeeds, the other gets SUT-807
    naming the first, and the first person's screen updates within 1 s
@@ -426,8 +478,8 @@ fan-out.
   reached only from the owner's own account.
 - MCP runs only through `sutra mcp` or the owner-only socket, never a
   network route; each session sees one site only.
-- MCP tools may read and draft only; agent settings changes become plans
-  the owner applies.
+- MCP tools may read and draft, and may change a setting only with the
+  owner's live confirmation, within the token's limits, as Q047 said.
 - Permissions are Cedar rules evaluated by dwarpal.
 - Colours come from SDS tokens; no other firm's colour values, marks or
   type are copied, and no theme add-on is used.
