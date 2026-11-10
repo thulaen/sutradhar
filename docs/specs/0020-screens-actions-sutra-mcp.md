@@ -15,6 +15,10 @@ through MCP, asks to do the same. All three reach
 permitted. The third is refused with SUT-805, "AI agents may recommend
 but not do this".
 
+Spec 0014 owns settings discovery. This specification owns scoped
+change requests for every product setting, their permission checks,
+live confirmation and protected-setting controls.
+
 ## What it does
 
 ### Words used here
@@ -29,7 +33,8 @@ but not do this".
   find and call another program's tools.
 - **Plan and apply**: an action that changes something first returns a
   plan (a preview with an id); applying the plan makes the change.
-- **Capability id**: the CAP-NNN entry an action serves.
+- **Capability id**: the `CAP-` entry an action serves, spelled as
+  spec 0064 sets.
 
 ### Scope
 

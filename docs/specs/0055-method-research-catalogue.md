@@ -42,8 +42,11 @@ it ranks a title match above a body match where BM25 does not.
 
 ### One identity per procedure
 
-1. Each method has one stable id, `M-NNNNNN`, never reused. Other names
-   are aliases on the same entry.
+1. Each method has one stable id, `M-` followed by a decimal ordinal,
+   spelled exactly as spec 0064 sets. Any other spelling is refused at
+   admission. Ids are never reused. Other names are aliases on the same
+   entry. An ordinal proves identity only. The release count comes from
+   checked evidence in spec 0064.
 2. A procedure used in several features (linking, spam, confidence) is
    still one method, counted once.
 3. An entry names its `implementation`: the Rust path of the function
@@ -92,10 +95,17 @@ it ranks a title match above a body match where BM25 does not.
   each procedure once.
 - Never counted: candidates, excluded entries, aliases, parameter
   variants, lab-only code, and entries whose evidence is stale.
-- `sutra methods count` prints counts by stage, family and pipeline.
+- `sutra methods count` prints counts by stage, family and pipeline
+  from the catalogue, and the qualified counts (the method total, the
+  in-scope total and the ranking subtotal) only from the latest signed
+  ledger for that candidate and run kind that the `qualify` verifier
+  publishes,
+  checked by the one reader check that spec 0064 places in this crate.
   The nightly exports them as gauges. The release gate refuses a
-  candidate with fewer than 6,000,000 counted methods. Source access,
-  research progress and qualified progress are shown separately.
+  candidate below the method floor, scope share or ranking subtotal in
+  AGENTS.md section 3, using that checked ledger.
+  Source access, research progress and qualified progress are shown
+  separately.
 - "Independently qualified" means each method has its own evidence, run
   on its own, and its review is signed by someone other than its author.
 
@@ -184,11 +194,22 @@ How its score is used belongs to the ranking specification.
   probe sets, link reconstruction runs and their Arrow exports; ganit's
   Mulyankan computes the intervals and verdicts used for usefulness.
 - `sutra methods` and the management API's `methods` routes only read
-  and advance the catalogue through `sutradhar-methods`.
+  and advance the catalogue through `sutradhar-methods`. Qualified
+  counts come from the signed ledger that `qualify` (spec 0064, Dell
+  only, never shipped) publishes; no shipped crate links `qualify`. This
+  crate holds the ledger type, its encoding and its one reader check
+  (spec 0064).
 - Swappable parts are traits with test fakes: `CatalogueStore` (TOML
   files; in-memory fake), `EvidenceStore` (Dell's evidence folder;
   in-memory fake), `TextSimilarity` (the capability check; fake by word
-  overlap) and `ProbeSource` (seeded generator; fixed fake).
+  overlap), `ProbeSource` (seeded generator; fixed fake) and
+  `QualifyTrust` (given a candidate and run kind: the protected signer
+  registry, the current protected policy digest, the Dell run ledger's
+  head, the newest attempt or refused run for that pair (not counting
+  passing attempts of gate, nightly or soak runs, as the policy records
+  them), the newest test failure on the candidate in a release or pilot
+  run, and the latest published ledger sequence number; in-memory fake),
+  injected at the composition root.
 - The catalogue never runs a method, and the runner never edits the
   catalogue.
 
@@ -216,7 +237,7 @@ How its score is used belongs to the ranking specification.
 
 ### The admission record
 
-One record per method version, `catalogue/admission/M-NNNNNN.toml`,
+One record per method version, `catalogue/admission/<method id>.toml`,
 holding references and digests only, never private data:
 
 - `method_version` and `behaviour_digest`;
@@ -468,8 +489,7 @@ to MC20).
 
 ## Changes from the source
 
-- The release count is 6,000,000 methods, as AGENTS.md section 3 sets,
-  not 2,000.
+- The release method floor is in AGENTS.md section 3.
 - ganit methods, the fingerprint job and its tests are rewritten as
   Rust in ganit.
 - Method explanations are Rust lab runs with recorded inputs and

@@ -65,16 +65,23 @@ ranking as a signal, as spec 0027 sets out. A signal can only reorder
 links that are already on the same subject; popularity or traffic can
 never make an off-topic link rank higher.
 
-Version 1 holds the full scope: features 1 to 1357 in the
-specifications. It ships only when the release gate passes:
+Version 1 holds all feature ranges and the expanded scope in spec 0064.
+The feature register has one owner for each behaviour and no conflicts,
+duplicates or overlaps. Version 1 ships only when the release gate
+passes:
 
-1. At least 6,000,000 distinct, independently qualified methods.
-2. At least 6,000,000 shipped capabilities.
-3. At least 16,000,000,000,000,000 (16 quadrillion) checked variants,
-   each counted only with its evidence.
-4. Every check passes at 100% and all the required reviews pass.
-5. The release artefacts are signed.
-6. The owner approves the release.
+1. At least 600,000,000,000,000,000 distinct, independently qualified
+   methods.
+2. At least 600,000,000,000,000,000 shipped capabilities.
+3. At least 80% of each of those two totals in the scope areas in
+   spec 0064.
+4. At least 6,000,000 distinct qualified methods for link ranking,
+   including weighting, learning, statistics, autotuning and reranking.
+5. At least 16,000,000,000,000,000 checked variants, each counted only
+   with its evidence.
+6. Every check passes at 100% and all the required reviews pass.
+7. The release artefacts are signed.
+8. The owner approves the release.
 
 ## 4. Languages and files
 
@@ -242,6 +249,11 @@ shipped product is built on it. Parts made before Boot exists (the gate,
   say"; spec 0020). No tool may change anything that lets site text leave the PC
   (the MCP grading setting included), tokens, the Cedar rules, the
   agent rules, the confirm step, or the history and audit settings.
+- MCP and `sutra` describe every product setting and its change route
+  through the settings registry (spec 0014). Within a token's scope they
+  file change requests and never show secret values. Each change still
+  needs the owner's live confirmation above, and no tool may change the
+  never-changeable class (spec 0020).
 - Suggestion quality may be graded by Bedrock or by an AI tool connected
   through MCP, only when the owner turns that on.
 - Site text leaves the owner's PC only through Bedrock, cloud helpers or

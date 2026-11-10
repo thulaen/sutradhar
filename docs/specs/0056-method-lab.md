@@ -157,8 +157,20 @@ competitions, the measure, the ranking experiments and the tuner all use them.
   heavy-job place (AGENTS.md section 11), one lab job at a time.
   Training a small network is a lab job of the same size. The
   transformer models are never retrained (spec 0024).
-- Private tiers are mounted read-only into the runner only. Arrow
-  exports carry no text. Lab jobs have no network route outside Dell.
+- The trusted assessment harness alone reads private held-out answers.
+  It sends only schema-checked exercise inputs to the candidate in a
+  separate sealed process. Run the candidate under a non-login user
+  with no groups shared with the harness. Give it its own mount and
+  process views and only the exercise channel to the harness. The
+  answer store is inaccessible by absolute path, through `/proc` or
+  through another process. The candidate inherits no answer files,
+  mounts, environment values or handles. Keep the answers out of its
+  writable state and outputs. The harness compares the result after
+  the candidate returns. The protected run policy sets a size and time
+  limit for that result; the harness checks its schema and stops
+  reading at the limit. The Dell queue provides the candidate's resource limits.
+  Arrow exports carry no text. Lab jobs have no network route outside
+  Dell.
 - Models used by experiments load through the production model host at
   their published precision, never lower; no int8.
 
@@ -473,6 +485,13 @@ unless they start with `tests/acceptance/`.
   nightly.
 - AT-LB25: a job request to fine-tune the embedder or the reranker
   finds no such job in ganit's registry and is refused. ganit unit test.
+- AT-LB26: on Dell, a planted candidate tries the host answer path, a
+  mount, the environment, an inherited handle and the harness's open
+  file through `/proc`. It reads no answers and fails the assessment. A
+  result over its size limit, malformed or late fails the assessment,
+  and the harness stops reading at the limit. The same harness passes an
+  honest candidate with the expected answers.
+  `lab/tests/assessment_seal.rs`, end to end.
 
 Rule-critical code: the split rule and the final-assessment barrier.
 Besides 100% line, branch and MC/DC coverage, they need zero surviving

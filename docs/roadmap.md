@@ -134,8 +134,8 @@ Forgejo milestone: `Phase 4: Site slices`.
    WordPress security plugin) and a cache plugin active.
 
 Finished when: items 1 to 4 are met, the footprint tests pass, a
-recorded demonstration shows both working on the test sites, and the six
-reviews of the phase pass.
+recorded demonstration shows both working on the test sites, and the
+required reviews of the phase pass.
 
 ## Phase 5: The rest of the core
 
@@ -160,8 +160,8 @@ beginner guide in the manual, and the required reviews of the phase pass.
 
 Forgejo milestone: `Phase 6: Features`.
 
-Build every feature in the feature list, `docs/specs/features.md`, in
-this order:
+Build the expanded scope in spec 0064 and every feature in
+`docs/specs/features.md`. Keep the four feature ranges in this order:
 
 1. The first range in the feature list.
 2. The second range.
@@ -173,16 +173,18 @@ insight-only features (they only show information), then review-page
 changes, then drafts (changes prepared for a moderator to approve), then
 public-page features.
 
-Finished when: every feature in the list is built, passes every gate and
-is shown in a recorded demonstration on both test sites, and the six
-reviews of the phase pass.
+Finished when: every feature in the list and the expanded scope in
+spec 0064 are built and pass every gate. Recorded demonstrations show
+each feature on both test sites, and the required reviews of the phase
+pass.
 
 ## Phase 7: Version 1
 
 Forgejo milestone: `Phase 7: Version 1`.
 
 1. The release gate in
-   [AGENTS.md section 3](../AGENTS.md#3-the-goal-and-the-release-bar).
+   [AGENTS.md section 3](../AGENTS.md#3-the-goal-and-the-release-bar),
+   with the qualification proof in spec 0064.
 2. The public manual on GitHub Pages.
 3. Signed release artefacts.
 

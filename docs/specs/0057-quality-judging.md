@@ -211,10 +211,11 @@ each must pass with current evidence:
 5. Judge reliability: invalid verdicts at most 2%; first-round agreement
    at least 95%.
 6. The 72-hour soak passed.
-7. The counts of AGENTS.md section 3: at least 6,000,000 distinct
-   qualified methods, 6,000,000 shipped capabilities and 16
-   quadrillion checked variants, each counted only with its evidence,
-   with no padding.
+7. The method, capability and checked-variant floors, both scope
+   shares and the ranking subtotal in AGENTS.md section 3. The latest
+   signed release ledger of spec 0064's `qualify` verifier for this
+   candidate, passing spec 0064's reader check, proves each count; no
+   other run kind is accepted.
 8. Every gate check of the candidate passed at 100%, the slowdown rule
    and the release-tier memory test included; 100% line, branch and
    MC/DC coverage, zero surviving mutants, property tests and the Kani
@@ -555,10 +556,8 @@ soak (BT-06, BT-07).
 
 ## Changes from the source
 
-- The release counts follow AGENTS.md section 3: 6,000,000 methods,
-  6,000,000 capabilities and 16 quadrillion checked variants, not
-  2,000 and 2,000; signed artefacts, the required reviews and the owner's
-  approval join as criterion 14.
+- The release counts follow AGENTS.md section 3. Signed artefacts, the
+  required reviews and the owner's approval join as criterion 14.
 - ganit's statistics jobs and their tests are rewritten as Rust.
 - Results are read through Rust lab runs with recorded inputs and
   outputs, not the old notebooks.

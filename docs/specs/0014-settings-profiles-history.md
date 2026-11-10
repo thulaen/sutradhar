@@ -132,6 +132,13 @@ settings_section! {
    cross-key rules as small named functions, such as "chunk overlap is
    below chunk size" and "chunk size is at least 1,024".
 
+Discovery: the registry describes every setting by stable id,
+purpose, type, allowed values, scope, owner and change route. The CLI
+and MCP read it through the same schema, which hides secret values and
+credentials. For an `owner_only` setting it describes the owner's own
+control or the rule that fixes it. Change requests from agents follow
+spec 0020, rule 5.
+
 ### Bootstrap settings and profiles
 
 1. The profile comes from `SUTRADHAR_PROFILE`; the installed service
@@ -603,6 +610,9 @@ and MC/DC, and every mutant is killed.
   A test fails when any `route_out` key lacks `owner_only`, and
   compares the `route_out` keys and the `owner_only` keys each both
   ways with a reviewed list kept in the test.
+- AT-CF41 (`tests/discovery.rs`): CLI and MCP discovery list every
+  declared setting with its scope and change route, show no secret
+  value, and describe each `owner_only` setting's own control.
 - Benchmarks `bench_bootstrap_5000`, `bench_snapshot_get`,
   `bench_draft_check_50` and `bench_history_page`, and the load test
   `load_activation`, hold the speed targets under the 5% median rule.

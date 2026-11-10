@@ -1,7 +1,9 @@
 # Feature list
 
 This is the full list of Sutradhar's features, numbered 1 to 1357.
-Version 1 holds all of them. Roadmap Phase 6 builds them in four
+Version 1 holds all of them and the expanded scope in spec 0064.
+Each behaviour has one owning design and build task. Roadmap Phase 6
+builds the features in four
 ranges, in this order:
 
 1. Features 1 to 112: search features for XenForo and WordPress.

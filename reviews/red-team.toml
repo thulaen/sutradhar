@@ -1,37 +1,33 @@
 skill = "red-team"
-change = "sha256:44c3c3f150a18726bac9b28e35bb6f77e8faee491d86ad971e3e372d2e63bcc1"
+change = "sha256:7496b694e63da18a20b08e9563ec72ca7bcef80af9e28d5ee9dd8c24cc638413"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 7 of task #146 (staged docs only). Three red agents ran, one each to break it, get round it and abuse it. I checked each report against the staged text, the owner's decisions and #165. The round 6 fixes hold: the 0012 receipt test now waits for each language's parse (item 6), 0014 uses up the confirmation in the write's transaction, AT-CF40 checks route_out and owner_only both ways, and 0042 samples only on the draft's own site. No report showed a contradiction or defect that needs fixing before commit. The reports already in #165 (items 1, 12, 14, 19, 22, 27, 29) or settled by owner decisions were dropped. The new gaps are recorded as Later items, because this change does not make them worse."
+summary = "Round 13 of task #64. Three red agents (get round it, break it, abuse it) attacked the staged 0064 and 0055 text, focusing on the round 12 fix: the policy fixing each run's purpose, passing gate, nightly and soak attempts not making a release ledger stale, and the replay refusing when the reader check refuses. Checked each report against the staged text. No sequence raises a qualified count or hides a test failure: the cell block covers every run of the candidate, refused and interrupted runs and release or pilot failures still make the ledger stale, and the ledger names the head it was built from. The reader check being candidate code is already Later item 40 in #180. The remaining reports either refuse too much or ask for clearer wording, so they are Later."
 
 [[finding]]
-what = "Later: spec 0063:32-34 and 307-309. If a create-issue call reaches its time limit after Forgejo has already made the issue, a retry makes a second task. The outbox key cannot see this. Say that before creating a task, the worker looks in Forgejo for an existing task by the fault id."
+what = "Later: the replay now refuses when the reader check on the previous ledger refuses (0064 lines 345-346), and that check refuses every ledger whose run kind is not release (lines 31-32). The fixture's 'Replay a previously accepted run to prove idempotence' (line 391), its stale-evidence replay (lines 466-467) and the pilot's replay (line 476) can therefore never pass. This refuses too much and gains no count. Say that a fixture or pilot replay runs the same check but expects its own run kind, or that these cases build a release ledger from the test catalogue with the QualifyTrust fake."
 fixed = true
 
 [[finding]]
-what = "Later: spec 0063:27-35. If a task is deleted or locked in Forgejo, its row fails every time and blocks every later row for that fault, because rows are handled in order and retried for ever. Add a dead-letter step or a way to re-create the task, beyond showing the row after a day."
+what = "Later: 0064 lines 247-254 and 264 never require the counted run's purpose to be qualification. A release-kind nightly run with runner-signed passes matches the policy and could be submitted as the counted run. The cell block (lines 261-262) stops it from hiding a failure, so no count is gained unless the policy gives nightly runs a narrower check matrix. Say that only a run whose policy purpose is qualification can build a ledger."
 fixed = true
 
 [[finding]]
-what = "Later: spec 0063:37-41 and 314-317. The task's 'link' is on no closed list, and the leak test does not cover it. A Dell URL there would be copied to GitHub. Say the link is the fault id in a fixed form, not a Dell address. Also, nothing stops an agent (possibly under the owner's login) from editing the task title to free text after the worker makes it. This extends #165 item 19 from comments to title edits."
+what = "Later: 0064 line 352 gives the replay ledger 'the new run-ledger head' without saying it is the head its history read reached (lines 17-18 say 'built from'). If an implementation took the head at publication, a pilot failure recorded between the history read and publication would fall before the head and be missed. Say the head is the one the history read ended at, read after the replay's own attempts."
 fixed = true
 
 [[finding]]
-what = "Later: spec 0063:113-117. 'Each new head is recorded in Forgejo' does not say where or when. Say the record is made off the claim path, never on it (line 34), that it is batched so repeated occurrences do not each make a Forgejo write, and where it is kept, given that Forgejo issues are copied to GitHub."
+what = "Later: 0064 line 253 says the replay's history check skips passing gate, nightly and soak attempts, but the replay paragraph (lines 347-349) refuses 'if that history has changed' without repeating the skip. Read literally, one passing nightly blocks every later replay. Repeat the skip in the replay paragraph."
 fixed = true
 
 [[finding]]
-what = "Later: spec 0042:137-143. The Coach's MCP sampling request should not carry the agent's other context (MCP includeContext 'none'). It should mark evidence as data, and the reply should be checked before it is stored. Otherwise a post on site B could steer the owner's agent into repeating text it holds from elsewhere. This is related to #165 items 12 and 27, but here Sutradhar pushes the text into the agent itself."
+what = "Later: the policy issues every run id, kind and purpose (0064 lines 247-249), and readers refuse a ledger whose policy digest differs from the current one (lines 33 and 39). If issuing a run changes the policy digest, every passing nightly would make the release ledger refused, which contradicts the planted fault at lines 424-425. Say that run issuance records are not part of the pinned policy digest."
 fixed = true
 
 [[finding]]
-what = "Later: spec 0012:253-256 and 275. The commit check asks only for a receipt's target, hash and card. The signing at line 197 is for promotion, so a hand-written receipt would pass ganit.every-change. Require the receipt to carry a GanitEvolve run's signature, and add a test that refuses a forged receipt."
+what = "Later: 0064 lines 233-238 resolve authors to principals through the signer registry, but do not say that an author key the registry does not know refuses the member. A principal who commits with an unregistered key and reviews with a registered one could then pass the 'differs from every author' test. Line 197 refuses unknown keys for signatures in general. Say it applies to author provenance too, and add the planted fault."
 fixed = true
 
 [[finding]]
-what = "Later: spec 0020:233-234. This text was there before the change. 'The database's monotonic time' does not exist in PostgreSQL, so moving the clock back can lengthen the one-hour wait for confirmation (AGENTS.md 5.5). Name the clock, or use a monotonic deadline set when the plan is made (see #165 item 24)."
-fixed = true
-
-[[finding]]
-what = "Later: spec 0063:218-219 and 283-286. A fault filed by an agent with no reproducer still counts as open. That lets a feature change through the repair lane by tying every hunk with 'Refs: AI-n' to it, with only a second reviewer standing in the way. The repair lane should accept only faults that have a reproducer or an adapter signal."
+what = "Later: in 0064 lines 144-146, 'a reviewer who is not one of its authors' can be read as the row's authors rather than the member's. Say 'not an author of the member or of the row'."
 fixed = true
