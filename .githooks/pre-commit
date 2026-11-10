@@ -21,4 +21,20 @@ if [ -x "$queue" ]; then export AEGIS_QUEUE="$queue"; fi
 # folder in its setting `sutradhar.private`.
 private=$(git config --get sutradhar.private || true)
 if [ -n "$private" ]; then export AEGIS_PRIVATE="$private"; fi
+# Agents share this checkout and lock the files they change in the
+# mailbox (AGENTS.md section 8.2), named in the setting
+# `sutradhar.mailbox`. A commit or push that takes a file under a live
+# lock is refused; the agent is named by SUTRADHAR_AGENT.
+mailbox=$(git config --get sutradhar.mailbox || true)
+locks_free() {
+  [ -z "$mailbox" ] && return 0
+  if [ -z "${SUTRADHAR_AGENT:-}" ]; then
+    echo "aegis: set SUTRADHAR_AGENT to your name in the mailbox" >&2
+    return 1
+  fi
+  "$mailbox/bin/agent-mailbox" audit commit --repo . \
+    --socket "$mailbox/run/mailbox.sock" --agent "$SUTRADHAR_AGENT" \
+    --token-file "$mailbox/tokens/$SUTRADHAR_AGENT"
+}
+locks_free
 exec cargo run --quiet --package aegis -- commit

@@ -466,13 +466,15 @@ other branches. Each change is small, complete and safe to ship.
    no task is ready, mark the next items ready, as section 10 allows.
 3. Take the task: assign it to yourself, change its label from
    `status/ready` to `status/working`, and take its file locks in the
-   mailbox. A lock lasts 4 hours and must be renewed to keep it.
+   mailbox (section 8.2). A lock lasts at most an hour and must be
+   renewed to keep it.
 4. Bring your copy of `main` up to date.
 5. Write the failing test first.
 6. Make it pass with the smallest clean change.
 7. Run the commit tier.
 8. Run the required reviews and fix what they find.
-9. Commit on `main` and bring in any newer commits from Forgejo. If
+9. Release the locks on the files you commit (section 8.2), commit on
+   `main` and bring in any newer commits from Forgejo. If
    anything came in, run the commit tier and the required reviews again on
    the result. Then push `main` to Forgejo.
 10. Forgejo's door gate runs the push tier before it accepts the push.
@@ -481,7 +483,7 @@ other branches. Each change is small, complete and safe to ship.
     raise an urgent task.
 12. Post the proof on the task: checks, reviews, commit and GitHub
     link. Close it.
-13. Release the file locks.
+13. Release any locks still held.
 14. The stop check refuses to end the session until the task carries a
     proof comment or a blocked reason.
 
@@ -520,6 +522,31 @@ sync, a failed release or a security problem, never for new scope.
 
 Only the newest release receives security fixes. A private security
 report gets a first reply within 7 days.
+
+### 8.2 Agents working at once
+
+Several agents work at once in the one checkout of `main` on Dell, and
+talk through the agent mailbox (the `agent-mailbox` tools, or its door
+for A2A, the open agent-to-agent protocol, on Dell).
+
+1. Each agent has a name in the mailbox (`claude`, `codex`, `gemini`),
+   and its tool sets `SUTRADHAR_AGENT` to that name for the git hooks.
+2. Lock every file before changing it. The lock's note names the
+   session (`session:` and the first eight characters of its id), or
+   `agent:` and the helper's own id for a helper. A change to a file
+   under another agent's lock is refused, and a shell change with no
+   lock is reported.
+3. Stage only your own files, by name. Never stage everything while
+   others are working.
+4. Release your locks, then commit. The commit check refuses a commit
+   or push that takes a file under a live lock.
+5. One agent commits and pushes at a time. The push check runs on a
+   clean copy of the commit being pushed, so other agents' unfinished
+   work neither blocks it nor joins it. The copy is the folder
+   `<checkout>.push-work` beside the checkout, with its lock file
+   `<checkout>.push-work.lock`. Never work in the copy: each push
+   resets it. Both are safe to delete when no push is running; the next
+   push makes them again.
 
 ## 9. Git and GitHub
 

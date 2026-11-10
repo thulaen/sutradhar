@@ -1,13 +1,25 @@
 skill = "defects"
-change = "sha256:f2f3e0126ff97272af36fd25ab42505267976b346617fc93168849e0d39b394e"
+change = "sha256:2b524ecaa0463a30a1f6ea957ced8a274ca93ac8b1ca96c98f89a0c3551e523c"
 verdict = "pass"
 agent = "claude subagents"
-summary = "Four rounds by fresh subagents on task #117 (rule M08, every function reached by a test). The cfg logic, roots and name reading are right, and tests catch each fix being taken out."
+summary = "After round 13 the hook tests were split into hooks.rs, hooks_copy.rs and common/hooks.rs to stay under 300 lines, with no change to any test. Thirteen rounds by fresh subagents on task #143 (agents working at once on main: the lock check in both hooks, and the push check on a clean, marked copy beside the checkout). A subfolder push, broken lists, broken HEADs, hidden files and copied settings are refused or put right, each with a test that fails when its fix is removed."
 
 [[finding]]
-what = "an empty test named like a function counted it as reached"
+what = "a subfolder push put the copy inside the checkout"
 fixed = true
 
 [[finding]]
-what = "cfg(not(test)) code was never checked"
+what = "tests would not notice unset_git removed"
+fixed = true
+
+[[finding]]
+what = "every push after the first was refused by the advisory database repo in target/"
+fixed = true
+
+[[finding]]
+what = "sparse-checkout disable changed the shared .git/config"
+fixed = true
+
+[[finding]]
+what = "graft settings flooded each push with advice"
 fixed = true

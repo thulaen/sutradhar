@@ -7,6 +7,8 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
+pub mod hooks;
+
 /// Runs git in `dir`, with no hooks and none of the caller's git
 /// settings, and gives what it printed, trimmed. A failure stops the
 /// test.

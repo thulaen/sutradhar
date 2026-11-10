@@ -43,9 +43,11 @@ are in [AGENTS.md sections 6 and 7](../../AGENTS.md#7-the-gate).
    tasks.
 7. The `aegis` command offers: run a tier, check the catalogue, verify a
    result, show where a run stands, and reproduce a finding.
-8. The git hooks only hand over the staged content. The door picks and
-   checks the exact pushed commit itself. The gate creates no worktrees
-   or branches.
+8. The commit hook checks the staged content, and the push hook checks
+   a clean copy of the pushed commit. The door picks and checks the
+   exact pushed commit itself. The gate creates no branches.
+   Its one worktree is the push hook's clean copy beside the checkout
+   (AGENTS.md section 8.2).
 
 ### What each tier runs
 

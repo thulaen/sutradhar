@@ -1,9 +1,13 @@
 skill = "style-docs"
-change = "sha256:f2f3e0126ff97272af36fd25ab42505267976b346617fc93168849e0d39b394e"
+change = "sha256:2b524ecaa0463a30a1f6ea957ced8a274ca93ac8b1ca96c98f89a0c3551e523c"
 verdict = "pass"
 agent = "claude subagents"
-summary = "Four rounds by fresh subagents on task #117 (rule M08, every function reached by a test). The spec, AGENTS.md item 13 and the code docs say what M08 does and where its limits are."
+summary = "After round 13 the hook tests were split into hooks.rs, hooks_copy.rs and common/hooks.rs to stay under 300 lines, with no change to any test. Thirteen rounds by fresh subagents on task #143 (agents working at once on main: the lock check in both hooks, and the push check on a clean, marked copy beside the checkout). shellcheck, shfmt, rustfmt and clippy are clean, and the docs say truly where the copy lives and that it is safe to delete."
 
 [[finding]]
-what = "docs claimed more than M08 checks"
+what = "the spec heading named the wrong settings"
+fixed = true
+
+[[finding]]
+what = "comments claimed more than the hook did"
 fixed = true

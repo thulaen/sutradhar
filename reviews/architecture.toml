@@ -1,5 +1,13 @@
 skill = "architecture"
-change = "sha256:f2f3e0126ff97272af36fd25ab42505267976b346617fc93168849e0d39b394e"
+change = "sha256:2b524ecaa0463a30a1f6ea957ced8a274ca93ac8b1ca96c98f89a0c3551e523c"
 verdict = "pass"
 agent = "claude subagents"
-summary = "Four rounds by fresh subagents on task #117 (rule M08, every function reached by a test). Facts stay in nirikshak's smell modules, the rule only reads them, and the score places M08 under tests."
+summary = "After round 13 the hook tests were split into hooks.rs, hooks_copy.rs and common/hooks.rs to stay under 300 lines, with no change to any test. Thirteen rounds by fresh subagents on task #143 (agents working at once on main: the lock check in both hooks, and the push check on a clean, marked copy beside the checkout). The copy sits beside the checkout, the gate keeps one worktree (spec 0010 item 8), and AGENTS.md 8.2 names the copy and its lock; follow-ups are on #144."
+
+[[finding]]
+what = "spec 0010 said the gate makes no worktrees"
+fixed = true
+
+[[finding]]
+what = "the copy folder and its lock were not documented"
+fixed = true

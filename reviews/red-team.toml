@@ -1,13 +1,17 @@
 skill = "red-team"
-change = "sha256:f2f3e0126ff97272af36fd25ab42505267976b346617fc93168849e0d39b394e"
+change = "sha256:2b524ecaa0463a30a1f6ea957ced8a274ca93ac8b1ca96c98f89a0c3551e523c"
 verdict = "pass"
 agent = "claude subagents"
-summary = "Four rounds by fresh subagents on task #117 (rule M08, every function reached by a test). Macro names, local names, own traits, test helpers and cfg tricks no longer hide untested code; the rest is filed on #133."
+summary = "After round 13 the hook tests were split into hooks.rs, hooks_copy.rs and common/hooks.rs to stay under 300 lines, with no change to any test. Thirteen rounds by fresh subagents on task #143 (agents working at once on main: the lock check in both hooks, and the push check on a clean, marked copy beside the checkout). Three red agents each round. Forged .git files, planted hooks and repositories, other agents' worktrees, broken HEADs, skip-worktree and sparse files, fsmonitor and stat settings, user-wide attributes, in-commit attributes, info/attributes, replace refs and grafts are all refused or ignored; the rest is on #144."
 
 [[finding]]
-what = "untested code hid behind any trait impl"
+what = "another agent's worktree inside or at the copy was wiped"
 fixed = true
 
 [[finding]]
-what = "test helpers counted as tests"
+what = "settings could make the check read other bytes than the pushed commit"
+fixed = true
+
+[[finding]]
+what = "replace refs and grafts fooled the history checks"
 fixed = true

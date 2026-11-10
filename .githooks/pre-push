@@ -16,6 +16,9 @@ if [ -n "$private" ]; then export AEGIS_PRIVATE="$private"; fi
 grype_db=$(git config --get sutradhar.grypedb || true)
 if [ -n "$grype_db" ]; then export AEGIS_GRYPE_DB="$grype_db"; fi
 remote="$1"
+# Replaced commits and grafts would let the history checks below judge
+# another history than the one pushed.
+export GIT_NO_REPLACE_OBJECTS=1 GIT_GRAFT_FILE=/dev/null/grafts
 # On Dell, the checks wait in the heavy-job queue (AGENTS.md section 11),
 # named in this checkout's own setting `sutradhar.queue`.
 # The pinned tools (gate/tools.toml) are found in this checkout's
@@ -28,6 +31,131 @@ fi
 if [ -n "$tools" ]; then PATH="$tools:$PATH"; fi
 queue=$(git config --get sutradhar.queue || true)
 if [ -x "$queue" ]; then export AEGIS_QUEUE="$queue"; fi
+# Agents share this checkout and lock the files they change in the
+# mailbox (AGENTS.md section 8.2), named in the setting
+# `sutradhar.mailbox`. A commit or push that takes a file under a live
+# lock is refused; the agent is named by SUTRADHAR_AGENT.
+mailbox=$(git config --get sutradhar.mailbox || true)
+locks_free() {
+  [ -z "$mailbox" ] && return 0
+  if [ -z "${SUTRADHAR_AGENT:-}" ]; then
+    echo "aegis: set SUTRADHAR_AGENT to your name in the mailbox" >&2
+    return 1
+  fi
+  "$mailbox/bin/agent-mailbox" audit commit --repo . \
+    --socket "$mailbox/run/mailbox.sock" --agent "$SUTRADHAR_AGENT" \
+    --token-file "$mailbox/tokens/$SUTRADHAR_AGENT" "$@"
+}
+# Clears git's location settings, so a command acts on the folder it
+# runs in.
+unset_git() {
+  unset GIT_DIR GIT_WORK_TREE GIT_INDEX_FILE GIT_COMMON_DIR GIT_ATTR_SOURCE
+  # Replaced objects would let the copy hold other bytes than the push.
+  export GIT_NO_REPLACE_OBJECTS=1 GIT_ATTR_NOSYSTEM=1
+}
+# Runs git with no hooks, so no hook in the copy, in the pushed commit
+# or in this checkout runs while the copy is made, and with every file
+# compared in full, so no setting can hide a changed file. Attributes
+# come from the empty tree; with the check in push_copy on the shared
+# info/attributes, each file holds its committed bytes.
+bare_git() {
+  git --attr-source=4b825dc642cb6eb9a060e54bf8d69288fbee4904 \
+    -c core.hooksPath=/dev/null -c core.fsmonitor=false \
+    -c core.trustctime=true -c core.checkStat=default \
+    -c core.ignoreStat=false -c core.autocrlf=false -c core.eol=lf \
+    -c core.attributesFile=/dev/null -c core.symlinks=true \
+    -c core.sparseCheckout=false -c core.precomposeUnicode=false "$@"
+}
+# The lock reason that marks the hook's own push copy.
+copy_mark="aegis push copy: made and used only by the pre-push hook"
+# True when $2 is the push copy this hook made from repository $1: its
+# record is under $1, points back at $2, carries the hook's mark, and
+# sits detached at the commit the hook last checked out there.
+is_own_copy() {
+  [ -f "$2/.git" ] || return 1
+  [ "$(bare_git -C "$2" rev-parse --show-toplevel 2>/dev/null)" = "$2" ] ||
+    return 1
+  own=$(cd "$(bare_git -C "$2" rev-parse --git-dir 2>/dev/null)" &&
+    pwd -P) || return 1
+  case "$own" in
+  "$1"/worktrees/?*) ;;
+  *) return 1 ;;
+  esac
+  [ ! -e "$own/config.worktree" ] &&
+    [ "$(cat "$own/gitdir" 2>/dev/null)" = "$2/.git" ] &&
+    [ "$(cat "$own/locked" 2>/dev/null)" = "$copy_mark" ] &&
+    [ "$(bare_git -C "$2" rev-parse --symbolic-full-name HEAD \
+      2>/dev/null)" = HEAD ] &&
+    [ "$(bare_git -C "$2" rev-parse HEAD 2>/dev/null)" = \
+      "$(cat "$own/aegis-push-commit" 2>/dev/null)" ]
+}
+# Brings the clean copy at $2 to commit $3: refreshed when it is truly
+# this repository's own detached copy, made from repository $1 when it
+# is missing, and refused otherwise, since it may be someone's work.
+push_copy() (
+  unset_git
+  if [ -s "$1/info/attributes" ]; then
+    echo "aegis: $1/info/attributes would change the files the check" \
+      "reads; empty it to push" >&2
+    exit 1
+  fi
+  # Another worktree or repository inside the copy, such as another
+  # agent's, would be wiped with it, so the push is refused.
+  trees=$(bare_git --git-dir="$1" worktree list --porcelain)
+  printf '%s\n' "$trees" | sed -n 's/^worktree //p' |
+    while IFS= read -r tree; do
+      case "$tree/" in
+      "$2"/?*)
+        echo "aegis: the worktree $tree sits inside the push copy" >&2
+        exit 1
+        ;;
+      esac
+    done
+  if [ -d "$2" ]; then
+    nested=$(cd "$2" && find . \( -path ./target -o -path ./.git \) \
+      -prune -o -name .git -print -quit)
+    if [ -n "$nested" ]; then
+      echo "aegis: $2/${nested#./} is a repository inside the push" \
+        "copy; move it, or delete the copy" >&2
+      exit 1
+    fi
+  fi
+  if is_own_copy "$1" "$2"; then
+    own=$(bare_git -C "$2" rev-parse --absolute-git-dir)
+    bare_git -C "$2" reset --quiet --hard
+    bare_git -C "$2" clean -qffdx -e /target
+    bare_git -C "$2" checkout --quiet --detach --force "$3"
+    bare_git -C "$2" clean -qffdx -e /target
+  elif [ -e "$2" ] || [ -L "$2" ]; then
+    echo "aegis: $2 is not this checkout's push copy; move it, or" \
+      "delete it if it holds nothing you need" >&2
+    exit 1
+  else
+    # A copy deleted by hand leaves its locked record; free it first.
+    for gitdir in "$1"/worktrees/*/gitdir; do
+      [ -f "$gitdir" ] || continue
+      record=$(dirname "$gitdir")
+      if [ "$(cat "$gitdir")" = "$2/.git" ] &&
+        [ "$(cat "$record/locked" 2>/dev/null)" = "$copy_mark" ]; then
+        rm -f "$record/locked"
+      fi
+    done
+    bare_git --git-dir="$1" worktree prune
+    bare_git --git-dir="$1" worktree add --quiet --detach --lock \
+      --reason "$copy_mark" "$2" "$3"
+    own=$(bare_git -C "$2" rev-parse --absolute-git-dir)
+    # Git copies the checkout's own settings into a new copy's record.
+    rm -f "$own/config.worktree"
+  fi
+  # The check must see every file of the pushed commit as committed.
+  flags=$(bare_git -C "$2" ls-files -v)
+  odd=$(printf '%s\n' "$flags" | grep -v -m 1 '^H ' || true)
+  if [ -n "$flags" ] && [ -n "$odd" ]; then
+    echo "aegis: $2 hides a file from the check ($odd); delete the copy" >&2
+    exit 1
+  fi
+  bare_git -C "$2" rev-parse HEAD >"$own/aegis-push-commit"
+)
 zero=0000000000000000000000000000000000000000
 while read -r local_ref local_sha remote_ref remote_sha; do
   if [ "$local_sha" = "$zero" ]; then
@@ -63,5 +191,43 @@ while read -r local_ref local_sha remote_ref remote_sha; do
     echo "aegis: check out $local_ref before pushing it" >&2
     exit 1
   fi
-  cargo run --quiet --package aegis -- push "$remote_sha" "$local_sha"
+  # A first push is checked against the empty tree, so every file it
+  # brings is checked.
+  base="$remote_sha"
+  if [ "$base" = "$zero" ]; then
+    base=4b825dc642cb6eb9a060e54bf8d69288fbee4904
+  fi
+  locks_free --range "$base..$local_sha" </dev/null
+  # The push tier runs on a clean copy of the pushed commit, so another
+  # agent's unfinished work in this checkout neither blocks nor joins it.
+  # The copy and its lock sit beside the checkout's own folder, outside
+  # it, so no cargo setting inside the checkout is read; a setting in a
+  # folder above both still is. One push runs at a time, and the copy
+  # keeps its build folder between pushes. Git's location settings from
+  # outside are cleared for every git and cargo step in the copy.
+  top=$(cd "$(git rev-parse --show-toplevel)" && pwd -P)
+  common=$(cd "$(git rev-parse --git-common-dir)" && pwd -P)
+  work="${common%/.git}.push-work"
+  case "$work/" in
+  "$top"/*)
+    echo "aegis: the push copy $work would sit inside the checkout" >&2
+    exit 1
+    ;;
+  esac
+  case "$top/" in
+  "$work"/*)
+    echo "aegis: this checkout sits inside the push copy $work" >&2
+    exit 1
+    ;;
+  esac
+  exec 9>>"$work.lock"
+  if ! flock -w 600 9; then
+    echo "aegis: another push has held $work.lock for ten minutes" >&2
+    exit 1
+  fi
+  push_copy "$common" "$work" "$local_sha" </dev/null
+  (cd "$work" && unset_git &&
+    cargo run --quiet --package aegis -- push "$remote_sha" "$local_sha") \
+    </dev/null 9>&-
+  exec 9>&-
 done
