@@ -1,13 +1,9 @@
 skill = "backlog"
-change = "sha256:d246e9c7b8ade1454d9fbee6339bee4ccbcaa6c29ccf43f5ac2f3e7d654edcbd"
+change = "sha256:9a538520590a00fff2373d3a651f541b082cccadd64602ed1422efad7c540580"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 8. Read Forgejo task #182 (Phase 7 item 1, Phase 7 milestone), roadmap Phase 7 and the staged diff: new spec 0068 and its amendments to specs 0027, 0049, 0067 and the specs README. The round 8 fixes (pairing exception worded by dependence, matching shape-sheets test, value and failing-step tests, item 4 wording) stay inside batch 1 as the task asks; no unrelated lines are touched and later batches are left to their own tasks."
+summary = "Read Forgejo #159 and all its comments (live: open, Phase 1 milestone, status/urgent and status/working), AGENTS.md sections 4, 8, 10 and 12, the roadmap's Phase 1 finished-when line, and the whole seven-file diff against a875bc2. Confirmed the candidate copy differs from a875bc2 in exactly those seven files. In copies outside the shared checkout, through the sealed pankti queue: with only the new tests applied to a875bc2, tiers::push_tier_scans_changes_made_in_merges fails (commit.tdd found [] instead of [old.rs, tdd.rs]) and rules::accepted_main_must_stay_the_first_parent fails (the crafted merge is accepted). On the candidate, aegis and aegis-door give 298 passed, 0 failed, 0 ignored. The change does what the task asks: merge paths are listed against the first parent, the test was planted first, and the minor is_record item is done. The door.history first-parent refusal is part of the same hole, since without it a merge with accepted main as a later parent escapes the first-parent listing, and it strengthens a check the kept door already has (section 4). Moving commits into history/commits.rs keeps history.rs under the 300-line limit, and the VERIFY constant only serves the new rev-parse calls. Urgent placement in Phase 1, the current phase, fits sections 8 and 12. Zero tasks carry status/ready. The missing docs/specs/0001-door.md paragraph leaves that spec incomplete but not untrue, because its list of refusals does not claim to be complete. That gap is recorded on #159 with an owner and a next step. Proof is to be posted on #159 at the end, as section 8 step 12 says."
 
 [[finding]]
-what = "Later: Forgejo task #182's body says specs 0027 and 0049 are amended but not that spec 0067's probe set, Order digest and Coarse digest bullets are amended too (docs/specs/0067-method-chains.md:35-39, 48-50, 60-61); update the task body when the work lands."
-fixed = true
-
-[[finding]]
-what = "Later: the proof for #182 is the spec's test list, built by Codex; the review records stand as proof for the docs change, and the test proof must be posted on #182 when Codex's work lands."
+what = "Later: crates/aegis-door/src/gate.rs:130 (door.history first-parent refusal) also refuses an ordinary `git pull` merge that brings newer Forgejo commits into local main, because Forgejo's main becomes the second parent. AGENTS.md section 8 step 9 says only 'bring in any newer commits' and the refusal message says to rebase, so nothing is untrue now. The spec owner's pending 'Checking merges' paragraph for docs/specs/0001-door.md should say that newer commits are brought in by rebasing. The owner may also want section 8 step 9 to say so."
 fixed = true

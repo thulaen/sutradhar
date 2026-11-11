@@ -1,7 +1,7 @@
 #![allow(clippy::unwrap_used, reason = "tests stop at the first failure")]
 
 use super::review_record::check;
-use super::{Entry, REQUIRED, fingerprint};
+use super::{Entry, REQUIRED, fingerprint, is_record};
 use std::collections::HashMap;
 
 fn e(mode: &str, id: &str, path: &[u8]) -> Entry {
@@ -141,4 +141,23 @@ fn text_from_a_record_cannot_rewrite_the_screen() {
         ("100644".to_owned(), record("\u{1b}[2J", "sha256:c", "pass")),
     );
     assert!(judged(&shouting).iter().all(|m| !m.contains('\u{1b}')));
+}
+
+#[test]
+fn only_the_eight_record_files_are_records() {
+    for skill in REQUIRED {
+        assert!(is_record(format!("reviews/{skill}.toml").as_bytes()));
+    }
+    for path in [
+        "reviews/defects.toml.bak",
+        "reviews/defects",
+        "reviews/sub/defects.toml",
+        "xreviews/defects.toml",
+        "reviews/other.toml",
+        "reviews/.toml",
+        "defects.toml",
+        "",
+    ] {
+        assert!(!is_record(path.as_bytes()), "{path}");
+    }
 }

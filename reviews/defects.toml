@@ -1,13 +1,9 @@
 skill = "defects"
-change = "sha256:d246e9c7b8ade1454d9fbee6339bee4ccbcaa6c29ccf43f5ac2f3e7d654edcbd"
+change = "sha256:9a538520590a00fff2373d3a651f541b082cccadd64602ed1422efad7c540580"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read every staged line of spec 0068 and the staged hunks of specs 0027, 0049, 0067 and the specs README, and checked the round 8 fixes against specs 0027, 0049, 0055 and 0067: the dependence-worded pairing exception, item 4's exact equality, direction and per-chain-step checks, the shape-sheets test, the value-range and failing-step tests, slot kinds, probe sets, the gate and the test list."
+summary = "Read task #159, its comments and every line of the seven-file candidate. Also read the code it calls and the code that calls it: tiers::push, tdd::check_paths, red_green::check and own_tests, history::parent_with_tests, repo::range, check_main and the door spec. keeps_first_parent is right for every first-parent shape: it checks the oldest commit on the line, a root commit is refused, and an empty range passes. The first-parent diff-tree paths match the first parent that red_green unpacks. is_record gives the same answers as before. In a copy of the candidate I ran aegis and aegis-door in the sealed queue: all passed, 0 failed, 0 ignored, and clippy -D warnings and fmt are clean. On the parent source both new tests fail: tiers commit.tdd found nothing, and the door found no door.history refusal. A mutant that checks the newest commit instead of the oldest is caught only by an unrelated test. docs/specs/0001-door.md still says only that accepted main must be an ancestor. That line is still true, just incomplete, and the paragraph is already an open finding on #159 for the spec owner."
 
 [[finding]]
-what = "Later: docs/specs/0068-chain-shapes-ranking-graph.md:240 tests that a chain with a step that fails or waits on a batch gives no result for it, but no rule in the body of 0068 or 0067 states it, and spec 0027 (line 163) gives the live path a provisional score instead. Add one sentence beside item 7 or the slot 10 bullet saying a chain with a failed or waiting step gives no result for that batch and never a provisional one."
-fixed = true
-
-[[finding]]
-what = "Later: docs/specs/0068-chain-shapes-ranking-graph.md:86 runs to 75 characters after the rewrap; wrap it with its neighbours."
+what = "Later: crates/aegis-door/tests/rules.rs:270 indexes found[0], so a regression panics with 'index out of bounds' instead of printing the findings. The test also uses only one-commit pushes. Checking the newest commit instead of the oldest (lines().next() at gate.rs:273) still passes it, and only a_big_file_in_an_earlier_commit_of_the_push_is_refused_too catches that by chance. A crafted merge with a normal commit on top would pin the rule."
 fixed = true

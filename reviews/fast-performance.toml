@@ -1,21 +1,13 @@
 skill = "fast-performance"
-change = "sha256:d246e9c7b8ade1454d9fbee6339bee4ccbcaa6c29ccf43f5ac2f3e7d654edcbd"
+change = "sha256:9a538520590a00fff2373d3a651f541b082cccadd64602ed1422efad7c540580"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 8 performance review of the staged docs change: new spec 0068, the spec 0027, 0049 and 0067 amendments and the specs README rows. Checked that the round 8 changes (item 4 checks run on every step of every chain run as well as alone, columns compared after turning by direction, the 0067 and 0068 pairing exception worded by dependence, new tests) add no live-path work: the live path of shodhan.rank still fuses ready methods and runs no chain, graph steps read stored ganit outputs and indexed lookups only, and the extra checks run only in qualified and lab runs, bounded by the admitted shapes (24 link ranking chains, 3 graph relevance chains). Nothing was timed because the change is docs only. Nothing blocks; the gaps below are Later items the change does not make worse."
+summary = "Read the whole seven-file diff against a875bc2 and its call sites (tiers::push, tdd::check_paths, reviews::fingerprint, gate::check_main). The new door check adds one rev-list --first-parent over a range already held to 500 commits plus two rev-parse calls per main push, run after the count limit; history::commits keeps its per-commit process count and only adds first-parent paths for merges, bounded by the commit limit and tree-size check; is_record now compares bytes with no allocation per tree entry, a real saving on the hot path. No unbounded growth, no new blocking path, nothing cut short. Ran aegis and aegis-door through pankti sealed on a copy: 298 passed, 0 failed, 0 ignored. No timing needed: no change adds measurable work."
 
 [[finding]]
-what = "Later: docs/specs/0068-chain-shapes-ranking-graph.md 'Output kinds and probe sets' item 3: each step copies every column it read, so a 12-slot chain copies the table up to nine times per probe batch. When implemented, store each step's one new column rather than copying the table (qualified and lab runs only, never the live path, per 'Limits')."
+what = "Later: crates/aegis-door/src/gate.rs:277 keeps_first_parent rev-parses base again although check_main already holds it as a commit id (from accepted() or push.old after is_ancestor), and lists the whole first-parent line to read only its last id; one extra short git process and at most 500 lines per main push, negligible next to the push tier."
 fixed = true
 
 [[finding]]
-what = "Later: docs/specs/0068-chain-shapes-ranking-graph.md 'Output kinds and probe sets' item 4 (lines 54-62): the checks now run on every step of every chain run as well as alone, against every present column including seeded ones, after turning each by its direction. Keep each column's direction-turned rank order once per batch (seeded ones once per probe seed) and reuse it across chains that share earlier slots, rather than sorting every present column again at every step of every chain."
-fixed = true
-
-[[finding]]
-what = "Later: docs/specs/0068-chain-shapes-ranking-graph.md 'Shape: link ranking' first bullet: the order step's output covers refused destinations, which the qualified run needs; the live service shows only those that passed, so the live path may skip ordering the refused ones."
-fixed = true
-
-[[finding]]
-what = "Later: docs/specs/0027-candidates-ranking.md 'The final score and confidence' chain bullet: job 45 weights and job 33 calibrations are fitted per column set and fusion method. Bounded by the admitted shapes now, but it grows as a product of slot choices in later batches; fit them once per column set in the heavy-job queue and keep them, never per qualified run."
+what = "Later: crates/aegis/src/history/commits.rs:31 still spawns two git processes per commit (log and diff-tree), up to 1000 per 500-commit push; unchanged by this diff, but one `git log --format=%H%x00%B%x00 --name-only -z --diff-merges=first-parent` call could replace them if push tier time matters."
 fixed = true

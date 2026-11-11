@@ -224,6 +224,8 @@ fn an_untracked_file_makes_the_tree_unclean() {
 #[test]
 fn push_tier_scans_changes_made_in_merges() {
     let dir = scratch("merge");
+    fs::write(dir.join("old.rs"), "// Renamed during the merge.\n").unwrap();
+    let _ = git(&dir, &["add", "old.rs"]);
     let _ = git(&dir, &["commit", "-q", "-m", GOOD_MSG]);
     let base = git(&dir, &["rev-parse", "HEAD"]);
     let _ = git(&dir, &["checkout", "-q", "-b", "side"]);
@@ -234,6 +236,8 @@ fn push_tier_scans_changes_made_in_merges() {
     let _ = git(&dir, &["merge", "-q", "--no-ff", "--no-commit", "side"]);
     let key = ["-----BEGIN", " ", "PRIVATE KEY-----\n"].concat();
     fs::write(dir.join("m.md"), key).unwrap();
+    fs::write(dir.join("tdd.rs"), "// Added during the merge.\n").unwrap();
+    let _ = git(&dir, &["mv", "old.rs", "old.md"]);
     let _ = git(&dir, &["add", "-A"]);
     let _ = git(&dir, &["commit", "-q", "-m", GOOD_MSG]);
     fs::remove_file(dir.join("m.md")).unwrap();
@@ -242,6 +246,13 @@ fn push_tier_scans_changes_made_in_merges() {
     let found = tiers::push(&Repo::at(&dir), &base, &head).unwrap();
     let paths: Vec<&str> = found.iter().map(|f| f.path.as_str()).collect();
     assert!(paths.contains(&"m.md (history)"), "{found:?}");
+    // The merge says docs only, but it adds code and moves code to a doc.
+    let tdd: Vec<&str> = found
+        .iter()
+        .filter(|f| f.check == "commit.tdd")
+        .map(|f| f.path.as_str())
+        .collect();
+    assert_eq!(tdd, ["old.rs", "tdd.rs"], "{found:?}");
 }
 
 #[test]

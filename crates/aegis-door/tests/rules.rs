@@ -241,3 +241,40 @@ fn a_filter_named_by_a_pushed_project_never_runs_at_checkout() {
     let _found = door.check(main_push(&first, &next), &body).unwrap();
     assert!(!marker.exists(), "the pushed filter ran");
 }
+
+#[test]
+fn accepted_main_must_stay_the_first_parent() {
+    let (source, door, first) = setup("first-parent");
+    let accepted = commit(&source, "b.md", "# B\n", GOOD);
+    let body = pack(&source, &first, &accepted);
+    let found = door.check(main_push(&first, &accepted), &body).unwrap();
+    assert_eq!(found.len(), 0, "{found:?}");
+    // Accepted main as the second parent: the push tier would read the
+    // merge against `first` and miss what `accepted` brought.
+    let tree = git(&source, &["rev-parse", &format!("{first}^{{tree}}")]);
+    let crafted = git(
+        &source,
+        &[
+            "commit-tree",
+            &tree,
+            "-p",
+            &first,
+            "-p",
+            &accepted,
+            "-m",
+            GOOD,
+        ],
+    );
+    let body = pack(&source, &accepted, &crafted);
+    let found = door.check(main_push(&accepted, &crafted), &body).unwrap();
+    assert_eq!(found[0].check, "door.history", "{found:?}");
+    // A merge into main, with main as its first parent, still passes.
+    let _ = git(&source, &["checkout", "-q", "-b", "side"]);
+    let _side = commit(&source, "c.md", "# C\n", GOOD);
+    let _ = git(&source, &["checkout", "-q", "main"]);
+    let _ = git(&source, &["merge", "-q", "--no-ff", "-m", GOOD, "side"]);
+    let merged = git(&source, &["rev-parse", "HEAD"]);
+    let body = pack(&source, &accepted, &merged);
+    let found = door.check(main_push(&accepted, &merged), &body).unwrap();
+    assert_eq!(found.len(), 0, "{found:?}");
+}

@@ -48,9 +48,10 @@ pub type Entry = (String, String, Vec<u8>);
 /// Whether a path is one of the record files.
 #[must_use]
 pub fn is_record(path: &[u8]) -> bool {
-    REQUIRED
-        .iter()
-        .any(|s| path == format!("{FOLDER}{s}.toml").as_bytes())
+    // Called for every file of every tree, so nothing is built per call.
+    path.strip_prefix(FOLDER.as_bytes())
+        .and_then(|name| name.strip_suffix(b".toml"))
+        .is_some_and(|skill| REQUIRED.iter().any(|s| skill == s.as_bytes()))
 }
 
 /// The fingerprint of a tree's files, records left out, in the order

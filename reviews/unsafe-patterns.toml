@@ -1,17 +1,9 @@
 skill = "unsafe-patterns"
-change = "sha256:d246e9c7b8ade1454d9fbee6339bee4ccbcaa6c29ccf43f5ac2f3e7d654edcbd"
+change = "sha256:9a538520590a00fff2373d3a651f541b082cccadd64602ed1422efad7c540580"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged spec 0068 and the staged hunks of specs 0027, 0049, 0067 and the specs README (round 8), looking for errors turned into defaults, check-then-use gaps, unbounded inputs, checks that misfire on edge inputs and weakened checks or tests. Round 7 Later items are addressed: item 4 now says exactly equal and compares columns after direction, its checks run inside chains too, non-number and infinity values fail with a test, and a failing or waiting step inside a chain gives no result (test). The gate still reads slot 1's column from the shipped step's own copy, and missing weights or calibration never fall back."
+summary = "Read the whole candidate diff (gate.rs keeps_first_parent and its call site in check_main, history/commits.rs with --diff-merges=first-parent, reviews::is_record byte compare, and the three test files) against a875bc2. In a private copy, aegis fingerprint printed the exact candidate fingerprint, the commit tier found zero automated problems (only the eight reviews missing), and the sealed queue ran aegis and aegis-door with 298 passed, 0 failed, 0 ignored. Checked each pattern in the skill: errors turned into defaults, overflow, locks, check-then-use, unclosed handles, unbounded input, trusted outside names, and weakened tests. Nothing blocking: the first-parent listing is bounded by the 500-commit count already checked, every git failure fails closed, ids come from rev-parse --verify, is_record matches exactly the old set, and the tests only gain assertions. No doc says anything about merges or parent order, so the missing 0001-door paragraph leaves docs incomplete, not untrue."
 
 [[finding]]
-what = "Fixed: docs/specs/0068-chain-shapes-ranking-graph.md:54-62: item 4 now names exact equality, compares columns after each is turned by its direction, and runs on every step of every chain run as well as alone, so a copy hidden inside a chain is caught."
-fixed = true
-
-[[finding]]
-what = "Fixed: docs/specs/0068-chain-shapes-ranking-graph.md:237-239: a test now covers a new column holding a value that is not a number, an infinity, or outside 0 to 1."
-fixed = true
-
-[[finding]]
-what = "Later: docs/specs/0068-chain-shapes-ranking-graph.md:240-241: the rule that a chain with a step that fails or waits on a batch gives no result for that batch is stated only as a test; add it to the body (beside item 7 or the slot 10 bullet at lines 141-145) so the rule and its test both exist."
+what = "Later: crates/aegis-door/src/gate.rs:282, keeps_first_parent maps every failure of `rev-parse --verify -q oldest^1` to false through is_ok_and, so a real git fault is reported as a door.history refusal instead of 'cannot be checked'. It fails closed (the push is refused), so it is safe; the comment names only the root-commit case."
 fixed = true

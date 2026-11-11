@@ -13,6 +13,8 @@ const SIZE_CHECK: &str = "door.size";
 
 /// The git command that names a commit or a path.
 const REV_PARSE: &str = "rev-parse";
+/// Makes `rev-parse` fail on a name that is not one object.
+const VERIFY: &str = "--verify";
 
 /// The ref that records the last `main` the door accepted. Every accepted
 /// commit stays in the door's copy for good, and this ref, not Forgejo's
@@ -80,8 +82,7 @@ impl Door {
         if !pack.is_empty() {
             let _out = repo.git_with_input(&["unpack-objects", "-q"], pack)?;
         }
-        let commit =
-            repo.git(&[REV_PARSE, "--verify", &commit_of(push.new)])?;
+        let commit = repo.git(&[REV_PARSE, VERIFY, &commit_of(push.new)])?;
         let commit = commit.trim();
         if push.name == "refs/heads/main" {
             check_main(&repo, push, commit)
@@ -124,6 +125,13 @@ fn check_main(
             return Ok(refused(
                 SIZE_CHECK,
                 "a push may bring at most 500 commits; push in smaller parts",
+            ));
+        }
+        if !keeps_first_parent(repo, base, &range)? {
+            return Ok(refused(
+                "door.history",
+                "the last accepted main must stay the first parent of the \
+                 new commits; rebase on main instead of merging it in",
             ));
         }
     }
@@ -186,7 +194,7 @@ fn accepted(repo: &Repo) -> Result<Option<String>, String> {
     if listed.trim().is_empty() {
         return Ok(None);
     }
-    let id = repo.git(&[REV_PARSE, "--verify", &commit_of(ACCEPTED)])?;
+    let id = repo.git(&[REV_PARSE, VERIFY, &commit_of(ACCEPTED)])?;
     Ok(Some(id.trim().to_owned()))
 }
 
@@ -251,6 +259,27 @@ fn refused(check: &'static str, message: &str) -> Vec<Finding> {
 
 fn commit_of(id: &str) -> String {
     format!("{id}^{{commit}}")
+}
+
+/// Whether `base` is on the first-parent line of the new commits: the
+/// push tier reads each merge against its first parent, so a merge that
+/// takes accepted main in as a later parent would be judged against
+/// another commit. The range is already held to 500 commits.
+fn keeps_first_parent(
+    repo: &Repo,
+    base: &str,
+    range: &str,
+) -> Result<bool, String> {
+    let line = repo.git(&["rev-list", "--first-parent", range, "--"])?;
+    let Some(oldest) = line.lines().last() else {
+        return Ok(true);
+    };
+    let base = repo.git(&[REV_PARSE, VERIFY, &commit_of(base)])?;
+    // A root commit has no first parent, so it cannot follow `base`.
+    let parent = format!("{oldest}^1");
+    Ok(repo
+        .git(&[REV_PARSE, VERIFY, "-q", &parent])
+        .is_ok_and(|id| id.trim() == base.trim()))
 }
 
 fn is_ancestor(repo: &Repo, old: &str, new: &str) -> bool {

@@ -1,29 +1,13 @@
 skill = "red-team"
-change = "sha256:d246e9c7b8ade1454d9fbee6339bee4ccbcaa6c29ccf43f5ac2f3e7d654edcbd"
+change = "sha256:9a538520590a00fff2373d3a651f541b082cccadd64602ed1422efad7c540580"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged spec 0068, round 8, and its amendments to specs 0027, 0049, 0067 and the specs README, against specs 0023, 0027, 0049, 0055, 0064 and 0067. Three red agents attacked it with the goals break it, get round it and abuse it, and each report was checked against the staged text. The round 7 items are fixed: the pairing exception is worded by dependence in 0067 and item 7, item 4 compares columns turned by their direction and runs inside chain runs, and the new tests match items 3 and 4. No report shows a new hole that blocks; the rest are gaps for later work, most recorded before."
+summary = "Read the task, its comments, the seven-file diff and the door and push-tier code around it. Checked that the red copy equals a875bc2 plus the diff. This session had no tool for starting helpers, so I ran the attacks myself as five attackers, each written as a real test in a private copy (crates/aegis-door/tests/redprobe.rs, not part of the change). The attacks: (1) crafted parent order, where the first-parent line skips accepted main and ends at one of its ancestors; (2) octopus merges in both parent orders, with code only in the merge tree; (3) orphan roots, both first on the line and as a later parent; (4) legitimate pushes the rule must still allow: an unchanged push, a side branch cut from an older main and merged with main first, an annotated tag named as the new main, and Forgejo's main lost behind refs/door/main; (5) a crafted merge deep inside the push. Every bad push came back door.history, or commit.tdd for code hidden in a docs-only merge, and accepted main stayed where it was. Every legitimate push passed. Four of the probes and both new tests (tiers::push_tier_scans_changes_made_in_merges, rules::accepted_main_must_stay_the_first_parent) fail with the parent's gate.rs and history.rs and pass on the candidate. aegis and aegis-door: 303 passed, 0 failed, 0 ignored (298 plus 5 probes), sealed in the queue. I also checked replace objects and grafts: git_env already shuts them off, and a push cannot create refs. The ids passed to git are checked hex ids, so none can look like an option. The missing 0001-door.md paragraph leaves the spec incomplete, not untrue: its ancestor rule still holds. Nothing blocking."
 
 [[finding]]
-what = "Later: item 7 (0068 lines 81-86) says a relevance method's added column does not depend on the seeded columns, but item 3 (lines 47-50) lets it read the whole table, and nothing tests the claim. A method that reads earlier columns would behave differently alone and in a chain, which makes chains look distinct. Add a probe check that re-draws the seeded columns and treats any step whose added column changes as one that is never paired with a chain."
+what = "Later: crates/aegis/src/tiers.rs:206 - tiers::push run on its own (the local pre-push hook) still reads a merge that has published main as a later parent against the wrong first parent. Only the door (crates/aegis-door/src/gate.rs:130) refuses that shape, so a local push gets no early warning. The door has the final say and refuses it, so nothing gets in."
 fixed = true
 
 [[finding]]
-what = "Later: 0068 line 240 tests that a chain with a step that fails or waits on a batch gives no result for it, but no body item states the rule, and spec 0067 does not either. Move the rule into item 7 or the Limits so the test checks a stated rule. Recorded before as the round 4 Later item on failing or waiting steps inside a chain."
-fixed = true
-
-[[finding]]
-what = "Later: seeded columns (0068 lines 69-75) carry a seeded id but no direction, while item 4 (lines 59-60) turns every column by its direction before comparing. Say that each seeded column has a direction drawn from the probe seed, or that seeded columns are compared as written."
-fixed = true
-
-[[finding]]
-what = "Later: the caution steps are carried into the gate (0068 lines 123-127, Shape sheets item 3) but nothing makes them count. LambdaMART in slot 10 has no direction rule and logistic fusion's weights may sit near zero (spec 0027), so a chain can carry spam risk and still fuse a spammy pair high; line 125's 'No chain can leave a protection out' holds only for presence. Recorded before as the weight floors Later item (rounds 3 and 7)."
-fixed = true
-
-[[finding]]
-what = "Later: the graph shape's slot 2 holds Adamic-Adar, resource allocation and Katz (0068 line 160), and which one the live method uses is a 0049 setting (lines 172-173). The chains built from the live parts with the other two scores differ from the live method only by that choice and are never paired with it by rank correlation. Pair each graph chain with the live method. Recorded before as the round 6 Later item."
-fixed = true
-
-[[finding]]
-what = "Later: still open from earlier rounds and repeated by the red agents: fusion or the weighted combination run alone needs weights for seeded ids (0068 lines 73-75, 141-145, 179); position weight is refused by item 4 (lines 120-122) yet 0027 still fuses it live; link ranking and graph batches share one feature table probe set with different row meanings (lines 41-43, 91-92, 151-152); the order digest covers refused rows (lines 115-119), so chains that differ only in their refused tail count; evidence travels with refused rows in lab runs on real forums."
+what = "Later: docs/specs/0001-door.md:23 - the spec describes only the ancestor rule, not the new first-parent refusal, which also reports as door.history. The spec is incomplete, not untrue. This is already an open finding on #159 for the spec owner."
 fixed = true

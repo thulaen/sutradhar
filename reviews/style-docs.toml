@@ -1,9 +1,17 @@
 skill = "style-docs"
-change = "sha256:d246e9c7b8ade1454d9fbee6339bee4ccbcaa6c29ccf43f5ac2f3e7d654edcbd"
+change = "sha256:9a538520590a00fff2373d3a651f541b082cccadd64602ed1422efad7c540580"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 8. Read the staged change (new spec 0068; spec 0027's Words used here sentence, chain bullet, graph relevance row and Ganit jobs list; spec 0049 Relevance item 2; spec 0067 probe set, Order digest and Coarse digest bullets; specs README row and written-fresh list) against AGENTS.md sections 6 and 12 and the style-docs checks. The round 7 finding is fixed: the shape-sheets test now matches Shape sheets item 3, and the new tests match item 4's wording. Spec 0067 and 0068 item 7 word the pairing exception the same way, by dependence on seeded columns. Every cited section and item exists, plain British English, no status words, no new rule numbers, no undefined terms."
+summary = "Read every changed line of the seven files (history.rs, new history/commits.rs, tiers.rs, aegis-door gate.rs and rules.rs, reviews.rs, reviews_tests.rs) against AGENTS.md section 6 and docs/standards, and checked the red tree equals a875bc2 plus the diff. Names say what things are (VERIFY, keeps_first_parent, only_the_eight_record_files_are_records); every new public item and helper has a doc comment, and comments say why (the --diff-merges=first-parent line, the root-commit case, the no-build-per-call is_record). The commits split removes the old inline range code in favour of repo::range, so nothing is copied; files stay under 300 lines and functions under 60. Readability, clear responsibilities (history reads, the door enforces parent order), smallest clear design and preserved behaviour hold: in a sealed probe copy aegis and aegis-door ran 298 passed, 0 failed, 0 ignored, and cargo fmt --check is clean. No status words, and no doc became untrue: docs/specs/0001-door.md still states true rules, it only lacks the new refusal, which #159 already routes to the spec owner."
 
 [[finding]]
-what = "Later: cosmetic wrapping in docs/specs/0068-chain-shapes-ranking-graph.md: line 86 runs to 75 characters, and lines 152 to 153 ('Scope' / 'row: ...') and 228 to 229 ('changes a' / 'column it read.') break early; rewrap with the next edit."
+what = "Later: docs/specs/0001-door.md:23 lists the door's main-push refusals but not the new door.history first-parent refusal or that merges are checked against their first parent. Incomplete, not untrue; already an open finding on #159 for the spec owner."
+fixed = true
+
+[[finding]]
+what = "Later: crates/aegis-door/src/gate.rs:109 and :132 spell the check name \"door.history\" twice as a literal, while door.size has the SIZE_CHECK constant; a HISTORY_CHECK constant would keep the two in step."
+fixed = true
+
+[[finding]]
+what = "Later: crates/aegis-door/src/gate.rs:133 the refusal says the accepted main must be the first parent \"of the new commits\", but only the oldest commit on the first-parent line needs it; wording such as \"must stay on the first-parent line of the new commits\" would match the check exactly. Clear enough to act on as it stands."
 fixed = true
