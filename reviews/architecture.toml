@@ -1,5 +1,5 @@
 skill = "architecture"
-change = "sha256:74c56f47c9b677e89e57f33f427c2a349c0f1b357cf45b08346e4b0367d0bd81"
+change = "sha256:1b8cbe088d5c00396f5f4c84458430a1298357ec61933e6606d199cebf19dc04"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged diff of docs/specs/0012-ganit-evolve.md (items 6, build order step 2, Changes from the source) against the rest of spec 0012 and AGENTS.md sections 4, 6 rules 6 and 9, and 7.3. Item 6 no longer states status and defers coverage timing to section 7.3, written once; build order step 2 puts the Rust safety parse before ganit.every-change can be turned on, matching 7.3; 'any Rust or Go file' now matches the whole-file problem item 5; the Go forbidden list matches rule 6 plus section 4's no-C-compiler rule. No module walls, wiring or data-flow changes; docs only. No new open problems; round 1 Later items are already logged on #166."
+summary = "Read the staged diff (docs/specs/features.md features 670 to 686, their heading and clean-room note, and the one cross-reference in spec 0027). Docs only: no module walls, composition root, events or data flow change; the renamed heading has no other reference left in the staged tree, spec 0027's job mapping still points at the right section, and no feature moves between modules."

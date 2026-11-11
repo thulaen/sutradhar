@@ -1,9 +1,5 @@
 skill = "security"
-change = "sha256:74c56f47c9b677e89e57f33f427c2a349c0f1b357cf45b08346e4b0367d0bd81"
+change = "sha256:1b8cbe088d5c00396f5f4c84458430a1298357ec61933e6606d199cebf19dc04"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged diff to docs/specs/0012-ganit-evolve.md (item 6, build order step 2, Changes from the source) against AGENTS.md section 4, section 6 rule 6 and section 7.3. Docs only: no inputs, secrets, crypto or dependencies added. Item 6 no longer claims a Rust safety parse exists and defers coverage timing to section 7.3, so the Rust check cannot be turned on before Rust files can pass the effects check; the Go forbidden list matches AGENTS.md (unsafe package, //go:linkname, hand-written assembly, plugin package, import \"C\")."
-
-[[finding]]
-what = "Later: the Go forbidden list does not yet name unsafe access through reflect or syscall, other //go: directives and cgo comments, or Go assembly as bodiless functions; already logged on task #166 from round 1, not made worse by this change."
-fixed = true
+summary = "Read the staged diff (docs/specs/features.md features 670 to 686, the renamed heading, the new clean-room note, and the matching cross-reference in spec 0027). Docs only: no code, inputs, secrets, access rules, crypto or dependencies change; the wording edits do not widen any feature's reach (683 custom user agents and 685 Business Profile photos keep their scope and [Approval] tag), and no stale reference to the old heading remains."

@@ -361,9 +361,10 @@ Structure and linking (query-aligned anchors, into anchor quality;
 density guard, into the caps); Site crawler (link reports, into graph
 relevance); Brand entity and knowledge panel (entities, into entity
 agreement); Measurement and learning (rejection reasons, into job 97);
-More from the named tools (content similarity, into job 1's variety
-term, which only spreads links); Planning and outlining, and Publishing
-(feature 1255), which propose candidates that still pass the gate.
+More analytics, workflow, crawl and press features (content similarity,
+into job 1's variety term, which only spreads links); Planning and
+outlining, and Publishing (feature 1255), which propose candidates that
+still pass the gate.
 
 Relevance ideas only after their own admission: Search data and
 insight (intent labels); Keyword and topic research (query clusters;

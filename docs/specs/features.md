@@ -1290,41 +1290,32 @@ the writing brief (36, task #54).
 669. Naver Search Advisor: Connects the site to Naver Search Advisor. [Own
      account]
 
-### More from the named tools
+### More analytics, workflow, crawl and press features
 
 670. Audience personas from forum data: Builds audience personas from forum
-     data, in aggregated form only, as Conductor does.
-671. Competitor traffic estimates: Estimates competitors' traffic, as Semrush
-     Enterprise does. [Paid]
-672. Staff advocacy: Lets staff share approved posts, as Hootsuite does.
-673. Review benchmarking: Compares the site's reviews with those of competitors,
-     as Birdeye does. [Approval]
-674. Mention geography: Shows where mentions come from geographically, as
-     Brand24 does.
+     data, in aggregated form only.
+671. Competitor traffic estimates: Estimates competitors' traffic. [Paid]
+672. Staff advocacy: Lets staff share approved posts.
+673. Review benchmarking: Compares the site's reviews with those of competitors.
+     [Approval]
+674. Mention geography: Shows where mentions come from geographically.
 675. Membership offer pages: Drafts membership offer pages. Every visitor and
      every search engine sees the same offer page. [Public]
-676. Workflow data tables: Gives simple data tables for use in workflows, as
-     Zapier does.
-677. Workflow input forms: Gives input forms for workflows inside the app, as
-     Zapier does.
-678. Workflow diagrams: Draws workflow diagrams to document processes, as Zapier
-     does.
-679. Error workflows: Runs an error workflow when another workflow fails, as n8n
-     does.
-680. Sub-workflows: Lets one workflow call another as a sub-workflow, as n8n
-     does.
-681. N-gram analysis: Counts how often phrases appear across the site, as
-     Screaming Frog does.
+676. Workflow data tables: Gives simple data tables for use in workflows.
+677. Workflow input forms: Gives input forms for workflows inside the app.
+678. Workflow diagrams: Draws workflow diagrams to document processes.
+679. Error workflows: Runs an error workflow when another workflow fails.
+680. Sub-workflows: Lets one workflow call another as a sub-workflow.
+681. N-gram analysis: Counts how often phrases appear across the site.
 682. Content similarity map: Maps how similar the site's pages are to each
-     other, as Screaming Frog does.
+     other.
 683. Custom user agent crawling: Crawls with custom user agents to test how
-     pages respond to different bots, as Screaming Frog does.
-684. Store or club locator: Adds a page where visitors find stores or clubs, as
-     Uberall does. [WP] [Public]
-685. Business Profile photos: Manages Google Business Profile photos, as Birdeye
-     does. [Approval]
+     pages respond to different bots.
+684. Store or club locator: Adds a page where visitors find stores or clubs.
+     [WP] [Public]
+685. Business Profile photos: Manages Google Business Profile photos. [Approval]
 686. Search Console history archive: Keeps the full Search Console history
-     beyond Google's 16 months, as seoClarity does.
+     beyond Google's 16 months.
 687. Bing Webmaster history archive: Keeps the full Bing Webmaster history.
 688. Anonymised query share: Shows the share of traffic from queries that Google
      does not name (anonymised queries).
@@ -2421,6 +2412,9 @@ identity and no customer records.
 These features come close to what another product does. Each gets our own
 design, as set out here.
 
+- 670 to 686: each names an idea only, and no product it comes close to;
+  nothing from those products is copied: no code, formulas, issue lists,
+  scores, screens, wording, data or trademarked names.
 - 1314 Mobile usability audit: built from Google's public guidance, with
   our own thresholds set in the lab; no other tool's list of issues.
 - 1316 Structured data validation: checked against schema.org and

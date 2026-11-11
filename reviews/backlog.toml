@@ -1,9 +1,5 @@
 skill = "backlog"
-change = "sha256:74c56f47c9b677e89e57f33f427c2a349c0f1b357cf45b08346e4b0367d0bd81"
+change = "sha256:1b8cbe088d5c00396f5f4c84458430a1298357ec61933e6606d199cebf19dc04"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged diff of docs/specs/0012-ganit-evolve.md (round 2) against HEAD 732007c, task #166 and its comments in Forgejo, and AGENTS.md sections 4, 6 rules 6 and 9 and 7.3. The change does what #166's follow-up asks and no more: item 6 drops the false 'Rust has one' status claim and points to section 7.3 for timing; build step 2 builds the Rust safety parse with the Rust whole-file problem, before the check is turned on; 'Changes from the source' now agrees with item 5 and restates the Go forbidden list from AGENTS.md. Round 1 Later items are logged on #166 as items 52 to 54."
-
-[[finding]]
-what = "Later: AGENTS.md section 10's limit of 10 tasks marked next cannot be checked, because Forgejo has no next label (only status/blocked, ready, urgent, working). Say which label marks next, or add one. Not caused by this change."
-fixed = true
+summary = "Read task #149 (Phase 2, item 15) and the staged diff of docs/specs/features.md and docs/specs/0027-candidates-ranking.md. Every 'as <product> does' phrase is gone from 670 to 686, the heading no longer says 'named tools' and its one cross-reference in spec 0027 matches, the clean-room note covers 670 to 686 without denying the Google data sources of 685 and 686, and nothing outside item 15 is changed; 687 to 712 stay for later batches."

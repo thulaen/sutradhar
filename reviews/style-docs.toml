@@ -1,9 +1,9 @@
 skill = "style-docs"
-change = "sha256:74c56f47c9b677e89e57f33f427c2a349c0f1b357cf45b08346e4b0367d0bd81"
+change = "sha256:1b8cbe088d5c00396f5f4c84458430a1298357ec61933e6606d199cebf19dc04"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 2: read the staged diff of docs/specs/0012-ganit-evolve.md (task #166 follow-up) against the staged AGENTS.md sections 4, 6 rules 6 and 9 and 7.3, and the spec's items 5 and 6, evaluation steps, build order and 'Changes from the source'. Item 6 no longer states status ('Rust has one' is gone) and no longer gives its own timing; it points to section 7.3, which it now agrees with for Rust and for other languages. Build order step 2 builds the Rust safety parse with the Rust whole-file problem; 'any Rust or Go file' agrees with item 5; the Go forbidden list matches section 4 (import \"C\") and rule 6 word for word. Plain British English, no status words, no new numbers."
+summary = "Read the staged diff (round 2) of docs/specs/features.md (features 670 to 686, the renamed heading and the clean-room note) and docs/specs/0027-candidates-ranking.md:364 against AGENTS.md and the features.md clean-room rule. No 'as <product> does' is left in 670 to 686, the heading and its one cross-reference in spec 0027 match and no other reference to the old heading remains, rewrapped lines stay within 80 columns with tags kept, the note no longer denies the data-source names in 685 and 686, and the wording is plain British English with no status words."
 
 [[finding]]
-what = "Later: item 6's list of languages (Rust, Go, TypeScript, CSS, PHP, SQL, shell, Cedar and Rego) and the Go forbidden list in 'Changes from the source' repeat AGENTS.md section 6 rule 9 and section 4 / rule 6, so they could drift; already logged on #166 from round 1, and this change does not make it worse than the old text did."
+what = "Later: docs/specs/features.md:1293 the heading 'More analytics, workflow, crawl and press features' does not cover every item under it (for example 672 staff advocacy, 673 review benchmarking, 684 store locator, 695 to 700 social items). Harmless as a 'More ...' catch-all; a later batch of task #149 could split the section or widen the name, updating docs/specs/0027-candidates-ranking.md:364 with it."
 fixed = true

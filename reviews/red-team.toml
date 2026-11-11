@@ -1,9 +1,13 @@
 skill = "red-team"
-change = "sha256:74c56f47c9b677e89e57f33f427c2a349c0f1b357cf45b08346e4b0367d0bd81"
+change = "sha256:1b8cbe088d5c00396f5f4c84458430a1298357ec61933e6606d199cebf19dc04"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 2. Read the staged diff to docs/specs/0012-ganit-evolve.md against AGENTS.md sections 4, 6 rules 6 and 9, and 7.3. Two red agents ran: get round it (loopholes for landing or evolving Rust and Go without a receipt or past the forbidden list) and break it (contradictions, status, build order, dangling pointers). Each claim was checked against the staged text. The round 1 blocker is fixed: item 6 now gives a necessary condition (no parse, no evolving, no receipt) and leaves timing to section 7.3, which fits Rust because the check can only turn on once a Rust receipt can be made, so the Rust parse comes first. Other claims were dropped: 'may evolve any Rust or Go file' is permissive and item 6 still governs; the test list's '(item 6)' still points to the parse condition item 6 keeps; receipts for TypeScript and the rest and the wider Go list are already Later items on #166; the forbidden list for Go that lands before the Go parse is a rule 6 gate matter, not new here."
+summary = "Two red agents (get round it: clean-room loopholes and contradictions; break it: stale cross-references, parsers, numbering, tags, line width) attacked the staged diff to features.md 670 to 686, the new clean-room note and the 0027 heading reference. Each claim was checked against the staged text; none is a contradiction or loophole the change creates."
 
 [[finding]]
-what = "Later: item 6 (lines 282-286) and item 3 ('A deleted file needs nothing') let an agent read 'until its parse exists its files need no receipt' as switching receipts back off if a language's safety parse is later deleted; 'Hard to skip' protects only the catalogue entry, not the parses or whole-file problems. The old wording had the same 'until' clause, so this is not made worse. Fix later: say coverage, once on, stays on, and add the parses and whole-file problems to what gate-wiring protects, with a test."
+what = "Later: docs/specs/features.md:1293 the renamed heading 'More analytics, workflow, crawl and press features' covers 670 to 694 but not the social, QR, community, sponsor and email features 695 to 712 under it (up to '## Range 3' at 1364). Not false, but incomplete; a broader name such as 'More analytics, workflow, crawl, press, social and email features' would describe the whole section, with the 0027:364 reference renamed to match."
+fixed = true
+
+[[finding]]
+what = "Later: docs/specs/features.md:2415 the 670 to 686 note is a disclaimer, not a design, unlike the other clean-room notes, and 'each names an idea only, and no product it comes close to' reads awkwardly ('and names no product it comes close to' is clearer). Per-feature design notes are already a logged Later item on #149."
 fixed = true

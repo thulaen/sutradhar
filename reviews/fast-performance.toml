@@ -1,5 +1,5 @@
 skill = "fast-performance"
-change = "sha256:74c56f47c9b677e89e57f33f427c2a349c0f1b357cf45b08346e4b0367d0bd81"
+change = "sha256:1b8cbe088d5c00396f5f4c84458430a1298357ec61933e6606d199cebf19dc04"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged round 2 diff to docs/specs/0012-ganit-evolve.md (item 6 now points to AGENTS.md section 7.3 for coverage timing, build order step 2 builds the Rust safety parse with the Rust whole-file problem, Changes from the source names whole-file problems for any Rust or Go file and restates the Go forbidden list). Docs only: no code, loop, per-request path, cache, allocation or time limit is added or changed; the Rust safety parse and the Go forbidden constructs were already work the spec required per evolved file, so the wording adds no new runtime cost and there is nothing to measure."
+summary = "Read the staged diff (round 2): docs/specs/features.md features 670 to 686 lose their product names, the heading is renamed, one clean-room note is added, and the matching cross-reference in spec 0027 is renamed. Docs only: no code, hot path, loop, cache, queue or time limit changes, and no feature's scope or data volume changes (686 already kept the full history), so there is nothing to measure."

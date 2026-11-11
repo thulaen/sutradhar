@@ -1,5 +1,5 @@
 skill = "defects"
-change = "sha256:74c56f47c9b677e89e57f33f427c2a349c0f1b357cf45b08346e4b0367d0bd81"
+change = "sha256:1b8cbe088d5c00396f5f4c84458430a1298357ec61933e6606d199cebf19dc04"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged diff of docs/specs/0012-ganit-evolve.md in full against HEAD AGENTS.md sections 4, 6 (rules 6 and 9) and 7.3. Item 6 no longer claims Rust has a parse and defers timing to section 7.3; build order step 2 builds the Rust parse with the Rust whole-file problem, matching 7.3's start condition; the 'Changes from the source' line now agrees with item 5; the Go forbidden list matches section 4 and rule 6. No contradictions or status claims found."
+summary = "Read the staged diff of docs/specs/features.md (features 670 to 686, the renamed heading and the new clean-room note) and docs/specs/0027-candidates-ranking.md (the renamed cross-reference). Checked that no 'as <product> does' phrase remains in 670 to 686, that no staged file still names the old heading 'More from the named tools', that the rewrapped lines keep their tags and stay within line width, and that the note no longer denies the Google Business Profile and Search Console data sources of 685 and 686."
