@@ -1,9 +1,5 @@
 skill = "security"
-change = "sha256:9ca487b14a69cb72e1c70a6255e6bf17c34f05b33c8d834e9e936df3accb0b80"
+change = "sha256:164a6c43ede42a6de5b5b18c0dd2dad80bcfb69f022b6f694c4eef0f5bb4af47"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged diff of docs/specs/features.md (new metrics rule, features 224, 397, 527, 701) against HEAD. Docs only: no code, inputs, secrets, crypto, access checks or dependencies change. 527 now shows only darshak's engaged-visit rate and uses the visit count only to hide thin pages, never showing it, which fits spec 0034; 224, 397 and 701 report aggregates per section, per review site and per topic, not per person."
-
-[[finding]]
-what = "Later: feature 701 (docs/specs/features.md, sentiment per forum topic) names no minimum number of posters before a topic's sentiment is shown, so a topic with one or two posters could reveal how a named member feels. The old text had the same gap, and it is logged on #149. When 701 is specified, add a floor and hide topics below it."
-fixed = true
+summary = "Read the staged diff of docs/specs/features.md against HEAD (round 3): the Shared parts section naming one owner first per overlap from task 149 item 9, the intro on where a part is described and built, the 81 line using 1316 for structured data, the approval-gate line naming owners first, the note on 235, and feature 107 citing the shape checks of 1316. Docs only: no code, untrusted input, secrets, crypto, access checks or dependencies change; each approval gate still checks through the shared part rather than dropping its check, and the 1017/416/1162 rights record and the 1327 page history widen no access to personal records."

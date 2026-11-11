@@ -1,21 +1,17 @@
 skill = "red-team"
-change = "sha256:9ca487b14a69cb72e1c70a6255e6bf17c34f05b33c8d834e9e936df3accb0b80"
+change = "sha256:164a6c43ede42a6de5b5b18c0dd2dad80bcfb69f022b6f694c4eef0f5bb4af47"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 5 on task #149 item 13 (docs/specs/features.md rule line and features 224, 397, 527, 701). Two red agents, one for get round it and one for break it and abuse it. I checked each claim against the staged text, ADR-0013, gate/metrics.toml and spec 0034. No contradiction or loophole that this change creates or makes worse."
+summary = "Task #149 item 9 round 3: the Shared parts section and the feature 107 edit in docs/specs/features.md. Two red agents, one to break it and one to get round it. I checked each claim against the staged entries of every cited feature and the list's header, and dropped claims already on the brief's Later lists. No contradiction or loophole the change creates remains; three gaps are logged as Later."
 
 [[finding]]
-what = "Later: features.md 397 does not name its source. 'average rating in new reviews' implies our own analytics of the collected reviews, but 701 says 'from our own analytics' and 397 does not. Name own-analytics in 397 when its gate/metrics.toml entry is written."
+what = "Later: docs/specs/features.md line 2427 says the part is built with whichever of its features comes first in the build order. The header (lines 5 to 25) orders ranges and kinds but not features of the same range and kind, so a tie such as 1345 and 1353 has no stated order. Harmless while the part is built once, but saying 'the build order above, and on a tie the owner' would close it."
 fixed = true
 
 [[finding]]
-what = "Later: features.md 397 'the period before' has no length (224 says 28 days, 701 says a month), and the line does not say when 'a year of reviews' starts. Fix the period in the metric's compared_with when 397 is built. Reviews that sites hide or remove later should be frozen as first seen."
+what = "Later: docs/specs/features.md line 2437 calls 315 (members who arrived from search) a view of 1345, but 1345 (line 2392) groups members only by their first action. Since the owner's entry is where the part is described, 1345 should also say it groups by arrival source, or 315 should be named as adding that grouping."
 fixed = true
 
 [[finding]]
-what = "Later: features.md 224 'average position for each section' and 701 'each forum topic' leave room to read them more than one way: impression-weighted versus plain average, and a thread versus a subject from 395. 701 should also say it reads only public forum posts, in line with the rule at line 48. Settle these when each feature is built."
-fixed = true
-
-[[finding]]
-what = "Rejected after checking: a cross-source ratio is still refused by 'one approved source' in the new rule. 527's cut-off uses the visit count darshak already offers with noise (spec 0034 lines 273-276), and the per-page API is already a Later item. 397 counts only the watchers that are switched on, because it names the sites they watch. A per-section change in impressions is a comparison, not the banned the banned whole-site impressions name. The rule cites ADR-0013 for the four-word decision rather than repeating the number."
+what = "Later: the Shared parts section (line 2424) lists known overlaps but does not say what happens to an overlap it leaves out. A line saying new overlaps are added here, owner first, before either feature is built, would give unlisted overlaps a default."
 fixed = true

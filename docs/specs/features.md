@@ -369,9 +369,9 @@ the writing brief (36, task #54).
 ### Rich results and media (each needs an approved footprint exception)
 
 107. Event detection: Add Event structured data for meetup and launch threads,
-     validated by Rust shape checks. This needs an approved footprint exception.
-     The shape checks are our own Rust rewrite of SHACL checks, with the same
-     aim.
+     validated by the Rust shape checks of feature 1316. This needs an approved
+     footprint exception. The shape checks are our own Rust rewrite of SHACL
+     checks, with the same aim.
 108. Video key moments: Add VideoObject structured data for embedded videos,
      with timestamps where the thread references them. This needs an approved
      footprint exception.
@@ -2418,6 +2418,39 @@ identity and no customer records.
       and up to four more, which the draft's checks then use.
 1357. Draft auto-save: Saves draft edits as they happen, so no work is
       lost.
+
+## Shared parts
+
+Where features overlap, one feature owns the shared part and the others
+use it, so nothing is built twice. Each line names the owner first. The
+owner's entry is where the part is described; the part is built with
+whichever of its features comes first in the build order.
+
+- 541 owns comments and mentions; 318 is its use on reports.
+- 1017 owns the record of each visual's source and rights; 416 is that
+  record for images, and 1162 reads it.
+- 792 owns effort and time estimates; 550 uses them for tasks.
+- 1185 owns the independent second-assistant check on drafts; 1152
+  (copy-edits) uses it, and 799 runs the same check on outlines.
+- 761 owns the index of videos already embedded on the forum; 572 uses it
+  to suggest threads for new ones.
+- 1344 owns step-by-step drop-off; 530 is one fixed set of its steps.
+- 1345 owns member cohorts; 315 (members from search) and 1353 (how often
+  members return) are views of it.
+- 1337 owns segment rules for page views, visits and signed-in members;
+  450 (membership stage) uses them, and 187 (crawls) and 226 (search
+  queries) use the same rule format on their own data.
+- 1316 owns structured data checks; 107 and 178 use them.
+- 1327 owns each page's dated history of title, headings, text, canonical
+  link and status; 81 reads it after an update, uses 1316 for structured
+  data, and compares noindex tags and robots rules itself.
+- 715 owns draft versions; 1357 auto-save writes through it.
+- 1326 owns how often each page is re-checked; 15 uses it for indexing.
+- Each approval gate reuses the part it checks rather than its own copy:
+  147 serves 1180, 1138 serves 1175, 135 serves 1172, 719 serves 1174 and
+  782 serves 1168.
+
+235 is one feature on both platforms.
 
 ## Clean-room notes
 

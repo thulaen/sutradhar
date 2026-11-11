@@ -1,9 +1,9 @@
 skill = "style-docs"
-change = "sha256:9ca487b14a69cb72e1c70a6255e6bf17c34f05b33c8d834e9e936df3accb0b80"
+change = "sha256:164a6c43ede42a6de5b5b18c0dd2dad80bcfb69f022b6f694c4eef0f5bb4af47"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged docs/specs/features.md diff (new feature-list rule and rewritten features 224, 397, 527, 701) against AGENTS.md section 6, ADR-0013, gate/metrics.toml, spec 0034 and features 340, 349, 350. Plain British English, no status words, names say what each feature shows, the new rule points to ADR-0013 rather than restating it in full, no other doc names the old feature titles, and changed lines stay within 80 columns."
+summary = "Read the staged diff of docs/specs/features.md (new Shared parts section and the feature 107 wording) against AGENTS.md section 6, and checked every cited feature number against its entry for name, meaning and owner-first wording, plain British English, no status words and no second home for a behaviour."
 
 [[finding]]
-what = "Later: docs/specs/features.md feature 397 says 'compared with the period before' without saying how long a period is; set the period length when the feature is built and its gate/metrics.toml entry is written."
+what = "Later: docs/specs/features.md, the closing line '235 is one feature on both platforms.' sits alone after the list with no reason given; it could become a list line saying 235 covers both the WordPress and XenForo editors, so no second per-platform feature is needed."
 fixed = true

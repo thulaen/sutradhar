@@ -1,13 +1,9 @@
 skill = "architecture"
-change = "sha256:9ca487b14a69cb72e1c70a6255e6bf17c34f05b33c8d834e9e936df3accb0b80"
+change = "sha256:164a6c43ede42a6de5b5b18c0dd2dad80bcfb69f022b6f694c4eef0f5bb4af47"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged diff of docs/specs/features.md (task #149 item 13, round 4) against ADR-0013, gate/metrics.toml and spec 0034. The new feature-list rule matches ADR-0013 (one approved source, a decision, a comparison, no blending); 224, 397, 527 and 701 each name one measure from one source with a comparison, and 527 reads darshak only through its rate-only public API, so no module wall or data-flow rule is broken. Docs only; no code, wiring or settings change."
+summary = "Read the staged diff of docs/specs/features.md (task #149 item 9, round 3): the new Shared parts section and the 107 cross-reference. Checked every named feature number against its staged entry, that each line names one owner of each shared part so no part is built twice (one home for each behaviour), that the build-order rule handles owners in later ranges, that each approval gate reuses the check it gates, that 1000 stays only an alias of 933, and that no status is stated. No module code is touched."
 
 [[finding]]
-what = "Later: feature 397 reads ratings collected by features 340, 349 and 350; when built, it must take them through those modules' public API or typed outbox events (AGENTS.md section 5), not by reading their stores."
-fixed = true
-
-[[finding]]
-what = "Later: feature 527 needs a per-page engaged-visit rate, but darshak's GET /api/darshak/features (spec 0034) offers rates per thread and day to ranking only; spec 0034 must add a rate-only per-page output for analytics before 527 is built (already logged on #149, round 3)."
+what = "Later: docs/specs/features.md Shared parts, 81 line. 1327's history holds title, headings, text, canonical link and status but not structured data, so 81 detects structured data regressions by re-validating with 1316 rather than by comparing before and after; if a changed-but-still-valid structured data alarm is wanted, 1327 should own that history too. Not made worse by this change."
 fixed = true
