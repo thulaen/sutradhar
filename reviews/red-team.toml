@@ -1,5 +1,33 @@
 skill = "red-team"
-change = "sha256:9cb736d6c746618504552d0c10b0ca1eb43deaa3aa97d8b9ffe04cfe3bf64866"
+change = "sha256:2de8a0b02921cf83b45489b204b845e0c09dc9db7ac3300588179487ba4fa634"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Red-team review of the door.history follow-up for task #159 (first_parent.rs, gate.rs HISTORY_CHECK and message, rules.rs). The candidate copy matches the diff on b86b455; f360e90..b86b455 touches no crate file. I took four attacker goals myself, each probed as real tests in a separate copy and build folder through the sealed queue. (1) Mutant killer: I planted eight keeps_first_parent mutants one at a time: newest instead of oldest, no --first-parent, empty range refused, root commit accepted, Forgejo's old main as base, ^2 instead of ^1, the ancestor test instead of equality, and the check removed. The suite killed every one: the newest mutant fails rules::only_the_oldest_new_commit_must_follow_accepted_main, and each of the others fails a first_parent test. (2) Get round it: these crafted histories all gave exactly door.history: an octopus with accepted main as third parent, a merge whose first parent is an older main, a good commit followed by a bent merge, a bent merge wrapped in an annotated tag, a bent merge while Forgejo lags, and a rewind. (3) Break legitimate use: an octopus with main first, a long line with a side branch dated in 1990, and two commits while Forgejo lags all pass. (4) Message and naming: the exact refusal text is pinned. The real code passes all 303 aegis and aegis-door tests and my 8 probes."
+summary = "Red-team review, round 8, of the staged spec 0070 change and its amendments to AGENTS.md, specs 0064 and 0020, the glossary and the specs README. Three red agents attacked it: break it (digest rows, the fixed target order, the second sorted copy and both merges, removal and placing keys, order dependence, Performance refusals), get round it (inflating the count with clones, presets, orders and manifest ranges, and the spec 0064 amendments) and abuse it (an outsider controlling a post, page, request or agent token through the recipe runner). I checked each report against the staged text. The round 7 blocker is closed: first-target one-target rows merge with the copy sorted by first-target digest and second-target ones with the copy sorted by second-target digest, so every match the rule defines is found, and both refusals name the second copy. No new contradiction was found; lines are within 80 characters. The remaining points are later-work gaps the change does not make worse."
+
+[[finding]]
+what = "Later: spec 0070 item 1 says how one-target rows meet two-target rows but not, in words, that one-target rows on the same target match each other; the sort puts them together, so it is implied. Say so when a one-target shape is added."
+fixed = true
+
+[[finding]]
+what = "Later: spec 0070 Key digest is over the sorted list of item keys while item 4 compares key sets; a version that splits one passage into two with the same citations and section changes the list but not the set. Say whether duplicates count (ties to the deferred Reword and Version workflows differing in two slots)."
+fixed = true
+
+[[finding]]
+what = "Later: spec 0070 item 4 has each workflow of the longer shape write placing and removal keys, counted from the catalogue before a run; say that only workflows the manifest runs (and their required near members) write them, so a range run is not sized as the whole shape. The scratch-space refusal could also name the near-member set of the manifest, which the time refusal names."
+fixed = true
+
+[[finding]]
+what = "Later: check ids in finding and tip keys let a cloned check under a new id, or a check built to add a tip to every passage, keep item 4's overlap low; the distinctness review is the only guard. Already recorded as check ids in keys; keep it with the overlap share's least strictness in the protected policy."
+fixed = true
+
+[[finding]]
+what = "Later: spec 0070 requires the two digests on every single capability result writing a catalogued kind, while spec 0064 requires them only in a run that compares capability workflows; and spec 0070's verified stage has no owner-approval path for the W- row signature that spec 0064 allows for member rows. Align the wording."
+fixed = true
+
+[[finding]]
+what = "Later: W-000004 slot 1 runs sutra content request, which spec 0052 gives to staff or a schedule staff set up; say whether an agent signed in as staff may run it, or the shape may never run for agents."
+fixed = true
+
+[[finding]]
+what = "Later: a W-000002 draft built from member-only sources keeps that visibility, but nothing makes sutra content submit refuse or flag a draft narrower than its destination before a person accepts it; ties to the deferred saved artefacts' visibility. Also deferred: a mid-shape slot that writes a plan, and artefacts edited between slots."
+fixed = true

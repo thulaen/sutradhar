@@ -74,7 +74,11 @@ passes:
    chain of separately qualified methods counts as one method when it
    behaves differently from every other counted method (spec 0067); a
    changed setting never makes a new method.
-2. At least 1,000,000,000 shipped capabilities.
+2. At least 1,000,000,000 shipped capabilities. A capability is a
+   shipped action, or a workflow of separately shipped actions, which
+   counts as one capability when it behaves differently from every
+   other counted capability and passes its own end-to-end tests (spec
+   0070); a changed setting never makes a new capability.
 3. At least 80% of each of those two totals in the scope areas in
    spec 0064.
 4. At least 100,000,000 distinct qualified methods for link ranking

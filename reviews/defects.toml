@@ -1,13 +1,13 @@
 skill = "defects"
-change = "sha256:9cb736d6c746618504552d0c10b0ca1eb43deaa3aa97d8b9ffe04cfe3bf64866"
+change = "sha256:2de8a0b02921cf83b45489b204b845e0c09dc9db7ac3300588179487ba4fa634"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the task, all comments and every changed line in gate.rs, rules.rs and the new first_parent.rs, with check_main, keeps_first_parent, accepted and the shared test helpers. Traced each new test's history by hand (range, first-parent line, oldest commit, its first parent). Confirmed the diff is byte-identical to the candidate copy, f360e90..b86b455 touches no code, and the diff applied on b86b455 gives the stated fingerprint. In a probe copy through the sealed queue: aegis and aegis-door 303 passed, 0 failed, 0 ignored; clippy -D warnings and fmt clean on aegis-door. Planted two mutants: checking the newest new commit fails only_the_oldest_new_commit_must_follow_accepted_main (and a_big_file_in_an_earlier_commit_of_the_push_is_refused_too); passing Forgejo's old main to keeps_first_parent fails the_rule_follows_the_accepted_main_when_forgejo_lags_behind. The new refusal message matches what the code checks. No blocking defect found."
+summary = "Read every staged line of spec 0070 and the staged hunks of AGENTS.md, specs 0020 and 0064, the glossary and the specs README. Checked that the round 7 merge defect is closed: targets have a fixed order (XenForo, then WordPress), two-target rows have a second copy sorted by kind and second-target digest, first-target and second-target one-target rows merge with the matching copy, each list read once per merge, and both refusals count the second copy. Item 3 now only points at item 1, item 2 says losers still count as lower members, and the tests cover a lower two-target member matching on one target and a one-target member on the second target. Recomputed slot sizes, products and Performance run counts (300; 1,979,873,280; 21; 2; 5; total 1,979,873,608) and line lengths; no new contradiction found."
 
 [[finding]]
-what = "Later: crates/aegis-door/tests/first_parent.rs:39 accepted_main returns the tree of `first` but not `first` itself, so three tests work it out again with rev-parse HEAD~1 (lines 62, 84, 95); returning `first` would remove the repeat."
+what = "Later: docs/specs/0070-capability-workflows.md:224-225: one-target rows are sorted by kind, then target, then digest, so the rows of one target are not contiguous; each merge must skip the other target's rows. This is sound and reads the list once per merge, but saying 'skipping rows of the other target' would make it plain to the implementer."
 fixed = true
 
 [[finding]]
-what = "Later: crates/aegis-door/tests/first_parent.rs:49 the checks helper has no doc comment, unlike the other helpers in the file; one line saying it returns the check names of a main push from base to new would do."
+what = "Later: docs/specs/0070-capability-workflows.md:226-229 and 273: item 2 lets a member that loses still remove higher members it matches, while item 4 judges pairs on the set left after item 3, so a member removed in items 2 or 3 removes nobody in item 4. Both choices only shrink the count, so the result stays sound; a sentence saying why the two items differ would stop a reader taking it for a slip (already recorded in round 7's Later items as a member near only to a workflow removed in item 3)."
 fixed = true

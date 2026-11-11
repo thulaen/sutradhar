@@ -1,13 +1,13 @@
 skill = "architecture"
-change = "sha256:9cb736d6c746618504552d0c10b0ca1eb43deaa3aa97d8b9ffe04cfe3bf64866"
+change = "sha256:2de8a0b02921cf83b45489b204b845e0c09dc9db7ac3300588179487ba4fa634"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the task, all comments, AGENTS.md sections 4 to 6 and the whole diff; confirmed the diff is byte-identical to git diff HEAD in the candidate copy and that f360e90..b86b455 touches only Markdown and review records. The change touches one module, the kept Rust door tool aegis-door (AGENTS.md section 4: it mends what keeps_first_parent already does, no new feature): a HISTORY_CHECK const beside SIZE_CHECK, a message that now matches the rule the code checks, and tests in the crate's own tests/ folder through the shared common helpers. No new wiring, setting, dependency, global or cross-module reach; data and rules unchanged; nothing for maybe one day. Ran aegis and aegis-door tests in a probe copy through the sealed queue: every test passed, 0 failed, 0 ignored. Probe copy and build folder deleted."
+summary = "Round 8 architecture review of the staged docs change: read the whole staged spec 0070 and the staged hunks of AGENTS.md, specs 0020, 0064 and README and the glossary. Module walls hold: sutradhar-methods owns shape types, artefact kinds, ids, decoding, stage records and the counted set's encoding and reader; sutradhar-actions owns only the recipe runner and workflow.recipe.run, depends on sutradhar-methods one way, and calls spec 0020's action runner through its typed interface wired at the composition root. The round 7 blocker is closed: targets in a fixed order, a second copy of two-target rows sorted by second-target digest, one-target rows merged with the matching copy, and item 3 reuses item 1's rows, sorts and merges; no new contradiction, layer, setting or cross-module reach. Spec 0020's action_runs columns, 0064's identity form, W- rows, record order and runner-result amendment agree with 0070."
 
 [[finding]]
-what = "Later: crates/aegis-door/tests/first_parent.rs:16 adds a commit_tree helper while crates/aegis-door/tests/rules.rs:255 and :184 still build commits with inline git commit-tree; moving commit_tree into tests/common/mod.rs would give one helper for crafted commits."
+what = "Later: docs/specs/0070-capability-workflows.md 'Shape stages' implemented stage checks spec 0020's registry from sutradhar-methods; when implemented, do it through a trait owned by sutradhar-methods and implemented by sutradhar-actions, wired at the composition root, so the dependency stays one way (carried from round 6)."
 fixed = true
 
 [[finding]]
-what = "Later: crates/aegis-door/tests/first_parent.rs:39 accepted_main knows first but drops it, so three tests recompute it with rev-parse HEAD~1 (lines 63, 85, 95); returning it from accepted_main would be simpler."
+what = "Later: docs/specs/0020-screens-actions-sutra-mcp.md action_runs says only the recipe runner sets the parent run id and CW- id; the action runner's typed interface should take these as a separate parameter only the recipe runner is given, rather than relying on convention (carried from round 7)."
 fixed = true

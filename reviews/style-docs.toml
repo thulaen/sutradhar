@@ -1,17 +1,13 @@
 skill = "style-docs"
-change = "sha256:9cb736d6c746618504552d0c10b0ca1eb43deaa3aa97d8b9ffe04cfe3bf64866"
+change = "sha256:2de8a0b02921cf83b45489b204b845e0c09dc9db7ac3300588179487ba4fa634"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read every changed line of gate.rs, tests/rules.rs and the new tests/first_parent.rs against AGENTS.md section 6 and docs/standards; checked names, doc comments, plain English, that the corrected door.history message now matches the keeps_first_parent doc comment, that no doc or spec quotes the old message (grep of docs and crates), that the HISTORY_CHECK const removes the double spelling, and the 300-line limit. Confirmed f360e90..b86b455 is Markdown and review records only. On a probe copy, cargo fmt --check and the aegis-door tests (32 passed, 0 failed) ran clean in the sealed queue. Nothing blocking."
+summary = "Read the whole staged spec 0070 and the staged hunks of AGENTS.md, the glossary, specs 0020, 0064 and the specs README against AGENTS.md sections 6 and 12: plain British English, line lengths, status words, undefined terms, cross-references and text that could drift. The round 7 points are closed: item 3 now reuses item 1's rows, sorts and merges with key digests, the second copy sorted by second-target digest is named in item 1, both Performance refusals and a new test, and item 2's same-set sort is reworded. No line outside a table passes 80 characters and no status words were found."
 
 [[finding]]
-what = "Later: crates/aegis-door/tests/first_parent.rs:49 the helper checks has no doc comment, while its siblings commit_tree and accepted_main do; one line saying it returns the check names of a push of base..new would match."
+what = "Later: docs/specs/0070-capability-workflows.md:221-228: item 1 says equal two-target rows sit together and describes the merges of one-target rows with the two copies, but does not say in so many words that two one-target members on the same target are matched within their own sorted list; a clause such as 'equal one-target rows on one target sit together too' would make it explicit."
 fixed = true
 
 [[finding]]
-what = "Later: crates/aegis-door/tests/rules.rs:246 the test name accepted_main_must_stay_the_first_parent still says 'the first parent', which the corrected message replaced with 'on the first-parent line'; renaming it (and moving it and only_the_oldest_new_commit_must_follow_accepted_main at rules.rs:289 into first_parent.rs, which now exists for this rule) would keep the rule in one place and give rules.rs (297 of 300 lines) room."
-fixed = true
-
-[[finding]]
-what = "Later: crates/aegis-door/tests/rules.rs:254 builds its crafted merge with a raw commit-tree call while first_parent.rs:16 now has commit_tree for the same job; sharing it through tests/common would leave one way to write such a commit."
+what = "Later: docs/specs/0070-capability-workflows.md:238 and 272, and the staged 0064 hunks at the counting, resolving and planted-fault paragraphs, keep uneven line wraps, already recorded as a Later item."
 fixed = true

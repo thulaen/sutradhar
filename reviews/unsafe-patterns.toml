@@ -1,13 +1,9 @@
 skill = "unsafe-patterns"
-change = "sha256:9cb736d6c746618504552d0c10b0ca1eb43deaa3aa97d8b9ffe04cfe3bf64866"
+change = "sha256:2de8a0b02921cf83b45489b204b845e0c09dc9db7ac3300588179487ba4fa634"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read every changed line of gate.rs (HISTORY_CHECK const, reworded door.history message), tests/rules.rs (exact check-and-message assertion, new two-commit pass test) and the new tests/first_parent.rs, plus keeps_first_parent, check_main and the shared test helpers, against each step-2 pattern. Confirmed f360e90..b86b455 touches only Markdown and review records, and that the candidate copy's staged diff is byte-identical to the given diff. Ran aegis and aegis-door through the sealed queue on a probe copy: 303 passed, 0 failed, 0 ignored. The production change is a constant and a message string, so no new error swallowing, overflow, lock, check-then-use, leaked process or unbounded input; no test was weakened (the rules.rs assertion is stricter, and four new tests add refusal and pass cases); each new test uses its own scratch repository name. I could not recompute the fingerprint myself (aegis fingerprint stopped with a git exit 128 inside the sealed queue on the probe copy), so this record rests on the fingerprint given with the task for that byte-identical diff."
+summary = "Read the staged spec 0070 (Proving workflows differ, Limits, Performance, tests) and the staged spec 0064 amendments for unsafe patterns: unbounded sizes, overflow, check-then-use, trusted input and weakened tests. The round 7 merge blocker is closed: targets have a fixed order, two-target rows have a second copy sorted by the second-target digest, one-target rows merge with the copy for their target, and both refusals name the second copy with checked arithmetic."
 
 [[finding]]
-what = "Later: crates/aegis-door/tests/first_parent.rs:22 commit_tree builds its own git Command rather than going through common::git, so it depends on the scratch repo's git identity and fails with a raw Output dump; it is test-only and asserts success, so nothing needs to change now."
-fixed = true
-
-[[finding]]
-what = "Later: crates/aegis-door/src/gate.rs:282 keeps_first_parent still maps any rev-parse failure of oldest^1 to a refusal (already recorded in an earlier review); this change does not make it worse and it fails closed."
+what = "Later: docs/specs/0070-capability-workflows.md item 1 says equal two-target rows sit together after sorting, but does not say in so many words that one-target members on the same target are matched by adjacency in their own sorted list; the sort order implies it. A plain sentence would help the implementer."
 fixed = true

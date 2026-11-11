@@ -132,7 +132,8 @@ class. Values within one class count once. Check identities record
 evidence. Every required check must pass for that variant. Weights,
 seeds, names, reordered steps and configuration choices earn no extra
 method, capability or variant by themselves; a chain of methods counts
-only under spec 0067's rules. A learned weighting model
+only under spec 0067's rules, and a workflow of shipped actions only
+under spec 0070's. A learned weighting model
 can count as a ranking method when it meets the distinctness and
 admission checks in spec 0055. Treat the ranking subtotal as a subset of
 the qualified methods.
@@ -148,6 +149,10 @@ installation or backup action keeps its own scope when exposed
 through MCP. Count a member once, even if its outputs feed several
 areas or pipelines. Research cards and run records provide evidence;
 only independently usable shipped operations earn capability credit.
+A capability workflow earns one capability only as spec 0070 sets out:
+each of its actions is shipped with its own evidence, it ran end to end
+on each target of its shape, and it behaves differently from every
+other counted capability. Presets, playbooks, templates and wrappers earn none.
 
 Implementation quality follows the code standards and required
 reviews in AGENTS.md sections 6 and 7. Review concise, readable,
@@ -164,7 +169,9 @@ the catalogue and scope register by digest. Each member's primary scope
 and ranking flag carries its own signature by a reviewer who is not one
 of its authors, or the owner's approval of that row, and the verifier
 checks it row by row. A method chain takes its shape's row, which
-covers each of its chains (spec 0067). The trusted verifier
+covers each of its chains (spec 0067), and a capability workflow takes
+its workflow shape's row, which covers each of its workflows (spec
+0070). The trusted verifier
 reads signed groups with disjoint member identities. Each group
 records the proof that its admitted members actually passed, with
 their membership and evidence tied to the frozen inputs. A group
@@ -239,7 +246,9 @@ the resource profiles and soak. Tagging follows spec 0005.
 
 A canonical member identity is ASCII only: `M-`, `CAP-` or `V-`, then a
 decimal ordinal, or `MC-`, a shape ordinal, `-` and a chain index for a
-method chain (spec 0067), each number from 1 upwards that fits an
+method chain (spec 0067), or `CW-`, a workflow shape ordinal, `-` and a
+workflow index for a capability workflow (spec 0070), each number from
+1 upwards that fits an
 unsigned 128-bit integer, written with exactly six digits with leading
 zeros below 1,000,000 and no leading zero from there up; ordinal 0 is
 not used, and a longer ordinal is refused as a bad value. The fixture's
@@ -249,7 +258,11 @@ case or a look-alike hyphen, before it compares anything. A shape's
 scope-register row is keyed by `S-` and the shape ordinal, written the
 same way; `S-` is not a member identity and never counts. An `S-` row
 carries the same signature as a member's row. The verifier finds an
-`MC-` member's scope row by its shape ordinal.
+`MC-` member's scope row by its shape ordinal. A workflow shape's row
+is keyed by `W-` and the shape ordinal, written the same way; `W-` is
+not a member identity and never counts, and it carries the same
+signature as a member's row. The verifier finds a `CW-` member's scope
+row by its shape ordinal.
 
 Each row has a ledger kind, canonical member identity, exact version,
 owning spec and task, primary scope and applicable target. Bind the
@@ -267,7 +280,11 @@ its run, member, check, target, outcome and evidence digest. The runner
 key must be authorised for that purpose, check and target. Verify the
 result against the check and target matrix from the protected run
 policy. A group signature authenticates the collection and cannot
-replace the runner's authority for each result.
+replace the runner's authority for each result. In a run that compares
+capability workflows, every capability result whose action writes a
+catalogued artefact kind also carries its last artefact's reference,
+output digest and key digest (spec 0070); such a result without them
+is refused.
 
 The protected policy issues each run a unique run id before it executes,
 and fixes the run's kind and its purpose (qualification, gate, nightly
@@ -296,7 +313,11 @@ distinguishing test, check that its catalogue stage is
 a method nothing shipped runs is not counted. A method chain resolves
 its shape and steps through spec 0067 and counts only when a shipped
 pipeline step can run it. For a capability, resolve the shipped action
-and its integration and end-to-end evidence. For a variant, resolve its
+and its integration and end-to-end evidence. A capability workflow
+resolves its shape and actions through spec 0070 and counts only when
+every action resolves as a capability does and the workflow's own
+runner-signed end-to-end result passed on each target of its shape. For a
+variant, resolve its
 owner, which is always a method, its admitted input class and its
 completed check; a variant counts only when its owner is among this
 run's verified members. Results for several required targets join under
@@ -304,8 +325,9 @@ the same member identity. The member counts once after every required
 result passes.
 
 Within each group, store records in strictly ascending order: by kind
-(method, method chain, capability, variant), then by ordinal as a number
-(for a chain, its shape ordinal and then its index), then by check
+(method, method chain, capability, capability workflow, variant), then
+by ordinal as a number (for a chain or a workflow, its shape ordinal
+and then its index), then by check
 identity, then by target. All of one member's results sit in one group.
 Two `V-` ids for the same owner and input class are refused. Give each
 group a manifest with its run digest, exact member commitment, evidence
@@ -331,8 +353,11 @@ signature covers the method, version, evidence, run and outcome. A group
 signature authenticates the manifest. It cannot stand in for the
 individual method reviews. A method chain's review is its shape's signed
 review, bound to the digest of the shape's catalogue entry, together
-with its own runner-signed result (spec 0067). Use explicit signed
-per-member records in the pilot.
+with its own runner-signed result (spec 0067). A capability workflow's
+review is its workflow shape's signed review, bound to the digest of
+that shape's catalogue entry, together with its own runner-signed
+result (spec 0070). Use explicit signed per-member records in the
+pilot.
 
 ### Input and resource limits
 
@@ -467,7 +492,12 @@ Plant one fault at a time. Check an identity repeated across groups, the
 same behaviour under a new id, an alias or setting counted as new, a
 wrapper counted as a capability, a check rerun counted as a variant, one
 numeric setting swept to make many variants, near-identical scenario
-keys counted as separate variants, a padded ordinal, a look-alike hyphen
+keys counted as separate variants, a workflow whose output matches one
+of its own actions run alone, a workflow that lists a preset or a
+second door of one action, a workflow that only rewords another's
+draft, a shape that lists an export or a message sent out of the
+product, a `CW-` id whose shape has no `W-` row, a
+padded ordinal, a look-alike hyphen
 in an id, a self-edited scope register supplied in the run manifest,
 evidence from an older version counted without a result for this
 candidate, a runner signature reused as a review or manifest signature,

@@ -83,7 +83,8 @@ Plain meanings of the names and terms used in Sutradhar.
 | Alert fatigue | So many alerts that people stop noticing them |
 | API | The set routes one program offers for others to call |
 | ARIA | Labels that tell screen readers what a part of a page is |
-| Artefact | A file a build produces, such as a `.deb` or a zip |
+| Artefact | A file a build produces, such as a `.deb` or a zip; in a capability workflow, see "Artefact kind" |
+| Artefact kind | In a capability workflow, the kind of thing an action reads or writes, such as a crawl or a draft (spec 0070) |
 | At-least-once delivery | Each event is sent until it is confirmed, so it may arrive twice |
 | Axum | A Rust library for serving web requests |
 | Baseline | A saved measurement that later runs are compared with |
@@ -94,6 +95,7 @@ Plain meanings of the names and terms used in Sutradhar.
 | Cache invalidation | Throwing away saved copies once the real data changes |
 | candle | A pure Rust library for running AI models |
 | Capability | One thing the shipped product can do, counted with evidence for the release bar |
+| Capability workflow | One choice of shipped action for each slot of a workflow shape, run in order, counted as one capability when it behaves differently from every other counted capability (spec 0070) |
 | Checksum | A short fingerprint of a file that changes if the file changes |
 | CI | Continuous integration: checks that run by themselves on every push |
 | Circular import | Two modules that each depend on the other |
@@ -176,6 +178,7 @@ Plain meanings of the names and terms used in Sutradhar.
 | Question tool | The agent's way of asking the owner a question with set answers to pick from |
 | Race condition | A bug that depends on which of two things happens first |
 | Readiness check | A check that says whether a part is ready to take work |
+| Recipe | A capability workflow that counted in the qualified run, offered for people and agents to run by its `CW-` id (spec 0070) |
 | Reflection | Code that inspects or changes itself while running |
 | Replay | Sending a copy of an old message again to trick the receiver |
 | RLS | Row-level security: the database itself hides rows a user may not see |
@@ -224,7 +227,7 @@ Plain meanings of the names and terms used in Sutradhar.
 | Webhook | A web call one service makes to tell another that something happened |
 | WebKitGTK | The Ubuntu library that provides the desktop window's web view |
 | Wordfence | A common WordPress security plugin |
-| Workflow | A list of steps CI runs |
+| Workflow | A list of steps CI runs; in the product, see "Capability workflow" |
 | XSS | A trick that runs an attacker's script in another user's page |
 | `.deb` | An Ubuntu install package |
 | `unsafe` | Rust code that turns off its safety checks |

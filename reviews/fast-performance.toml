@@ -1,5 +1,9 @@
 skill = "fast-performance"
-change = "sha256:9cb736d6c746618504552d0c10b0ca1eb43deaa3aa97d8b9ffe04cfe3bf64866"
+change = "sha256:2de8a0b02921cf83b45489b204b845e0c09dc9db7ac3300588179487ba4fa634"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the whole diff against b86b455 (f360e90..b86b455 is Markdown and review records only, checked with git diff --stat) and the unchanged check_main and keeps_first_parent around it. The only production change is a HISTORY_CHECK const in place of a repeated literal and a reworded refusal message: no new git calls, loops, allocations or unbounded growth on the door's push path, and no text cut short. The new tests in first_parent.rs and rules.rs add a few git processes each on small temporary repos; in a probe copy, aegis and aegis-door ran 303 passed, 0 failed, 0 ignored through the sealed pankti queue, with first_parent.rs in 1.81s and rules.rs in 2.99s. No timing run against the parent was needed, as the runtime path does the same work as before."
+summary = "Read the staged spec 0070 Proving workflows differ, Running a workflow, Limits and Performance sections, and the staged hunks of AGENTS.md, specs 0064 and 0020. Checked that the round 7 blocker is closed: with targets in a fixed order, two-target rows sorted by kind and first-target digest, a second copy sorted by kind and second-target digest, and one-target rows sorted by kind, target and digest, both one-target groups now merge once against a copy sorted on their own target, so no match on either target is missed and no pair is compared one by one; the extra copy is named in both refusals with checked arithmetic."
+
+[[finding]]
+what = "Later: docs/specs/0070-capability-workflows.md Performance names 'the second copy of the two-target rows' and 'their second copy' once; item 3 uses the same rows, sorts and merges for key digests, so the key-digest second copy is covered only by reading 'digest lists' as both kinds. Name the key-digest rows and their second copy explicitly in both refusals when the section is next touched."
+fixed = true

@@ -233,7 +233,11 @@ service role may insert and read `action_runs` but not update or delete
 them, and reads only its own site's rows.
 
 - `action_runs`: run id, action id, door, caller id, token id (or
-  null), plan id, outcome, started, finished, error code. Kept 90 days.
+  null), plan id, parent run id (or null), capability workflow id (or
+  null), outcome, started, finished, error code. Kept 90 days. A
+  recipe's actions carry the recipe run's id as their parent run id,
+  which only the recipe runner sets, and the recipe run carries its
+  `CW-` id and no parent (spec 0070).
 - `action_plans`: plan id, action id, caller, input hash (blake3),
   preview, owner confirmation (who and when, for a plan with the agent
   rule "owner confirms"), expiry (15 minutes, or
