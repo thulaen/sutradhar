@@ -267,7 +267,13 @@ fn accepted_main_must_stay_the_first_parent() {
     );
     let body = pack(&source, &accepted, &crafted);
     let found = door.check(main_push(&accepted, &crafted), &body).unwrap();
-    assert_eq!(found[0].check, "door.history", "{found:?}");
+    let said: Vec<(&str, &str)> = found
+        .iter()
+        .map(|f| (f.check, f.message.as_str()))
+        .collect();
+    let why = "the last accepted main must stay on the first-parent line \
+               of the new commits; rebase on main instead of merging it in";
+    assert_eq!(said, [("door.history", why)], "{found:?}");
     // A merge into main, with main as its first parent, still passes.
     let _ = git(&source, &["checkout", "-q", "-b", "side"]);
     let _side = commit(&source, "c.md", "# C\n", GOOD);
@@ -277,4 +283,15 @@ fn accepted_main_must_stay_the_first_parent() {
     let body = pack(&source, &accepted, &merged);
     let found = door.check(main_push(&accepted, &merged), &body).unwrap();
     assert_eq!(found.len(), 0, "{found:?}");
+}
+
+#[test]
+fn only_the_oldest_new_commit_must_follow_accepted_main() {
+    let (source, door, first) = setup("first-parent-line");
+    let one = commit(&source, "b.md", "# B\n", GOOD);
+    let two = commit(&source, "c.md", "# C\n", GOOD);
+    let body = pack(&source, &first, &two);
+    let found = door.check(main_push(&first, &two), &body).unwrap();
+    assert_eq!(found.len(), 0, "{found:?}");
+    assert_eq!(git(&source, &["rev-parse", "HEAD~1"]), one);
 }

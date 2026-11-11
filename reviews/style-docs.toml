@@ -1,17 +1,17 @@
 skill = "style-docs"
-change = "sha256:134b75b6d34c9997edae24219069860a690e2b627a2495f8188bf7dcfe1b60d0"
+change = "sha256:9cb736d6c746618504552d0c10b0ca1eb43deaa3aa97d8b9ffe04cfe3bf64866"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 3 of the ranking floor change: read the staged hunks of AGENTS.md release gate item 4, the spec 0064 'Link ranking and protection' scope row and the spec 0027 'Recommendation engine' entry. The number 100,000,000 is written only in AGENTS.md and no staged file still holds 6,000,000 or 6 million. Every cross-reference resolves: spec 0023's hard filters, spec 0027's relevance gate and 'The link-equity rules' item 9 (review mode), spec 0051 expert routing, features.md item 28 'most recommended' sections and the 0064 scope row by its exact name. Lines outside tables stay within 80 characters, spelling is British, there are no status words, and the spec 0064 row now points to spec 0027 for the full rule instead of restating it."
+summary = "Read every changed line of gate.rs, tests/rules.rs and the new tests/first_parent.rs against AGENTS.md section 6 and docs/standards; checked names, doc comments, plain English, that the corrected door.history message now matches the keeps_first_parent doc comment, that no doc or spec quotes the old message (grep of docs and crates), that the HISTORY_CHECK const removes the double spelling, and the 300-line limit. Confirmed f360e90..b86b455 is Markdown and review records only. On a probe copy, cargo fmt --check and the aegis-door tests (32 passed, 0 failed) ran clean in the sealed queue. Nothing blocking."
 
 [[finding]]
-what = "Later: docs/specs/0027-candidates-ranking.md:29 'as each suggestion does' is vague; 'as it does for each link suggestion' would say which suggestion is meant."
+what = "Later: crates/aegis-door/tests/first_parent.rs:49 the helper checks has no doc comment, while its siblings commit_tree and accepted_main do; one line saying it returns the check names of a push of base..new would match."
 fixed = true
 
 [[finding]]
-what = "Later: docs/specs/0027-candidates-ranking.md:27 and :36 use 'matching' in two senses in one entry (spec 0023's phrase-to-destination matching, then matching people to threads). Calling the second 'routing people to threads (spec 0051, expert routing)' would avoid the clash."
+what = "Later: crates/aegis-door/tests/rules.rs:246 the test name accepted_main_must_stay_the_first_parent still says 'the first parent', which the corrected message replaced with 'on the first-parent line'; renaming it (and moving it and only_the_oldest_new_commit_must_follow_accepted_main at rules.rs:289 into first_parent.rs, which now exists for this rule) would keep the rule in one place and give rules.rs (297 of 300 lines) room."
 fixed = true
 
 [[finding]]
-what = "Later: AGENTS.md:82 'meta-algorithms' has no glossary entry (already recorded in rounds 1 and 2)."
+what = "Later: crates/aegis-door/tests/rules.rs:254 builds its crafted merge with a raw commit-tree call while first_parent.rs:16 now has commit_tree for the same job; sharing it through tests/common would leave one way to write such a commit."
 fixed = true

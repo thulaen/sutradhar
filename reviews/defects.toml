@@ -1,13 +1,13 @@
 skill = "defects"
-change = "sha256:134b75b6d34c9997edae24219069860a690e2b627a2495f8188bf7dcfe1b60d0"
+change = "sha256:9cb736d6c746618504552d0c10b0ca1eb43deaa3aa97d8b9ffe04cfe3bf64866"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 3 of the ranking floor change: read the staged diff (AGENTS.md section 3 item 4, spec 0064 link ranking scope row, spec 0027 Recommendation engine entry) against the owner's words on task 185. Checked every cross-reference in the staged tree: spec 0027 'The link-equity rules' item 9 is review mode with no other mode in version 1, spec 0023 has hard filters, spec 0027 has the relevance gate, features.md item 28 is the 'most recommended' sections, spec 0051 owns expert routing. No 6,000,000 floor is left in the staged tree, 100,000,000 appears only in AGENTS.md, item 1 and spec 0067 still bar settings from counting, the 0064 row and the 0027 entry agree, and no added line passes 80 characters."
+summary = "Read the task, all comments and every changed line in gate.rs, rules.rs and the new first_parent.rs, with check_main, keeps_first_parent, accepted and the shared test helpers. Traced each new test's history by hand (range, first-parent line, oldest commit, its first parent). Confirmed the diff is byte-identical to the candidate copy, f360e90..b86b455 touches no code, and the diff applied on b86b455 gives the stated fingerprint. In a probe copy through the sealed queue: aegis and aegis-door 303 passed, 0 failed, 0 ignored; clippy -D warnings and fmt clean on aegis-door. Planted two mutants: checking the newest new commit fails only_the_oldest_new_commit_must_follow_accepted_main (and a_big_file_in_an_earlier_commit_of_the_push_is_refused_too); passing Forgejo's old main to keeps_first_parent fails the_rule_follows_the_accepted_main_when_forgejo_lags_behind. The new refusal message matches what the code checks. No blocking defect found."
 
 [[finding]]
-what = "Later: features.md 921 (recommended next lessons) and 572 still carry no pointer to spec 0027 as the one recommendation engine; add one when they are specced. Feature 797 recommends a format, not a destination, so it is not this engine."
+what = "Later: crates/aegis-door/tests/first_parent.rs:39 accepted_main returns the tree of `first` but not `first` itself, so three tests work it out again with rev-parse HEAD~1 (lines 62, 84, 95); returning `first` would remove the repeat."
 fixed = true
 
 [[finding]]
-what = "Later: spec 0064's row keeps the name 'ranking-method subtotal' while item 4 now covers link ranking and recommendation; consistent because the entry defines recommendation as link ranking, but the subtotal could name both when next edited."
+what = "Later: crates/aegis-door/tests/first_parent.rs:49 the checks helper has no doc comment, unlike the other helpers in the file; one line saying it returns the check names of a main push from base to new would do."
 fixed = true

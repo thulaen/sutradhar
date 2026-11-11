@@ -1,13 +1,13 @@
 skill = "architecture"
-change = "sha256:134b75b6d34c9997edae24219069860a690e2b627a2495f8188bf7dcfe1b60d0"
+change = "sha256:9cb736d6c746618504552d0c10b0ca1eb43deaa3aa97d8b9ffe04cfe3bf64866"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged diff for the ranking floor round 3: AGENTS.md release gate item 4, spec 0064's link ranking scope row and spec 0027's Recommendation engine entry. Checked that the new floor is written only in AGENTS.md and the old floor nowhere in the staged tree, that the engine is now matching (spec 0023) and ranking together as one path with spec 0023's hard filters, spec 0027's relevance gate and link-equity rule 9 (all present in the staged specs), that other callers go through the whole path and keep no ranking, and the one-owner rule against features.md items 28, 95, 757, 797 and 921 and specs 0028 and 0051."
+summary = "Read the task, all comments, AGENTS.md sections 4 to 6 and the whole diff; confirmed the diff is byte-identical to git diff HEAD in the candidate copy and that f360e90..b86b455 touches only Markdown and review records. The change touches one module, the kept Rust door tool aegis-door (AGENTS.md section 4: it mends what keeps_first_parent already does, no new feature): a HISTORY_CHECK const beside SIZE_CHECK, a message that now matches the rule the code checks, and tests in the crate's own tests/ folder through the shared common helpers. No new wiring, setting, dependency, global or cross-module reach; data and rules unchanged; nothing for maybe one day. Ran aegis and aegis-door tests in a probe copy through the sealed queue: every test passed, 0 failed, 0 ignored. Probe copy and build folder deleted."
 
 [[finding]]
-what = "Later: features.md item 95 (citation suggestions to an owner-approved list of outside domains) chooses link targets for a passage but they are not site threads or pages; when it is specced, say whether it goes through the engine or is not this engine. Not made worse by this change."
+what = "Later: crates/aegis-door/tests/first_parent.rs:16 adds a commit_tree helper while crates/aegis-door/tests/rules.rs:255 and :184 still build commits with inline git commit-tree; moving commit_tree into tests/common/mod.rs would give one helper for crafted commits."
 fixed = true
 
 [[finding]]
-what = "Later: the whole matching-and-ranking path has no single public shodhan entry point yet; other features are told to ask through it. Already recorded from round 2 as a public entry point with its own budget and degraded mode when the first other caller is specced."
+what = "Later: crates/aegis-door/tests/first_parent.rs:39 accepted_main knows first but drops it, so three tests recompute it with rev-parse HEAD~1 (lines 63, 85, 95); returning it from accepted_main would be simpler."
 fixed = true

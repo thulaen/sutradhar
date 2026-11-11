@@ -1,13 +1,9 @@
 skill = "backlog"
-change = "sha256:134b75b6d34c9997edae24219069860a690e2b627a2495f8188bf7dcfe1b60d0"
+change = "sha256:9cb736d6c746618504552d0c10b0ca1eb43deaa3aa97d8b9ffe04cfe3bf64866"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 3 of the ranking floor change: read the staged diff only (AGENTS.md section 3 item 4, spec 0064 link ranking scope row, spec 0027 Recommendation engine entry) against task 185 (Phase 7 item 1, parent 64) and the owner's words on 161. The change does the three things the task lists and nothing more, touches no other line, and is docs only, so no test is needed. 100,000,000 is written only in AGENTS.md; no staged spec, test or code still names 6,000,000. Item 4 names kinds of method, so item 1 and spec 0067 still stop settings and combinations from counting. The one-engine entry now routes other destination choosers through matching and ranking together, cites link-equity rule 9 (review mode) correctly, and fits features.md 28, 296 and 797, spec 0028 and spec 0051, none of which choose destinations for a source passage. Round 1 and round 2 Later items stay recorded."
+summary = "Read the backlog skill, AGENTS.md sections 7.1, 8, 8.3, 10 and 12, task #159 (open, status/urgent and status/working, milestone Phase 1: Forgejo home) with all comments, and the roadmap. Confirmed the candidate copy's base tree equals f360e90 and that f360e90..b86b455 touches only Markdown and review records. The three-file diff does what the reopening comment asks and nothing else: it repairs the defects the #159 reviews found in keeps_first_parent's tests and refusal message (section 8.3 standing repair), adds the door.history const on the same lines, and changes no unrelated file. Proof: in a probe copy, aegis and aegis-door gave 303 passed, 0 failed, 0 ignored through the sealed queue; planting the newest-instead-of-oldest mutant (lines().next()) makes only_the_oldest_new_commit_must_follow_accepted_main and a_big_file_in_an_earlier_commit_of_the_push_is_refused_too fail. No ideas outside the repair are folded in; the remaining items (live door stale, spec 0001 paragraph, shared identity) stay on the task with owners and next steps. Forgejo shows 0 status/ready tasks, within the limit of 10."
 
 [[finding]]
-what = "Later: post the proof (staged diff, review records and commit) on task 185 when the change lands, as the task's end-of-work proof."
-fixed = true
-
-[[finding]]
-what = "Later: features.md 296 (AI citation recommendations) and 797 (Format recommendation) recommend actions or formats, not destinations, so they are outside the engine; if either grows to suggest destination pages, its spec must point at spec 0027's Recommendation engine entry."
+what = "Later: the proof for this follow-up (commit, test counts, review fingerprint, publication) still has to be posted on #159 once it lands; the task's comments show it is planned, nothing to change in the diff."
 fixed = true

@@ -1,9 +1,5 @@
 skill = "fast-performance"
-change = "sha256:134b75b6d34c9997edae24219069860a690e2b627a2495f8188bf7dcfe1b60d0"
+change = "sha256:9cb736d6c746618504552d0c10b0ca1eb43deaa3aa97d8b9ffe04cfe3bf64866"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged docs-only round 3 change: AGENTS.md release gate item 4, the spec 0064 link ranking scope row and the spec 0027 recommendation engine entry. No code, loop, cache, queue or request path changes. No staged doc, code or test still names a 6,000,000 floor, and 100,000,000 is written only in AGENTS.md. Other callers now go through the whole matching and ranking path with a person approving each destination, so no extra live per-request work reaches readers; inputs stay a guest-visible page or passage with no member data."
-
-[[finding]]
-what = "Later: when the first other feature that shows related destinations is specced, it needs its own call budget, time limit and degraded mode on the matching and ranking path (spec 0027's limits are written for job 1). Already recorded as a round 2 Later item; this change does not make it worse."
-fixed = true
+summary = "Read the whole diff against b86b455 (f360e90..b86b455 is Markdown and review records only, checked with git diff --stat) and the unchanged check_main and keeps_first_parent around it. The only production change is a HISTORY_CHECK const in place of a repeated literal and a reworded refusal message: no new git calls, loops, allocations or unbounded growth on the door's push path, and no text cut short. The new tests in first_parent.rs and rules.rs add a few git processes each on small temporary repos; in a probe copy, aegis and aegis-door ran 303 passed, 0 failed, 0 ignored through the sealed pankti queue, with first_parent.rs in 1.81s and rules.rs in 2.99s. No timing run against the parent was needed, as the runtime path does the same work as before."

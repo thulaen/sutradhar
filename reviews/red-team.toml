@@ -1,25 +1,5 @@
 skill = "red-team"
-change = "sha256:134b75b6d34c9997edae24219069860a690e2b627a2495f8188bf7dcfe1b60d0"
+change = "sha256:9cb736d6c746618504552d0c10b0ca1eb43deaa3aa97d8b9ffe04cfe3bf64866"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 3 of the ranking floor change, read from the staged index: AGENTS.md section 3 item 4, the spec 0064 Link ranking and protection row and the spec 0027 Recommendation engine entry. Three red agents ran: break it (references, leftover 6,000,000, numbers outside AGENTS.md, undefined terms, line length, status claims), get round it (counting settings or combinations, a second engine under another name), abuse it (private sources, member data, spam or unapproved destinations reaching readers). Every reference resolves, 100,000,000 appears only in AGENTS.md, no staged doc, test or code still names 6,000,000, spec 0064's counting rules and spec 0067 still keep weights, settings and combinations from counting, and spec 0020 keeps link approval with a person. The round 2 blockers are closed; what remains is later work."
-
-[[finding]]
-what = "Later: AGENTS.md item 4 now counts methods for link ranking and recommendation, and spec 0027 says the engine is matching (spec 0023) and ranking, but spec 0027's Ranking method entry and spec 0064's subtotal flag cover only methods of shodhan.rank. Say in spec 0064 or 0067 whether spec 0023 matching methods can carry the ranking subtotal flag. It undercounts, so nothing wrong counts meanwhile."
-fixed = true
-
-[[finding]]
-what = "Later: spec 0027 Recommendation engine entry lists the hard filters, the relevance gate and link-equity rule 9 for other callers; the whole path already runs equity::check in the selector, but name rule 6 (canonical, indexable, guest-visible now) and a visibility re-check at display time for another feature's approved list, as spec 0028 and spec 0052 item 9 do for theirs."
-fixed = true
-
-[[finding]]
-what = "Later: the exemption 'lists not chosen for a source page or passage' is defined by what is missing, so a feature keyed on a topic, a query or a learner's progress (features.md 784, 921) is outside the engine. Decide when those features are specced whether they pass a source passage or are a separate, non-overlapping kind."
-fixed = true
-
-[[finding]]
-what = "Later: spec 0027 entry says the source is a guest-visible page but not that the passage is that page's current text; say so when the public shodhan entry point is specced. The reply holds only guest-visible destinations, so no leak meanwhile."
-fixed = true
-
-[[finding]]
-what = "Later (recorded in round 2, still open): spec 0052 item 5 has job 23 reorder hub links after the selector, against 'keeps the order it gets back'; make job 23's rates a spec 0027 signal or say hub links are the engine's own output."
-fixed = true
+summary = "Red-team review of the door.history follow-up for task #159 (first_parent.rs, gate.rs HISTORY_CHECK and message, rules.rs). The candidate copy matches the diff on b86b455; f360e90..b86b455 touches no crate file. I took four attacker goals myself, each probed as real tests in a separate copy and build folder through the sealed queue. (1) Mutant killer: I planted eight keeps_first_parent mutants one at a time: newest instead of oldest, no --first-parent, empty range refused, root commit accepted, Forgejo's old main as base, ^2 instead of ^1, the ancestor test instead of equality, and the check removed. The suite killed every one: the newest mutant fails rules::only_the_oldest_new_commit_must_follow_accepted_main, and each of the others fails a first_parent test. (2) Get round it: these crafted histories all gave exactly door.history: an octopus with accepted main as third parent, a merge whose first parent is an older main, a good commit followed by a bent merge, a bent merge wrapped in an annotated tag, a bent merge while Forgejo lags, and a rewind. (3) Break legitimate use: an octopus with main first, a long line with a side branch dated in 1990, and two commits while Forgejo lags all pass. (4) Message and naming: the exact refusal text is pinned. The real code passes all 303 aegis and aegis-door tests and my 8 probes."

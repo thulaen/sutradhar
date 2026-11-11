@@ -1,5 +1,13 @@
 skill = "unsafe-patterns"
-change = "sha256:134b75b6d34c9997edae24219069860a690e2b627a2495f8188bf7dcfe1b60d0"
+change = "sha256:9cb736d6c746618504552d0c10b0ca1eb43deaa3aa97d8b9ffe04cfe3bf64866"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 3 of the ranking floor change: read the staged diff (AGENTS.md section 3 item 4, the spec 0064 'Link ranking and protection' scope row, the 'Recommendation engine' entry in spec 0027); docs only, no code or test staged. The number 100,000,000 appears only in AGENTS.md and no staged file or test still assumes 6,000,000. Item 4 names kinds of method and 'distinct qualified methods' keeps item 1 and spec 0067 in force, so settings and combinations earn nothing; no check was weakened. The entry now routes every other caller through the whole matching and ranking path (guest-visible source, spec 0023 hard filters, the relevance gate, no member data, order kept, a person approves each destination), so no outside value is trusted and no check is skipped by calling shodhan.rank alone. Nothing open."
+summary = "Read every changed line of gate.rs (HISTORY_CHECK const, reworded door.history message), tests/rules.rs (exact check-and-message assertion, new two-commit pass test) and the new tests/first_parent.rs, plus keeps_first_parent, check_main and the shared test helpers, against each step-2 pattern. Confirmed f360e90..b86b455 touches only Markdown and review records, and that the candidate copy's staged diff is byte-identical to the given diff. Ran aegis and aegis-door through the sealed queue on a probe copy: 303 passed, 0 failed, 0 ignored. The production change is a constant and a message string, so no new error swallowing, overflow, lock, check-then-use, leaked process or unbounded input; no test was weakened (the rules.rs assertion is stricter, and four new tests add refusal and pass cases); each new test uses its own scratch repository name. I could not recompute the fingerprint myself (aegis fingerprint stopped with a git exit 128 inside the sealed queue on the probe copy), so this record rests on the fingerprint given with the task for that byte-identical diff."
+
+[[finding]]
+what = "Later: crates/aegis-door/tests/first_parent.rs:22 commit_tree builds its own git Command rather than going through common::git, so it depends on the scratch repo's git identity and fails with a raw Output dump; it is test-only and asserts success, so nothing needs to change now."
+fixed = true
+
+[[finding]]
+what = "Later: crates/aegis-door/src/gate.rs:282 keeps_first_parent still maps any rev-parse failure of oldest^1 to a refusal (already recorded in an earlier review); this change does not make it worse and it fails closed."
+fixed = true

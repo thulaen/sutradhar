@@ -10,6 +10,8 @@ use aegis::tiers;
 
 /// The check that refuses a push too large to look at.
 const SIZE_CHECK: &str = "door.size";
+/// The check that refuses a push that rewrites or bends main's history.
+const HISTORY_CHECK: &str = "door.history";
 
 /// The git command that names a commit or a path.
 const REV_PARSE: &str = "rev-parse";
@@ -106,7 +108,7 @@ fn check_main(
     let base = accepted.as_deref().unwrap_or(push.old);
     if base != NO_COMMIT && !is_ancestor(repo, base, commit) {
         return Ok(refused(
-            "door.history",
+            HISTORY_CHECK,
             "rewriting main's history is refused",
         ));
     }
@@ -129,9 +131,9 @@ fn check_main(
         }
         if !keeps_first_parent(repo, base, &range)? {
             return Ok(refused(
-                "door.history",
-                "the last accepted main must stay the first parent of the \
-                 new commits; rebase on main instead of merging it in",
+                HISTORY_CHECK,
+                "the last accepted main must stay on the first-parent line \
+                 of the new commits; rebase on main instead of merging it in",
             ));
         }
     }
