@@ -1,9 +1,5 @@
 skill = "fast-performance"
-change = "sha256:71c0f536c0c731a50ad1adfb12e3a119c905ac87b91dfac1fac120a806d89848"
+change = "sha256:74c56f47c9b677e89e57f33f427c2a349c0f1b357cf45b08346e4b0367d0bd81"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged docs-only diff to spec 0064 (task #64, #180 item 46 round 5: signed run id and run purpose in the ledger, replay context looked up by signed run id, shared ledger validator, current-invocation attempt-id exclusion, one run-ledger head read after the replay's own attempts and verdict, history checked over every candidate entry in that range whatever its run kind, replay's policy digest check against the current protected policy, and the acceptance cases including same-kind refused or interrupted runs and the changed-policy case). No code changes. The text keeps one read of the checked ledger bytes for both paths, one run-id lookup before any evidence is opened, an exclusion set bounded by the current invocation's attempts, a single bounded history scan from the previous ledger's head to one exact head, and the new policy digest check is one comparison of values already loaded; nothing adds a second read, an unbounded structure or a blocking call."
-
-[[finding]]
-what = "Later: docs/specs/0064-v1-qualification.md lines 45-62 and 364-391. When implemented, the run-id lookup in the policy's run records should be keyed, not a scan of every issued record, and the current invocation's attempt ids should be held as a set during the single history read, so replay cost stays proportional to history for the candidate since the previous ledger's head. Not made worse by this change; already logged on #180."
-fixed = true
+summary = "Read the staged round 2 diff to docs/specs/0012-ganit-evolve.md (item 6 now points to AGENTS.md section 7.3 for coverage timing, build order step 2 builds the Rust safety parse with the Rust whole-file problem, Changes from the source names whole-file problems for any Rust or Go file and restates the Go forbidden list). Docs only: no code, loop, per-request path, cache, allocation or time limit is added or changed; the Rust safety parse and the Go forbidden constructs were already work the spec required per evolved file, so the wording adds no new runtime cost and there is nothing to measure."

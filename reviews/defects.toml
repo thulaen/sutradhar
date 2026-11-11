@@ -1,5 +1,5 @@
 skill = "defects"
-change = "sha256:71c0f536c0c731a50ad1adfb12e3a119c905ac87b91dfac1fac120a806d89848"
+change = "sha256:74c56f47c9b677e89e57f33f427c2a349c0f1b357cf45b08346e4b0367d0bd81"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read every staged line of docs/specs/0064-v1-qualification.md (#180 item 46, round 5) with the surrounding reader check, Replay and refusal, Fixture and pilot cases and acceptance text. Checked the round 4 fixes: the same-kind versus other-kind history acceptance case now matches the replay history rule and the reader check's freshness rule (including refused or interrupted nightly runs counting against a release ledger), 'replay reads' names the actor, and replay's policy digest check against the current protected policy has a matching refusal case. No new defect found; earlier Later items stay logged on #180."
+summary = "Read the staged diff of docs/specs/0012-ganit-evolve.md in full against HEAD AGENTS.md sections 4, 6 (rules 6 and 9) and 7.3. Item 6 no longer claims Rust has a parse and defers timing to section 7.3; build order step 2 builds the Rust parse with the Rust whole-file problem, matching 7.3's start condition; the 'Changes from the source' line now agrees with item 5; the Go forbidden list matches section 4 and rule 6. No contradictions or status claims found."

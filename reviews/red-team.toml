@@ -1,25 +1,9 @@
 skill = "red-team"
-change = "sha256:71c0f536c0c731a50ad1adfb12e3a119c905ac87b91dfac1fac120a806d89848"
+change = "sha256:74c56f47c9b677e89e57f33f427c2a349c0f1b357cf45b08346e4b0367d0bd81"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Two red agents (get round it; break it) attacked the staged spec 0064 replay text for #180 item 46 round 5. Each claim was checked against the staged file (git show :docs/specs/0064-v1-qualification.md). No path admits a pilot or fixture ledger to the reader check, and the round 5 acceptance case (same-kind refused or interrupted runs refuse, other-kind ones pass) matches the reader check at lines 34-36 and the replay rule at lines 378-384; line 272 speaks of purpose within a kind, not of other kinds. The remaining claims are clarity gaps, logged as Later."
+summary = "Round 2. Read the staged diff to docs/specs/0012-ganit-evolve.md against AGENTS.md sections 4, 6 rules 6 and 9, and 7.3. Two red agents ran: get round it (loopholes for landing or evolving Rust and Go without a receipt or past the forbidden list) and break it (contradictions, status, build order, dangling pointers). Each claim was checked against the staged text. The round 1 blocker is fixed: item 6 now gives a necessary condition (no parse, no evolving, no receipt) and leaves timing to section 7.3, which fits Rust because the check can only turn on once a Rust receipt can be made, so the Rust parse comes first. Other claims were dropped: 'may evolve any Rust or Go file' is permissive and item 6 still governs; the test list's '(item 6)' still points to the parse condition item 6 keeps; receipts for TypeScript and the rest and the wider Go list are already Later items on #166; the forbidden list for Go that lands before the Go parse is a rule 6 gate matter, not new here."
 
 [[finding]]
-what = "Later: line 441 'Add a newer attempt from another invocation and require refusal under the existing history rules' names no run kind; say same run kind, since a newer pilot attempt during a release replay must pass (lines 383, 475-476)."
-fixed = true
-
-[[finding]]
-what = "Later: lines 373-374 'from the head the previous ledger names up to that exact head' should say the range excludes the previous ledger's own head entry (entries recorded after it), as the reader check's 'recorded since' does."
-fixed = true
-
-[[finding]]
-what = "Later: lines 374-376 say the supervisor supplies the invocation's ordered attempt ids for the initial validation too, but later attempts do not exist yet; say the initial check uses the ids recorded so far."
-fixed = true
-
-[[finding]]
-what = "Later: say whether an infrastructure interruption of the replay's own attempt, retried under the frozen retry policy, lets the replay pass (lines 272, 377-380), and add a case for it."
-fixed = true
-
-[[finding]]
-what = "Later: line 46 'binding' checks for replay should name that the candidate, catalogue and manifest digests are compared with the approved run inputs for the signed run id (line 51), not with the ledger's own fields."
+what = "Later: item 6 (lines 282-286) and item 3 ('A deleted file needs nothing') let an agent read 'until its parse exists its files need no receipt' as switching receipts back off if a language's safety parse is later deleted; 'Hard to skip' protects only the catalogue entry, not the parses or whole-file problems. The old wording had the same 'until' clause, so this is not made worse. Fix later: say coverage, once on, stays on, and add the parses and whole-file problems to what gate-wiring protects, with a test."
 fixed = true

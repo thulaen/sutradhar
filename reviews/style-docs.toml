@@ -1,13 +1,9 @@
 skill = "style-docs"
-change = "sha256:71c0f536c0c731a50ad1adfb12e3a119c905ac87b91dfac1fac120a806d89848"
+change = "sha256:74c56f47c9b677e89e57f33f427c2a349c0f1b357cf45b08346e4b0367d0bd81"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged diff of docs/specs/0064-v1-qualification.md (round 5 of #180 item 46) against AGENTS.md section 6, the reader-check text, the run-purpose and history rules near lines 265-280 and the acceptance cases. The round 5 fixes are in place: the same-kind refused or interrupted run case matches line 272 and the reader check, 'replay reads' names the actor, and the policy-digest check has its acceptance case. Plain British English, no status words, no new numbers."
+summary = "Round 2: read the staged diff of docs/specs/0012-ganit-evolve.md (task #166 follow-up) against the staged AGENTS.md sections 4, 6 rules 6 and 9 and 7.3, and the spec's items 5 and 6, evaluation steps, build order and 'Changes from the source'. Item 6 no longer states status ('Rust has one' is gone) and no longer gives its own timing; it points to section 7.3, which it now agrees with for Rust and for other languages. Build order step 2 builds the Rust safety parse with the Rust whole-file problem; 'any Rust or Go file' agrees with item 5; the Go forbidden list matches section 4 (import \"C\") and rule 6 word for word. Plain British English, no status words, no new numbers."
 
 [[finding]]
-what = "Later: docs/specs/0064-v1-qualification.md:448, 'a refused or interrupted run of another kind ... require the replay to pass' does not say the run records no test failure on the candidate in a release or pilot run; a refused release run that does record one must refuse under line 385. Add 'with no test failure' to that pass case."
-fixed = true
-
-[[finding]]
-what = "Later: docs/specs/0064-v1-qualification.md:368, 'It checks the policy digest against the current protected policy, as the reader check does' partly repeats the binding checks the shared validator already does (line 44). Consider saying the shared validator's binding check covers it, so the two cannot drift."
+what = "Later: item 6's list of languages (Rust, Go, TypeScript, CSS, PHP, SQL, shell, Cedar and Rego) and the Go forbidden list in 'Changes from the source' repeat AGENTS.md section 6 rule 9 and section 4 / rule 6, so they could drift; already logged on #166 from round 1, and this change does not make it worse than the old text did."
 fixed = true

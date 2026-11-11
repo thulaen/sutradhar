@@ -279,11 +279,11 @@ Each problem lives in its own folder under the GanitEvolve Go module:
    For kernels, the owner also reviews the evidence. For other files,
    the review and the receipt are the proof; the owner may tighten
    this.
-6. A language with no safety parse cannot be evolved. Until its parse
-   exists its files need no receipt, and `ganit.every-change` covers
-   it from the commit that adds the parse (AGENTS.md section 7.3).
-   Rust has one; Go, TypeScript, CSS, PHP, SQL, shell, Cedar and Rego
-   each need theirs.
+6. A language with no safety parse cannot be evolved, and until its
+   parse exists its files need no receipt. AGENTS.md section 7.3 sets
+   when `ganit.every-change` starts to cover each language. Each
+   language needs its own parse: Rust, Go, TypeScript, CSS, PHP, SQL,
+   shell, Cedar and Rego.
 
 ### Hard to skip
 
@@ -303,11 +303,11 @@ Each problem lives in its own folder under the GanitEvolve Go module:
 ### Build order
 
 1. The `ganit.every-change` check, test first.
-2. The whole-file problem for Rust files. Then, in one later commit,
-   the whole-file problem for Go files and the Go safety parse, so a Go
-   receipt can be made from the commit that first requires one
-   (AGENTS.md section 7.3). Which Go source may land before that
-   commit is set in AGENTS.md section 4.
+2. The Rust safety parse and the whole-file problem for Rust files.
+   Then, in one later commit, the whole-file problem for Go files and
+   the Go safety parse, so a Go receipt can be made from the commit that
+   first requires one (AGENTS.md section 7.3). Which Go source may land
+   before that commit is set in AGENTS.md section 4.
 3. `judge` and judgements in packets; then `score` problems; then helper
    submissions and the agent prompt for fan-out.
 4. Guards; then hints; then parallel checks.
@@ -397,9 +397,12 @@ Go tests in the GanitEvolve module and Rust tests in ganit:
 ## Changes from the source
 
 - The maths side is rewritten as Rust in ganit.
-- The first kernels and every evolved routine are Rust, in ganit.
+- The first kernels are Rust, in ganit; whole-file problems may evolve
+  any Rust or Go file.
 - The safety step's forbidden list is restated for Rust, with `unsafe`
-  added, as AGENTS.md section 6 rule 6 asks.
+  added, and for Go, with the `unsafe` package, `//go:linkname`,
+  hand-written assembly, the `plugin` package and `import "C"`, as
+  AGENTS.md section 4 and section 6 rule 6 ask.
 - The compiler choice for the old kernels is dropped.
 - The run screen and briefing come from the Dioxus app.
 - Receipts live in `receipts/`, and source files are the kinds AGENTS.md

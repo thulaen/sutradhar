@@ -1,9 +1,9 @@
 skill = "security"
-change = "sha256:71c0f536c0c731a50ad1adfb12e3a119c905ac87b91dfac1fac120a806d89848"
+change = "sha256:74c56f47c9b677e89e57f33f427c2a349c0f1b357cf45b08346e4b0367d0bd81"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged diff of docs/specs/0064-v1-qualification.md (round 5 of #180 item 46) against HEAD aa43114 and the surrounding reader-check, run-id and history rules. Checked that replay takes its trust context only from the signed run id and the protected policy's record, that neither submitted data nor caller options can select kind, purpose, signing purpose or exclusions, that the current-invocation exclusion is verifier-only and never hides failures, that the reader check stays release-only for both callers, that replay checks the policy digest against the current protected policy, and that the new acceptance case matches the history rules. No open defect found."
+summary = "Read the staged diff to docs/specs/0012-ganit-evolve.md (item 6, build order step 2, Changes from the source) against AGENTS.md section 4, section 6 rule 6 and section 7.3. Docs only: no inputs, secrets, crypto or dependencies added. Item 6 no longer claims a Rust safety parse exists and defers coverage timing to section 7.3, so the Rust check cannot be turned on before Rust files can pass the effects check; the Go forbidden list matches AGENTS.md (unsafe package, //go:linkname, hand-written assembly, plugin package, import \"C\")."
 
 [[finding]]
-what = "Later: docs/specs/0064-v1-qualification.md:45-61 and 365-370 do not say the run id used for the policy lookup is read from the same checked bytes after the signature check passes, rather than from a pre-parse; state that a signature failure refuses before the policy record is consulted (already logged on #180 as a round 4 Later item)."
+what = "Later: the Go forbidden list does not yet name unsafe access through reflect or syscall, other //go: directives and cgo comments, or Go assembly as bodiless functions; already logged on task #166 from round 1, not made worse by this change."
 fixed = true

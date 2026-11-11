@@ -1,9 +1,9 @@
 skill = "backlog"
-change = "sha256:71c0f536c0c731a50ad1adfb12e3a119c905ac87b91dfac1fac120a806d89848"
+change = "sha256:74c56f47c9b677e89e57f33f427c2a349c0f1b357cf45b08346e4b0367d0bd81"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 5 backlog review of the staged docs/specs/0064-v1-qualification.md diff for #64 / #180 item 46 (pilot and fixture replay). Read the task and its #180 comments, the staged diff and surrounding spec text; the change fixes only the replay contradiction and its review follow-ups, stays in the current campaign, and earlier rounds' Later items are logged on #180."
+summary = "Read the staged diff of docs/specs/0012-ganit-evolve.md (round 2) against HEAD 732007c, task #166 and its comments in Forgejo, and AGENTS.md sections 4, 6 rules 6 and 9 and 7.3. The change does what #166's follow-up asks and no more: item 6 drops the false 'Rust has one' status claim and points to section 7.3 for timing; build step 2 builds the Rust safety parse with the Rust whole-file problem, before the check is turned on; 'Changes from the source' now agrees with item 5 and restates the Go forbidden list from AGENTS.md. Round 1 Later items are logged on #166 as items 52 to 54."
 
 [[finding]]
-what = "Later: post the round 5 outcome and proof on #180 item 46 once the commit lands (blocked behind #130), and mark items 35, 48 and 49 as covered there, as the earlier comments plan."
+what = "Later: AGENTS.md section 10's limit of 10 tasks marked next cannot be checked, because Forgejo has no next label (only status/blocked, ready, urgent, working). Say which label marks next, or add one. Not caused by this change."
 fixed = true

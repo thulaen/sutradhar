@@ -1,9 +1,5 @@
 skill = "unsafe-patterns"
-change = "sha256:71c0f536c0c731a50ad1adfb12e3a119c905ac87b91dfac1fac120a806d89848"
+change = "sha256:74c56f47c9b677e89e57f33f427c2a349c0f1b357cf45b08346e4b0367d0bd81"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged diff to docs/specs/0064-v1-qualification.md (round 5 of #180 item 46: shared ledger validator, pilot and fixture replay, acceptance cases) against the unchanged reader-check text. Checked for trust in caller-named ids or options, check-then-use gaps, defaulted errors, unbounded inputs and weakened tests. Run id, kind and purpose come from signed fields matched against the policy's record; exclusions come only from the supervisor and never hide failures; the history check reads one head and the new ledger names it; the acceptance cases now match the same-run-kind history rule and add a policy-change refusal. No blocking pattern found."
-
-[[finding]]
-what = "Later: docs/specs/0064-v1-qualification.md:370 says replay checks the policy digest against the current protected policy but not when; a policy change after that check and before the new ledger is published is a check-then-use gap. Say the digest is read once with the final run-ledger head (or rechecked just before publish) and add a case that changes the policy during the replay."
-fixed = true
+summary = "Read the staged docs-only diff to docs/specs/0012-ganit-evolve.md (item 6, build order step 2, Changes from the source) against AGENTS.md sections 4, 6 rule 6, 6 rule 9 and 7.3 at HEAD. No code changed, so no hidden unsafe code patterns are possible; checked that no safety guard is weakened: Rust is no longer claimed to have a safety parse, the Rust parse is built with the Rust whole-file problem before ganit.every-change turns on, the Go forbidden list matches AGENTS.md (plus import \"C\" from the no-C-compiler rule), and timing is left to section 7.3."
