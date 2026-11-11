@@ -210,26 +210,20 @@ pub fn for_scan(
     read(text, day, &pinned)
 }
 
-/// The hole id at the start of one line from `holes()`.
-fn id_of(hole: &str) -> &str {
-    hole.split_once(" (").map_or(hole, |(id, _)| id)
-}
-
 /// The holes of tool `name` that the list does not allow; each hole
 /// found, allowed or not, is noted in `seen`.
 #[must_use]
 pub fn not_allowed(
     name: &str,
-    holes: Vec<String>,
+    holes: Vec<super::Hole>,
     allowed: &[Entry],
     seen: &mut Vec<(String, String)>,
 ) -> Vec<String> {
-    seen.extend(holes.iter().map(|h| (name.to_owned(), id_of(h).to_owned())));
+    seen.extend(holes.iter().map(|h| (name.to_owned(), h.id.clone())));
     holes
         .into_iter()
-        .filter(|h| {
-            !allowed.iter().any(|e| e.image == name && e.id == id_of(h))
-        })
+        .filter(|h| !allowed.iter().any(|e| e.image == name && e.id == h.id))
+        .map(super::Hole::message)
         .collect()
 }
 

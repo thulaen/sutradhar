@@ -1,9 +1,9 @@
 skill = "defects"
-change = "sha256:4bf136c9409409027d6e720e32430bb1bc3840417b80d1874ed4d444a2e1fecf"
+change = "sha256:ded670f0757639c234835520561bd4575b1b3610e0873078c2bc2f17b78b2ed2"
 verdict = "pass"
-agent = "claude subagent"
-summary = "Round 23 of spec 0065 (staged index only). Read the two changed lines (Interfaces item 1 on principal(name, policy_digest) and the new test that a digest not in force is refused through the socket and tijori-verify) against the check rules (Check library item 4), tijori-verify's 'same refusals' sentence and the matching verify test; they agree and the test is concrete. No blocking defect."
+agent = "codex"
+summary = "Verified the unchanged ten-file scanner candidate against the new parent and inspected the signing-spec compatibility context and refreshed test proof. Structured allowance identity, diagnostic limits, bounded capture and corrected comments remain sound; no open findings."
 
 [[finding]]
-what = "Later: docs/specs/0065-tijori.md test lines 720 and 801 name only 'newer or unknown' digests for verify and principal; the likeliest real case, a digest that was in force before the latest policy change (older, previously valid), is not named, so an implementation that accepted the previous digest could still pass. Add 'older' to both test sentences."
+what = "Both stale comments remain corrected and separate formatting from allowance identity."
 fixed = true

@@ -1,5 +1,5 @@
 skill = "backlog"
-change = "sha256:4bf136c9409409027d6e720e32430bb1bc3840417b80d1874ed4d444a2e1fecf"
+change = "sha256:ded670f0757639c234835520561bd4575b1b3610e0873078c2bc2f17b78b2ed2"
 verdict = "pass"
-agent = "claude subagent"
-summary = "Round 23 of spec 0065 (tijori signing core, task #167, Phase 2 item 8). Read the staged diff of 0065, 0003, 0008 and the README row; checked that the two round-23 lines (Interfaces item 1 principal sentence, and the test that principal with a digest not in force, newer or unknown, is refused through the socket and tijori-verify) match each other and the tijori-verify item, add no scope beyond the signing core, and that the change stays within its task with later work already recorded as Later items."
+agent = "codex"
+summary = "Refreshed against parent8f5308ad and current AGENTS instructions; checked signing/scope context in specs0003/0008/0065/README and verified unchanged ten-file patch. Existing retained Rust defect repair under130, without product/signing/Go/live adoption scope. Fresh Forgejo reads show urgent130 working/assignedCodex in lowest open phase, readycount0. Exact-candidate415sealed tests and all preliminary non-review checks pass; stale reviews refuse. Normal commit/push/mirror pending. Root owns publication;130 remains open for live upgrade/recovery and remaining prerequisites."

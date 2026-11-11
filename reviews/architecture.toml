@@ -1,11 +1,5 @@
 skill = "architecture"
-change = "sha256:4bf136c9409409027d6e720e32430bb1bc3840417b80d1874ed4d444a2e1fecf"
+change = "sha256:ded670f0757639c234835520561bd4575b1b3610e0873078c2bc2f17b78b2ed2"
 verdict = "pass"
-agent = "claude subagent"
-summary = """
-Round 23 architecture review of the staged index only: new spec 0065 (tijori's signing core) and the staged edits to specs 0003 item 4, 0008 items 2, 6, 8, protected paths and tests, and the specs README row. Both round 23 changes are in place and agree with the rest of the spec: the Interfaces item 1 sentence says `principal(name, policy_digest)` returns the named principal's purposes under that policy, or refuses a digest not in force or an unknown name (0065:584-587), and a new test covers a newer or unknown digest refused through both the socket and `tijori-verify` (0065:801-803), which answers `principal` from main's policy with the same refusals (0065:298-300). That closes the round 22 Later item on the missing digest-refusal test. The crate split (client and check library in `sutradhar-tijori`, keys only in the `tijori` program), one account per principal, the one-direction dependency through `sutradhar-methods`, protected paths and the release guards are unchanged since round 22. No new blocker.
-"""
-
-[[finding]]
-what = "Later: docs/specs/0065-tijori.md:127-130 states, under 'Records this spec owns', what a `review-record` names and a gate refusal rule, while the same paragraph says spec 0010 owns that encoding, and spec 0010 does not yet mention `review-record` or `gate-run`. These belong in spec 0010, with 0065 pointing there. Covered by the recorded 'spec 0010 encodings' Later item; not a blocker."
-fixed = true
+agent = "codex"
+summary = "Refreshed against parent8f5308ad790a6e01eb3b52b90703cde1233daafa; verified all ten scanner blobs and refreshed parent specs0003/0008/0065/README. Signing bootstrap remains under AGENTS7.3. The repair adds no signer/key/product/dependency/Go scope. Typed Hole separates complete identity from diagnostic text with restricted fields; capture, parsing and policy have clear responsibilities and explicit inputs without globals/cycles. Budgets precede copies and formatting; arithmetic fails closed. Compared separator parsing, rejecting harmless references and sequential capture; bounded helpers and typed value are clearer, readable and justified. No dead or duplicated logic. Source review only; no final gate/push/coverage/release/live upgrade claim."

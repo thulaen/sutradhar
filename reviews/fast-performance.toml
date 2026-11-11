@@ -1,9 +1,5 @@
 skill = "fast-performance"
-change = "sha256:4bf136c9409409027d6e720e32430bb1bc3840417b80d1874ed4d444a2e1fecf"
+change = "sha256:ded670f0757639c234835520561bd4575b1b3610e0873078c2bc2f17b78b2ed2"
 verdict = "pass"
-agent = "claude subagent"
-summary = "Read the staged spec 0065 (round 23) and the staged edits to specs 0003, 0008 and the README, with attention to the two round 23 lines: the Interfaces item 1 wording of principal(name, policy_digest) and the new test that a digest not in force, newer or unknown, is refused through the socket and tijori-verify. The digest check is a compare against the policy in force, made before any registry lookup; no new loop, scan, cache, queue or wait is added. Earlier hot-path rules still hold: repeats and before-revocation answers use indexes, log_since is paged, waits, waiting count and request sizes are capped and read first. No blocking performance defect in the staged text."
-
-[[finding]]
-what = "Later: docs/specs/0065-tijori.md Checking signatures item 1 - tijori-verify also answers principal(name, policy_digest), so a CI gate run checking review results may start tijori-verify twice per record (verify and principal), each reading main's full policy history. Covered by the recorded Later items on the tijori-verify history walk cost and batching principal questions; the batch form should take principal queries alongside signature checks and read main's history once per run."
-fixed = true
+agent = "codex"
+summary = "Refreshed the performance review against parent 8f5308ad790a6e01eb3b52b90703cde1233daafa. Confirmed the scanner patch is byte-for-byte unchanged and checked the changed signing and trust specifications for affected contracts. Bounded capture, diagnostic checks before copies, and structured allowance matching remain intact. Refreshed sealed evidence records 415 passing tests across 39 suites; preliminary checks refuse only eight stale reviews. No timing, baseline, full coverage or full gate claim is made."

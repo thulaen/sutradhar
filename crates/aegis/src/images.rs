@@ -19,6 +19,8 @@ use crate::tools_list;
 #[path = "images_report.rs"]
 mod report;
 
+pub use report::Hole;
+
 const CHECK: &str = "images.holes";
 
 /// How many holes are named for one image; the rest are counted.
@@ -39,7 +41,20 @@ const SCAN_SECONDS: &str = "600";
 /// # Errors
 /// When the text is not a `CycloneDX` report.
 pub fn holes(report: &str) -> Result<Vec<String>, String> {
-    report::holes(report)
+    findings(report).map(|found| {
+        let mut messages: Vec<String> =
+            found.into_iter().map(Hole::message).collect();
+        messages.sort();
+        messages
+    })
+}
+
+/// Read serious findings while keeping their full IDs separate from text.
+///
+/// # Errors
+/// Refuses malformed reports, unsafe diagnostic text and excessive findings.
+pub fn findings(report: &str) -> Result<Vec<Hole>, String> {
+    report::findings(report)
 }
 
 /// The folder for the list of holes: it must be named, and lie outside
@@ -125,7 +140,7 @@ fn scan_image(
     program: &str,
     db: &Path,
     image: &str,
-) -> Result<Vec<String>, String> {
+) -> Result<Vec<Hole>, String> {
     let source = format!("registry:{image}");
     let args = [
         source.as_str(),
@@ -136,7 +151,7 @@ fn scan_image(
         "cyclonedx-json",
         "-q",
     ];
-    grype(program, db, SCAN_SECONDS, &args).and_then(|r| holes(&r))
+    grype(program, db, SCAN_SECONDS, &args).and_then(|r| findings(&r))
 }
 
 /// The message for an image's serious holes, naming the first few.

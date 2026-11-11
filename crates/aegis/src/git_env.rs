@@ -6,8 +6,11 @@
 //! file watcher is off. The person's own `~/.gitconfig`, at its usual
 //! place, is still read: it is theirs to keep safe.
 
-use std::io::{Read, Write};
+use std::io::Read;
 use std::process::{Command, Stdio};
+
+#[path = "process_capture.rs"]
+mod capture;
 
 /// The settings a git command never takes from outside.
 const CLEARED: [&str; 12] = [
@@ -76,36 +79,20 @@ pub fn read_capped(
 }
 
 /// Runs `command` with `input` as what it reads, and gives what it
-/// printed. `what` names it in the errors: it could not start, did not
-/// finish, or ended with an error (with what it said, and `args`).
+/// printed. `what` is a trusted label for safe errors. Output is bounded;
+/// raw child diagnostics and command arguments never enter an error.
+/// `_args` preserves the existing callers but is never shown or inspected.
 ///
 /// # Errors
 /// When the program cannot start, or ends with an error, or does not
-/// take all of `input`.
+/// take all of `input`, output exceeds its limit, or is not UTF-8.
 pub fn run_with_input(
     command: &mut Command,
     input: &[u8],
     what: &str,
-    args: &str,
+    _args: &str,
 ) -> Result<String, String> {
-    let mut child = command
-        .stdin(Stdio::piped())
-        .stdout(Stdio::piped())
-        .stderr(Stdio::piped())
-        .spawn()
-        .map_err(|e| format!("cannot run {what}: {e}"))?;
-    let sent = child.stdin.take().map(|mut s| s.write_all(input));
-    let out = child
-        .wait_with_output()
-        .map_err(|e| format!("{what} did not finish: {e}"))?;
-    if out.status.success() && !matches!(sent, Some(Err(_))) {
-        Ok(String::from_utf8_lossy(&out.stdout).into_owned())
-    } else {
-        Err(format!(
-            "{what} {args} failed: {}",
-            String::from_utf8_lossy(&out.stderr).trim()
-        ))
-    }
+    capture::run(command, input, what)
 }
 
 #[cfg(test)]

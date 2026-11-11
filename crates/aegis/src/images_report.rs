@@ -1,78 +1,169 @@
-//! Validate the report fields used to decide which image holes block.
+//! Read decision fields once, with unambiguous IDs and safe diagnostics.
 
-use serde_json::{Map, Value};
+use serde::{Deserialize, Deserializer, de::Error};
 
-type Object = Map<String, Value>;
+#[path = "images_report_object.rs"]
+mod object;
 
-fn object(value: &Value) -> Result<&Object, String> {
-    value
-        .as_object()
-        .ok_or_else(|| "malformed vulnerability entry".into())
+use object::Object;
+
+// Bound expansion as well as scanner output: IDs repeat for affected parts.
+const DIAGNOSTIC_BYTES: usize = 1024 * 1024;
+const DIAGNOSTIC_COUNT: usize = 4096;
+
+/// One serious finding, with identity separate from displayed package text.
+#[derive(Debug, Eq, Ord, PartialEq, PartialOrd)]
+pub struct Hole {
+    /// The complete vulnerability identifier used by the allowance policy.
+    pub(super) id: String,
+    /// The validated serious severity.
+    pub(super) level: String,
+    /// The affected reference without its query parameters.
+    pub(super) part: String,
 }
 
-fn list<'a>(value: &'a Object, key: &str) -> Result<&'a [Value], String> {
-    match value.get(key) {
-        None => Ok(&[]),
-        Some(Value::Array(items)) => Ok(items),
-        Some(_) => Err("malformed vulnerability list".into()),
+impl Hole {
+    /// Format a diagnostic without recovering or changing the finding's ID.
+    pub(super) fn message(self) -> String {
+        format!("{} ({}) in {}", self.id, self.level, self.part)
     }
 }
 
-fn text_field(value: &Object, key: &str) -> Result<(), String> {
-    match value.get(key) {
-        None | Some(Value::String(_)) => Ok(()),
-        Some(_) => Err("malformed vulnerability text".into()),
+#[derive(Deserialize)]
+struct Report {
+    #[serde(rename = "bomFormat")]
+    format: String,
+    #[serde(default)]
+    vulnerabilities: Vec<Object<Vulnerability>>,
+}
+
+#[derive(Deserialize)]
+struct Vulnerability {
+    #[serde(default, deserialize_with = "identifier")]
+    id: String,
+    #[serde(default)]
+    ratings: Vec<Object<Rating>>,
+    #[serde(default)]
+    affects: Vec<Object<Affected>>,
+}
+
+#[derive(Deserialize)]
+struct Rating {
+    #[serde(default, deserialize_with = "severity")]
+    severity: String,
+}
+
+#[derive(Deserialize)]
+struct Affected {
+    #[serde(rename = "ref", default, deserialize_with = "diagnostic_text")]
+    reference: String,
+}
+
+fn diagnostic_text<'de, D: Deserializer<'de>>(
+    deserializer: D,
+) -> Result<String, D::Error> {
+    let text = String::deserialize(deserializer)?;
+    // Direction overrides and line separators can also disguise a diagnostic.
+    if text.chars().any(|c| {
+        c.is_control()
+            || matches!(c, '\u{61c}' | '\u{200e}'..='\u{200f}'
+                | '\u{2028}'..='\u{202e}' | '\u{2066}'..='\u{2069}')
+    }) {
+        return Err(D::Error::custom("control character in scanner text"));
+    }
+    Ok(text)
+}
+
+fn identifier<'de, D: Deserializer<'de>>(
+    deserializer: D,
+) -> Result<String, D::Error> {
+    let text = diagnostic_text(deserializer)?;
+    // Keep diagnostic IDs distinct from the surrounding display separators.
+    if text
+        .chars()
+        .any(|c| c.is_whitespace() || matches!(c, '(' | ')'))
+    {
+        return Err(D::Error::custom("ambiguous vulnerability identifier"));
+    }
+    Ok(text)
+}
+
+fn severity<'de, D: Deserializer<'de>>(
+    deserializer: D,
+) -> Result<String, D::Error> {
+    let text = String::deserialize(deserializer)?.to_ascii_lowercase();
+    match text.as_str() {
+        "none" | "info" | "low" | "medium" | "high" | "critical"
+        | "unknown" => Ok(text),
+        _ => Err(D::Error::custom("unrecognised vulnerability severity")),
     }
 }
 
-fn validate(report: &Value) -> Result<(), String> {
-    for entry in list(object(report)?, "vulnerabilities")? {
-        let entry = object(entry)?;
-        text_field(entry, "id")?;
-        for (collection, field) in [("ratings", "severity"), ("affects", "ref")]
-        {
-            for item in list(entry, collection)? {
-                text_field(object(item)?, field)?;
-            }
-        }
+fn record(
+    out: &mut Vec<Hole>,
+    remaining: &mut usize,
+    id: &str,
+    level: &str,
+    part: &str,
+) -> Result<(), String> {
+    let size = id
+        .len()
+        .checked_add(level.len())
+        .and_then(|n| n.checked_add(part.len()))
+        .and_then(|n| n.checked_add(" () in ".len()));
+    let available = size.and_then(|n| remaining.checked_sub(n));
+    if out.len() >= DIAGNOSTIC_COUNT || available.is_none() {
+        return Err(
+            "the scanner's findings exceed their diagnostic limit".into()
+        );
     }
+    *remaining = available.unwrap_or_default();
+    out.push(Hole {
+        id: id.to_owned(),
+        level: level.to_owned(),
+        part: part.to_owned(),
+    });
     Ok(())
 }
 
-pub(super) fn holes(report: &str) -> Result<Vec<String>, String> {
-    let report: Value = serde_json::from_str(report)
-        .map_err(|e| format!("the scanner's report cannot be read: {e}"))?;
-    if report.get("bomFormat").and_then(Value::as_str) != Some("CycloneDX") {
+/// Read serious findings with strict decision fields and bounded diagnostics.
+///
+/// # Errors
+/// Refuses malformed or ambiguous input, unsafe text and excessive output.
+pub(super) fn findings(report: &str) -> Result<Vec<Hole>, String> {
+    // Typed fields reject duplicate decision keys, including escaped spellings.
+    // Unknown metadata is ignored rather than copied into a generic JSON tree.
+    let Object(report): Object<Report> = serde_json::from_str(report)
+        .map_err(|_| "the scanner's report cannot be read".to_owned())?;
+    if report.format != "CycloneDX" {
         return Err("the scanner's report is not a CycloneDX report".into());
     }
-    validate(&report)?;
-    let text = |v: Option<&Value>| {
-        v.and_then(Value::as_str).unwrap_or_default().to_owned()
-    };
     let mut out = Vec::new();
-    for hole in list(object(&report)?, "vulnerabilities")? {
-        let ratings = hole.get("ratings").and_then(Value::as_array);
-        let serious = ratings.into_iter().flatten().find_map(|r| {
-            let level = text(r.get("severity")).to_ascii_lowercase();
-            matches!(level.as_str(), "high" | "critical").then_some(level)
+    let mut remaining = DIAGNOSTIC_BYTES;
+    for Object(hole) in report.vulnerabilities {
+        let level = hole.ratings.iter().find_map(|Object(r)| {
+            matches!(r.severity.as_str(), "high" | "critical")
+                .then_some(&r.severity)
         });
-        let Some(level) = serious else { continue };
-        let id = text(hole.get("id"));
-        let parts = hole.get("affects").and_then(Value::as_array);
-        let mut named: Vec<String> = parts
-            .into_iter()
-            .flatten()
-            .map(|p| text(p.get("ref")))
-            .map(|r| r.split('?').next().unwrap_or_default().to_owned())
-            .collect();
-        if named.is_empty() {
-            named.push("a part the report does not name".to_owned());
+        let Some(level) = level else { continue };
+        let named = hole
+            .affects
+            .iter()
+            .map(|Object(p)| p.reference.split('?').next().unwrap_or_default())
+            .chain(
+                hole.affects
+                    .is_empty()
+                    .then_some("a part the report does not name"),
+            );
+        for part in named {
+            record(&mut out, &mut remaining, &hole.id, level, part)?;
         }
-        out.extend(
-            named.iter().map(|what| format!("{id} ({level}) in {what}")),
-        );
     }
     out.sort();
     out.dedup();
     Ok(out)
 }
+
+#[cfg(test)]
+#[path = "images_report_tests.rs"]
+mod tests;

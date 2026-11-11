@@ -1,9 +1,13 @@
 skill = "security"
-change = "sha256:4bf136c9409409027d6e720e32430bb1bc3840417b80d1874ed4d444a2e1fecf"
+change = "sha256:ded670f0757639c234835520561bd4575b1b3610e0873078c2bc2f17b78b2ed2"
 verdict = "pass"
-agent = "claude subagent"
-summary = "Read the staged spec 0065 round 23 changes: the Interfaces item 1 wording that principal(name, policy_digest) refuses a digest not in force or an unknown name, and the new test that a newer or unknown policy digest is refused through both the socket and tijori-verify (whose policy in force is protected main's). Rechecked that the change keeps caller identity by peer account, the protected-main trust source and the earlier refusals; no open security defect in the staged text."
+agent = "codex"
+summary = "Rechecked unchanged ten-file scanner patch/callers after parent8f5308ad790a6e01eb3b52b90703cde1233daafa, verified patch/hash identities, and read relevant signing/trust-boundary specs0003/0008/0065. No new constraint conflicts with bounded capture, strict parsing, privacy or exact image/ID exemptions. No remaining security defect found. Source review only; no runtime/fullgate/push/coverage/migration/release/live upgrade claim."
 
 [[finding]]
-what = "Later: docs/specs/0065-tijori.md 'Records this spec owns' says the gate refuses a review-record whose review is not the one being counted, but does not say, as 0008 item 8 does for review-result, that the gate refuses one whose fingerprint is not the change being checked; AGENTS.md 7.1's change fingerprint covers this today, so spec 0010's review-record encoding should state the fingerprint refusal when it is written."
+what = "Report expansion2821 remains repaired: aggregate byte/count checks precede copies and formatting."
+fixed = true
+
+[[finding]]
+what = "Reference identity2823 remains repaired: allowance/seen records compare the separate full ID, unaffected by reference separators."
 fixed = true

@@ -1,5 +1,13 @@
 skill = "style-docs"
-change = "sha256:4bf136c9409409027d6e720e32430bb1bc3840417b80d1874ed4d444a2e1fecf"
+change = "sha256:ded670f0757639c234835520561bd4575b1b3610e0873078c2bc2f17b78b2ed2"
 verdict = "pass"
-agent = "claude subagent"
-summary = "Round 23 of spec 0065 (staged index only): read the two changed lines, the Interfaces item 1 sentence on principal(name, policy_digest) and the new test that a principal question with a digest not in force is refused through the socket and tijori-verify, against AGENTS.md sections 6 and 12 and the rest of the spec. Both are plain British English, name only defined terms, state no status and add no number; they agree with the check library item 1 sentence on tijori-verify answering principal with the same refusals."
+agent = "codex"
+summary = "Re-read unchanged ten-file patch against parent8f5308ad and relevant specs0003/0008/0065/README; signing/provenance contracts do not conflict. Names, comments, item docs and British English are clear; source/function limits hold. No dead or duplicated logic or speculative extension points. Opaque Hole is clearer than recovering identity from display text; typed fields, object-only wrapper and bounded readers each have one justified purpose. Budgets precede copies/formatting and public holes string API remains. Regression, scanner integration and end-to-end allowance proofs cover full IDs/reference separators. Refreshed415sealed tests and non-review checks pass; stale records refuse. No fullgate/commit/push/coverage/release claim."
+
+[[finding]]
+what = "The four wide fixture lines remain repaired without weaker assertions."
+fixed = true
+
+[[finding]]
+what = "Object<T>/field and findings/Hole APIs retain clear item docs."
+fixed = true
