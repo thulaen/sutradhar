@@ -1,9 +1,13 @@
 skill = "backlog"
-change = "sha256:2de8a0b02921cf83b45489b204b845e0c09dc9db7ac3300588179487ba4fa634"
+change = "sha256:d142b654fc78ea16afcc94c94a4efb1cbbe9fc2a63d0a02a20817695de358919"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 8 backlog review of the staged index only: spec 0070, AGENTS.md section 3 item 2, the spec 0064 amendments, spec 0020's action_runs row, four glossary rows and the specs README row, against task #186 (parent #64). The same six files as round 7 and the scope still matches the task with no unrelated lines. The round 7 blocker is closed: targets have a fixed order, two-target rows have a second copy sorted by kind and second-target digest, first-target and second-target one-target rows merge with the matching copy, item 3 reuses item 1's rows, sorts and merges, Performance counts the second copy in both refusals, and a test covers a second-target match. No status claims, no new rule numbers, added prose lines within 80 characters."
+summary = "Round 10: read the staged spec 0071, the spec 0064 owner and counting sentences, and the specs README row and written-fresh list, against Forgejo task 187 (Phase 7, parent 64). The change does what the task asks and no more; the round 9 blocker is closed: a shape's claim entry is admitted and re-admitted with an independent review signed by someone who is not an author of the claim entry or of the code holding its named points, bound to the entry's digest, matching the class review rule, with tests for a review of another digest and an author-signed review. No new contradiction found and no line over 80 characters."
 
 [[finding]]
-what = "Later: task #186 shows no labels and no milestone in Forgejo; set its phase label and milestone, and update its body (old total, missing the spec 0020 action_runs row and the Artefact kind and Recipe glossary rows) when the proof is posted."
+what = "Later: docs/specs/0071-checked-variants.md:146-148, for a shape's claim entry 'the code holding its named points' spans every step in the listed rows; say whether an author of any such step, or only of the steps whose points are named, is barred from signing the claim review."
+fixed = true
+
+[[finding]]
+what = "Later: round 9 Later items (owner of the claim entry type in 'Who owns what', catalogue/claims/ in spec 0055's layout, replay using the claim entry pinned for that run, withdrawal needing the run repeated, capability and workflow class lists) stay recorded as tasks and are not blockers."
 fixed = true

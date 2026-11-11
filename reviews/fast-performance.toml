@@ -1,9 +1,9 @@
 skill = "fast-performance"
-change = "sha256:2de8a0b02921cf83b45489b204b845e0c09dc9db7ac3300588179487ba4fa634"
+change = "sha256:d142b654fc78ea16afcc94c94a4efb1cbbe9fc2a63d0a02a20817695de358919"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged spec 0070 Proving workflows differ, Running a workflow, Limits and Performance sections, and the staged hunks of AGENTS.md, specs 0064 and 0020. Checked that the round 7 blocker is closed: with targets in a fixed order, two-target rows sorted by kind and first-target digest, a second copy sorted by kind and second-target digest, and one-target rows sorted by kind, target and digest, both one-target groups now merge once against a copy sorted on their own target, so no match on either target is missed and no pair is compared one by one; the extra copy is named in both refusals with checked arithmetic."
+summary = "Read the staged spec 0071, the spec 0064 sentences and the README row, focusing on the round 10 change (an independent, digest-bound review of a shape's claim entry). The change adds an admission-time check only, nothing on any run or request path; the fold stays one on-disk sort and one pass per target, the count one merged pass over sorted lists, and all growth is bounded by the frozen layout bounds and the class list length."
 
 [[finding]]
-what = "Later: docs/specs/0070-capability-workflows.md Performance names 'the second copy of the two-target rows' and 'their second copy' once; item 3 uses the same rows, sorts and merges for key digests, so the key-digest second copy is covered only by reading 'digest lists' as both kinds. Name the key-digest rows and their second copy explicitly in both refusals when the section is next touched."
+what = "Later: admission compares the claim review's digest and signer against the claim entry and the authors of the code holding its named points; working out those authors should read the pinned history once per admission, not once per named point."
 fixed = true

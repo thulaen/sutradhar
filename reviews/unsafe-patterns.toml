@@ -1,9 +1,9 @@
 skill = "unsafe-patterns"
-change = "sha256:2de8a0b02921cf83b45489b204b845e0c09dc9db7ac3300588179487ba4fa634"
+change = "sha256:d142b654fc78ea16afcc94c94a4efb1cbbe9fc2a63d0a02a20817695de358919"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged spec 0070 (Proving workflows differ, Limits, Performance, tests) and the staged spec 0064 amendments for unsafe patterns: unbounded sizes, overflow, check-then-use, trusted input and weakened tests. The round 7 merge blocker is closed: targets have a fixed order, two-target rows have a second copy sorted by the second-target digest, one-target rows merge with the copy for their target, and both refusals name the second copy with checked arithmetic."
+summary = "Read the staged spec 0071 and the staged hunks of spec 0064 and the specs README, round 10. Checked that the round 9 blocker is closed: a shape's claim entry is admitted and re-admitted with an independent review signed by someone who is not an author of the claim entry or of the code holding its named points, bound to the claim entry's digest, with a review for another digest refused (test claim_review_for_another_entry_digest_is_refused, plus an author-signed claim review refused), matching the class review rule in Class lists item 2. Rechecked the V- id arithmetic (checked unsigned 128-bit, round trip, ordinal 0 and out-of-range bases refused, fixture K = 1), the harness-written signed branch record, input limits on class lists and batch rows, fail-safe outcomes for missing or vacuous twin results, and the pre-run refusals on overflow. No new contradiction and no blocking pattern found; lines within 80 characters."
 
 [[finding]]
-what = "Later: docs/specs/0070-capability-workflows.md item 1 says equal two-target rows sit together after sorting, but does not say in so many words that one-target members on the same target are matched by adjacency in their own sorted list; the sort order implies it. A plain sentence would help the implementer."
+what = "Later: a method's catalogue entry also names claimed classes and decision points, but section 'Which classes a member claims' item 1 states the independent, digest-bound, non-author review only for a shape's claim entry; a method entry's claim relies on the catalogue's own review (spec 0055). A later spec could state the same author and digest rule for claims in a method's catalogue entry."
 fixed = true

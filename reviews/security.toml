@@ -1,13 +1,13 @@
 skill = "security"
-change = "sha256:2de8a0b02921cf83b45489b204b845e0c09dc9db7ac3300588179487ba4fa634"
+change = "sha256:d142b654fc78ea16afcc94c94a4efb1cbbe9fc2a63d0a02a20817695de358919"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged diff (spec 0070, AGENTS.md item 2, spec 0064 amendments, spec 0020 action_runs row, glossary, README). Traced untrusted inputs: shape input and CW- ids (refused with SUT-802 when uncounted, decoded with checked arithmetic), artefact content (data only, never choosing the next action, input or rights), runner-signed results and digests (recomputed by qualify, replay re-sorts and refuses on difference), the counted set (digest and signature checked on install into a read-only store), caller rights (agent rule, Cedar permission, token scopes and allow list checked before the run and again per action as the same caller, token and door), visibility (strictest scope kept, private text to agents only with private scope) and change requests (stop at plan or draft, live owner confirmation, nothing applied). Round 8 closes the round 7 blocker: targets take a fixed order, two-target rows get a second copy sorted by second-target digest, and each target's one-target rows merge with the copy ordered by that target, so a second-target-only member is now found; item 3 reuses the same rows and merges, and both Performance refusals count the second copy. No new contradiction or security gap found."
+summary = "Read the staged spec 0071, the spec 0064 owner and counting sentences and the README rows. Traced every untrusted input (member output, class entries, the reviewed claim entries in catalogue/claims/, review signatures, branch records, rerun rows, V- ids) to where it is used. The round 10 change makes a shape's claim entry review independent of the claim entry's authors and of the code holding its named points, and binds it to the claim entry's digest, matching the class review rule; both refusals are tested. Claims only select which checks run; every variant still needs a runner-signed class pass and a failing twin with a named point missing from the harness-written branch record. No secrets, crypto, paths, shell or libraries are added; no line outside tables passes 80 characters."
 
 [[finding]]
-what = "Fixed: docs/specs/0070-capability-workflows.md:218-228, the round 7 merge gap that let a workflow matching a second-target-only member escape items 2 and 3, is closed by the second sorted copy and per-target merges, with a test at line 611."
+what = "Later: docs/specs/0071-checked-variants.md:141-149 and 244-248, the V- reader's 'claimed by that owner' test and a replay should be stated to use the claim entry digest pinned for that run's protected policy, so a later withdrawal neither fails replay of an earlier signed run nor reads a newer claim into it."
 fixed = true
 
 [[finding]]
-what = "Later: the placing rule ('a placing is known by the set of longer slots it uses') has no policy cap on placings per pair of shapes; already recorded as a round 6 Later item, not made worse here."
+what = "Later: docs/specs/0071-checked-variants.md:146-147, 'an author of the code holding its named points' for a shape's claim entry spans every slot row's step code; the spec could say how authorship of that code is read (for example from the reviewed catalogue entries of those steps), so the independence check is mechanical rather than left to the reviewer."
 fixed = true

@@ -1,13 +1,13 @@
 skill = "defects"
-change = "sha256:2de8a0b02921cf83b45489b204b845e0c09dc9db7ac3300588179487ba4fa634"
+change = "sha256:d142b654fc78ea16afcc94c94a4efb1cbbe9fc2a63d0a02a20817695de358919"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read every staged line of spec 0070 and the staged hunks of AGENTS.md, specs 0020 and 0064, the glossary and the specs README. Checked that the round 7 merge defect is closed: targets have a fixed order (XenForo, then WordPress), two-target rows have a second copy sorted by kind and second-target digest, first-target and second-target one-target rows merge with the matching copy, each list read once per merge, and both refusals count the second copy. Item 3 now only points at item 1, item 2 says losers still count as lower members, and the tests cover a lower two-target member matching on one target and a one-target member on the second target. Recomputed slot sizes, products and Performance run counts (300; 1,979,873,280; 21; 2; 5; total 1,979,873,608) and line lengths; no new contradiction found."
+summary = "Read every staged line of spec 0071, the two spec 0064 sentences and the specs README row and list, against specs 0055 and 0064. The round 9 blocker is closed: a shape's claim entry is admitted and re-admitted with a review signed by someone who is not an author of the entry or of the code holding its named points, bound to the entry's digest, with tests for a mismatched digest and an author-signed review. No new contradiction, line over 80 characters, status claim or new rule number found."
 
 [[finding]]
-what = "Later: docs/specs/0070-capability-workflows.md:224-225: one-target rows are sorted by kind, then target, then digest, so the rows of one target are not contiguous; each merge must skip the other target's rows. This is sound and reads the list once per merge, but saying 'skipping rows of the other target' would make it plain to the implementer."
+what = "Later: docs/specs/0071-checked-variants.md:146-147 says the claim review is signed by 'someone who is not an author'; spec 0064 judges authorship by stable principal from authenticated authors. A later edit could cite spec 0064's author rule here so the two cannot drift, and say how authors of 'the code holding its named points' are found."
 fixed = true
 
 [[finding]]
-what = "Later: docs/specs/0070-capability-workflows.md:226-229 and 273: item 2 lets a member that loses still remove higher members it matches, while item 4 judges pairs on the set left after item 3, so a member removed in items 2 or 3 removes nobody in item 4. Both choices only shrink the count, so the result stays sound; a sentence saying why the two items differ would stop a reader taking it for a slip (already recorded in round 7's Later items as a member near only to a workflow removed in item 3)."
+what = "Later: docs/specs/0071-checked-variants.md:148 binds the claim review to the claim entry's digest only; if the code at a named Rust path changes while the claim entry stays the same, the review is not repeated. The behaviour digest pinned with the catalogue may already cover this; a later edit could say so."
 fixed = true

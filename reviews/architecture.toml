@@ -1,13 +1,9 @@
 skill = "architecture"
-change = "sha256:2de8a0b02921cf83b45489b204b845e0c09dc9db7ac3300588179487ba4fa634"
+change = "sha256:d142b654fc78ea16afcc94c94a4efb1cbbe9fc2a63d0a02a20817695de358919"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 8 architecture review of the staged docs change: read the whole staged spec 0070 and the staged hunks of AGENTS.md, specs 0020, 0064 and README and the glossary. Module walls hold: sutradhar-methods owns shape types, artefact kinds, ids, decoding, stage records and the counted set's encoding and reader; sutradhar-actions owns only the recipe runner and workflow.recipe.run, depends on sutradhar-methods one way, and calls spec 0020's action runner through its typed interface wired at the composition root. The round 7 blocker is closed: targets in a fixed order, a second copy of two-target rows sorted by second-target digest, one-target rows merged with the matching copy, and item 3 reuses item 1's rows, sorts and merges; no new contradiction, layer, setting or cross-module reach. Spec 0020's action_runs columns, 0064's identity form, W- rows, record order and runner-result amendment agree with 0070."
+summary = "Read the staged spec 0071, the spec 0064 owner and counting sentences and the specs README row, round 10. Checked that the round 9 blocker is closed: a shape's claim entry is now admitted and re-admitted with an independent review signed by someone who is not an author of the claim entry or of the code holding its named points, bound to the claim entry's digest, matching the class review rule, with tests for a wrong digest and an author-signed review. No new contradiction: ownership stays clear (sutradhar-methods owns types, admission, layout and the one V- reader; the class set builder and instrumentation sit in spec 0064's pinned harness; qualify owns fold and count), no loop between modules, and the V- layout, fold and sort-based counting remain sound and bounded."
 
 [[finding]]
-what = "Later: docs/specs/0070-capability-workflows.md 'Shape stages' implemented stage checks spec 0020's registry from sutradhar-methods; when implemented, do it through a trait owned by sutradhar-methods and implemented by sutradhar-actions, wired at the composition root, so the dependency stays one way (carried from round 6)."
-fixed = true
-
-[[finding]]
-what = "Later: docs/specs/0020-screens-actions-sutra-mcp.md action_runs says only the recipe runner sets the parent run id and CW- id; the action runner's typed interface should take these as a separate parameter only the recipe runner is given, rather than relying on convention (carried from round 7)."
+what = "Later: docs/specs/0071-checked-variants.md lines 127-137, 'Who owns what' still does not name which module owns the claim entry type and its admission in catalogue/claims/ (implied to be sutradhar-methods). Name it there when the section is next touched."
 fixed = true

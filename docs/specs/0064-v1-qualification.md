@@ -123,9 +123,10 @@ and platform wrappers for one behaviour share its identity.
 A method is counted once by its computation and behaviour. A capability
 is counted once by its independently usable, shipped operation. A
 variant is counted once by its canonical owning behaviour and its
-admitted input class. An input class is admitted in the frozen catalogue
-with an independent review. It is distinct from a neighbouring class
-only when its test fails with the neighbour's input in its place,
+admitted input class, as spec 0071 sets out. An input class is
+admitted in the frozen catalogue with an independent review. It is
+distinct from a neighbouring class only when its test fails with the
+neighbour's input in its place,
 because the input takes a different decision or code path. Classes that
 differ only by value, such as adjacent bands of one number, are one
 class. Values within one class count once. Check identities record
@@ -317,9 +318,10 @@ and its integration and end-to-end evidence. A capability workflow
 resolves its shape and actions through spec 0070 and counts only when
 every action resolves as a capability does and the workflow's own
 runner-signed end-to-end result passed on each target of its shape. For a
-variant, resolve its
-owner, which is always a method, its admitted input class and its
-completed check; a variant counts only when its owner is among this
+variant, resolve its owner, its admitted input class and its
+completed check. The owner is a counted method or method chain, or a
+capability or capability workflow once a spec admits a class list for
+its input kind (spec 0071). A variant counts only when its owner is among this
 run's verified members. Results for several required targets join under
 the same member identity. The member counts once after every required
 result passes.

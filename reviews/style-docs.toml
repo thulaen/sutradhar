@@ -1,13 +1,17 @@
 skill = "style-docs"
-change = "sha256:2de8a0b02921cf83b45489b204b845e0c09dc9db7ac3300588179487ba4fa634"
+change = "sha256:d142b654fc78ea16afcc94c94a4efb1cbbe9fc2a63d0a02a20817695de358919"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the whole staged spec 0070 and the staged hunks of AGENTS.md, the glossary, specs 0020, 0064 and the specs README against AGENTS.md sections 6 and 12: plain British English, line lengths, status words, undefined terms, cross-references and text that could drift. The round 7 points are closed: item 3 now reuses item 1's rows, sorts and merges with key digests, the second copy sorted by second-target digest is named in item 1, both Performance refusals and a new test, and item 2's same-set sort is reworded. No line outside a table passes 80 characters and no status words were found."
+summary = "Read the staged spec 0071, the spec 0064 variant counting and owner sentences and the specs README row and written-fresh list against AGENTS.md section 6 and 12 style rules: plain British English, no status words, lines at most 80 characters outside tables, defined terms and tests matching the text. The round 9 blocker is closed: a shape's claim entry is admitted and re-admitted with an independent review signed by a non-author of the entry and of the code holding its named points, bound to the entry's digest, and the two new tests match the text without contradicting the class review rule."
 
 [[finding]]
-what = "Later: docs/specs/0070-capability-workflows.md:221-228: item 1 says equal two-target rows sit together and describes the merges of one-target rows with the two copies, but does not say in so many words that two one-target members on the same target are matched within their own sorted list; a clause such as 'equal one-target rows on one target sit together too' would make it explicit."
+what = "Later: docs/specs/0071-checked-variants.md lines 141-156, item 1 of 'Which classes a member claims', is one long chain of semicolon clauses covering both method entries and claim entries, and its 'Changing it changes no shape' leaves 'it' to mean the claim entry by position only. Splitting it into shorter sentences naming 'the claim entry' would read more plainly."
 fixed = true
 
 [[finding]]
-what = "Later: docs/specs/0070-capability-workflows.md:238 and 272, and the staged 0064 hunks at the counting, resolving and planted-fault paragraphs, keep uneven line wraps, already recorded as a Later item."
+what = "Later: docs/specs/0064-v1-qualification.md line 128 ends early ('neighbour's input in its place,') after the rewrap, leaving a ragged short line; rewrap the paragraph when it is next touched."
+fixed = true
+
+[[finding]]
+what = "Later: docs/specs/0071-checked-variants.md speaks of 'the member's reviewed entry' and 'the member's entry'; for a chain this means the shape's claim entry. A short definition under 'Words used here' would stop a reader taking it for the frozen shape sheet."
 fixed = true
