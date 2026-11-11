@@ -383,7 +383,7 @@ Paid search alignment; Other search engines; The MCP content toolkit;
 Forum-native content; Learning content; Reference content; Community and
 policy pages; Visual content; Audio and video production; Email and
 messaging copy; Site copy and UX writing; Editing operations;
-Collaboration; Staff and contributor access through MCP.
+Collaboration; Staff and contributor access.
 
 ### The link-equity rules
 

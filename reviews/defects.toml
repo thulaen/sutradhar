@@ -1,9 +1,5 @@
 skill = "defects"
-change = "sha256:840e1ba4cbc4568b55923f35834b214e3a7015708004e444714336576e8994eb"
+change = "sha256:1962a6a58bbccf972ee7bb3f50091e322950926c21b90a3f55c11c65de94d461"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read every staged line of task #166 round 12 (AGENTS.md sections 4, 5.1, 5.2, 6 rules 2, 6, 8, 9, 12 and 7.3; ADR-0017 and its index row; ADR-0001; README; roadmap Phase 2 lead step, item 10 and Phase 3 item 8; specs 0002, 0003, 0010, 0012, 0063; architecture skill step 3) against the owner answers and the round 11 fixes. Checked the landing order (analyser checks with their planted faults, GanitEvolve's own Go source, then the Go safety parse with the Go whole-file problem) against section 7.3 and spec 0012 build order, the Phase 1 Rust exception against roadmap items 2 and 9 and crates on 7f5ccc9, and that no staged text still says Cargo-only, Rust hooks or small shell scripts. No blocking defect found."
-
-[[finding]]
-what = "Later: spec 0010 'Changes from the source' says the bootstrap supervisor is written in Go, while deploy/runner on main at 7f5ccc9 may hold a kept shell supervisor; name which (already logged on #166 in round 6, not made worse here)."
-fixed = true
+summary = "Round 4 of task #149 batch 3: read every staged line of docs/specs/features.md and the one line of spec 0027 against AGENTS.md sections 5.3 to 5.5 and the features.md rules. Checked the [Public] tags on 376, 698, 700 and 1294, the 675 rewrite (same page for every visitor, no named product), the MCP rewrites of 1245, 1250, 1261 and 1303 to 1312, the round 3 fixes to 1303 and 1305 (site's admin pages, matching AGENTS.md section 5.4), and that no staged doc still names the old heading or feature names. Nothing blocking found; earlier Later items stay logged on #149."

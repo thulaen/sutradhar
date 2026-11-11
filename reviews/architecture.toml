@@ -1,13 +1,13 @@
 skill = "architecture"
-change = "sha256:840e1ba4cbc4568b55923f35834b214e3a7015708004e444714336576e8994eb"
+change = "sha256:1962a6a58bbccf972ee7bb3f50091e322950926c21b90a3f55c11c65de94d461"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged index for task #166 (AGENTS.md sections 4, 5.1, 5.2, 6 and 7.3; roadmap Phase 2 lead step, item 10 and Phase 3 item 8; ADR-0001, ADR-0017 and its index row; README; specs 0002, 0003, 0010, 0012 and 0063; architecture skill step 3) and checked the module split (product in Rust on Boot, operations and developer tools in Go off Boot), the landing order for Go, the Phase 1 exception, tool stores under section 5.2, and that every round 12 fix is present without new contradictions."
+summary = "Read the staged diff of docs/specs/features.md and spec 0027 line 386 for task #149 items 10 and 11 against AGENTS.md sections 5.3, 5.4 and 5.5 and the features.md rules. The [Public] tags, the same-page offer pages in 675, the draft-and-accept flows in 1245 and 1250, the owner-only switch in 1261 and the staff access in 1303 to 1312 (owner-started sessions on the owner's PC, one site per session, site-account permissions instead of MCP, dashboards in the site's admin pages) now fit the module walls; the round 3 fixes are in."
 
 [[finding]]
-what = "Round 12 fixes confirmed: spec 0012 build order step 2 points to AGENTS.md section 4 for early Go source; the Phase 1 exception names forge-sync with its GitHub sign-in (Phase 1 item 9) and the Forgejo Actions runner on Dell (Phase 1 item 2); each analyser check lands in one commit with its planted faults; AGENTS.md 5.1, roadmap Phase 3 item 8, the architecture skill and spec 0002 say the tools move to Go under ADR-0017 and point to section 4's exception; ADR-0017 lists all five owner answers."
+what = "Later: 1305 puts writer dashboards in the site's admin pages, which the add-on must render from data the service pushes over the signed site link (AGENTS.md section 5.4, the site never calls the PC); spec 0027 or the add-on spec should say the add-on renders them from pushed data and give them a footprint budget if any reach public pages."
 fixed = true
 
 [[finding]]
-what = "Later: spec 0003 calls aegis a developer tool while AGENTS.md 5.1 and 7.3 call the gate and forge-sync operations tools; the section 4 Go row covers both, so nothing breaks, but one word for the gate would read better (already logged as a round 3 Later item on #166)."
+what = "Later: 1303 keeps per-writer assistant profiles, but every session is owner-started on the owner's PC; the spec should say how a writer's drafts are attributed to that writer in the publication log (1260) when the owner runs the session."
 fixed = true

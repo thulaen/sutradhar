@@ -9,7 +9,7 @@ ranges, in this order:
 1. Features 1 to 112: search features for XenForo and WordPress.
 2. Features 113 to 712: the wider feature catalogue.
 3. Features 713 to 1312: content features that AI assistants use
-   through Sutradhar's MCP server.
+   through Sutradhar's MCP server, and the staff access around them.
 4. Features 1313 to 1357: crawler, monitoring, bot and analytics
    additions, and two content tools.
 
@@ -817,7 +817,7 @@ the writing brief (36, task #54).
      inbox.
 375. Social analytics: Shows how social posts perform.
 376. Shared link click tracking: Counts clicks on links shared on social
-     networks.
+     networks. [Public]
 377. Evergreen recycling queue: Keeps a queue of lasting posts to share again
      over time. Each post waits for a person's approval through feature 378.
 378. Social post approvals: Lets a person approve social posts before they go
@@ -1301,8 +1301,8 @@ the writing brief (36, task #54).
      as Birdeye does. [Approval]
 674. Mention geography: Shows where mentions come from geographically, as
      Brand24 does.
-675. Membership offer journeys: Guides visitors through membership offers, as
-     Piano does. [Public]
+675. Membership offer pages: Drafts membership offer pages. Every visitor and
+     every search engine sees the same offer page. [Public]
 676. Workflow data tables: Gives simple data tables for use in workflows, as
      Zapier does.
 677. Workflow input forms: Gives input forms for workflows inside the app, as
@@ -1343,9 +1343,10 @@ the writing brief (36, task #54).
 697. Bluesky best threads feed: Offers a Bluesky custom feed of the community's
      best threads.
 698. Mastodon verification links: Adds links that verify the site's Mastodon
-     accounts.
+     accounts. [Public]
 699. Link-in-bio page: Builds a link-in-bio page. [WP] [Public]
 700. Print campaign QR codes: Makes QR codes for print campaigns, with tracking.
+     [Public]
 701. Community sentiment index: Tracks how members feel about forum topics over
      time.
 702. Product feedback mining: Finds feature requests and complaints about the
@@ -2172,8 +2173,9 @@ the writing brief (36, task #54).
       staff account through the two-key path, where an assistant drafts and a
       person approves.
 1244. Scheduled publishing: Publishes content at a scheduled time.
-1245. Multi-site publishing: Publishes to several of the owner's sites at once,
-      with correct canonical tags.
+1245. Multi-site drafts: Prepares a draft for each of the owner's sites, with
+      correct canonical tags. Each draft is made in its own one-site MCP
+      session, and a person approves and publishes each one on its own site.
 1246. Save as WordPress draft: Saves content as a WordPress draft for a final
       human touch.
 1247. One-step thread creation: Creates a thread with its prefix, tags and poll
@@ -2182,8 +2184,9 @@ the writing brief (36, task #54).
       image and excerpt. [WP]
 1249. Changes approved as a diff: Changes to existing pages are approved as a
       diff that shows what changes.
-1250. Unpublish or roll back: Unpublishes or rolls back anything published
-      through MCP.
+1250. Unpublish or roll back: Proposes unpublishing or rolling back anything
+      published through MCP. A person accepts it on the review page, and it
+      can be undone.
 1251. Embargoed release: Releases embargoed content at an exact time.
 1252. Placement requests: Requests pinned or featured placement for content.
 1253. Forum and blog cross-posts: Cross-posts announcements to the forum and the
@@ -2199,8 +2202,8 @@ the writing brief (36, task #54).
       and assistant.
 1260. Publication log: Logs what was published, when, by which assistant and who
       approved it.
-1261. Emergency unpublish switch: An emergency switch unpublishes AI-assisted
-      content.
+1261. Emergency unpublish switch: A switch the owner presses in the app
+      unpublishes AI-assisted content. No assistant can press it.
 1262. Media upload while publishing: Uploads media to the WordPress library or
       XenForo attachments while publishing.
 
@@ -2253,7 +2256,7 @@ the writing brief (36, task #54).
 1292. Daily publishing limits: Sets daily limits on how much is published.
 1293. AI content kill switch: A kill switch stops all AI content creation.
 1294. Legal AI labels: Adds labels required by law for AI-generated content
-      where they apply, for example under the EU AI Act.
+      where they apply, for example under the EU AI Act. [Public]
 1295. Children's data protection: Blocks content that collects or targets
       children's data.
 1296. Trademark guidance: Gives guidance on using trademarks in content.
@@ -2266,23 +2269,32 @@ the writing brief (36, task #54).
 1301. Approved models: Sets which models are approved for each content type.
 1302. Assistant permission revocation: Revokes the permissions of any assistant.
 
-### Staff and contributor access through MCP
+### Staff and contributor access
 
-1303. Own assistant per writer: Each staff writer connects their own assistant,
-      with scoped content permissions.
+1303. Assistant profile per writer: The owner sets up an assistant profile for
+      each staff writer, with scoped content permissions. The owner starts
+      every session, and sessions run only on the owner's PC (AGENTS.md
+      section 5.5).
 1304. Personal style memory: Keeps a personal style memory for each writer,
       within the brand voice.
-1305. Writer dashboards: Shows each writer their drafts and deadlines through
-      MCP.
+1305. Writer dashboards: Shows each writer their drafts and deadlines in the
+      site's admin pages.
 1306. Personal drafts space: Gives each writer a personal space for drafts.
 1307. Writer source packs: Makes source packs for each writer's sections.
-1308. Trusted member writers: Gives trusted member writers draft-only access.
-1309. Expiring guest access: Gives guest contributors access that expires.
-1310. Sponsor content intake: Takes in sponsor-supplied content through MCP,
-      with disclosure enforced.
-1311. Agency writer access: Gives agency writers access to client sites.
-1312. Writer offboarding: Revokes a writer's assistant access and reassigns
-      their drafts.
+1308. Trusted member writers: Gives trusted member writers draft-only access
+      through site-account permissions, never the MCP server.
+1309. Expiring guest access: Gives guest contributors site-account access that
+      expires, through the platform's own permissions, with a draft-only role.
+      A person grants it on the review page, and that Accept covers removing
+      the access when it expires. It never opens the MCP server to them.
+1310. Sponsor content intake: Takes in sponsor-supplied content as drafts, with
+      disclosure enforced. Only the owner's own sessions do this.
+1311. Agency writer access: The client connects its site to the agency edition
+      with its own site account. Each agency writer works under their own
+      draft-only account on that site. MCP sessions run only on the agency
+      owner's PC, and each sees one site only.
+1312. Writer offboarding: Removes a writer's assistant profile and site-account
+      access, and reassigns their drafts.
 
 ## Range 4: features 1313 to 1357
 

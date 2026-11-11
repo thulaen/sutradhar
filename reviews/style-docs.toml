@@ -1,9 +1,9 @@
 skill = "style-docs"
-change = "sha256:840e1ba4cbc4568b55923f35834b214e3a7015708004e444714336576e8994eb"
+change = "sha256:1962a6a58bbccf972ee7bb3f50091e322950926c21b90a3f55c11c65de94d461"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 12 of task #166: read the whole staged diff fresh from the index (AGENTS.md sections 4, 5.1, 5.2, 6 and 7.3; roadmap; ADR-0001, ADR-0017 and the ADR index; README; architecture skill; specs 0002, 0003, 0010, 0012 and 0063) against section 6, plain English, status words and said-twice. Round 11 fixes are in place: spec 0012 step 2 points to section 4, the Phase 1 exception names forge-sync with its sign-in and the Forgejo Actions runner on Dell and matches roadmap items 9 and 2, the analyser checks land with their planted faults, 5.1, Phase 3 item 8, the skill and spec 0002 say the tools move to Go under ADR-0017, and ADR-0017 lists all five owner answers. Existing Phase 1 tools (pankti, aegis-door, chaukidar) are on main at 7f5ccc9, so the kept-and-fixed allowance covers them and no new deadlock appears."
+summary = "Round 4 of task #149 batch 3: read the staged diff of docs/specs/features.md and docs/specs/0027-candidates-ranking.md against AGENTS.md section 6, the features.md rules and tag table. Checked plain British English, no status words, names, the [Public] tags on 376, 675, 698, 700 and 1294, the MCP rewrites of 1245, 1250, 1261 and 1303 to 1312, the renamed group heading and its one reference in spec 0027, and the range 3 description. All round 3 findings are fixed; nothing new blocks."
 
 [[finding]]
-what = "Later: ADR-0017 Decision (docs/adr/0017-go-for-tools.md, 'Go source lands only once the Go toolchain and every Go analyser are pinned by version and hash and their checks catch planted faults') still restates AGENTS.md section 4's landing condition, with slightly different words ('every Go analyser' against 'its analysers'), so the two could drift. Suggest the ADR keep only the pointer to section 4."
+what = "Later: features.md 1311 names 'the agency edition', which has no glossary entry yet; already logged on #149 with #145 item 1."
 fixed = true

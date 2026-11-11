@@ -1,5 +1,13 @@
 skill = "security"
-change = "sha256:840e1ba4cbc4568b55923f35834b214e3a7015708004e444714336576e8994eb"
+change = "sha256:1962a6a58bbccf972ee7bb3f50091e322950926c21b90a3f55c11c65de94d461"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 12 of task #166: read the whole staged docs-only diff fresh from the index (AGENTS.md sections 4, 5.1, 5.2, 6 rules 2, 6, 8, 9, 12 and 7.3; README.md; ADR-0001, new ADR-0017 and its README row; roadmap Phase 2 lead step and items 8 and 10; specs 0002, 0003, 0010, 0012 and the staged hunk of 0063; architecture skill step 3). Checked the round 12 fixes: the Phase 1 Rust exception names only forge-sync with its GitHub sign-in and the Forgejo Actions runner on Dell, adding no shell; each Go analyser check lands in one commit with its planted faults, so the early-landing rule is not circular; spec 0012 step 2, section 5.1, roadmap item 8, the skill and spec 0002 point to section 4 instead of claiming the tools are already Go. The shell ban still removes sh -c and bash -c with explicit argument lists; the kept set is fixed at 7f5ccc9 and no shell may be added; cgo stays off outside sealed race-test jobs; rule 6 bans Go unsafe, linkname, hand assembly and plugin; no live guard is switched off before its replacement passes. No secrets, code or new dependencies in the change. Earlier Later items are logged on #166; no new problem found."
+summary = "Read the staged diff of docs/specs/features.md (features 376, 675, 698, 700, 1245, 1250, 1261, 1294, 1303 to 1312, range 3 line) and spec 0027 line 386 against AGENTS.md sections 5.3 to 5.5 and the features.md rules. Checked that no feature now opens the MCP server to outside people, acts on the live site without a person's Accept, crosses sites in one session, or shows different public pages to different visitors. None does."
+
+[[finding]]
+what = "Later: features.md 376 and 700 (shared link and QR click tracking, now [Public]) will likely need a redirect or counting endpoint on the public site; their specs must make it accept only Sutradhar-signed or registered targets so it cannot be used as an open redirect, and must not log visitor IP addresses or set cookies."
+fixed = true
+
+[[finding]]
+what = "Later: features.md 1308, 1309 and 1312 have Sutradhar grant and remove site-account roles; their specs must state that Sutradhar's own site token can only assign a fixed draft-only role (never raise a role, never admin), and that the grant and removal are logged in the publication log (1260)."
+fixed = true

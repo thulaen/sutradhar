@@ -1,9 +1,5 @@
 skill = "backlog"
-change = "sha256:840e1ba4cbc4568b55923f35834b214e3a7015708004e444714336576e8994eb"
+change = "sha256:1962a6a58bbccf972ee7bb3f50091e322950926c21b90a3f55c11c65de94d461"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 12 backlog review of task #166 (Go for tools, no shell), docs only. Read the staged index fresh (AGENTS.md sections 4, 5.1, 5.2, 6 and 7.3; roadmap Phase 2 lead step, item 10 and Phase 3 item 8; ADR-0017 and its index row; ADR-0001; README.md; specs 0002, 0003, 0010, 0012 and the staged hunk of 0063; architecture skill step 3), task #166 on Forgejo and the owner answers in the brief. The change records only the owner's decisions and points the specs at them, with implementation left to Codex; the roadmap reorder is the owner's 11 November answer; the Phase 1 exception matches the owner's option text; all round 11 fixes are present; earlier Later items are logged on #166; 8 tasks carry status/ready (limit 10)."
-
-[[finding]]
-what = "Later: ADR-0017's Decision says 'every Go analyser' is pinned before Go source lands, while AGENTS.md section 4 says 'its analysers'; the same meaning in two wordings. When the required Go analysers are listed (round 9 Later item), use one wording in both places."
-fixed = true
+summary = "Read task #149 and its comments, and the staged diff of docs/specs/features.md and spec 0027 line 386. The change does items 10 and 11 of #149 (Phase 2, status/working) and nothing else: [Public] on 376, 698, 700 and 1294; 675 rewritten without the named product; 1245, 1250, 1261 and 1303 to 1312 brought under AGENTS.md section 5.5 and the human-Accept rule; the group rename is carried into spec 0027 and the range 3 description. Later items from rounds 1 to 3 are logged on #149, and 8 tasks carry status/ready (at most 10)."

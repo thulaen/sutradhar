@@ -1,5 +1,9 @@
 skill = "fast-performance"
-change = "sha256:840e1ba4cbc4568b55923f35834b214e3a7015708004e444714336576e8994eb"
+change = "sha256:1962a6a58bbccf972ee7bb3f50091e322950926c21b90a3f55c11c65de94d461"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged index for task #166 (AGENTS.md sections 4, 5.1, 5.2, 6 and 7.3, ADR-0017, ADR-0001, README, roadmap, specs 0002, 0003, 0010, 0012 and 0063, architecture skill). Docs only: no code, loops, per-request paths, caches or queues change. Checked that no rule weakens speed or memory checks for Go ('No check is weaker for Go'), that rule 8 and 9 speed baselines and receipts still apply to Go once the Go safety parse lands, and that nothing cuts text short. Go speed and memory budgets and Go equivalents of the Rust speed-counting crates are already logged as Later on #166; nothing new blocks."
+summary = "Read the staged docs-only diff (features.md range 2 and 3 rewrites for task #149 items 10 and 11, round 4: 1303 owner starts every session, 1305 dashboards in the site's admin pages, and the group name in spec 0027). No code or hot path changes; checked that the reworded features add no per-request work, unbounded growth or per-visitor rendering beyond what is already logged as Later on #149."
+
+[[finding]]
+what = "Later: 376 and 700 now carry [Public]; their specs must set a footprint budget and count clicks off the render path (already logged on #149, round 1). 1309 timed removal should sweep an indexed expiry time rather than scan all grants (already logged on #149, round 2). 1305 writer dashboards sit in the site's admin pages, so they add nothing to public page footprint. The change does not make any of these worse."
+fixed = true

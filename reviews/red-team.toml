@@ -1,21 +1,25 @@
 skill = "red-team"
-change = "sha256:840e1ba4cbc4568b55923f35834b214e3a7015708004e444714336576e8994eb"
+change = "sha256:1962a6a58bbccf972ee7bb3f50091e322950926c21b90a3f55c11c65de94d461"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 12 red team of task #166 (docs only), read from the staged index. Two red agents: get round it (loopholes in the Go and no-shell rule, the kept-and-fixed allowance, the Phase 1 exception and the early-landing list) and break it (contradictions and deadlocks across AGENTS.md, ADR-0017, the roadmap, README, ADR-0001, specs 0002, 0003, 0010, 0012, 0063 and the architecture skill). Each claim was checked against git show :PATH and open Phase 1 tasks in Forgejo; claims on the brief's Later lists were dropped. The round 11 blocker (spec 0012 step 2 restating the early-landing list) is fixed: it now points to AGENTS.md section 4. No contradiction or loophole this change creates was found."
+summary = "Round 4 of task #149 batch 3 (docs only: features.md and spec 0027 line 386). Two red agents attacked the staged diff, one getting round the rules (MCP reach, Accept, one site per session, same page for every visitor, [Public], clean-room) and one breaking and abusing it (stale names, cross-references, outsider routes to MCP or publishing). Each claim was checked against the staged text. No stale names remain, the 0027 group list matches the new heading, and no guest, sponsor or agency writer can reach the MCP server or publish without a person's Accept. Claims already on the #149 Later lists were dropped, and the rest are Later items."
 
 [[finding]]
-what = "Later: the analyser gate checks that AGENTS.md section 4 (staged lines 133-138) lets land before the Go safety parse have no receipt until next changed, like GanitEvolve's own Go source; extend that existing Later item to cover them."
+what = "Later: features.md 1305 shows writer dashboards in the site's admin pages, but 1308, 1309 and 1311 give writers draft-only roles, and on XenForo only administrators can open the admin control panel. The writer-dashboards spec should say which role sees the page (each writer sees only their own drafts, and no writer gets admin or moderator rights to see it), or show XenForo as not applicable."
 fixed = true
 
 [[finding]]
-what = "Later: AGENTS.md section 4 (staged lines 120-122) defines a fix as mending 'a defect in what the kept file, step or tool already does', but not what counts as a defect versus missing behaviour; a reviewer test (the failing test must show behaviour the tool already claims) would close the stretch."
+what = "Later: features.md 1303 says who starts a session and where it runs, but not who drives it. It should say plainly that the writer never reaches the MCP server, for example through a relay or remote desktop."
 fixed = true
 
 [[finding]]
-what = "Later: AGENTS.md section 4 (staged lines 116-117) and ADR-0017 say the ban covers code we write and keep, not an agent running programs; say whether shell kept in skill files or other Markdown as commands for agents counts as kept shell."
+what = "Later: features.md 1310 says 'Only the owner's own sessions do this', but under 1303 the owner starts every session, including those under writer profiles. The spec should name the profile, or say no writer profile is used."
 fixed = true
 
 [[finding]]
-what = "Later: the Phase 1 exception (AGENTS.md staged lines 123-127) lets forge-sync and the runner 'finish in Rust' without bounding 'finish'; tie it to the open Phase 1 tasks (now only #162) so the exception cannot grow with later edits to the roadmap or spec 0002."
+what = "Later: features.md 698 and 1294 are now tagged [Public], but no spec gives them a footprint budget yet, so the footprint tests refuse them until their specs set one. This is the same Later item as the budgets for 376 and 700."
+fixed = true
+
+[[finding]]
+what = "Later: features.md 1308 and 1312 change site-account roles. The global rule covers them, but unlike 1309 they do not say the change goes through the review page with a person's Accept. Also, the sponsor disclosure in 1310 may need a [Public] tag. Both gaps were there before this diff."
 fixed = true
