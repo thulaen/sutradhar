@@ -1,13 +1,9 @@
 skill = "fast-performance"
-change = "sha256:275b0b704a49043aa5d95997d157a9132c385f0f3a5c9ec63929dc89ad286bb1"
+change = "sha256:134b75b6d34c9997edae24219069860a690e2b627a2495f8188bf7dcfe1b60d0"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 15 performance review of the staged docs change. The only new edits are two table rows of spec 0069: slot 2's character n-gram tokenisation now cites Cavnar and Trenkle, 1994 (N-gram-based text categorisation, a real source that scores text by character n-gram profiles), replacing the old n-gram source; slot 5's row is renamed 'Structural identity embedding', still citing Ribeiro, Saverese and Figueiredo, 2017, whose method learns node vectors from structural identity, replacing the old slot 5 name. Neither row changes a slot, a count or any path, and _typos.toml is no longer staged. Rechecked spec 0069's Performance and Limits sections as round 13 passed them: the live path runs no chain, index order keeps one training and one fit at a time, and the counts (29,321,600 prefixes; 234,572,800 non-linear trainings; 45 linear; 5,805,676,800 calibration fits) hold. Nothing timed, since the change is docs only. Nothing blocks."
+summary = "Read the staged docs-only round 3 change: AGENTS.md release gate item 4, the spec 0064 link ranking scope row and the spec 0027 recommendation engine entry. No code, loop, cache, queue or request path changes. No staged doc, code or test still names a 6,000,000 floor, and 100,000,000 is written only in AGENTS.md. Other callers now go through the whole matching and ranking path with a person approving each destination, so no extra live per-request work reaches readers; inputs stay a guest-visible page or passage with no member data."
 
 [[finding]]
-what = "Later: docs/specs/0069-wide-link-ranking.md 'Output kinds, views and checks' item 2: when implemented, fit a slot 11 normaliser once per prefix and probe batch and share it across the chains under that prefix, never once per chain; on an empty batch, stop before asking the owning ganit job for a mixture fit at all."
-fixed = true
-
-[[finding]]
-what = "Later: carried from rounds 9 to 14: seeded-forum ganit builds and per-view word statistics are not named in the Performance cost list (build once per probe seed, shared across chains); keep linear weights indexed by column; work out the caution-on-every-row test once per probe batch."
+what = "Later: when the first other feature that shows related destinations is specced, it needs its own call budget, time limit and degraded mode on the matching and ranking path (spec 0027's limits are written for job 1). Already recorded as a round 2 Later item; this change does not make it worse."
 fixed = true

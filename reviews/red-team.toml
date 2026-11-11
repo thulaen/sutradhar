@@ -1,21 +1,25 @@
 skill = "red-team"
-change = "sha256:275b0b704a49043aa5d95997d157a9132c385f0f3a5c9ec63929dc89ad286bb1"
+change = "sha256:134b75b6d34c9997edae24219069860a690e2b627a2495f8188bf7dcfe1b60d0"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 15. The only edits since round 13 are two rows of spec 0069: slot 2 character n-gram tokenisation now cites Cavnar and Trenkle, 1994, replacing the old n-gram source, and the old slot 5 name is now Structural identity embedding, still citing Ribeiro, Saverese and Figueiredo, 2017; _typos.toml is not staged. Three red agents ran: break it (are the sources real, rightly attributed and fitting, does slot 2 now duplicate slot 3, does the new slot 5 name collide), get round it (pinned typos 1.52.0 with the HEAD config over the staged tree, the docs-only rule, how aegis runs text.typos), abuse it (a hostile post against slot 2 views, slot 5 embeddings, the three cautions, labels and live fusion). Both sources are real (SDAIR-94 pp. 161-175; KDD 2017 pp. 385-394, ACM spelling). The staged docs pass typos with the HEAD config, and only docs and review records are staged. No attack beat a protection; the rest is as round 13 passed it. Nothing blocks."
+summary = "Round 3 of the ranking floor change, read from the staged index: AGENTS.md section 3 item 4, the spec 0064 Link ranking and protection row and the spec 0027 Recommendation engine entry. Three red agents ran: break it (references, leftover 6,000,000, numbers outside AGENTS.md, undefined terms, line length, status claims), get round it (counting settings or combinations, a second engine under another name), abuse it (private sources, member data, spam or unapproved destinations reaching readers). Every reference resolves, 100,000,000 appears only in AGENTS.md, no staged doc, test or code still names 6,000,000, spec 0064's counting rules and spec 0067 still keep weights, settings and combinations from counting, and spec 0020 keeps link approval with a person. The round 2 blockers are closed; what remains is later work."
 
 [[finding]]
-what = "Later: 0069:141 cites Cavnar and Trenkle, 1994, whose method tokenises text into padded character n-grams but whose scoring is profile comparison by rank distance, close to the slot 3 row (Damashek, 1995). The rows sit in different slots with different output kinds, so spec 0067 Shapes item 5 holds; admission under spec 0055 item 5 must still show a sourced difference between the tokenisation view and the profile similarity, and a source on tokenisation for retrieval would fit the row better."
+what = "Later: AGENTS.md item 4 now counts methods for link ranking and recommendation, and spec 0027 says the engine is matching (spec 0023) and ranking, but spec 0027's Ranking method entry and spec 0064's subtotal flag cover only methods of shodhan.rank. Say in spec 0064 or 0067 whether spec 0023 matching methods can carry the ranking subtotal flag. It undercounts, so nothing wrong counts meanwhile."
 fixed = true
 
 [[finding]]
-what = "Later: 0069:204 'Structural identity embedding' also describes GraphWave (0069:205, a structural role embedding), and 'identity' is the spec's own word for procedure and chain identity (0069:399, 410). The citation picks out one row, so it is not ambiguous in practice; a more specific name that the spelling check accepts would be clearer."
+what = "Later: spec 0027 Recommendation engine entry lists the hard filters, the relevance gate and link-equity rule 9 for other callers; the whole path already runs equity::check in the selector, but name rule 6 (canonical, indexable, guest-visible now) and a visibility re-check at display time for another feature's approved list, as spec 0028 and spec 0052 item 9 do for theirs."
 fixed = true
 
 [[finding]]
-what = "Later: the gate's text.typos runs over the whole content copy, review records included (crates/aegis/src/tiers.rs:95). Every round 14 record staged before this round names the two dropped allow-list words, so each reviewer's round 15 record must leave them out or the commit is refused; re-run typos on the staged tree once all eight records are written."
+what = "Later: the exemption 'lists not chosen for a source page or passage' is defined by what is missing, so a feature keyed on a topic, a query or a learner's progress (features.md 784, 921) is outside the engine. Decide when those features are specced whether they pass a source passage or are a separate, non-overlapping kind."
 fixed = true
 
 [[finding]]
-what = "Later: abuse agent notes, unchanged since round 13 and already Later in earlier rounds: outside data for explicit semantic analysis and entity linking is not pinned by digest (0069:434-437), and 'the forum's own data' (0069:429, 437) versus 'the seeded probe forum' (0069:292-295) could name one source."
+what = "Later: spec 0027 entry says the source is a guest-visible page but not that the passage is that page's current text; say so when the public shodhan entry point is specced. The reply holds only guest-visible destinations, so no leak meanwhile."
+fixed = true
+
+[[finding]]
+what = "Later (recorded in round 2, still open): spec 0052 item 5 has job 23 reorder hub links after the selector, against 'keeps the order it gets back'; make job 23's rates a spec 0027 signal or say hub links are the engine's own output."
 fixed = true

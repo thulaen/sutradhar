@@ -1,13 +1,5 @@
 skill = "security"
-change = "sha256:275b0b704a49043aa5d95997d157a9132c385f0f3a5c9ec63929dc89ad286bb1"
+change = "sha256:134b75b6d34c9997edae24219069860a690e2b627a2495f8188bf7dcfe1b60d0"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 15. The staged change no longer touches _typos.toml; the only new edits are two rows of docs/specs/0069-wide-link-ranking.md. Line 141 now cites Cavnar and Trenkle, 1994 (N-gram-based text categorisation, SDAIR-94), a real paper that builds character n-gram profiles, so it fits character n-gram tokenisation and stays separate from Damashek, 1995 at line 154 (profile similarity). Line 204 is now 'Structural identity embedding', citing Ribeiro, Saverese and Figueiredo, 2017 (KDD), whose paper learns node representations from structural identity, so the name fits. Neither old name is left in the spec. The round 13 edits that passed still hold (live calibration stays job 33's active one, lines 278-283; new rows never fused live, lines 443-446). Docs only: no new input, sink, decoding, outgoing call, secret, crypto or library."
-
-[[finding]]
-what = "Later: docs/specs/0069-wide-link-ranking.md lets steps read outside data (WordNet, the Krovetz dictionary, an encyclopaedia for explicit semantic analysis, entity linking and link-based relatedness) gated only by spec 0055's rights area, with no rule that the copy is a declared input pinned by digest in the admission record. Recorded from round 1; this change does not make it worse."
-fixed = true
-
-[[finding]]
-what = "Later: docs/specs/0069-wide-link-ranking.md adds word steps whose cost grows faster than text length (Word Mover's Distance, ROUGE-L, sequential dependence, SimRank) on post text others control; only the run-wide time limit bounds them. A per-step input length cap could go in each catalogue entry. Not a blocker: qualified runs use made-up probe forums and the live service never runs these chains."
-fixed = true
+summary = "Round 3 of the ranking floor change. Read the staged diff only: AGENTS.md section 3 item 4 (100,000,000 ranking and recommendation floor), the spec 0064 link ranking scope row and the revised 'Recommendation engine' term in spec 0027. Docs only: no new input, sink, decoding, outgoing call, secret, crypto, access check or library. The term tightens privacy and access: other features must go through the whole matching and ranking path, never shodhan.rank alone, from a guest-visible source page, with every candidate through spec 0023's hard filters and the relevance gate, no member data sent, and a person approving each destination (link-equity rule 9, checked in the staged text); destinations stay under rule 6 (canonical, indexable, guest-visible). No staged text still assumes 6,000,000."

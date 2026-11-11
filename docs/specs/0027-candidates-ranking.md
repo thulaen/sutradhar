@@ -24,6 +24,19 @@ freshness and graph relevance as separate lines.
   A relevance method's input and output kinds, alone or in a chain, are
   spec 0068's feature table (spec 0068, "Output kinds and probe sets",
   item 3).
+- Recommendation engine: matching (spec 0023) and ranking together,
+  the one path that chooses destination threads or pages for a source
+  phrase or passage, as each suggestion does. Any other feature that
+  shows destinations as related to a page or passage asks for them
+  through that whole path, never `shodhan.rank` alone: the source is
+  a guest-visible page, every candidate passes spec 0023's hard
+  filters and this spec's relevance gate, no member data is sent, the
+  feature keeps the order it gets back and keeps no ranking of its
+  own, and a person approves each destination before a reader sees it
+  ("The link-equity rules", item 9). Matching people to threads (spec
+  0051) and lists not chosen for a source page or passage, such as
+  features.md item 28's "most recommended" sections, are not this
+  engine (spec 0064, "Link ranking and protection" scope row).
 - Scoring model: the formula turning feature scores into one final
   score: logistic fusion now (a weighted sum passed through a curve
   from 0 to 1), LambdaMART later if it wins (ganit job 45).

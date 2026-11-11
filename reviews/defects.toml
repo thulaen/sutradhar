@@ -1,13 +1,13 @@
 skill = "defects"
-change = "sha256:275b0b704a49043aa5d95997d157a9132c385f0f3a5c9ec63929dc89ad286bb1"
+change = "sha256:134b75b6d34c9997edae24219069860a690e2b627a2495f8188bf7dcfe1b60d0"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 15: read the staged diff (spec 0069 new, spec 0027 chain bullet, spec 0049 Relevance item 2, specs README) and confirmed _typos.toml is no longer staged. Checked the two reworded rows of spec 0069: slot 2 character n-gram tokenisation now cites Cavnar and Trenkle, 1994 (N-gram-based text categorisation, SDAIR-94, which tokenises text into blank-padded character n-grams of length 1 to 5), a real source that fits; slot 5 is now 'Structural identity embedding', citing Ribeiro, Saverese and Figueiredo, 2017 (KDD, learning node representations from structural identity), real and correctly attributed. Neither the old n-gram source nor the old slot 5 name remains in the staged spec. Confirmed the round 13 edits (live calibration sentence at line 281, item 3 weights wording at line 309, new Limits bullet at line 442, tests at lines 507 to 508) are unchanged."
+summary = "Round 3 of the ranking floor change: read the staged diff (AGENTS.md section 3 item 4, spec 0064 link ranking scope row, spec 0027 Recommendation engine entry) against the owner's words on task 185. Checked every cross-reference in the staged tree: spec 0027 'The link-equity rules' item 9 is review mode with no other mode in version 1, spec 0023 has hard filters, spec 0027 has the relevance gate, features.md item 28 is the 'most recommended' sections, spec 0051 owns expert routing. No 6,000,000 floor is left in the staged tree, 100,000,000 appears only in AGENTS.md, item 1 and spec 0067 still bar settings from counting, the 0064 row and the 0027 entry agree, and no added line passes 80 characters."
 
 [[finding]]
-what = "Later: docs/specs/0069-wide-link-ranking.md:141 and :154 both rest on character n-gram profiles (Cavnar and Trenkle for slot 2 tokenisation, Damashek for slot 3 similarity); the slot 2 catalogue entry should cite the tokenisation step of Cavnar and Trenkle, not their out-of-place profile ranking, so its sourced difference from the slot 3 row stays clear at admission."
+what = "Later: features.md 921 (recommended next lessons) and 572 still carry no pointer to spec 0027 as the one recommendation engine; add one when they are specced. Feature 797 recommends a format, not a destination, so it is not this engine."
 fixed = true
 
 [[finding]]
-what = "Later: docs/specs/0069-wide-link-ranking.md Limits (line 442) says rows this spec adds run 'only as a step of a method chain of this shape'; a later spec's shape reusing one of those rows would need this wording widened, as spec 0049's 'specs 0068 and 0069' was (carried from round 13)."
+what = "Later: spec 0064's row keeps the name 'ranking-method subtotal' while item 4 now covers link ranking and recommendation; consistent because the entry defines recommendation as link ranking, but the subtotal could name both when next edited."
 fixed = true

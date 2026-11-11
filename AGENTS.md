@@ -77,8 +77,10 @@ passes:
 2. At least 1,000,000,000 shipped capabilities.
 3. At least 80% of each of those two totals in the scope areas in
    spec 0064.
-4. At least 6,000,000 distinct qualified methods for link ranking,
-   including weighting, learning, statistics, autotuning and reranking.
+4. At least 100,000,000 distinct qualified methods for link ranking
+   and recommendation, including weighting schemes, algorithms,
+   meta-algorithms, statistical models, learning, autotuning and
+   reranking.
 5. At least 1,000,000,000 checked variants, each counted only with its
    evidence.
 6. Every check passes at 100% and all the required reviews pass.

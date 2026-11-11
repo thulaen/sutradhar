@@ -1,13 +1,13 @@
 skill = "backlog"
-change = "sha256:275b0b704a49043aa5d95997d157a9132c385f0f3a5c9ec63929dc89ad286bb1"
+change = "sha256:134b75b6d34c9997edae24219069860a690e2b627a2495f8188bf7dcfe1b60d0"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 15. Read the staged diff only against open Forgejo task #183 on roadmap Phase 7 item 1. The _typos.toml change is no longer staged; the staged change is docs and review records only. The two reworded rows of docs/specs/0069-wide-link-ranking.md cite real sources that fit: line 141 cites Cavnar and Trenkle, 1994 (N-gram-based text categorisation, SDAIR-94), which splits text into character n-grams, and stays a separate entry from slot 3's n-gram profile similarity (Damashek, 1995) as Shapes item 3 at lines 415-417 says; line 204's 'Structural identity embedding' names the method of Ribeiro, Saverese and Figueiredo, KDD 2017, whose paper is about learning node representations from structural identity. Neither old name is left in the spec. The rest matches what round 13 passed (spec 0027 clause, spec 0049 Relevance item 2, README row and written-fresh list); no unrelated line, no status claim, no new rule number."
+summary = "Round 3 of the ranking floor change: read the staged diff only (AGENTS.md section 3 item 4, spec 0064 link ranking scope row, spec 0027 Recommendation engine entry) against task 185 (Phase 7 item 1, parent 64) and the owner's words on 161. The change does the three things the task lists and nothing more, touches no other line, and is docs only, so no test is needed. 100,000,000 is written only in AGENTS.md; no staged spec, test or code still names 6,000,000. Item 4 names kinds of method, so item 1 and spec 0067 still stop settings and combinations from counting. The one-engine entry now routes other destination choosers through matching and ranking together, cites link-equity rule 9 (review mode) correctly, and fits features.md 28, 296 and 797, spec 0028 and spec 0051, none of which choose destinations for a source passage. Round 1 and round 2 Later items stay recorded."
 
 [[finding]]
-what = "Later: docs/specs/0069-wide-link-ranking.md:442-445 says making a new row live needs an amendment to spec 0027; which rows no earlier spec serves live is not listed, so the test new_rows_are_never_fused_live needs that list from the catalogue entries. Settle when Codex implements #183; not made worse here."
+what = "Later: post the proof (staged diff, review records and commit) on task 185 when the change lands, as the task's end-of-work proof."
 fixed = true
 
 [[finding]]
-what = "Later: items from rounds 1 to 13 stay tracked on #183 and #184 or as Later on Phase 7 item 1 (which slot 13 row is job 33's calibration, left-out stages, index-range qualifying, owning ganit jobs, outside data by digest, held-out split, cost-list entries, near-setting rows at admission, slot 2 and 11 view checks against spec 0067's no-loosening rule, n-gram views, behaviour digests for rescalers, among others). Not a defect in the staged text."
+what = "Later: features.md 296 (AI citation recommendations) and 797 (Format recommendation) recommend actions or formats, not destinations, so they are outside the engine; if either grows to suggest destination pages, its spec must point at spec 0027's Recommendation engine entry."
 fixed = true
