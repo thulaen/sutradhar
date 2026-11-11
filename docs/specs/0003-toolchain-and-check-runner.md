@@ -7,6 +7,12 @@ pushed, and why. It is part of aegis, the gate, and is roadmap Phase 2
 items 1 and 3. The tiers it serves are in
 [AGENTS.md section 7](../../AGENTS.md#7-the-gate).
 
+Language. aegis is a developer tool, so it moves to Go (ADR-0017). The
+Rust crates, types and Cargo steps this page names are the reference
+for what the Go port must do: the port keeps every behaviour, contract
+and test here, and the Rust tool keeps running until the port passes
+every check and review.
+
 ## What it does
 
 ### Entry points and profiles

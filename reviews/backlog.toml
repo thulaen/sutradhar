@@ -1,5 +1,9 @@
 skill = "backlog"
-change = "sha256:e32adefeefddd19647812232809913cf7e5825f497b4f859ac5432d5f5936b25"
+change = "sha256:840e1ba4cbc4568b55923f35834b214e3a7015708004e444714336576e8994eb"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 4: read the staged diff of docs/specs/features.md, 0034-analytics.md and 0048-fix-list.md against #149 items 3 to 8, 12 and 14, the 11 November owner answer on auto-accept and the #145 Rhai decision. Each item is done as asked and nothing more; both round 3 fixes are in (0034 small-group noise on top of the floors, research sets the size; 0048 Rules item 3 and the Rhai line limit scripts to the item 2 actions); spec 0043 text and feature 774 stay with #145; items 9 to 11, 13, 15 and 16 stay for later batches; the task is in the current phase (Phase 2). No status/next label exists in Forgejo, so the at-most-10-next check has nothing to count."
+summary = "Round 12 backlog review of task #166 (Go for tools, no shell), docs only. Read the staged index fresh (AGENTS.md sections 4, 5.1, 5.2, 6 and 7.3; roadmap Phase 2 lead step, item 10 and Phase 3 item 8; ADR-0017 and its index row; ADR-0001; README.md; specs 0002, 0003, 0010, 0012 and the staged hunk of 0063; architecture skill step 3), task #166 on Forgejo and the owner answers in the brief. The change records only the owner's decisions and points the specs at them, with implementation left to Codex; the roadmap reorder is the owner's 11 November answer; the Phase 1 exception matches the owner's option text; all round 11 fixes are present; earlier Later items are logged on #166; 8 tasks carry status/ready (limit 10)."
+
+[[finding]]
+what = "Later: ADR-0017's Decision says 'every Go analyser' is pinned before Go source lands, while AGENTS.md section 4 says 'its analysers'; the same meaning in two wordings. When the required Go analysers are listed (round 9 Later item), use one wording in both places."
+fixed = true

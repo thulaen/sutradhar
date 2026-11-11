@@ -1,13 +1,5 @@
 skill = "fast-performance"
-change = "sha256:e32adefeefddd19647812232809913cf7e5825f497b4f859ac5432d5f5936b25"
+change = "sha256:840e1ba4cbc4568b55923f35834b214e3a7015708004e444714336576e8994eb"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged diff of docs/specs/features.md, docs/specs/0034-analytics.md and docs/specs/0048-fix-list.md (task #149 batch 2, round 4). Docs only, no code or hot path changed; checked the new rules (Rhai then steps limited to item 2 actions, small-group noise on top of floors, 378 approvals, feature 20 records) for per-page or per-request work, unbounded growth, calls with no limit and text cut short. Nothing blocks."
-
-[[finding]]
-what = "Later: features.md 185, 467 and 1324 and 0048-fix-list.md Rules item 3 run Rhai user scripts on every crawled page and as rule then steps. Spec 0043 (owned by #145) should give each script run an operation and time limit (Rhai max_operations and a wall-clock cap) and compile each script once per crawl or rule save, not once per page or run. Not made worse by this docs change; belongs with #145."
-fixed = true
-
-[[finding]]
-what = "Later: 0034-analytics.md small-group line adds OpenDP noise to figures darshak gives other features. When implemented, compute the noisy figure once per group per day close and serve that, not fresh noise per request, so cost and privacy budget stay bounded."
-fixed = true
+summary = "Read the staged index for task #166 (AGENTS.md sections 4, 5.1, 5.2, 6 and 7.3, ADR-0017, ADR-0001, README, roadmap, specs 0002, 0003, 0010, 0012 and 0063, architecture skill). Docs only: no code, loops, per-request paths, caches or queues change. Checked that no rule weakens speed or memory checks for Go ('No check is weaker for Go'), that rule 8 and 9 speed baselines and receipts still apply to Go once the Go safety parse lands, and that nothing cuts text short. Go speed and memory budgets and Go equivalents of the Rust speed-counting crates are already logged as Later on #166; nothing new blocks."

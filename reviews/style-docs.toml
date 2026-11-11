@@ -1,9 +1,9 @@
 skill = "style-docs"
-change = "sha256:e32adefeefddd19647812232809913cf7e5825f497b4f859ac5432d5f5936b25"
+change = "sha256:840e1ba4cbc4568b55923f35834b214e3a7015708004e444714336576e8994eb"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged diff of features.md, 0034-analytics.md and 0048-fix-list.md for task #149 items 3-8, 12 and 14 (round 4) against AGENTS.md and the brief: plain British English, no status words, names, no drift between features.md, 0034 and 0048, clean-room notes. Round 3 fixes are in: 0034 small-group noise matches features.md and sits on top of the visit and pair floors; 0048 Rules item 3 and the Rhai line agree that a then step may be a Rhai script limited to item 2 actions."
+summary = "Round 12 of task #166: read the whole staged diff fresh from the index (AGENTS.md sections 4, 5.1, 5.2, 6 and 7.3; roadmap; ADR-0001, ADR-0017 and the ADR index; README; architecture skill; specs 0002, 0003, 0010, 0012 and 0063) against section 6, plain English, status words and said-twice. Round 11 fixes are in place: spec 0012 step 2 points to section 4, the Phase 1 exception names forge-sync with its sign-in and the Forgejo Actions runner on Dell and matches roadmap items 9 and 2, the analyser checks land with their planted faults, 5.1, Phase 3 item 8, the skill and spec 0002 say the tools move to Go under ADR-0017, and ADR-0017 lists all five owner answers. Existing Phase 1 tools (pankti, aegis-door, chaukidar) are on main at 7f5ccc9, so the kept-and-fixed allowance covers them and no new deadlock appears."
 
 [[finding]]
-what = "Later: 0048 Rules item 3 and the Rust-libraries line both state the item 2 action limit for Rhai scripts; same file, low drift risk, but a future edit should keep them in step or have the second line point at item 3 only."
+what = "Later: ADR-0017 Decision (docs/adr/0017-go-for-tools.md, 'Go source lands only once the Go toolchain and every Go analyser are pinned by version and hash and their checks catch planted faults') still restates AGENTS.md section 4's landing condition, with slightly different words ('every Go analyser' against 'its analysers'), so the two could drift. Suggest the ADR keep only the pointer to section 4."
 fixed = true

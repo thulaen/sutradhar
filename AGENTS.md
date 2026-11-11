@@ -90,12 +90,13 @@ language and every file type not listed here.
 
 | Kind | Allowed for |
 |---|---|
-| Rust (stable, edition 2024) | Everything else: framework, service, engine, desktop app, tools, the gate, tests, build steps, git hooks |
+| Rust (stable, edition 2024) | The product: framework, service, engines, desktop app, product rules, their build steps and their tests |
+| Go (pinned toolchain) | Operations and developer tools: the gate and its analysers, git hooks, the build-host queue, sync, the mailbox and stop check, research and speed tools, deployment, CI, caches, recovery, and their tests (ADR-0017) |
 | CSS with Tailwind v4 | Styling and design tokens for the desktop app |
 | TypeScript, strict | Small, justified browser interop modules in `ui/ts/` |
 | PHP 8.5 | The XenForo add-on in `addons/xenforo/` and the WordPress plugin in `addons/wordpress/` |
 | SQL | PostgreSQL migrations in `migrations/` and database tests |
-| Shell | Small scripts |
+| Shell | Existing files and steps only, kept and fixed until each Go replacement passes (ADR-0017) |
 | Cedar | In-app permission rules |
 | Rego | Agent and build policy rules |
 | TOML, YAML, JSON | Configuration and data |
@@ -110,7 +111,35 @@ language and every file type not listed here.
 - TypeScript is written only once the native `tsgo` compiler is pinned in
   `gate/tools.toml`, because nothing may need an extra runtime to build
   it.
-- Cargo is the only build tool. Custom build steps are written in Rust.
+- No hand-written shell (owner, 10 November 2026). That covers shell
+  files, shell steps in hooks and CI, and programs of ours that start a
+  shell (`sh -c`, `bash -c`). Agents may still run programs with their
+  own command tool (owner, 11 November 2026). Shell files, shell steps
+  in hooks and CI, and Rust tools already on `main` at commit `7f5ccc9`
+  (10 November 2026) may be kept and fixed until each Go replacement
+  passes every check and review; then the old one is removed. A fix
+  mends a defect in what the kept file, step or tool already does, with
+  its failing test first; anything it does not yet do is written in Go.
+  No new shell file or shell step is added. The one exception to Go:
+  forge-sync with its GitHub sign-in (roadmap Phase 1 item 9) and the
+  Forgejo Actions runner on Dell (Phase 1 item 2) finish in Rust, adding
+  no shell, and move to Go later with the other tools (owner, 11
+  November 2026).
+- Cargo builds the Rust and the pinned Go toolchain builds the Go, both
+  run from one pipeline that aegis controls. No check is weaker for Go.
+  Go source lands only once the Go toolchain and its analysers are
+  pinned by version and hash and their checks catch planted faults;
+  each such check lands in one commit with its planted faults.
+  Go files need receipts from the commit that adds the Go safety parse
+  (rule 9, section 7.3); that commit also adds GanitEvolve's whole-file
+  problem for Go, so the receipts can be made. Before it, only
+  GanitEvolve's own Go source, its gate check included, and the gate
+  checks that run the pinned Go analysers, with their planted Go
+  faults, may land.
+- No C compiler in our build. The one exception: sealed Go race-test
+  jobs may use a pinned C compiler, because Go's race detector needs
+  one. Go builds outside those jobs keep cgo off (`CGO_ENABLED=0`), and
+  no Go file imports `"C"` (owner, 10 November 2026).
 - Agents may download a tool or library only from its official source
   (its maker's release site or registry, or Ubuntu's official package
   archive),
@@ -131,8 +160,10 @@ language and every file type not listed here.
 ### 5.1 Sutradhar Boot
 
 Our own Rust framework, in the spirit of Spring Boot. Every part of the
-shipped product is built on it. Parts made before Boot exists (the gate,
-`forge-sync` and the signing core of tijori) move onto it in Phase 3.
+shipped product is built on it. The signing core of tijori, made before
+Boot exists, moves onto it in Phase 3. The gate and `forge-sync` are
+operations tools that move to Go under ADR-0017 (section 4 names what
+finishes in Rust first) and are not built on Boot.
 
 - One composition root wires every part with typed, explicit dependency
   injection. No service locators, globals or singletons, and no hidden
@@ -170,8 +201,10 @@ shipped product is built on it. Parts made before Boot exists (the gate,
   every policy returns no rows. Credentials, permissions, jobs, storage,
   backups and audit logs are all kept per site.
 - Migrations are numbered plain SQL files in `migrations/`. sqlx applies
-  them in order, with checksums, so an applied file can never change.
-  squawk checks that each migration is safe.
+  the product's migrations in order, with checksums, so an applied file
+  can never change. A Go tool with its own store keeps its migrations in
+  `migrations/<tool>/`, and the tool applies them the same way, with
+  checksums. squawk checks that each migration is safe.
 
 ### 5.3 Screens and the service
 
@@ -320,7 +353,7 @@ shipped product is built on it. Parts made before Boot exists (the gate,
 
 1. Test first. A change arrives with a test that failed before it.
 2. Google style everywhere. Use Google's own guide where one exists
-   (TypeScript, Shell, HTML/CSS), and our Google-style guides in
+   (Go, TypeScript, Shell, HTML/CSS), and our Google-style guides in
    [docs/standards/](docs/standards/) for Rust, PHP and SQL.
 3. One rule matrix turns MISRA, NASA's Power of 10, JPL's rules and
    DO-178C Level A objectives into checks for every allowed language.
@@ -332,8 +365,10 @@ shipped product is built on it. Parts made before Boot exists (the gate,
    default, more at the release tier through `PROPTEST_CASES`. Text the
    gate shows people is kept as a snapshot in `tests/snapshots`; a
    deliberate change is accepted with `AEGIS_UPDATE_SNAPSHOTS=1`.
-6. Write safe Rust only. No `unsafe` in our code. The one exception is
-   the speed-counting crates of rule 8, in benchmark programs only.
+6. Write safe Rust and Go only. No `unsafe` in our Rust, and no `unsafe`
+   package, `//go:linkname`, hand-written assembly or `plugin` package
+   in our Go. The one exception is the Rust speed-counting crates of
+   rule 8, in benchmark programs only.
 7. No dead code, no commented-out code and no unused dependencies.
 8. Speed is checked against baselines (spec 0007): instruction counts
    kept in `gate/speed.toml`, and times kept by the door in its speed
@@ -360,8 +395,8 @@ shipped product is built on it. Parts made before Boot exists (the gate,
      every tier on Dell, and on the median and p95 time at release. The
      reference may be a Rust library, or a C library run as its own
      outside program for measuring only: never linked into our code,
-     with no `-sys` crate, `build.rs` or C compiler in our build (owner,
-     10 November 2026).
+     with no `-sys` crate or `build.rs`, and no C compiler in our build
+     beyond section 4's one exception (owner, 10 November 2026).
    - **The baseline only gets stricter:** a better count is recorded
      only when it equals the door's own count of that tree, and better
      times are recorded by the door itself. Recording anything worse
@@ -385,7 +420,7 @@ shipped product is built on it. Parts made before Boot exists (the gate,
    the receipt of the code they test. Agents must run GanitEvolve: the
    gate check `ganit.every-change` refuses a source change with no
    receipt or no card at every commit, push and release (owner,
-   10 November 2026). Source files are Rust, TypeScript, CSS, PHP,
+   10 November 2026). Source files are Rust, Go, TypeScript, CSS, PHP,
    SQL, shell, Cedar and Rego files, whether they ship or not (owner,
    10 November 2026: "Every source file").
    The checks in rules 8 and 9 are wired in: a change may not remove
@@ -397,13 +432,13 @@ shipped product is built on it. Parts made before Boot exists (the gate,
 11. A source file has at most 300 lines and a function at most 60 lines.
     A function takes at most 5 arguments, nests at most 4 levels deep and
     stays under a complexity score of 15.
-12. No copied code. Two runs of 100 or more equal tokens, in one file
-    or two, in Rust, shell, SQL, CSS, TypeScript, PHP or a policy file,
-    are refused: write the code once and share it. In Rust a copy with
-    its names changed still counts, and `use` items are left out. A
-    table of like entries, written the same way, names and all, is a
-    list, not code, and counts once. No old copies are allowed; only a
-    signed owner waiver (section 7.2) may allow one.
+12. No copied code. Two runs of 100 or more equal tokens, in one file or
+    two, in Rust, Go, shell, SQL, CSS, TypeScript, PHP or a policy file,
+    are refused: write the code once and share it. In Rust and Go a copy
+    with its names changed still counts, and `use` and `import` items
+    are left out. A table of like entries, written the same way, names
+    and all, is a list, not code, and counts once. No old copies are
+    allowed; only a signed owner waiver (section 7.2) may allow one.
 13. Every rule holds for all code, not only new code, unless the rule
     itself names new or changed files (as item 9 does). The only old
     problems allowed to stay are the image holes listed in section 5.7
@@ -506,9 +541,9 @@ checksum guard watches these files too.
 Until Phase 2 is finished:
 
 - Each commit must pass every check already built, plus the required reviews.
-- No product code is written before the gate is complete. The two
-  exceptions are `forge-sync` and the signing core of tijori, because
-  Phases 1 and 2 need them.
+- No product code is written before the gate is complete. The one
+  exception is the signing core of tijori, because Phase 2 needs it.
+  `forge-sync` is an operations tool, not product code.
 - Until the signing core exists, review records and phase checks are
   signed by being committed: the commit names the reviewing agents and
   their results.

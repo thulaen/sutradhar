@@ -53,9 +53,12 @@ the diff, never the agent that wrote the change (AGENTS.md section 7.1).
      every part shuts down gracefully.
    - **One library per job** (`gate/packages.toml`); Axum, Tokio,
      Tower, Tracing, Serde and sqlx where they fit.
-3. Code made before Boot exists (the gate, forge-sync, tijori's signing
-   core) is held to the same rules where they apply, and noted for its
-   move onto Boot in Phase 3.
+3. tijori's signing core, made before Boot exists, is held to the same
+   rules where they apply, and noted for its move onto Boot in Phase 3.
+   The gate, forge-sync and the other operations and developer tools
+   move to Go under ADR-0017 (AGENTS.md section 4). They are held to
+   AGENTS.md sections 4, 5.2 (for a tool's own store) and 6, not to
+   Boot's conventions.
 4. Look for a simpler design that does the same job with less code.
 5. Report each problem with its place. The agent that wrote the change
    fixes it, or says why it is not one, and this review runs again on

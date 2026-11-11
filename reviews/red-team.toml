@@ -1,21 +1,21 @@
 skill = "red-team"
-change = "sha256:e32adefeefddd19647812232809913cf7e5825f497b4f859ac5432d5f5936b25"
+change = "sha256:840e1ba4cbc4568b55923f35834b214e3a7015708004e444714336576e8994eb"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Task #149 batch 2, round 4: staged features.md, 0034 and 0048 only. Two red agents: get round it (auto-accept, auto-post, private data and script reach past the new every-feature rules) and break or abuse it (re-identify a visitor from darshak figures, hostile feeds, pages and AI answers). The round 3 block is fixed: 0048 Rules item 3 and line 575 now limit Rhai then-steps to the item 2 actions with the runner refusing any other call. No hole the change creates; gaps found are earlier or already logged."
+summary = "Round 12 red team of task #166 (docs only), read from the staged index. Two red agents: get round it (loopholes in the Go and no-shell rule, the kept-and-fixed allowance, the Phase 1 exception and the early-landing list) and break it (contradictions and deadlocks across AGENTS.md, ADR-0017, the roadmap, README, ADR-0001, specs 0002, 0003, 0010, 0012, 0063 and the architecture skill). Each claim was checked against git show :PATH and open Phase 1 tasks in Forgejo; claims on the brief's Later lists were dropped. The round 11 blocker (spec 0012 step 2 restating the early-landing list) is fixed: it now points to AGENTS.md section 4. No contradiction or loophole this change creates was found."
 
 [[finding]]
-what = "Later: docs/specs/0034-analytics.md:361-365 adds noise only to small groups. Two exact large-group figures that differ by one visit (a segment with and without one page or day) can still be subtracted, and fake visits that pass the human checks can pad a group past a floor. The line 'so no one visitor shows' therefore promises more than the floors and small-group noise give. Research should set the small-group size above every floor and cover differencing alongside the privacy budget already logged."
+what = "Later: the analyser gate checks that AGENTS.md section 4 (staged lines 133-138) lets land before the Go safety parse have no receipt until next changed, like GanitEvolve's own Go source; extend that existing Later item to cover them."
 fixed = true
 
 [[finding]]
-what = "Later: docs/specs/features.md:683-684 and 692-694 (292, 300) treat 'the site's own published pages' as the reference, and on a forum those include member posts, so a member can plant a contradiction or a 'fact'. Say which pages count (staff-written pages, for example). Staff publishing and evidence-only output limit the harm for now."
+what = "Later: AGENTS.md section 4 (staged lines 120-122) defines a fix as mending 'a defect in what the kept file, step or tool already does', but not what counts as a defect versus missing behaviour; a reviewer test (the failing test must show behaviour the tool already claims) would close the stretch."
 fixed = true
 
 [[finding]]
-what = "Later: docs/specs/0048-fix-list.md:258 'refuses any other call while the script runs' sits beside item 2's refusal at save (line 254) and the test at line 536. Say that saving refuses a script naming any action outside item 2, and the runner also refuses at run time. Feature 467 workflow scripts and 185 crawl-check scripts have no stated action, time or memory limits yet: covered by the Rhai sandbox limits in 0043 already logged under #145."
+what = "Later: AGENTS.md section 4 (staged lines 116-117) and ADR-0017 say the ban covers code we write and keep, not an agent running programs; say whether shell kept in skill files or other Markdown as commands for agents counts as kept shell."
 fixed = true
 
 [[finding]]
-what = "Later: some existing features now need to show the new preamble rules in their own text: 103 Solved-marking nudges (features.md:355) and 448 Welcome sequences (features.md:934) for the members' nudge rule, and 339, 354, 366 and 367 for 378 approval. The preamble already covers them, so nothing contradicts it now."
+what = "Later: the Phase 1 exception (AGENTS.md staged lines 123-127) lets forge-sync and the runner 'finish in Rust' without bounding 'finish'; tie it to the open Phase 1 tasks (now only #162) so the exception cannot grow with later edits to the roadmap or spec 0002."
 fixed = true

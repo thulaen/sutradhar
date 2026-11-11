@@ -1,9 +1,5 @@
 skill = "security"
-change = "sha256:e32adefeefddd19647812232809913cf7e5825f497b4f859ac5432d5f5936b25"
+change = "sha256:840e1ba4cbc4568b55923f35834b214e3a7015708004e444714336576e8994eb"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 4 of task #149 batch 2: read the whole staged docs-only diff (docs/specs/features.md, docs/specs/0034-analytics.md, docs/specs/0048-fix-list.md). Checked privacy floors and small-group noise, approval paths for site changes and social posts, member data and nudges, and the limits on Rhai user scripts. 0034 now says noise goes on small-group figures on top of the floors, matching features.md; 0048 Rules item 3 and the Rhai line limit a then-step script to the item 2 actions, with the runner refusing any other call. No secrets, code or new dependencies in the change."
-
-[[finding]]
-what = "Later: features.md 185 (custom checks over crawled pages, untrusted input) and 467 (workflow script steps) do not themselves state the Rhai sandbox limits (operation, memory and time caps, no file or network access); 0048 does for its own rules. Already logged under #145 for spec 0043; not made worse here."
-fixed = true
+summary = "Round 12 of task #166: read the whole staged docs-only diff fresh from the index (AGENTS.md sections 4, 5.1, 5.2, 6 rules 2, 6, 8, 9, 12 and 7.3; README.md; ADR-0001, new ADR-0017 and its README row; roadmap Phase 2 lead step and items 8 and 10; specs 0002, 0003, 0010, 0012 and the staged hunk of 0063; architecture skill step 3). Checked the round 12 fixes: the Phase 1 Rust exception names only forge-sync with its GitHub sign-in and the Forgejo Actions runner on Dell, adding no shell; each Go analyser check lands in one commit with its planted faults, so the early-landing rule is not circular; spec 0012 step 2, section 5.1, roadmap item 8, the skill and spec 0002 point to section 4 instead of claiming the tools are already Go. The shell ban still removes sh -c and bash -c with explicit argument lists; the kept set is fixed at 7f5ccc9 and no shell may be added; cgo stays off outside sealed race-test jobs; rule 6 bans Go unsafe, linkname, hand assembly and plugin; no live guard is switched off before its replacement passes. No secrets, code or new dependencies in the change. Earlier Later items are logged on #166; no new problem found."

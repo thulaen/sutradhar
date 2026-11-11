@@ -1,9 +1,13 @@
 skill = "architecture"
-change = "sha256:e32adefeefddd19647812232809913cf7e5825f497b4f859ac5432d5f5936b25"
+change = "sha256:840e1ba4cbc4568b55923f35834b214e3a7015708004e444714336576e8994eb"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 4 of task #149 batch 2: read the staged diff of docs/specs/features.md, 0034-analytics.md and 0048-fix-list.md against the module walls, one-way-per-job and jobs/scheduler rules. The round 3 fixes hold: 0034's small-group OpenDP line matches features.md and sits on top of the floors; 0048 Rules item 3 keeps one scheduler (spec 0019) and limits Rhai then-steps to the item 2 actions, enforced by the runner; no TOML rule engine is left in the three files."
+summary = "Read the staged index for task #166 (AGENTS.md sections 4, 5.1, 5.2, 6 and 7.3; roadmap Phase 2 lead step, item 10 and Phase 3 item 8; ADR-0001, ADR-0017 and its index row; README; specs 0002, 0003, 0010, 0012 and 0063; architecture skill step 3) and checked the module split (product in Rust on Boot, operations and developer tools in Go off Boot), the landing order for Go, the Phase 1 exception, tool stores under section 5.2, and that every round 12 fix is present without new contradictions."
 
 [[finding]]
-what = "Later: 0048 Rules item 3 and the 0048 Rhai line point at feature 467 for script steps, so the fix list depends on the shared Rhai runner; the runner's sandbox and allowed-call surface belong in spec 0043 under #145 (already logged), and rhai and opendp need gate/packages.toml entries when code lands (already logged)."
+what = "Round 12 fixes confirmed: spec 0012 build order step 2 points to AGENTS.md section 4 for early Go source; the Phase 1 exception names forge-sync with its GitHub sign-in (Phase 1 item 9) and the Forgejo Actions runner on Dell (Phase 1 item 2); each analyser check lands in one commit with its planted faults; AGENTS.md 5.1, roadmap Phase 3 item 8, the architecture skill and spec 0002 say the tools move to Go under ADR-0017 and point to section 4's exception; ADR-0017 lists all five owner answers."
+fixed = true
+
+[[finding]]
+what = "Later: spec 0003 calls aegis a developer tool while AGENTS.md 5.1 and 7.3 call the gate and forge-sync operations tools; the section 4 Go row covers both, so nothing breaks, but one word for the gate would read better (already logged as a round 3 Later item on #166)."
 fixed = true

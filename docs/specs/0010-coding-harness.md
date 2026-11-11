@@ -6,6 +6,12 @@ not what a tool name or a passing fixture claims. It is roadmap Phase 2
 items 1 and 2. The gate lives in `gate/` and `crates/aegis`, and its rules
 are in [AGENTS.md sections 6 and 7](../../AGENTS.md#7-the-gate).
 
+Language. aegis and nirikshak are developer tools, so they move to Go
+(ADR-0017). The Rust crates, types and Cargo steps this page names are
+the reference for what the Go port must do: the port keeps every
+behaviour, contract and test here, and each Rust tool keeps running
+until the port passes every check and review.
+
 ## What it does
 
 ### Goals and bounds
@@ -501,8 +507,8 @@ Tests live in `crates/aegis/tests/` unless named otherwise.
 ## Changes from the source
 
 - The harness, nirikshak and every helper are rewritten as Rust, built
-  with Cargo. The bootstrap route's temporary supervisor is a small
-  shell script, which AGENTS.md section 4 allows.
+  with Cargo; their Go ports follow ADR-0017. The bootstrap route's
+  temporary supervisor is written in Go (ADR-0017), not shell.
 - Languages not allowed by AGENTS.md section 4 are dropped from the
   checked set, with their tools, models and native solver checks.
 - The second safety checker is written independently in an allowed

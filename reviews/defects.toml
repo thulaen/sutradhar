@@ -1,9 +1,9 @@
 skill = "defects"
-change = "sha256:e32adefeefddd19647812232809913cf7e5825f497b4f859ac5432d5f5936b25"
+change = "sha256:840e1ba4cbc4568b55923f35834b214e3a7015708004e444714336576e8994eb"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read every staged line of features.md, 0034 and 0048 for task #149 batch 2 round 4 (items 3-8, 12, 14), with the surrounding rule sections. Checked the round 3 fixes: the 0034 small-group noise line now matches features.md and sits on top of the visit and pair floors; 0048 Rules item 3 and the Rhai line agree that then steps may be Rhai scripts limited to item 2 actions. No stale TOML rule engine, auto-posting or auto-accept wording remains in the staged files."
+summary = "Read every staged line of task #166 round 12 (AGENTS.md sections 4, 5.1, 5.2, 6 rules 2, 6, 8, 9, 12 and 7.3; ADR-0017 and its index row; ADR-0001; README; roadmap Phase 2 lead step, item 10 and Phase 3 item 8; specs 0002, 0003, 0010, 0012, 0063; architecture skill step 3) against the owner answers and the round 11 fixes. Checked the landing order (analyser checks with their planted faults, GanitEvolve's own Go source, then the Go safety parse with the Go whole-file problem) against section 7.3 and spec 0012 build order, the Phase 1 Rust exception against roadmap items 2 and 9 and crates on 7f5ccc9, and that no staged text still says Cargo-only, Rust hooks or small shell scripts. No blocking defect found."
 
 [[finding]]
-what = "Later: docs/specs/0048-fix-list.md Rules item 2 says saving a rule that asks for more is refused, but a Rhai then step can only be fully checked at run time (item 3 runner refusal). When 0048 is next touched, say what the save-time check does for scripts (for example, it rejects calls to names outside item 2 found in the script) so both checks are stated."
+what = "Later: spec 0010 'Changes from the source' says the bootstrap supervisor is written in Go, while deploy/runner on main at 7f5ccc9 may hold a kept shell supervisor; name which (already logged on #166 in round 6, not made worse here)."
 fixed = true

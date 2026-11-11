@@ -4,11 +4,12 @@ GanitEvolve searches for better code the way DeepMind's AlphaEvolve
 does: a language model proposes changes to marked parts of a program,
 automatic evaluators score each change, and an archive of good, varied
 programs supplies the parents and examples for the next proposals. It
-also writes the speed receipt that every new or changed source
-file must carry
-([AGENTS.md section 6](../../AGENTS.md#6-code-standards) rule 9). It
-is roadmap Phase 2 item 6. The proof standard it shares with the lab
-is in 0013.
+also writes the speed receipt that every new or changed source file must
+carry ([AGENTS.md section 6](../../AGENTS.md#6-code-standards) rule 9).
+It is roadmap Phase 2 item 6. Language: `ganit-evolve` is a developer
+tool written in Go (ADR-0017). ganit stays Rust; the Go tool runs it as
+a separate program through a shared schema, never shared code. The proof
+standard it shares with the lab is in 0013.
 
 ## What it does
 
@@ -18,7 +19,7 @@ is in 0013.
    packet, proposes a change and submits it, inside its own chat and on
    its own usage. Its tokens are the only model cost. GanitEvolve never
    calls a model and holds no key. Nothing runs unless an agent drives.
-2. **`ganit-evolve`**, a Rust command in its own crate, keeps the run,
+2. **`ganit-evolve`**, a developer tool written in Go, keeps the run,
    builds task packets, checks each submission, runs the evaluators in
    sealed containers through the heavy-job queue, and records results.
 3. **ganit**, the Rust numerical engine, does the maths: choosing parents
@@ -200,7 +201,7 @@ through Dell's heavy-job queue.
 
 ### A problem definition
 
-Each problem lives in its own folder under the GanitEvolve crate:
+Each problem lives in its own folder under the GanitEvolve Go module:
 
 1. `problem.toml`: name, language, the source files and their
    EVOLVE-BLOCK regions, the reference, tolerances, the input
@@ -215,8 +216,8 @@ Each problem lives in its own folder under the GanitEvolve crate:
    shape set" (lower is better) with "largest scaled error" as a hard
    limit. A candidate that misses a hard limit scores nothing.
 5. A whole-file problem needs no EVOLVE-BLOCK markers and uses the
-   crate's own tests as the correctness step, so any Rust file can be
-   evolved.
+   crate's or Go module's own tests as the correctness step, so any
+   Rust or Go file can be evolved.
 
 ### The first problem: ganit's matrix kernels
 
@@ -254,8 +255,8 @@ Each problem lives in its own folder under the GanitEvolve crate:
    exact program a GanitEvolve run proved. The proof is a receipt in
    `receipts/` whose `target` is the file and whose `tested` is the
    SHA-256 of its new bytes.
-2. A source file is a Rust, TypeScript, CSS, PHP, SQL, shell, Cedar or
-   Rego file, whether it ships or not. Tests, benchmarks and test data
+2. A source file is any file of a kind AGENTS.md section 6 rule 9
+   names, whether it ships or not. Tests, benchmarks and test data
    go with the receipt of the code they test (AGENTS.md section 6
    rule 9). A file counts as a test, benchmark or test data only when
    nothing but test or benchmark targets include, load or run it, as
@@ -281,8 +282,8 @@ Each problem lives in its own folder under the GanitEvolve crate:
 6. A language with no safety parse cannot be evolved. Until its parse
    exists its files need no receipt, and `ganit.every-change` covers
    it from the commit that adds the parse (AGENTS.md section 7.3).
-   Rust has one; TypeScript, CSS, PHP, SQL, shell, Cedar and Rego each
-   need theirs.
+   Rust has one; Go, TypeScript, CSS, PHP, SQL, shell, Cedar and Rego
+   each need theirs.
 
 ### Hard to skip
 
@@ -302,7 +303,11 @@ Each problem lives in its own folder under the GanitEvolve crate:
 ### Build order
 
 1. The `ganit.every-change` check, test first.
-2. The whole-file problem, so any Rust file can be evolved.
+2. The whole-file problem for Rust files. Then, in one later commit,
+   the whole-file problem for Go files and the Go safety parse, so a Go
+   receipt can be made from the commit that first requires one
+   (AGENTS.md section 7.3). Which Go source may land before that
+   commit is set in AGENTS.md section 4.
 3. `judge` and judgements in packets; then `score` problems; then helper
    submissions and the agent prompt for fan-out.
 4. Guards; then hints; then parallel checks.
@@ -328,7 +333,7 @@ This part adds nothing to public pages.
 
 ## How it is tested
 
-Rust tests in the GanitEvolve crate and ganit:
+Go tests in the GanitEvolve module and Rust tests in ganit:
 
 - A run started from Claude: `next` gives a packet with the parent, two
   to four examples, feedback, the rules and the answer format, and the
