@@ -1,13 +1,5 @@
 skill = "defects"
-change = "sha256:a03b1d584fbc6e1ec06da3cef499ff639b52743eb2492c70e5ab147cfc9030f6"
+change = "sha256:c92fd48a925d06f45d45111e1fabd4f7ba833ba76acd1aa4acf28a06e9bc2a01"
 verdict = "pass"
-agent = "claude subagent"
-summary = "Round 11: read the staged AGENTS.md section 3 items 1, 2 and 5, the spec 0055 and 0064 hunks, the README row and all of spec 0067, checking the round 11 fixes (tie check on the rank order's form alone, seeds from each step's own probe set with versions recorded, signers who are not shape or step authors) against 0055 and 0064. The tie-form rule is sound: with length n, smallest rank 1 and each rank v of k items followed by v + k, the ranks cover 1 to n in lowest-rank form. The seed source agrees with spec 0055. No blocking defect is left."
-
-[[finding]]
-what = "Later: docs/specs/0064-v1-qualification.md identity paragraph says an S- row 'carries the same signature as a member's row' (a reviewer who is not one of its authors, or the owner's approval), while 0067 lines 99-101 also exclude authors of any of the shape's steps. The verifier spec should point to 0067's stricter signer rule so an implementer of 0064 alone checks step authors too."
-fixed = true
-
-[[finding]]
-what = "Later: docs/specs/0067-method-chains.md 'How it is tested' has no test for the rank-order refusals in 'Proving chains differ' item 2 (wrong length, rank outside 1 to n, ties not in lowest-rank form such as [1, 1, 2]), nor for a chain's evidence recording the version of each probe set it draws seeds from (Chain identity item 4)."
-fixed = true
+agent = "codex"
+summary = "Refreshed against published parent d21a191aab52f22ba58392c9f002cfe49635a83b. Independently verified the five inherited rule/specification files and nine unchanged repair blobs; parent changes do not alter this review's scope or obligations. Refreshed the full defects review after checking the revised patch and all nine source hashes. Only two documentation lines changed. Capture, callers, privacy, limits, classification, valid link fixture and genuine failed-first evidence remain sound. Inspected 270 passing affected tests and 14 process integration tests. No builds or tests rerun. No new-parent full gate or publication pass is claimed by this read-only review."

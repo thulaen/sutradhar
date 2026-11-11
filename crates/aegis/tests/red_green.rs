@@ -97,7 +97,19 @@ fn a_link_in_the_old_tree_cannot_send_a_write_outside() {
     fs::create_dir_all(dir.join("crates/demo")).unwrap();
     std::os::unix::fs::symlink(&outside, dir.join("crates/demo/tests"))
         .unwrap();
-    let base = save(&dir, &[("Cargo.toml", "[workspace]\n")], "feat(demo): a");
+    let base = save(
+        &dir,
+        &[
+            ("Cargo.toml", "[workspace]\nmembers = [\"crates/*\"]\n"),
+            (
+                "crates/demo/Cargo.toml",
+                "[package]\nname = \"demo\"\nversion = \"0.1.0\"\n\
+                 edition = \"2024\"\n",
+            ),
+            ("crates/demo/src/lib.rs", "//! Link-safety fixture.\n"),
+        ],
+        "feat(demo): a",
+    );
     fs::remove_file(dir.join("crates/demo/tests")).unwrap();
     let head = save(
         &dir,

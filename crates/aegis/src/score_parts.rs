@@ -82,7 +82,7 @@ const RULES: [(&str, Part); 4] = [
 
 /// The clippy lints that measure complexity: a function too long, too
 /// complex, too deep or with too many inputs.
-const COMPLEX: [&str; 5] = [
+pub(crate) const COMPLEX: [&str; 5] = [
     "too_many_lines",
     "cognitive_complexity",
     "excessive_nesting",

@@ -1,21 +1,5 @@
 skill = "security"
-change = "sha256:a03b1d584fbc6e1ec06da3cef499ff639b52743eb2492c70e5ab147cfc9030f6"
+change = "sha256:c92fd48a925d06f45d45111e1fabd4f7ba833ba76acd1aa4acf28a06e9bc2a01"
 verdict = "pass"
-agent = "claude subagent"
-summary = "Read the staged diff of AGENTS.md section 3, specs 0055, 0064, 0067 and the specs README (round 11). Traced the inputs others control (shape sheets, runner-signed results and rank orders, member ids, probe set seed lists, scratch-space lists, review and scope-row signatures) to where qualify uses them. Ids are parsed strictly with checked u128 bounds; rank orders are refused before banding on length, range or tie form, and the lowest-rank tie form check is sound on ranks alone; the band formula uses checked arithmetic; digests are recomputed and replayed; each step's seed comes from its own versioned probe set by method id and the chain's evidence records those versions; every signature on a shape, its reviews and its S- row is independent of the shape's and its steps' authors. No blocking security defect in the staged text."
-
-[[finding]]
-what = "Later (already recorded in round 6): 0067 Proving items 2, 5 and 6 write and reread digest, key and rank-order lists in scratch space without saying each read is checked against the digest qualify recorded when writing; the replay rebuilds from signed results, but the first pass should also check."
-fixed = true
-
-[[finding]]
-what = "Later (already recorded in round 8): spec 0055's stochastic edge case and 0067 chain identity item 4 make each step's seed public in the versioned probe set seed list, so a method author can tune to known seeds; a held-out probe batch or seeds drawn after the catalogue is pinned would close this."
-fixed = true
-
-[[finding]]
-what = "Later: 0067 chain identity item 4 has a chain's evidence record the version of every probe set it draws seeds from, but does not say qualify refuses a chain whose recorded versions differ from the probe set versions the qualified run used (spec 0055 marks method evidence stale on a probe set version change); one sentence in 'When a chain counts' condition 4 would close it."
-fixed = true
-
-[[finding]]
-what = "Later: 0067 shape stages (verified) requires every signature on a shape's S- row to come from someone who is not an author of the shape or its steps, while spec 0064 says an S- row carries the same signature as a member's row, which also allows the owner's approval; say whether the owner's approval of an S- row is allowed when the owner authored a step."
-fixed = true
+agent = "codex"
+summary = "Refreshed against published parent d21a191aab52f22ba58392c9f002cfe49635a83b. Independently verified the five inherited rule/specification files and nine unchanged repair blobs; parent changes do not alter this review's scope or obligations. Refreshed the nine-file security review and verified the revised patch and all source hashes. The sole delta clarifies the public documentation. Bounded concurrent capture, private-safe findings, child ownership, fixed lint labels and the repaired link fixture retain the previous assessment. No production or test behaviour changed. Read-only review; no builds or tests rerun. No new-parent full gate or publication pass is claimed by this read-only review."

@@ -1,21 +1,5 @@
 skill = "architecture"
-change = "sha256:a03b1d584fbc6e1ec06da3cef499ff639b52743eb2492c70e5ab147cfc9030f6"
+change = "sha256:c92fd48a925d06f45d45111e1fabd4f7ba833ba76acd1aa4acf28a06e9bc2a01"
 verdict = "pass"
-agent = "claude subagent"
-summary = "Round 11: read the staged AGENTS.md section 3 edits, the 0055, 0064 and README hunks and the whole of spec 0067; checked data ownership (probe sets and seed lists in 0055, shape types and id rules in sutradhar-methods, identity, S- rows and record order in 0064), the new rank-form tie check, per-step seed source and signer rule, and the sort-based distinctness proof. The round 10 findings are fixed and nothing blocking is left."
-
-[[finding]]
-what = "Fixed: docs/specs/0067-method-chains.md:169-174 now checks the tie form on ranks alone (smallest rank 1; a rank v held by k items is the largest or is followed by v + k), which matches the lowest-rank rule at 0067:40-41 and needs no scores."
-fixed = true
-
-[[finding]]
-what = "Fixed: 0067:121-125 draws each step's seed from the seed list of the step's own probe set by method id, and the chain's evidence records every probe set version it draws from, so seed data has one owner (0055:369-373)."
-fixed = true
-
-[[finding]]
-what = "Later: 0067:99-101 requires every signature on a shape, its reviews and its S- row to come from a non-author of the shape or any step, while 0064 lets a member's row be signed by a non-author reviewer or approved by the owner and says an S- row carries the same signature as a member's row; say whether the owner's approval of an S- row is allowed and whether the owner's spec_approved sign-off counts as a signature under this rule."
-fixed = true
-
-[[finding]]
-what = "Later: spec 0055's typed catalogue.stage_changed event and the counted gauge name only method ids and families, while shapes move through sutra methods advance (already recorded)."
-fixed = true
+agent = "codex"
+summary = "Refreshed against published parent d21a191aab52f22ba58392c9f002cfe49635a83b. Independently verified the five inherited rule/specification files and nine unchanged repair blobs; parent changes do not alter this review's scope or obligations. Refreshed the full nine-file review after comparing both patches and verifying all source hashes. Only two documentation lines changed. One private bounded capture mechanism and standard Output keep process handling, Git decoding and safe findings separate. Public interfaces remain intact; the score owns one shared label list without cycles. Retained Rust defect repair; Boot does not apply. Readability, responsibilities, the smallest clear equivalent design, justified abstraction, absence of dead or duplicated logic and behaviour preservation pass. Read supplied regression and integration evidence; no build or test rerun. No new-parent full gate or publication pass is claimed by this read-only review."

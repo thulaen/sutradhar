@@ -19,6 +19,7 @@ pub mod names;
 pub mod packages;
 pub mod patch;
 pub mod private;
+mod process_capture;
 pub mod proofs;
 pub mod red_green;
 pub mod repo;

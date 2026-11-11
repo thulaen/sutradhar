@@ -52,7 +52,7 @@ mod tests {
             .unwrap();
         let found = check(&Repo::at(&dir), &["a.sh".to_owned()]);
         assert_eq!(found.len(), 2, "{found:?}");
-        assert!(found.iter().all(|f| !f.message.contains("is missing")));
+        assert!(found.iter().all(|f| !f.message.contains("cannot run")));
     }
 
     #[test]

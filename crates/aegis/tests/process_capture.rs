@@ -3,7 +3,93 @@
 
 use aegis::git_env::run_with_input;
 use std::io::{Read, Write};
+use std::path::Path;
 use std::process::Command;
+
+fn tool_fixture(mode: &str) -> Option<aegis::Finding> {
+    let exe = std::env::current_exe().unwrap();
+    aegis::tool::run(
+        Path::new("."),
+        "fixture.check",
+        "env",
+        &[
+            &format!("AEGIS_CAPTURE_FIXTURE={mode}"),
+            exe.to_str().unwrap(),
+            "--exact",
+            "capture_child_fixture",
+            "--nocapture",
+            "--skip",
+            "synthetic-private-argument",
+        ],
+    )
+}
+
+#[test]
+fn tool_refuses_oversized_stdout_even_when_the_child_succeeds() {
+    let found = aegis::tool::run(
+        Path::new("."),
+        "fixture.check",
+        "head",
+        &["-c", "33554433", "/dev/zero"],
+    );
+    assert!(found.is_some(), "oversized successful output must fail");
+}
+
+#[test]
+fn tool_accepts_stdout_at_the_limit_and_binary_output() {
+    assert!(
+        aegis::tool::run(
+            Path::new("."),
+            "fixture.check",
+            "head",
+            &["-c", "33554432", "/dev/zero"],
+        )
+        .is_none()
+    );
+    assert!(tool_fixture("binary").is_none());
+}
+
+#[test]
+fn tool_refuses_oversized_stderr_even_when_the_child_succeeds() {
+    let found = tool_fixture("stderr").unwrap();
+    assert!(found.message.contains("error output exceeded its limit"));
+    assert!(!found.message.contains(&"e".repeat(64)));
+}
+
+#[test]
+fn tool_accepts_stderr_at_the_limit() {
+    assert!(tool_fixture("stderr-at-cap").is_none());
+}
+
+#[test]
+fn tool_failure_hides_output_and_arguments() {
+    let found = tool_fixture("fail").unwrap();
+    assert_eq!(found.check, "fixture.check");
+    assert!(found.message.contains("failed"));
+    for private in [
+        "synthetic-private-stdout",
+        "synthetic-private-stderr",
+        "synthetic-private-argument",
+    ] {
+        assert!(
+            !found.message.contains(private),
+            "private child text leaked"
+        );
+    }
+}
+
+#[test]
+fn tool_missing_program_hides_its_private_name() {
+    let found = aegis::tool::run(
+        Path::new("."),
+        "fixture.check",
+        "/missing-synthetic-private-program",
+        &[],
+    )
+    .unwrap();
+    assert!(found.message.contains("fixture.check"));
+    assert!(!found.message.contains("synthetic-private-program"));
+}
 
 fn fixture(mode: &str) -> Command {
     let mut command = Command::new(std::env::current_exe().unwrap());
@@ -105,6 +191,9 @@ fn capture_child_fixture() {
     } else if mode == "stderr-at-cap" {
         std::io::stderr().write_all(&vec![b'e'; 65_536]).unwrap();
     } else if mode == "fail" {
+        std::io::stdout()
+            .write_all(b"synthetic-private-stdout")
+            .unwrap();
         std::io::stderr()
             .write_all(b"synthetic-private-stderr")
             .unwrap();

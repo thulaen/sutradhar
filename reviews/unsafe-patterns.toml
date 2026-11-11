@@ -1,9 +1,5 @@
 skill = "unsafe-patterns"
-change = "sha256:a03b1d584fbc6e1ec06da3cef499ff639b52743eb2492c70e5ab147cfc9030f6"
+change = "sha256:c92fd48a925d06f45d45111e1fabd4f7ba833ba76acd1aa4acf28a06e9bc2a01"
 verdict = "pass"
-agent = "claude subagent"
-summary = "Read the staged diff of AGENTS.md section 3, specs 0055, 0064, the specs README and the new 0067 for overflow, unbounded inputs, errors turned into defaults, check-then-use gaps, trusted outside values and weakened tests. The round 11 tie check is now a rank-order form qualify can check (smallest rank 1, a rank v held by k items is the largest or is followed by v + k), which with the 1 to n range check pins lowest-rank ties exactly; seeds come from each step's own probe set with every probe set version recorded; signatures exclude shape and step authors. Ids, counts, bands, keys and cost products use checked arithmetic; nothing blocks."
-
-[[finding]]
-what = "Later: docs/specs/0067-method-chains.md:173-174 says a rank v held by k items 'must be the largest rank or be followed by v + k'. 'Followed by' could be read as the next entry in the list rather than the next larger distinct rank. Say 'the next larger rank present is v + k'."
-fixed = true
+agent = "codex"
+summary = "Refreshed against published parent d21a191aab52f22ba58392c9f002cfe49635a83b. Independently verified the five inherited rule/specification files and nine unchanged repair blobs; parent changes do not alter this review's scope or obligations. Refreshed the completed nine-file review after verifying the sole delta is two public documentation lines. Checked counts, error paths, thread setup, waiting, stdin and pipe closure, privacy, labels and preserved test assertions. All source and patch hashes match. No unsafe-pattern finding remains; no builds or tests rerun. No new-parent full gate or publication pass is claimed by this read-only review."

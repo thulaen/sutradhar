@@ -1,7 +1,7 @@
 //! Bounded draining keeps the scanner's existing timeout supervisor alive.
 
 use std::io::{self, Read, Write};
-use std::process::{Child, ChildStderr, ChildStdout, Command, Stdio};
+use std::process::{Child, ChildStderr, ChildStdout, Command, Output, Stdio};
 use std::sync::mpsc::{SyncSender, sync_channel};
 use std::thread::{Builder, Scope, ScopedJoinHandle};
 
@@ -68,7 +68,7 @@ fn finish(
     input: &[u8],
     readers: (Reader<'_, ChildStdout>, Reader<'_, ChildStderr>),
     what: &str,
-) -> Result<String, String> {
+) -> Result<Output, String> {
     let ((out_send, output), (err_send, errors)) = readers;
     let stdout_sent = out_send.send(child.stdout.take()).is_ok();
     let stderr_sent = err_send.send(child.stderr.take()).is_ok();
@@ -83,29 +83,30 @@ fn finish(
         return Err(format!("{what} did not accept its complete input"));
     }
     let status = ended.map_err(|_| format!("{what} did not finish"))?;
-    if !status.success() {
-        return Err(format!("{what} failed ({status})"));
-    }
-    if !matches!(diagnostics, Ok(Ok(_))) {
+    let Ok(Ok(stderr)) = diagnostics else {
         return Err(format!(
             "{what} error output exceeded its limit or could not be read"
         ));
-    }
-    let Ok(Ok(bytes)) = captured else {
+    };
+    let Ok(Ok(stdout)) = captured else {
         return Err(format!(
             "{what} output exceeded its limit or could not be read"
         ));
     };
-    String::from_utf8(bytes).map_err(|_| format!("{what} output is not UTF-8"))
+    Ok(Output {
+        status,
+        stdout,
+        stderr,
+    })
 }
 
 /// Drains both output pipes while supplying input. Overflow is refused
 /// after draining; it does not kill an outer timeout and orphan its child.
-pub(super) fn run(
+pub(crate) fn run(
     command: &mut Command,
     input: &[u8],
     what: &str,
-) -> Result<String, String> {
+) -> Result<Output, String> {
     std::thread::scope(|scope| {
         // Start readers before the child, so a failed thread start cannot
         // abandon a running timeout supervisor or its process group.

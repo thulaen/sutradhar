@@ -73,6 +73,7 @@ impl Part {
 #[path = "score_parts.rs"]
 mod parts;
 
+pub(crate) use parts::COMPLEX;
 pub use parts::part;
 
 /// A change's score: the count of findings in each part, and the score.

@@ -9,9 +9,6 @@
 use std::io::Read;
 use std::process::{Command, Stdio};
 
-#[path = "process_capture.rs"]
-mod capture;
-
 /// The settings a git command never takes from outside.
 const CLEARED: [&str; 12] = [
     "GIT_DIR",
@@ -92,7 +89,12 @@ pub fn run_with_input(
     what: &str,
     _args: &str,
 ) -> Result<String, String> {
-    capture::run(command, input, what)
+    let output = crate::process_capture::run(command, input, what)?;
+    if !output.status.success() {
+        return Err(format!("{what} failed ({})", output.status));
+    }
+    String::from_utf8(output.stdout)
+        .map_err(|_| format!("{what} output is not UTF-8"))
 }
 
 #[cfg(test)]
