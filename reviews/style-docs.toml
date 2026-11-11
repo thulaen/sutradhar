@@ -1,9 +1,13 @@
 skill = "style-docs"
-change = "sha256:164a6c43ede42a6de5b5b18c0dd2dad80bcfb69f022b6f694c4eef0f5bb4af47"
+change = "sha256:4294cc1185c912e03e7171f22d4e7f6e20703cba770bba5b6a635157b017fe46"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged diff of docs/specs/features.md (new Shared parts section and the feature 107 wording) against AGENTS.md section 6, and checked every cited feature number against its entry for name, meaning and owner-first wording, plain British English, no status words and no second home for a behaviour."
+summary = "Round 4. Read the whole staged diff: openings of specs 0039 to 0048, the README roadmap column and intro line, and the new features.md section on which spec designs each feature. Checked every README Phase 6 row against the map using the four ranges in features.md (1-112, 113-712, 713-1312, 1313-1357): all rows match. No feature is listed twice. Spot-checked rows against spec text (2, 5, 36, 70, 204, 264, 278, 308, 314, 483, 585, 1302, 1325): each spec gives that behaviour's inputs, limits or tests. No status words, plain British English, lines wrapped, no product names."
 
 [[finding]]
-what = "Later: docs/specs/features.md, the closing line '235 is one feature on both platforms.' sits alone after the list with no reason given; it could become a list line saying 235 covers both the WordPress and XenForo editors, so no second per-platform feature is needed."
+what = "Later: docs/specs/0039-test-room.md opening says it designs no numbered feature, and features.md says the same for 0039, 0050, 0053 and 0054; two places can drift. The map check (task #181) should cover spec openings too, or the openings should only point to the map."
+fixed = true
+
+[[finding]]
+what = "Later: docs/specs/0048-fix-list.md opening lists the kinds of features it covers (tasks, approvals, deadlines, playbooks, freeze windows, backlog by impact) next to the pointer to the map; the list repeats what the map holds and can drift from it."
 fixed = true

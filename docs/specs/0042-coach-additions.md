@@ -1,12 +1,14 @@
 # 0042: Coach additions
 
-These additions widen the Editorial Coach ([0041](0041-editorial-coach.md)).
-They help an editor see what a page lacks, where it disagrees with the
-rest of the site, and what readers still ask; set one rule for which
-model writes the words; give staff a first draft of a new piece; warn on
-near-copy drafts; check whether outside chatbots name the site; and let
-reader habits help pick hub topics. All of it is advice only. It is
-roadmap Phase 6 item 1.
+These additions widen the Editorial Coach
+([0041](0041-editorial-coach.md)). They help an editor see what a page
+lacks, where it disagrees with the rest of the site, and what readers
+still ask; set one rule for which model writes the words; give staff a
+first draft of a new piece; warn on near-copy drafts; check whether
+outside chatbots name the site; and let reader habits help pick hub
+topics. All of it is advice only. It is part of roadmap Phase 6; "Which
+spec designs each feature" in [features.md](features.md) lists the
+features it designs in whole or in part.
 
 Example: an editor pastes a Word draft of a router guide. The Coach
 says "the answer first appears in section 4"; "this guide says the

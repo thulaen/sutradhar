@@ -6,6 +6,8 @@ is tested. How specifications are named and approved is in
 [AGENTS.md section 12](../../AGENTS.md#12-docs).
 
 The feature list, features 1 to 1357, is in [features.md](features.md).
+Its section "Which spec designs each feature" names the one home of
+each feature.
 Specifications 0003 to 0057, 0061 and 0063 are rewritten from the
 private archive `archive-2026-11-08-old-repo` on Dell; the table below
 names each one's source files. Specifications 0001, 0002, 0058 to
@@ -32,39 +34,39 @@ names each one's source files. Specifications 0001, 0002, 0058 to
 | [0017](0017-visual-layer.md) | Visual layer on real data | Phase 3 items 1 and 3 | `platform/visuals*.md` |
 | [0018](0018-platform-additions.md) | Platform additions | Phase 3 item 1; Phase 5 item 2 | `platform/platform-additions*.md` |
 | [0019](0019-events-jobs-recovery.md) | Events, jobs and durable recovery | Phase 3 item 6 | `platform/jobs*.md` |
-| [0020](0020-screens-actions-sutra-mcp.md) | Screens, actions, sutra and MCP | Phase 5 item 5; Phase 3 item 5 | `operations/actions*.md` |
+| [0020](0020-screens-actions-sutra-mcp.md) | Screens, actions, sutra and MCP | Phase 5 item 5; Phase 3 item 5; Phase 6 item 3 | `operations/actions*.md` |
 | [0021](0021-forum-contracts-ingestion.md) | Signed contracts and guest-visible ingestion | Phase 4 item 1 | `platform/forum*.md` |
 | [0022](0022-reading-indexing.md) | Reading and indexing | Phase 4 item 3 | `linking/reading*.md` |
-| [0023](0023-matching-anchors.md) | Matching and anchors | Phase 4 item 3 | `linking/matching*.md` |
+| [0023](0023-matching-anchors.md) | Matching and anchors | Phase 4 item 3; Phase 6 item 1 | `linking/matching*.md` |
 | [0024](0024-models.md) | Models | Phase 4 item 3 | `linking/models*.md` |
 | [0025](0025-paid-embeddings.md) | Paid embeddings | Phase 4 item 3 | `linking/paid-embeddings*.md` |
 | [0026](0026-text-engine.md) | shodhan, the text engine | Phase 4 item 3 | `text/*.md` |
-| [0027](0027-candidates-ranking.md) | Candidates, relevance and ranking | Phase 4 item 3 | `linking/ranking*.md` |
+| [0027](0027-candidates-ranking.md) | Candidates, relevance and ranking | Phase 4 item 3; Phase 6 item 1 | `linking/ranking*.md` |
 | [0028](0028-staff-suggestions.md) | Staff suggestions, insertion and undo | Phase 4 item 3 | `linking/suggestions*.md` |
-| [0029](0029-link-additions.md) | Link additions | Phase 4 item 3 | `linking/link-additions*.md` |
+| [0029](0029-link-additions.md) | Link additions | Phase 4 item 3; Phase 6 items 1 and 2 | `linking/link-additions*.md` |
 | [0030](0030-install-upgrade-removal.md) | Point-and-click install, upgrade and removal | Phase 5 item 1 | `operations/install*.md` |
 | [0031](0031-shared-platform-installation.md) | Shared-platform installation | Phase 5 item 1; Phase 4 items 3 and 4 | `installation-platforms/*.md` |
 | [0032](0032-audit-erasure-diagnostics.md) | Audit, erasure, diagnostics and safe exports | Phase 5 items 1 and 3 | `operations/audit.md operations/audit-2.md` |
 | [0033](0033-safe-running.md) | Safe running | Phase 5 item 2 | `platform/safe-running*.md` |
-| [0034](0034-analytics.md) | darshak, first-party analytics | Phase 5 item 4 | `signals/analytics*.md` |
+| [0034](0034-analytics.md) | darshak, first-party analytics | Phase 5 item 4; Phase 6 items 1 and 2 | `signals/analytics*.md` |
 | [0035](0035-hisaab.md) | hisaab, books and reports | Phase 5 item 4 | `hisaab/*.md` |
 | [0036](0036-audit-proof.md) | Audit proof | Phase 5 item 4 | `operations/audit-proof.md` |
 | [0037](0037-extension-isolation.md) | Third-party extension isolation | Phase 5 item 5 | `operations/extensions*.md` |
 | [0038](0038-search-services-cloud-storage.md) | Search services, cloud storage and provisioning | Phase 5 item 6 | `operations/search-storage*.md` |
-| [0039](0039-test-room.md) | Test room | Phase 6 item 1 | `signals/machinemirror*.md` |
-| [0040](0040-search-connectors.md) | Search Console, Bing and GA4 connectors | Phase 6 item 1 | `signals/connectors*.md` |
-| [0041](0041-editorial-coach.md) | Editorial Coach | Phase 6 item 1 | `signals/editorial-coach.md` |
-| [0042](0042-coach-additions.md) | Coach additions | Phase 6 item 1 | `signals/coach-additions*.md` |
-| [0043](0043-search-charts.md) | Search charts | Phase 6 item 1 | `signals/quarryview*.md` |
-| [0044](0044-seo-signals-crawler.md) | SEO signals, crawler and health reports | Phase 6 item 2 | `signals/seo.md signals/seo-2.md signals/seo-crawler-amendment.md` |
+| [0039](0039-test-room.md) | Test room | Phase 6 | `signals/machinemirror*.md` |
+| [0040](0040-search-connectors.md) | Search Console, Bing and GA4 connectors | Phase 6 items 1 and 2 | `signals/connectors*.md` |
+| [0041](0041-editorial-coach.md) | Editorial Coach | Phase 6 items 1 and 2 | `signals/editorial-coach.md` |
+| [0042](0042-coach-additions.md) | Coach additions | Phase 6 items 2 and 3 | `signals/coach-additions*.md` |
+| [0043](0043-search-charts.md) | Search charts | Phase 6 items 1 and 2 | `signals/quarryview*.md` |
+| [0044](0044-seo-signals-crawler.md) | SEO signals, crawler and health reports | Phase 6 items 1, 2 and 4 | `signals/seo.md signals/seo-2.md signals/seo-crawler-amendment.md` |
 | [0045](0045-backlink-crawl.md) | Backlink crawl | Phase 6 item 2 | `signals/backlink-crawl.md` |
-| [0046](0046-web-link-study.md) | Web link study | Phase 6 item 2 | `signals/link-study.md` |
-| [0047](0047-site-structure-checks.md) | Site structure checks | Phase 6 item 2 | `signals/site-structure-checks*.md` |
-| [0048](0048-fix-list.md) | Fix list | Phase 6 item 2 | `signals/work-graph*.md` |
-| [0049](0049-knowledge-graph.md) | Knowledge graph | Phase 6 item 1 (feature 49) | `signals/graph.md` |
+| [0046](0046-web-link-study.md) | Web link study | Phase 6 items 1 and 2 | `signals/link-study.md` |
+| [0047](0047-site-structure-checks.md) | Site structure checks | Phase 6 items 1 and 2 | `signals/site-structure-checks*.md` |
+| [0048](0048-fix-list.md) | Fix list | Phase 6 items 1 and 2 | `signals/work-graph*.md` |
+| [0049](0049-knowledge-graph.md) | Knowledge graph | Phase 6 items 1 and 3 | `signals/graph.md` |
 | [0050](0050-sorting-usefulness-karma.md) | Sorting, usefulness and karma | Phase 6 | `signals/ranking*.md` |
-| [0051](0051-moderation-hints.md) | Moderation hints | Phase 6 item 1 (feature 26) | `signals/moderation.md` |
-| [0052](0052-hubs-summaries-drafts.md) | Hubs, summaries and content drafts | Phase 6 item 1 (features 28, 33 and 35) | `signals/content*.md` |
+| [0051](0051-moderation-hints.md) | Moderation hints | Phase 6 item 1 | `signals/moderation.md` |
+| [0052](0052-hubs-summaries-drafts.md) | Hubs, summaries and content drafts | Phase 6 items 1 and 3 | `signals/content*.md` |
 | [0053](0053-feedback-learning.md) | Feedback learning and bounded autotuning | Phase 6 | `linking/feedback.md linking/feedback-2.md linking/feedback-3.md` |
 | [0054](0054-feedback-harvest.md) | Feedback harvest | Phase 6 | `linking/feedback-harvest*.md` |
 | [0055](0055-method-research-catalogue.md) | Method research and admission catalogue | Phase 7 item 1 | `linking/methods*.md` |

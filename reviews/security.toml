@@ -1,5 +1,5 @@
 skill = "security"
-change = "sha256:164a6c43ede42a6de5b5b18c0dd2dad80bcfb69f022b6f694c4eef0f5bb4af47"
+change = "sha256:4294cc1185c912e03e7171f22d4e7f6e20703cba770bba5b6a635157b017fe46"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged diff of docs/specs/features.md against HEAD (round 3): the Shared parts section naming one owner first per overlap from task 149 item 9, the intro on where a part is described and built, the 81 line using 1316 for structured data, the approval-gate line naming owners first, the note on 235, and feature 107 citing the shape checks of 1316. Docs only: no code, untrusted input, secrets, crypto, access checks or dependencies change; each approval gate still checks through the shared part rather than dropping its check, and the 1017/416/1162 rights record and the 1327 page history widen no access to personal records."
+summary = "Read the whole staged diff (spec 0039 to 0048 openings, README roadmap column, features.md map). Docs only: no code, inputs, secrets, addresses, crypto or dependencies. Checked that the map's clash rule keeps each spec's own rules (such as 0040's read-only, no-write rule against feature 80) and that no feature is listed twice."

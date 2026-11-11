@@ -3,8 +3,10 @@
 The Editorial Coach answers one question for an editor: what is the
 smallest edit worth testing on this page? The editor opens an exact
 passage, sees the evidence, compares the wording and can keep the
-original. It is advice only. It is roadmap Phase 6 item 1. Its later
-additions are in [0042](0042-coach-additions.md).
+original. It is advice only. It is part of roadmap Phase 6; "Which spec
+designs each feature" in [features.md](features.md) lists the features
+it designs in whole or in part. Its later additions are in
+[0042](0042-coach-additions.md).
 
 ## What it does
 

@@ -4,9 +4,10 @@ Search charts answer one question for a site owner: how are my search
 numbers moving over time, and is this move unusual for them? One chart
 shows one number across days. On it sit indicators (lines worked out
 from the numbers, such as a 14-day average), alerts, a filtering tool
-that finds every series matching a test, and short chart rules the
-admin writes. It is roadmap Phase 6 item 1. In code it is the `quarry`
-module.
+that finds every series matching a test, and short chart rules the admin
+writes. It is part of roadmap Phase 6; "Which spec designs each feature"
+in [features.md](features.md) lists the features it designs in whole or
+in part. In code it is the `quarry` module.
 
 Example: an admin opens Search Console clicks for one forum section over
 180 days. A 14-day average runs through them. A band on 3 March says

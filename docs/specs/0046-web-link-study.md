@@ -4,7 +4,9 @@ The link study answers one question for a site owner: how good are the
 links to my site, and how sure are we? It reads link records and the
 reports of services the owner connects, and fetches nothing itself.
 Every number says what kind it is. The screen label is "Link study"; the
-module is `subramanian`. It is roadmap Phase 6 item 2.
+module is `subramanian`. It is part of roadmap Phase 6; "Which spec
+designs each feature" in [features.md](features.md) lists the features
+it designs in whole or in part.
 
 Example: "Service A reports 412 pages linking here (service figure, read
 2 Nov). Our crawl has checked 57. 3 links: not seen since 14 Oct."

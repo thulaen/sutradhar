@@ -2419,6 +2419,51 @@ identity and no customer records.
 1357. Draft auto-save: Saves draft edits as they happen, so no work is
       lost.
 
+## Which spec designs each feature
+
+Each feature is designed in one place: the specification named below,
+or, for a feature not named below, its Phase 6 range task. That task
+writes the feature's specification, and gets it approved, before the
+feature is built:
+
+| Features | Range task |
+|---|---|
+| 1 to 56 | #54 |
+| 57 to 112 | #55 |
+| 113 to 712 | #56 |
+| 713 to 1312 | #57 |
+| 1313 to 1357 | #164 |
+
+"Part of" means the specification designs only part of the feature; the
+range task designs the rest in that same specification, approved like
+any change to it, so the feature keeps one home. Where the rest clashes
+with a rule that specification already states, the specification's rule
+holds and the clash goes to the owner as a question ([AGENTS.md section
+13](../../AGENTS.md#13-when-rules-clash)). A feature that uses a shared
+part (see "Shared parts") is designed where its own number is listed.
+
+| Spec | Features it designs | Part of |
+|---|---|---|
+| [0020](0020-screens-actions-sutra-mcp.md) | 1287, 1302 | 713, 730 |
+| [0023](0023-matching-anchors.md) | 2 | |
+| [0027](0027-candidates-ranking.md) | 5 | 61 |
+| [0029](0029-link-additions.md) | 484, 485 | 59, 323 |
+| [0034](0034-analytics.md) | | 45, 52, 106, 526, 527 |
+| [0040](0040-search-connectors.md) | 483 | 15, 75, 80, 686, 687 |
+| [0041](0041-editorial-coach.md) | 36 | 558 |
+| [0042](0042-coach-additions.md) | 235, 241, 245, 287, 288, 298, 299 | 285, 289, 725, 1155, 1165, 1293 |
+| [0043](0043-search-charts.md) | 224, 232, 308 | 14, 78, 223, 233, 234, 313, 317 |
+| [0044](0044-seo-signals-crawler.md) | 16, 70, 82, 113, 115, 116, 118, 124, 164, 190, 197, 201, 203, 204, 205, 1325 | 32, 38, 39, 40, 41, 46, 71, 114, 117, 120, 122, 176, 191, 196, 198, 200, 297, 1316, 1319, 1330 |
+| [0045](0045-backlink-crawl.md) | | 272 |
+| [0046](0046-web-link-study.md) | 264, 278 | 42, 270, 271, 273, 276, 282, 283 |
+| [0047](0047-site-structure-checks.md) | 3, 140, 344, 564, 585 | 4, 13, 43, 560, 579, 580 |
+| [0048](0048-fix-list.md) | 79, 314, 539, 540, 542, 544, 545, 546, 548 | 189, 318, 498, 500, 541, 549, 550 |
+| [0049](0049-knowledge-graph.md) | | 49, 97, 767 |
+| [0051](0051-moderation-hints.md) | 26 | |
+| [0052](0052-hubs-summaries-drafts.md) | | 28, 33, 35, 714, 1163, 1167 |
+
+Specs 0039, 0050, 0053 and 0054 design no numbered feature.
+
 ## Shared parts
 
 Where features overlap, one feature owns the shared part and the others

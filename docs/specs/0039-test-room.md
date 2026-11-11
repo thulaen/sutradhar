@@ -4,8 +4,9 @@ The test room answers one question for an editor: can a simple machine
 reader use my pages? Small reader programs try to use a frozen copy of
 one site, in a locked area with no network. They look for a fact, name
 an author, compare two items or cite the original page, and the room
-reports what they could not do. It is advice only. It is roadmap Phase 6
-item 1. In code it is the `mirror` module.
+reports what they could not do. It is advice only. It is part of roadmap
+Phase 6 and designs no numbered feature. In code it is the `mirror`
+module.
 
 ## What it does
 

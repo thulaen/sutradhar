@@ -4,7 +4,9 @@ These checks show a site owner what is wrong with how the site is built,
 once per cause rather than once per page. Every check is a report over
 pages the crawler (spec 0044) has already read. Nothing here fetches a
 new page, changes a page or writes to the site. It is advice only. It is
-roadmap Phase 6 item 2.
+part of roadmap Phase 6; "Which spec designs each feature" in
+[features.md](features.md) lists the features it designs in whole or in
+part.
 
 Example: a theme update drops the breadcrumb markup on thread pages. The
 health report would list 9,800 faulty pages. These checks give one

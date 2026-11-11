@@ -2,12 +2,14 @@
 
 This part checks each registered site's health for search engines. It
 visits the site's own pages as a guest would (the crawler), reads the
-site's database, the copied Search Console, Bing and GA4 figures
-(spec 0040) and, if allowed, the web server's access logs. It turns these
-into a health report per site: what is wrong, why it matters, how many
-pages it affects, and a proposed fix that a person carries out. It never
+site's database, the copied Search Console, Bing and GA4 figures (spec
+0040) and, if allowed, the web server's access logs. It turns these into
+a health report per site: what is wrong, why it matters, how many pages
+it affects, and a proposed fix that a person carries out. It never
 changes titles, redirects, canonical addresses or indexing instructions
-by itself. It is roadmap Phase 6 item 2. The module is `sanket`.
+by itself. It is part of roadmap Phase 6; "Which spec designs each
+feature" in [features.md](features.md) lists the features it designs in
+whole or in part. The module is `sanket`.
 
 Example: "212 thread pages 2+ point their canonical address to page 1
 (signal SIG-017). Search engines may ignore the later pages' replies.

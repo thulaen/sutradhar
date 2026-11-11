@@ -3,10 +3,11 @@
 The backlink crawl answers one question for a site owner: which other
 sites link to my pages? A backlink is a link on someone else's page that
 points to your site. Example: a blog post links to your router guide,
-and Sutradhar keeps that one link. It is roadmap Phase 6 item 2. It
-widens the crawler of [0044](0044-seo-signals-crawler.md), and its
-records are used by the web link study ([0046](0046-web-link-study.md)),
-which does no fetching.
+and Sutradhar keeps that one link. It is part of roadmap Phase 6; "Which
+spec designs each feature" in [features.md](features.md) lists the
+features it designs in whole or in part. It widens the crawler of
+[0044](0044-seo-signals-crawler.md), and its records are used by the web
+link study ([0046](0046-web-link-study.md)), which does no fetching.
 
 ## What it does
 

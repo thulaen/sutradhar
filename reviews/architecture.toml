@@ -1,9 +1,9 @@
 skill = "architecture"
-change = "sha256:164a6c43ede42a6de5b5b18c0dd2dad80bcfb69f022b6f694c4eef0f5bb4af47"
+change = "sha256:4294cc1185c912e03e7171f22d4e7f6e20703cba770bba5b6a635157b017fe46"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged diff of docs/specs/features.md (task #149 item 9, round 3): the new Shared parts section and the 107 cross-reference. Checked every named feature number against its staged entry, that each line names one owner of each shared part so no part is built twice (one home for each behaviour), that the build-order rule handles owners in later ranges, that each approval gate reuses the check it gates, that 1000 stays only an alias of 933, and that no status is stated. No module code is touched."
+summary = "Read the staged diff for task #149 item 16 (docs only): the new 'Which spec designs each feature' map in docs/specs/features.md, the README roadmap-item column and the openings of specs 0039 to 0048. Checked one home per feature (no number listed twice across both columns), README Phase 6 items against the feature ranges in features.md (range 1 = 1-112, 2 = 113-712, 3 = 713-1312, 4 = 1313-1357; every row matches its listed features), range-task table against Forgejo #54/#55/#56/#57/#164, and spot-checked 16 rows against spec text (2/0023, 26/0051, 36/0041, 70, 82, 113, 1325/0044, 79, 314/0048, 140, 344/0047, 235/0042, 264/0046, 308/0043, 483/0040, 1302/0020). No status claims; the Part-of and clash rule keep a single owner and defer clashes to the owner under AGENTS.md section 13. No code, so Boot conventions do not apply."
 
 [[finding]]
-what = "Later: docs/specs/features.md Shared parts, 81 line. 1327's history holds title, headings, text, canonical link and status but not structured data, so 81 detects structured data regressions by re-validating with 1316 rather than by comparing before and after; if a changed-but-still-valid structured data alarm is wanted, 1327 should own that history too. Not made worse by this change."
+what = "Later: docs/specs/features.md map lists 1325 (adaptive crawl pace) as wholly designed by 0044, but 0044 section on slowing down (staged lines 114-117) designs only slowing and pausing, not 'speeds up again with care'; 1325 may belong under Part of. Already among the round 3 Later items for #149."
 fixed = true

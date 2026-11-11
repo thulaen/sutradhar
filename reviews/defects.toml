@@ -1,9 +1,9 @@
 skill = "defects"
-change = "sha256:164a6c43ede42a6de5b5b18c0dd2dad80bcfb69f022b6f694c4eef0f5bb4af47"
+change = "sha256:4294cc1185c912e03e7171f22d4e7f6e20703cba770bba5b6a635157b017fe46"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged diff to docs/specs/features.md (the new Shared parts section and the feature 107 wording) and checked every owner and user line against the staged text of each feature it names, the build order at the top of the list, and task 149 item 9. Round 2's open finding is fixed: the approval-gate line now names owners first, and the 81 line uses 1316 for structured data."
+summary = "Read every staged line (specs 0039 to 0048 openings, features.md map, README rows and intro). Checked no feature is listed twice (130 distinct numbers), every README Phase 6 item matches the four features.md ranges for the listed numbers, the range-task table covers 1 to 1357 with no gap, and spot-checked 21 rows against spec text (2, 5, 26, 36, 70, 79, 82, 164, 224, 241, 264, 278, 287, 308, 314, 344, 483, 539, 564, 585, 1302). No status claims found."
 
 [[finding]]
-what = "Later: docs/specs/features.md:2453 says only that 235 is one feature on both platforms, with no word on why it sits in Shared parts. Feature 235 already names both editors, so nothing is wrong, but the line could say it answers the old per-platform split if a reader asks."
+what = "Later: docs/specs/0041-editorial-coach.md lines 16 to 28 use archive feature numbers (16, 245, 483 among them) that collide with features.md numbers the new map assigns to 0044, 0042 and 0040; a reader may take them as features.md numbers. Renumber or drop them when 0041 is next edited."
 fixed = true

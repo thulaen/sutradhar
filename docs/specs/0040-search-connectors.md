@@ -2,11 +2,13 @@
 
 The connectors let the owner link a site to Google Search Console, Bing
 Webmaster Tools and Google Analytics 4 (GA4) with their own accounts.
-Each night Sutradhar copies the site's search numbers, read-only, to feed
-SEO reports ([0044](0044-seo-signals-crawler.md)), darshak's analytics
-([0034](0034-analytics.md)) and link ranking. It is roadmap Phase 6
-item 1. In code it is the `connectors` module of sanket ("signal", the
-SEO signals crate).
+Each night Sutradhar copies the site's search numbers, read-only, to
+feed SEO reports ([0044](0044-seo-signals-crawler.md)), darshak's
+analytics ([0034](0034-analytics.md)) and link ranking. It is part of
+roadmap Phase 6; "Which spec designs each feature" in
+[features.md](features.md) lists the features it designs in whole or in
+part. In code it is the `connectors` module of sanket ("signal", the SEO
+signals crate).
 
 ## What it does
 

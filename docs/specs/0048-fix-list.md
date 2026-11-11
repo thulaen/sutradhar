@@ -6,9 +6,11 @@ Each finding Sutradhar makes about a registered site becomes one item on
 that site's Fix list. An item closes only when a recheck of the live
 pages proves the fix, and reopens if the fault returns. A "What to do
 first" view says which items to take on this cycle. The module is
-`work_graph`; the screen label is "Fix list". It is roadmap Phase 6
-item 2 (features 539 to 550: tasks, approvals, deadlines, playbooks,
-freeze windows and backlog by impact, served as one list).
+`work_graph`; the screen label is "Fix list". It is part of roadmap
+Phase 6; "Which spec designs each feature" in [features.md](features.md)
+lists the features it designs in whole or in part. They include tasks,
+approvals, deadlines, playbooks, freeze windows and backlog by impact,
+served as one list.
 
 Example: the health report finds 212 thread pages with a wrong canonical
 address. One item opens. The owner says "I fixed it"; it reads "fix
