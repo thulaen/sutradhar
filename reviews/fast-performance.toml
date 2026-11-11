@@ -1,13 +1,13 @@
 skill = "fast-performance"
-change = "sha256:9a538520590a00fff2373d3a651f541b082cccadd64602ed1422efad7c540580"
+change = "sha256:275b0b704a49043aa5d95997d157a9132c385f0f3a5c9ec63929dc89ad286bb1"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the whole seven-file diff against a875bc2 and its call sites (tiers::push, tdd::check_paths, reviews::fingerprint, gate::check_main). The new door check adds one rev-list --first-parent over a range already held to 500 commits plus two rev-parse calls per main push, run after the count limit; history::commits keeps its per-commit process count and only adds first-parent paths for merges, bounded by the commit limit and tree-size check; is_record now compares bytes with no allocation per tree entry, a real saving on the hot path. No unbounded growth, no new blocking path, nothing cut short. Ran aegis and aegis-door through pankti sealed on a copy: 298 passed, 0 failed, 0 ignored. No timing needed: no change adds measurable work."
+summary = "Round 15 performance review of the staged docs change. The only new edits are two table rows of spec 0069: slot 2's character n-gram tokenisation now cites Cavnar and Trenkle, 1994 (N-gram-based text categorisation, a real source that scores text by character n-gram profiles), replacing the old n-gram source; slot 5's row is renamed 'Structural identity embedding', still citing Ribeiro, Saverese and Figueiredo, 2017, whose method learns node vectors from structural identity, replacing the old slot 5 name. Neither row changes a slot, a count or any path, and _typos.toml is no longer staged. Rechecked spec 0069's Performance and Limits sections as round 13 passed them: the live path runs no chain, index order keeps one training and one fit at a time, and the counts (29,321,600 prefixes; 234,572,800 non-linear trainings; 45 linear; 5,805,676,800 calibration fits) hold. Nothing timed, since the change is docs only. Nothing blocks."
 
 [[finding]]
-what = "Later: crates/aegis-door/src/gate.rs:277 keeps_first_parent rev-parses base again although check_main already holds it as a commit id (from accepted() or push.old after is_ancestor), and lists the whole first-parent line to read only its last id; one extra short git process and at most 500 lines per main push, negligible next to the push tier."
+what = "Later: docs/specs/0069-wide-link-ranking.md 'Output kinds, views and checks' item 2: when implemented, fit a slot 11 normaliser once per prefix and probe batch and share it across the chains under that prefix, never once per chain; on an empty batch, stop before asking the owning ganit job for a mixture fit at all."
 fixed = true
 
 [[finding]]
-what = "Later: crates/aegis/src/history/commits.rs:31 still spawns two git processes per commit (log and diff-tree), up to 1000 per 500-commit push; unchanged by this diff, but one `git log --format=%H%x00%B%x00 --name-only -z --diff-merges=first-parent` call could replace them if push tier time matters."
+what = "Later: carried from rounds 9 to 14: seeded-forum ganit builds and per-view word statistics are not named in the Performance cost list (build once per probe seed, shared across chains); keep linear weights indexed by column; work out the caution-on-every-row test once per probe batch."
 fixed = true

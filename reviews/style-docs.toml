@@ -1,17 +1,17 @@
 skill = "style-docs"
-change = "sha256:9a538520590a00fff2373d3a651f541b082cccadd64602ed1422efad7c540580"
+change = "sha256:275b0b704a49043aa5d95997d157a9132c385f0f3a5c9ec63929dc89ad286bb1"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read every changed line of the seven files (history.rs, new history/commits.rs, tiers.rs, aegis-door gate.rs and rules.rs, reviews.rs, reviews_tests.rs) against AGENTS.md section 6 and docs/standards, and checked the red tree equals a875bc2 plus the diff. Names say what things are (VERIFY, keeps_first_parent, only_the_eight_record_files_are_records); every new public item and helper has a doc comment, and comments say why (the --diff-merges=first-parent line, the root-commit case, the no-build-per-call is_record). The commits split removes the old inline range code in favour of repo::range, so nothing is copied; files stay under 300 lines and functions under 60. Readability, clear responsibilities (history reads, the door enforces parent order), smallest clear design and preserved behaviour hold: in a sealed probe copy aegis and aegis-door ran 298 passed, 0 failed, 0 ignored, and cargo fmt --check is clean. No status words, and no doc became untrue: docs/specs/0001-door.md still states true rules, it only lacks the new refusal, which #159 already routes to the spec owner."
+summary = "Round 15: read the two reworded rows of the staged spec 0069. Line 141, character n-gram tokenisation, now cites Cavnar and Trenkle, 1994 (N-gram-based text categorisation, SDAIR-94), a real paper built on character n-gram profiles, in place of the old n-gram source. Line 204, now 'Structural identity embedding', still cites Ribeiro, Saverese and Figueiredo, 2017 (KDD, node representations from structural identity), and the name fits it. Neither old name is left anywhere in the staged spec, and _typos.toml is no longer staged. Re-checked the staged hunks of specs 0027 and 0049 and the specs README, which are as round 13 passed them, and found no status words."
 
 [[finding]]
-what = "Later: docs/specs/0001-door.md:23 lists the door's main-push refusals but not the new door.history first-parent refusal or that merges are checked against their first parent. Incomplete, not untrue; already an open finding on #159 for the spec owner."
+what = "Later: docs/specs/0069-wide-link-ranking.md:141: the Cavnar and Trenkle paper's headline method is categorisation by comparing n-gram profiles, which sits close to the slot 3 row on line 154 (Damashek, 1995). Admission (item 2) should confirm that the slot 2 row is the tokenisation alone and that each slot keeps the method only once (item 3)."
 fixed = true
 
 [[finding]]
-what = "Later: crates/aegis-door/src/gate.rs:109 and :132 spell the check name \"door.history\" twice as a literal, while door.size has the SIZE_CHECK constant; a HISTORY_CHECK constant would keep the two in step."
+what = "Later: the typos tool is not installed in this review's environment, so the new cited names (Cavnar, Trenkle) were not run through gate check text.typos here. The gate run will show whether they pass."
 fixed = true
 
 [[finding]]
-what = "Later: crates/aegis-door/src/gate.rs:133 the refusal says the accepted main must be the first parent \"of the new commits\", but only the oldest commit on the first-parent line needs it; wording such as \"must stay on the first-parent line of the new commits\" would match the check exactly. Clear enough to act on as it stands."
+what = "Later: docs/specs/0069-wide-link-ranking.md:440-445: the two last Limits bullets (no chain of this shape runs live; no new row is fused live) both point at spec 0027 and could be merged so the live rule is said once (carried from round 13)."
 fixed = true

@@ -158,7 +158,8 @@ test and lab run, and must pass admission to count.
 - A method chain of spec 0068 fuses only the columns its own feature
   table holds. Job 45 trains the weights for each such set of columns
   on the same terms, and job 33 fits the calibration for each such set
-  and fusion method on the same terms; the live service fuses every
+  and fusion method on the same terms; spec 0069 sets its own rule for
+  its shape's fusers and calibration. The live service fuses every
   ready relevance method, as above.
 - A waiting or failed method has no feature score, so the pair has no
   complete final score. A provisional one, from finished methods only,

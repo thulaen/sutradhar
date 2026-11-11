@@ -1,9 +1,13 @@
 skill = "unsafe-patterns"
-change = "sha256:9a538520590a00fff2373d3a651f541b082cccadd64602ed1422efad7c540580"
+change = "sha256:275b0b704a49043aa5d95997d157a9132c385f0f3a5c9ec63929dc89ad286bb1"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the whole candidate diff (gate.rs keeps_first_parent and its call site in check_main, history/commits.rs with --diff-merges=first-parent, reviews::is_record byte compare, and the three test files) against a875bc2. In a private copy, aegis fingerprint printed the exact candidate fingerprint, the commit tier found zero automated problems (only the eight reviews missing), and the sealed queue ran aegis and aegis-door with 298 passed, 0 failed, 0 ignored. Checked each pattern in the skill: errors turned into defaults, overflow, locks, check-then-use, unclosed handles, unbounded input, trusted outside names, and weakened tests. Nothing blocking: the first-parent listing is bounded by the 500-commit count already checked, every git failure fails closed, ids come from rev-parse --verify, is_record matches exactly the old set, and the tests only gain assertions. No doc says anything about merges or parent order, so the missing 0001-door paragraph leaves docs incomplete, not untrue."
+summary = "Round 15: read the staged diff (spec 0069, the spec 0027 clause, the spec 0049 sentence, the README row); no non-doc file is staged. The two reworded rows are sound: slot 2 cites Cavnar and Trenkle, 1994, N-gram-based text categorisation, a real paper that splits text into padded character n-grams of length 1 to 5, distinct from the slot 3 profile similarity row (Damashek, 1995); slot 5 'Structural identity embedding' cites Ribeiro, Saverese and Figueiredo, 2017, whose KDD paper learns node representations from structural identity, so the name fits. The rest has the shape round 13 passed; no error turned into a default, unbounded input, trusted outside value or weakened test was introduced. Nothing open."
 
 [[finding]]
-what = "Later: crates/aegis-door/src/gate.rs:282, keeps_first_parent maps every failure of `rev-parse --verify -q oldest^1` to false through is_ok_and, so a real git fault is reported as a door.history refusal instead of 'cannot be checked'. It fails closed (the push is refused), so it is safe; the comment names only the root-commit case."
+what = "Later: docs/specs/0069-wide-link-ranking.md line 141 cites Cavnar and Trenkle, 1994 for tokenisation, but that paper's main method is ranking by n-gram profiles with an out-of-place distance, close to the slot 3 row at line 154. The slot 2 catalogue entry should say it takes only the tokenisation step (padded character n-grams), so admission does not read it as the slot 3 method again. Not a defect in this change."
+fixed = true
+
+[[finding]]
+what = "Later: docs/specs/0069-wide-link-ranking.md 'How it is tested' says 'an index above the chain count', meaning spec 0067's chain count (the product of slot sizes), while the same section also uses 'count' for the number qualify supplies. Saying 'above the shape's chain id count' would keep the bound from being read as the qualified count. Not a defect in this change."
 fixed = true

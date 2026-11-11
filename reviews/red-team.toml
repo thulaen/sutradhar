@@ -1,13 +1,21 @@
 skill = "red-team"
-change = "sha256:9a538520590a00fff2373d3a651f541b082cccadd64602ed1422efad7c540580"
+change = "sha256:275b0b704a49043aa5d95997d157a9132c385f0f3a5c9ec63929dc89ad286bb1"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the task, its comments, the seven-file diff and the door and push-tier code around it. Checked that the red copy equals a875bc2 plus the diff. This session had no tool for starting helpers, so I ran the attacks myself as five attackers, each written as a real test in a private copy (crates/aegis-door/tests/redprobe.rs, not part of the change). The attacks: (1) crafted parent order, where the first-parent line skips accepted main and ends at one of its ancestors; (2) octopus merges in both parent orders, with code only in the merge tree; (3) orphan roots, both first on the line and as a later parent; (4) legitimate pushes the rule must still allow: an unchanged push, a side branch cut from an older main and merged with main first, an annotated tag named as the new main, and Forgejo's main lost behind refs/door/main; (5) a crafted merge deep inside the push. Every bad push came back door.history, or commit.tdd for code hidden in a docs-only merge, and accepted main stayed where it was. Every legitimate push passed. Four of the probes and both new tests (tiers::push_tier_scans_changes_made_in_merges, rules::accepted_main_must_stay_the_first_parent) fail with the parent's gate.rs and history.rs and pass on the candidate. aegis and aegis-door: 303 passed, 0 failed, 0 ignored (298 plus 5 probes), sealed in the queue. I also checked replace objects and grafts: git_env already shuts them off, and a push cannot create refs. The ids passed to git are checked hex ids, so none can look like an option. The missing 0001-door.md paragraph leaves the spec incomplete, not untrue: its ancestor rule still holds. Nothing blocking."
+summary = "Round 15. The only edits since round 13 are two rows of spec 0069: slot 2 character n-gram tokenisation now cites Cavnar and Trenkle, 1994, replacing the old n-gram source, and the old slot 5 name is now Structural identity embedding, still citing Ribeiro, Saverese and Figueiredo, 2017; _typos.toml is not staged. Three red agents ran: break it (are the sources real, rightly attributed and fitting, does slot 2 now duplicate slot 3, does the new slot 5 name collide), get round it (pinned typos 1.52.0 with the HEAD config over the staged tree, the docs-only rule, how aegis runs text.typos), abuse it (a hostile post against slot 2 views, slot 5 embeddings, the three cautions, labels and live fusion). Both sources are real (SDAIR-94 pp. 161-175; KDD 2017 pp. 385-394, ACM spelling). The staged docs pass typos with the HEAD config, and only docs and review records are staged. No attack beat a protection; the rest is as round 13 passed it. Nothing blocks."
 
 [[finding]]
-what = "Later: crates/aegis/src/tiers.rs:206 - tiers::push run on its own (the local pre-push hook) still reads a merge that has published main as a later parent against the wrong first parent. Only the door (crates/aegis-door/src/gate.rs:130) refuses that shape, so a local push gets no early warning. The door has the final say and refuses it, so nothing gets in."
+what = "Later: 0069:141 cites Cavnar and Trenkle, 1994, whose method tokenises text into padded character n-grams but whose scoring is profile comparison by rank distance, close to the slot 3 row (Damashek, 1995). The rows sit in different slots with different output kinds, so spec 0067 Shapes item 5 holds; admission under spec 0055 item 5 must still show a sourced difference between the tokenisation view and the profile similarity, and a source on tokenisation for retrieval would fit the row better."
 fixed = true
 
 [[finding]]
-what = "Later: docs/specs/0001-door.md:23 - the spec describes only the ancestor rule, not the new first-parent refusal, which also reports as door.history. The spec is incomplete, not untrue. This is already an open finding on #159 for the spec owner."
+what = "Later: 0069:204 'Structural identity embedding' also describes GraphWave (0069:205, a structural role embedding), and 'identity' is the spec's own word for procedure and chain identity (0069:399, 410). The citation picks out one row, so it is not ambiguous in practice; a more specific name that the spelling check accepts would be clearer."
+fixed = true
+
+[[finding]]
+what = "Later: the gate's text.typos runs over the whole content copy, review records included (crates/aegis/src/tiers.rs:95). Every round 14 record staged before this round names the two dropped allow-list words, so each reviewer's round 15 record must leave them out or the commit is refused; re-run typos on the staged tree once all eight records are written."
+fixed = true
+
+[[finding]]
+what = "Later: abuse agent notes, unchanged since round 13 and already Later in earlier rounds: outside data for explicit semantic analysis and entity linking is not pinned by digest (0069:434-437), and 'the forum's own data' (0069:429, 437) versus 'the seeded probe forum' (0069:292-295) could name one source."
 fixed = true

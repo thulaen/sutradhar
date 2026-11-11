@@ -1,17 +1,13 @@
 skill = "architecture"
-change = "sha256:9a538520590a00fff2373d3a651f541b082cccadd64602ed1422efad7c540580"
+change = "sha256:275b0b704a49043aa5d95997d157a9132c385f0f3a5c9ec63929dc89ad286bb1"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read task #159 and its comments, AGENTS.md sections 4 to 6 and the seven-file diff against a875bc2. The change mends defects in kept Rust gate tools (section 4): history::commits stays a pure reader that lists merge paths against the first parent, and the policy that makes that reading sound (accepted main must be the first parent of the oldest new commit on the first-parent line) sits in the door beside the existing door.history rule, after the 500-commit bound, reusing the existing check name and error shape. No new setting, layer, option or dependency; the history/commits.rs split keeps history.rs short and reuses repo::range. I checked keeps_first_parent's logic for crafted later-parent merges, ancestors of base on the first-parent line, root commits and empty ranges. In a copy of the candidate, sealed: aegis and aegis-door 298 passed, 0 failed, 0 ignored; with history.rs, gate.rs and reviews.rs put back to a875bc2, tiers::push_tier_scans_changes_made_in_merges and rules::accepted_main_must_stay_the_first_parent fail and every other test passes. No doc mentions how merges are read, so leaving out the spec 0001 paragraph makes nothing untrue."
+summary = "Read the staged diff for round 15: spec 0069 and the staged hunks in specs 0027, 0049 and the specs README; _typos.toml is no longer staged. Checked the two reworded rows (docs/specs/0069-wide-link-ranking.md:141, Character n-gram tokenisation, Cavnar and Trenkle 1994, N-gram-based text categorisation; :204, Structural identity embedding, Ribeiro, Saverese and Figueiredo 2017, whose KDD paper learns node representations from structural identity) against real sources, that neither the old n-gram source nor the old slot 5 name remains in any staged doc, that slot 2 and slot 3 still hold separate n-gram entries (:416), and that module walls, spec 0027's live service rule and spec 0049's graph parts stay as round 13 passed them."
 
 [[finding]]
-what = "Later: docs/specs/0001-door.md does not yet say that the door refuses new commits whose first-parent line does not start at the last accepted main, or that merges are checked against their first parent. Incomplete, not untrue; already routed to the spec owner as the open finding on #159."
+what = "Later: docs/specs/0069-wide-link-ranking.md:141 cites Cavnar and Trenkle, 1994 for character n-gram tokenisation; that paper's main method is profile comparison (out-of-place ranking), close to slot 3's n-gram profile similarity (Damashek, 1995, :154). At admission, the catalogue entry should state that slot 2 takes only the tokenisation step, so the two entries stay separate procedures."
 fixed = true
 
 [[finding]]
-what = "Later: the first-parent rule lives only in the door (crates/aegis-door/src/gate.rs:130), so a local pre-push run of the aegis push tier passes a crafted merge that the door then refuses. Right for now, since the door is the authority; worth carrying into the Go rewrite of the push tier under ADR-0017 so both report the same."
-fixed = true
-
-[[finding]]
-what = "Later: crates/aegis/src/reviews.rs:51 is_record is a behaviour-preserving rewrite, so its pin test (reviews_tests.rs only_the_eight_record_files_are_records) also passes on a875bc2. That fits the task's named minor item and section 4's mending of a kept tool, but it is not a red-first fix; no change needed."
+what = "Later: docs/specs/0069-wide-link-ranking.md:533-534 says an index 'above the chain count' is refused; the bound is the number of chain ids (product of slot sizes), not the qualified count. Say 'above the number of chain ids'."
 fixed = true
