@@ -1,13 +1,5 @@
 skill = "backlog"
-change = "sha256:26bc57662d3f1501035d72e9aabf48624f93719b6b77a4e0a4231715e8870fb1"
+change = "sha256:4bf136c9409409027d6e720e32430bb1bc3840417b80d1874ed4d444a2e1fecf"
 verdict = "pass"
-agent = "codex"
-summary = "Read the rules, backlog skill, task #130, roadmap, ADR-0017, eight-file patch, candidate proof and verified metadata reconciliation. The partial security repair fits the urgent Phase 1 prerequisite, preserves remaining cleanup scope and exception expiry, adds no product scope or document status, and claims no full gate, deployment, completion or qualification result."
-
-[[finding]]
-what = "Task #130 was outside the current phase. Its live milestone is now Phase 1, with urgent/working labels, assignment and remaining scope preserved."
-fixed = true
-
-[[finding]]
-what = "Seven Phase 2 tasks carried ready labels while Phase 1 remained open. The verified reconciliation blocks them with prerequisite comments; the subsequent queue read reports zero ready tasks."
-fixed = true
+agent = "claude subagent"
+summary = "Round 23 of spec 0065 (tijori signing core, task #167, Phase 2 item 8). Read the staged diff of 0065, 0003, 0008 and the README row; checked that the two round-23 lines (Interfaces item 1 principal sentence, and the test that principal with a digest not in force, newer or unknown, is refused through the socket and tijori-verify) match each other and the tijori-verify item, add no scope beyond the signing core, and that the change stays within its task with later work already recorded as Later items."

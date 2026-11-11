@@ -1,16 +1,25 @@
 skill = "red-team"
-change = "sha256:26bc57662d3f1501035d72e9aabf48624f93719b6b77a4e0a4231715e8870fb1"
+change = "sha256:4bf136c9409409027d6e720e32430bb1bc3840417b80d1874ed4d444a2e1fecf"
 verdict = "pass"
-agent = "codex"
-summary = """
-Checked the three independent goals: Break it, Get round it and Abuse it.
-Read every fixture and independently executed all twelve synthetic tests
-sealed against the verified candidate library; all passed. Malformed
-consumed field types are refused, including after a serious finding.
-No introduced or worsened hole was found. Static comparison confirms
-the inherited parser, exemption-ID and diagnostic behaviours remain
-unchanged; they remain open and unwaived under task #130 comment 2775,
-alongside uncapped capture in comment 2772. This assessment covers bounded
-synthetic tests and source inspection; it claims no full-gate pass,
-real-image scan, deployment or resource-stress proof.
-"""
+agent = "claude subagent"
+summary = "Round 23 of spec 0065 (staged diff only: 0065, 0003 item 4, 0008 runner/reviewer/release items, README row). Three red agents ran with the goals break it, get round it and abuse it; each report was checked against the staged text, AGENTS.md 7.1 and the brief's recorded Later items. The round 23 lines are right: Interfaces item 1 (0065:584-586) says principal refuses a digest not in force or an unknown name, and the new test (0065:801-803) covers a newer or unknown digest through the socket and tijori-verify. Most reports repeat recorded Later items (retired keys in tijori-verify, CI enforcing the protected copy, CI lag after a revocation, author source and shared accounts, records signed before a policy change, waiver screen fingerprint, revocation heads for owner keys); no new real hole."
+
+[[finding]]
+what = "Fixed since round 22: principal(name, policy_digest) now refuses a digest not in force as well as an unknown name (0065:584-586), with a test through the socket and tijori-verify for a newer or unknown digest (0065:801-803)."
+fixed = true
+
+[[finding]]
+what = "Later: 0065:207-215, the threat model says root on Dell can sign outside the core and that the owner's log copy catches a forged waiver, but a review-record, gate-run, runner-purpose or cache-entry signed outside the core never enters the log, and no check (library, verify, tijori-verify) asks whether a signature is in the log, so nothing catches it. Say so plainly in the threat model, or name the later step that makes the gate require a log entry for those purposes."
+fixed = true
+
+[[finding]]
+what = "Later: 0065:53 and spec 0030:254, the install helper on a user's PC must check release manifests, but the check library trusts only the local instance's own policy and a user's PC has no instance; 0065 does not say where an off-Dell verifier gets the release public key and its revocations. Settle it before the real release key signs (Phase 7)."
+fixed = true
+
+[[finding]]
+what = "Later: 0065:473-478, a release request writes its release-pending entry (copied to GitHub) before saying whether the other guards run first, so malformed sign_release calls from the release step's account add pending entries that later releases wait on (guard 5). Say the cheap checks (purpose, typed fields, bytes match) run before the pending entry is written."
+fixed = true
+
+[[finding]]
+what = "Later: 0065:574-578 and the policy-wide settings, the policy may set a log_since page size, waiting count or clock bound of zero, which loops the relay or stops signing; the core should refuse a policy with such values (the floors written once in AGENTS.md if they are numbers)."
+fixed = true

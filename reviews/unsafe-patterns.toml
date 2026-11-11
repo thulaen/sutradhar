@@ -1,5 +1,9 @@
 skill = "unsafe-patterns"
-change = "sha256:26bc57662d3f1501035d72e9aabf48624f93719b6b77a4e0a4231715e8870fb1"
+change = "sha256:4bf136c9409409027d6e720e32430bb1bc3840417b80d1874ed4d444a2e1fecf"
 verdict = "pass"
-agent = "codex"
-summary = "Reviewed all eight changed files after the preliminary commit checks, including report defaults, error propagation, borrowing, counts, paths, process handling and test preservation. Present consumed fields with malformed types now fail before immutable extraction; no unsafe pattern was introduced or worsened, and the inherited uncapped scanner capture remains open under task #130 comment 2772."
+agent = "claude subagent"
+summary = "Read the staged diff of specs 0003, 0008, 0065 and the specs README (round 23), looking for checks separated from use, unbounded sizes and counts, trusted outside names and weakened tests, with most attention on the two changed lines. Interfaces item 1 now says principal(name, policy_digest) refuses a digest not in force or an unknown name, matching verify, so a caller cannot ask under a stale or invented policy; the new test checks a newer or unknown digest is refused through both the socket and tijori-verify, which is concrete and checkable. No test was weakened and nothing blocking remains."
+
+[[finding]]
+what = "Later: docs/specs/0065-tijori.md 'Records this spec owns' (about line 127): the gate rule refusing a review-record whose review is not the one being counted sits in a section about encodings, and it states review-record fields although spec 0010 owns that encoding. Not unsafe; a later round could move the gate rule to Callers item 2 and point the fields to spec 0010 (already a recorded round 22 Later item)."
+fixed = true

@@ -1,5 +1,9 @@
 skill = "security"
-change = "sha256:26bc57662d3f1501035d72e9aabf48624f93719b6b77a4e0a4231715e8870fb1"
+change = "sha256:4bf136c9409409027d6e720e32430bb1bc3840417b80d1874ed4d444a2e1fecf"
 verdict = "pass"
-agent = "codex"
-summary = "Reviewed all eight changed files and verified their hashes against the supplied proof. Traced scanner input through consumed-field validation, severity filtering, errors and unchanged exception handling; checked matching immutable image pins and SBOM, removal of exactly eight obsolete exceptions, preserved expiry and container restrictions, and absence of new secrets, dependencies or command interpolation."
+agent = "claude subagent"
+summary = "Read the staged spec 0065 round 23 changes: the Interfaces item 1 wording that principal(name, policy_digest) refuses a digest not in force or an unknown name, and the new test that a newer or unknown policy digest is refused through both the socket and tijori-verify (whose policy in force is protected main's). Rechecked that the change keeps caller identity by peer account, the protected-main trust source and the earlier refusals; no open security defect in the staged text."
+
+[[finding]]
+what = "Later: docs/specs/0065-tijori.md 'Records this spec owns' says the gate refuses a review-record whose review is not the one being counted, but does not say, as 0008 item 8 does for review-result, that the gate refuses one whose fingerprint is not the change being checked; AGENTS.md 7.1's change fingerprint covers this today, so spec 0010's review-record encoding should state the fingerprint refusal when it is written."
+fixed = true

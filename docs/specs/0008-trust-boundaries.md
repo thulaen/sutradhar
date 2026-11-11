@@ -23,24 +23,41 @@ from signed reports, by an account that never runs candidate code.
    memory, processes and time inside the heavy-job budget. Every test,
    benchmark, coverage run, mutant run, analyser, red check and adapter
    re-run that runs candidate code runs here.
-2. **Runner.** Starts the boxes, collects their reports and signs an
-   evidence bundle bound to the exact tree, profile, policy version,
-   environment and dependency lock. Only this account can read its
-   signing key. It never runs candidate code under its own identity.
+2. **Runner** (the runner supervisor of specs 0064 and 0065). Starts the
+   boxes, collects their reports and signs an evidence bundle bound to
+   the exact tree, profile, policy version, environment and dependency
+   lock. It signs the bundle as an `evidence-bundle` through tijori
+   (spec 0065), which alone holds the runner's key; only this account
+   may ask tijori for an `evidence-bundle` signature. It never runs
+   candidate code under its own identity.
 3. **Gate.** Owns the autoissues store and journal. Reads only signed
    bundles. Decides queue and quota results and signs its verdicts.
 4. **Door.** Runs as its own account, as 0001 sets out. Only the door's
    account and Forgejo's may reach its socket.
 5. **Sync.** Holds only the sync's GitHub token, in its own account.
-6. **Release step.** Holds the encrypted release key. Every use is
+6. **Release step.** The only account that may ask tijori (spec 0065)
+   to sign with the release key, which tijori alone holds. Every use is
    logged and copied to GitHub (AGENTS.md section 8.1).
 7. **Test services.** Run in containers on a private network reachable
    only by the test-services and gate accounts.
 8. **Reviewer.** Holds only the AI reviewer's sign-in. The runner starts
-   each review in a reviewer box: a throwaway identity that can read only
-   the public candidate and reach only the AI provider's network
+   each review in a reviewer box: a throwaway identity that can read
+   only the public candidate and reach only the AI provider's network
    addresses, with no other key, socket or store. The runner signs the
-   review result.
+   review result as a `review-result` through tijori (spec 0065), naming
+   the reviewing product in a field. It takes that product, the change's
+   fingerprint and the review's name from its own record of the job and
+   the reviewer sign-in it started, never from the box's output; the
+   gate refuses one whose product is not an agent product, a principal
+   tijori's policy allows `review-record` (spec 0065), and compares that
+   product, never the runner, with the change's authors. The signed
+   bytes follow spec 0064's layout: the purpose, record type and format
+   version fields first, then the reviewed change's fingerprint, the
+   required review it is for (AGENTS.md section 7.1), the reviewing
+   product and the verdict, each a length-prefixed field. This spec owns
+   that record type. The gate refuses a `review-result` whose
+   fingerprint is not the change being checked, or whose review is not
+   the one being counted.
 9. **Coding agent.** Edits code and pushes through the door. It holds no
    key of the accounts above. Separate agent accounts are preferred.
    While agents share one, independence checks rely on runner signals
@@ -61,10 +78,11 @@ from signed reports, by an account that never runs candidate code.
 1. The protected policy is always read from the base commit or the
    installed copy, never from the candidate.
 2. Protected paths are the full dependency closure of the runner, gate,
-   door, sync and release step: their source, the modules they use,
-   their settings, the benchmark map, lock files and workflows, plus the
-   rules, roadmap and specifications, and the files AGENTS.md section
-   7.2 names. A change to any of them needs the owner's signature.
+   door, sync, release step, the `tijori` program and `tijori-verify`
+   (spec 0065): their source, the modules they use, their settings, the
+   benchmark map, lock files and workflows, plus the rules, roadmap and
+   specifications, and the files AGENTS.md section 7.2 names. A change
+   to any of them needs the owner's signature.
 3. These tools are installed only by their own service account, only
    from an accepted `main` tree whose identifier is in a publication
    receipt. The installed bytes are hashed again before each use. A
@@ -119,8 +137,8 @@ This part adds nothing to public pages.
 Rust tests in the runner, gate and door crates, with planted faults:
 
 - A hostile test in the box tries to read the sync token, the runner
-  key, the store, the journal and the gate socket; every attempt fails
-  and is reported.
+  key, the store, the journal and the gate socket, and to reach tijori's
+  socket; every attempt fails and is reported.
 - A bundle with a forged or missing runner signature is refused by the
   door and the gate.
 - The gate works out a failing result from the bundle even when the push

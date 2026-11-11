@@ -1,7 +1,5 @@
 skill = "style-docs"
-change = "sha256:26bc57662d3f1501035d72e9aabf48624f93719b6b77a4e0a4231715e8870fb1"
+change = "sha256:4bf136c9409409027d6e720e32430bb1bc3840417b80d1874ed4d444a2e1fecf"
 verdict = "pass"
-agent = "codex"
-summary = """
-Reviewed every changed line against AGENTS.md, the style-docs skill and available standards: names and British English are clear, responsibilities are narrow, links resolve, canonical pins replace repeated version wording, and no new rules or status claims appear. The small report module is the smallest clear equivalent design among the alternatives considered: separate type validation preserves optional-field behaviour more clearly than a broader typed-schema rewrite, adds no speculative extension points or dead or duplicated logic, and has preserved-behaviour evidence from the three regression tests, existing scanner integration and end-to-end allowance tests within the supplied 393-test sealed run, strict Clippy, formatting and regenerated SBOM proof.
-"""
+agent = "claude subagent"
+summary = "Round 23 of spec 0065 (staged index only): read the two changed lines, the Interfaces item 1 sentence on principal(name, policy_digest) and the new test that a principal question with a digest not in force is refused through the socket and tijori-verify, against AGENTS.md sections 6 and 12 and the rest of the spec. Both are plain British English, name only defined terms, state no status and add no number; they agree with the check library item 1 sentence on tijori-verify answering principal with the same refusals."

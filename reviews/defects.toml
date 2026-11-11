@@ -1,5 +1,9 @@
 skill = "defects"
-change = "sha256:26bc57662d3f1501035d72e9aabf48624f93719b6b77a4e0a4231715e8870fb1"
+change = "sha256:4bf136c9409409027d6e720e32430bb1bc3840417b80d1874ed4d444a2e1fecf"
 verdict = "pass"
-agent = "codex"
-summary = "Read every changed line, parser callers, exception handling, surrounding tests and SBOM generation. Verified the patch, all eight changed file hashes and locked scan hash. Malformed consumed field types refuse before severity filtering; valid severity, fallback, sorting and deduplication behaviour is preserved. The scan supports removing exactly eight obsolete exceptions. Inspected supplied red/green and 393-test sealed evidence; did not independently rerun tests, recalculate the supplied fingerprint or run the full gate. No new correctness or test defect found."
+agent = "claude subagent"
+summary = "Round 23 of spec 0065 (staged index only). Read the two changed lines (Interfaces item 1 on principal(name, policy_digest) and the new test that a digest not in force is refused through the socket and tijori-verify) against the check rules (Check library item 4), tijori-verify's 'same refusals' sentence and the matching verify test; they agree and the test is concrete. No blocking defect."
+
+[[finding]]
+what = "Later: docs/specs/0065-tijori.md test lines 720 and 801 name only 'newer or unknown' digests for verify and principal; the likeliest real case, a digest that was in force before the latest policy change (older, previously valid), is not named, so an implementation that accepted the previous digest could still pass. Add 'older' to both test sentences."
+fixed = true

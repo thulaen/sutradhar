@@ -53,8 +53,11 @@ every check and review.
    skipped result never becomes PASSED. A worker crash or partial
    report never counts as success.
 3. Exit codes: 0 PASSED, 1 FAILED, 2 BLOCKED.
-4. Bundles are canonical JSON signed with OpenSSH under the namespace
-   `sutradhar-evidence`. `verify` rechecks the signature, tree, base,
+4. Bundles are canonical JSON, signed through tijori (spec 0065) for the
+   `evidence-bundle` purpose. The signed bytes follow spec 0064's
+   layout: the purpose, record type and format version fields first,
+   then the canonical JSON as one length-prefixed field. This spec owns
+   that record type. `verify` rechecks the signature, tree, base,
    profile, plan, pins and maximum age, and works out the status again.
 5. Private raw output stays on Dell. Only scrubbed summaries leave it.
 
