@@ -11,7 +11,7 @@ each feature.
 Specifications 0003 to 0057, 0061 and 0063 are rewritten from the
 private archive `archive-2026-11-08-old-repo` on Dell; the table below
 names each one's source files. Specifications 0001, 0002, 0058 to
-0060, 0062, 0064, 0065 and 0067 were written fresh.
+0060, 0062, 0064, 0065, 0067 and 0068 were written fresh.
 
 | No. | Title | Roadmap item | Archive source (under `docs/specifications/`) |
 |---|---|---|---|
@@ -81,3 +81,4 @@ names each one's source files. Specifications 0001, 0002, 0058 to
 | [0064](0064-v1-qualification.md) | Version 1 scope and qualification | Phase 6; Phase 7 item 1 | written fresh |
 | [0065](0065-tijori.md) | tijori's signing core | Phase 2 item 8; Phase 3 item 8; Phase 5 items 1 and 5; Phase 7 items 1 and 3 | written fresh, using the archive's ADR-0050 |
 | [0067](0067-method-chains.md) | Method chains | Phase 7 item 1 | written fresh |
+| [0068](0068-chain-shapes-ranking-graph.md) | Chain shapes for link ranking and graph relevance | Phase 7 item 1 | written fresh |

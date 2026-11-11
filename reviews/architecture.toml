@@ -1,5 +1,13 @@
 skill = "architecture"
-change = "sha256:c92fd48a925d06f45d45111e1fabd4f7ba833ba76acd1aa4acf28a06e9bc2a01"
+change = "sha256:d246e9c7b8ade1454d9fbee6339bee4ccbcaa6c29ccf43f5ac2f3e7d654edcbd"
 verdict = "pass"
-agent = "codex"
-summary = "Refreshed against published parent d21a191aab52f22ba58392c9f002cfe49635a83b. Independently verified the five inherited rule/specification files and nine unchanged repair blobs; parent changes do not alter this review's scope or obligations. Refreshed the full nine-file review after comparing both patches and verifying all source hashes. Only two documentation lines changed. One private bounded capture mechanism and standard Output keep process handling, Git decoding and safe findings separate. Public interfaces remain intact; the score owns one shared label list without cycles. Retained Rust defect repair; Boot does not apply. Readability, responsibilities, the smallest clear equivalent design, justified abstraction, absence of dead or duplicated logic and behaviour preservation pass. Read supplied regression and integration evidence; no build or test rerun. No new-parent full gate or publication pass is claimed by this read-only review."
+agent = "claude subagent"
+summary = "Read the staged spec 0068, the spec 0067 probe set and digest bullets, the spec 0027 and 0049 amendments and the specs README rows, and checked both shapes against specs 0023, 0027, 0049, 0055, 0064 and 0067: each slot reads the previous slot's kind, no setting is a step, no method sits in two slots, probe sets exist for (feature table, score) and (feature table, feature table), both run in shodhan.rank, the gate stays part of the shipped step with order-stage outputs after it, cautions are a registration-time declaration, ganit outputs are read, never computed, and the round 7 pairing conflict is resolved by wording the exception by dependence on seeded columns in both 0067 and 0068 item 7."
+
+[[finding]]
+what = "Later: the link ranking shape's probe set is (feature table, score), whose only single methods are logistic fusion and LambdaMART, both never paired with a chain under the new 0067 exception, so link ranking chains are compared with no single method at all. Spec 0067 or a later batch should say plainly that such chains need only differ from each other, or name the single method they are checked against."
+fixed = true
+
+[[finding]]
+what = "Later: spec 0049 item 2 and 0068 graph relevance bullets let a setting pick which of job 256's three separately identified methods the live graph relevance method calls; a setting that chooses between methods should be recorded as such in the method's catalogue entry, so spec 0055's parameter-variant check (SUT-501) does not read it as one method with three variants."
+fixed = true

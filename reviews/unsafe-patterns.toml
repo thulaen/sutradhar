@@ -1,5 +1,17 @@
 skill = "unsafe-patterns"
-change = "sha256:c92fd48a925d06f45d45111e1fabd4f7ba833ba76acd1aa4acf28a06e9bc2a01"
+change = "sha256:d246e9c7b8ade1454d9fbee6339bee4ccbcaa6c29ccf43f5ac2f3e7d654edcbd"
 verdict = "pass"
-agent = "codex"
-summary = "Refreshed against published parent d21a191aab52f22ba58392c9f002cfe49635a83b. Independently verified the five inherited rule/specification files and nine unchanged repair blobs; parent changes do not alter this review's scope or obligations. Refreshed the completed nine-file review after verifying the sole delta is two public documentation lines. Checked counts, error paths, thread setup, waiting, stdin and pipe closure, privacy, labels and preserved test assertions. All source and patch hashes match. No unsafe-pattern finding remains; no builds or tests rerun. No new-parent full gate or publication pass is claimed by this read-only review."
+agent = "claude subagent"
+summary = "Read the staged spec 0068 and the staged hunks of specs 0027, 0049, 0067 and the specs README (round 8), looking for errors turned into defaults, check-then-use gaps, unbounded inputs, checks that misfire on edge inputs and weakened checks or tests. Round 7 Later items are addressed: item 4 now says exactly equal and compares columns after direction, its checks run inside chains too, non-number and infinity values fail with a test, and a failing or waiting step inside a chain gives no result (test). The gate still reads slot 1's column from the shipped step's own copy, and missing weights or calibration never fall back."
+
+[[finding]]
+what = "Fixed: docs/specs/0068-chain-shapes-ranking-graph.md:54-62: item 4 now names exact equality, compares columns after each is turned by its direction, and runs on every step of every chain run as well as alone, so a copy hidden inside a chain is caught."
+fixed = true
+
+[[finding]]
+what = "Fixed: docs/specs/0068-chain-shapes-ranking-graph.md:237-239: a test now covers a new column holding a value that is not a number, an infinity, or outside 0 to 1."
+fixed = true
+
+[[finding]]
+what = "Later: docs/specs/0068-chain-shapes-ranking-graph.md:240-241: the rule that a chain with a step that fails or waits on a batch gives no result for that batch is stated only as a test; add it to the body (beside item 7 or the slot 10 bullet at lines 141-145) so the rule and its test both exist."
+fixed = true

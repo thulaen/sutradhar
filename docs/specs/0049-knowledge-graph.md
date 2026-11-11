@@ -81,6 +81,13 @@ them gets a graph reason: "both about the Pixel 9 series".
    (indexed lookups), the same topic community (ganit job 278), the
    link-prediction score (job 256) and the similarity of the two
    threads' spectral features (job 276).
+   As a feature-table method (spec 0068) it calls this per-pair score
+   for each row and adds the column. The weighted combination is a
+   method of its own, and so is each part, used only as a step of spec
+   0068's graph relevance shape; the live service never fuses a part on
+   its own. In a method chain of spec 0068 the link-prediction part is
+   one of job 256's three scores (Adamic–Adar, resource allocation or
+   Katz); which of the three the live method uses is a setting.
 3. The explanation names the strongest part, such as "both mention X",
    "X is part of Y" or "same topic: home routers".
 4. It feeds the relevance side only: it is one of the scorer features

@@ -1,5 +1,17 @@
 skill = "security"
-change = "sha256:c92fd48a925d06f45d45111e1fabd4f7ba833ba76acd1aa4acf28a06e9bc2a01"
+change = "sha256:d246e9c7b8ade1454d9fbee6339bee4ccbcaa6c29ccf43f5ac2f3e7d654edcbd"
 verdict = "pass"
-agent = "codex"
-summary = "Refreshed against published parent d21a191aab52f22ba58392c9f002cfe49635a83b. Independently verified the five inherited rule/specification files and nine unchanged repair blobs; parent changes do not alter this review's scope or obligations. Refreshed the nine-file security review and verified the revised patch and all source hashes. The sole delta clarifies the public documentation. Bounded concurrent capture, private-safe findings, child ownership, fixed lint labels and the repaired link fixture retain the previous assessment. No production or test behaviour changed. Read-only review; no builds or tests rerun. No new-parent full gate or publication pass is claimed by this read-only review."
+agent = "claude subagent"
+summary = "Read the staged spec 0068 (round 8), the spec 0027, 0049 and 0067 amendments and the specs README rows. Traced the inputs others control (forum posts, destination facts, kavach's spam signal, ganit outputs, site settings) through both shapes. Docs only: no new sinks, decoding, outgoing calls, secrets, crypto beyond spec 0067's existing BLAKE3 digests, or libraries. The relevance gate stays in the shipped step ahead of the order slot and reads slot 1's reranker column from the step's own copy; the three cautions spec 0027 names are one-step slots plus a registration-time declaration enforced at admission without method ids; item 4's checks now run on every step of every chain run as well as alone; a chain with unfitted weights or calibration, or with a failing or waiting step, gives no result; refused destinations are marked and never shown live; graph maths stays in ganit."
+
+[[finding]]
+what = "Seeded probe columns (docs/specs/0068-chain-shapes-ranking-graph.md:68-86) cannot pose as a method's output or reach a chain's fusion or the gate: they carry seeded ids, never method ids, take values only from the probe seed, are compared against by item 4 so a step cannot pass by copying one (tested at :242), and are removed before a chain runs (tested at :248-250); the dependence-worded exception in spec 0067 and item 7 keeps qualify from pairing a chain with a single method whose result depends on them (tested at :243-244)."
+fixed = true
+
+[[finding]]
+what = "Item 4 (docs/specs/0068-chain-shapes-ranking-graph.md:54-62) now runs its checks inside every chain run, so a step cannot alter a column it read, or write a non-finite or out-of-range value, only when chained; tested at :237-239. Fail closed (:141-145, :240-241, :245-247): unfitted weights or calibration, or a failing or waiting step, give no result and never fall back."
+fixed = true
+
+[[finding]]
+what = "Later: a chain's fusion weights for the caution columns (docs/specs/0068-chain-shapes-ranking-graph.md:141-145, spec 0027 chain bullet) are bounded only as spec 0027 bounds every weight, and graph poisoning of the graph relevance parts relies on spec 0027 and 0049's existing defences; both recorded in earlier rounds' Later items and not made worse here."
+fixed = true

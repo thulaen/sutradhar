@@ -1,9 +1,9 @@
 skill = "style-docs"
-change = "sha256:c92fd48a925d06f45d45111e1fabd4f7ba833ba76acd1aa4acf28a06e9bc2a01"
+change = "sha256:d246e9c7b8ade1454d9fbee6339bee4ccbcaa6c29ccf43f5ac2f3e7d654edcbd"
 verdict = "pass"
-agent = "codex"
-summary = "Refreshed against published parent d21a191aab52f22ba58392c9f002cfe49635a83b. Independently verified the five inherited rule/specification files and nine unchanged repair blobs; parent changes do not alter this review's scope or obligations. Read all nine changed files for names, clarity, responsibilities, duplication, truthful documentation and the smallest clear equivalent design. Re-read the corrected public comment and verified all source hashes. No findings remain open. No new-parent full gate or publication pass is claimed by this read-only review."
+agent = "claude subagent"
+summary = "Round 8. Read the staged change (new spec 0068; spec 0027's Words used here sentence, chain bullet, graph relevance row and Ganit jobs list; spec 0049 Relevance item 2; spec 0067 probe set, Order digest and Coarse digest bullets; specs README row and written-fresh list) against AGENTS.md sections 6 and 12 and the style-docs checks. The round 7 finding is fixed: the shape-sheets test now matches Shape sheets item 3, and the new tests match item 4's wording. Spec 0067 and 0068 item 7 word the pairing exception the same way, by dependence on seeded columns. Every cited section and item exists, plain British English, no status words, no new rule numbers, no undefined terms."
 
 [[finding]]
-what = "The public comment previously implied every error contained an exit status. It now correctly says when available."
+what = "Later: cosmetic wrapping in docs/specs/0068-chain-shapes-ranking-graph.md: line 86 runs to 75 characters, and lines 152 to 153 ('Scope' / 'row: ...') and 228 to 229 ('changes a' / 'column it read.') break early; rewrap with the next edit."
 fixed = true

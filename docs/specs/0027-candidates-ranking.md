@@ -21,6 +21,9 @@ freshness and graph relevance as separate lines.
 - Ranking method: a catalogue method (spec 0055) of pipeline
   `shodhan.rank` that scores one destination for one source phrase,
   from 0 to 1. Feature score: one method's normalised score for a pair.
+  A relevance method's input and output kinds, alone or in a chain, are
+  spec 0068's feature table (spec 0068, "Output kinds and probe sets",
+  item 3).
 - Scoring model: the formula turning feature scores into one final
   score: logistic fusion now (a weighted sum passed through a curve
   from 0 to 1), LambdaMART later if it wins (ganit job 45).
@@ -116,7 +119,7 @@ test and lab run, and must pass admission to count.
 | Title overlap | phrase words in the title | shodhan |
 | Entity agreement | same people, products, places | shodhan |
 | Keyphrase agreement | shared statistical keyphrases | shodhan |
-| Graph relevance | link-map closeness | jobs 251, 256, 276 |
+| Graph relevance | link-map closeness | jobs 256, 276, 278 |
 | Acceptance prior | past accepts for similar pairs | job 94 |
 | Destination quality | rates only: solved, engaged visits | jobs 325, 66, 68 |
 | Freshness | attention decay; outdated answers | jobs 222, 109 |
@@ -152,6 +155,11 @@ test and lab run, and must pass admission to count.
   line by line. Every weight is positive and inside its bound. Newly
   trained weights are a target reached by bounded, shadow-tested steps
   of at most 5% (spec 0053).
+- A method chain of spec 0068 fuses only the columns its own feature
+  table holds. Job 45 trains the weights for each such set of columns
+  on the same terms, and job 33 fits the calibration for each such set
+  and fusion method on the same terms; the live service fuses every
+  ready relevance method, as above.
 - A waiting or failed method has no feature score, so the pair has no
   complete final score. A provisional one, from finished methods only,
   orders the first useful suggestion and is marked so. Nothing missing
@@ -530,7 +538,8 @@ Nightly, in ganit's batch runs, shadow-tested and activated here:
 - Jaal: 49 (diminishing returns), 251 (internal PageRank), 253 (orphans
   and click depth), 256 (link-prediction scores and candidates), 258
   (spam-pattern flags), 259 (PageRank gain if accepted).
-- Varnakram: 276 (spectral graph embeddings as features).
+- Varnakram: 276 (spectral graph embeddings as features), 278 (topic
+  communities, a part of graph relevance).
 - Sannidhya: 286 (near-duplicate clusters and canonical threads).
 - Padbandh: 296 (generic anchors, joining matching's stop list).
 - Order stage: 324 (need) and 325 (quality floor).

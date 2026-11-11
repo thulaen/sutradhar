@@ -1,5 +1,13 @@
 skill = "defects"
-change = "sha256:c92fd48a925d06f45d45111e1fabd4f7ba833ba76acd1aa4acf28a06e9bc2a01"
+change = "sha256:d246e9c7b8ade1454d9fbee6339bee4ccbcaa6c29ccf43f5ac2f3e7d654edcbd"
 verdict = "pass"
-agent = "codex"
-summary = "Refreshed against published parent d21a191aab52f22ba58392c9f002cfe49635a83b. Independently verified the five inherited rule/specification files and nine unchanged repair blobs; parent changes do not alter this review's scope or obligations. Refreshed the full defects review after checking the revised patch and all nine source hashes. Only two documentation lines changed. Capture, callers, privacy, limits, classification, valid link fixture and genuine failed-first evidence remain sound. Inspected 270 passing affected tests and 14 process integration tests. No builds or tests rerun. No new-parent full gate or publication pass is claimed by this read-only review."
+agent = "claude subagent"
+summary = "Read every staged line of spec 0068 and the staged hunks of specs 0027, 0049, 0067 and the specs README, and checked the round 8 fixes against specs 0027, 0049, 0055 and 0067: the dependence-worded pairing exception, item 4's exact equality, direction and per-chain-step checks, the shape-sheets test, the value-range and failing-step tests, slot kinds, probe sets, the gate and the test list."
+
+[[finding]]
+what = "Later: docs/specs/0068-chain-shapes-ranking-graph.md:240 tests that a chain with a step that fails or waits on a batch gives no result for it, but no rule in the body of 0068 or 0067 states it, and spec 0027 (line 163) gives the live path a provisional score instead. Add one sentence beside item 7 or the slot 10 bullet saying a chain with a failed or waiting step gives no result for that batch and never a provisional one."
+fixed = true
+
+[[finding]]
+what = "Later: docs/specs/0068-chain-shapes-ranking-graph.md:86 runs to 75 characters after the rewrap; wrap it with its neighbours."
+fixed = true

@@ -1,5 +1,13 @@
 skill = "backlog"
-change = "sha256:c92fd48a925d06f45d45111e1fabd4f7ba833ba76acd1aa4acf28a06e9bc2a01"
+change = "sha256:d246e9c7b8ade1454d9fbee6339bee4ccbcaa6c29ccf43f5ac2f3e7d654edcbd"
 verdict = "pass"
-agent = "codex"
-summary = "Refreshed against published parent d21a191aab52f22ba58392c9f002cfe49635a83b. Independently verified the five inherited rule/specification files and nine unchanged repair blobs; parent changes do not alter this review's scope or obligations. Read AGENTS, the backlog skill, roadmap, exact patch and test evidence. Live Forgejo reads confirm task130 is urgent, assigned to Codex in current Phase1 with zero ready tasks. Historical server creation acknowledgements2851/2857 record defects, scope, owner and publication plan; they are not fresh comment reads. Nine files mend retained capture and the exposed fixture, with no new feature or weakened check. Root retains final checks, publication and proof. No new-parent full gate or publication pass is claimed by this read-only review."
+agent = "claude subagent"
+summary = "Round 8. Read Forgejo task #182 (Phase 7 item 1, Phase 7 milestone), roadmap Phase 7 and the staged diff: new spec 0068 and its amendments to specs 0027, 0049, 0067 and the specs README. The round 8 fixes (pairing exception worded by dependence, matching shape-sheets test, value and failing-step tests, item 4 wording) stay inside batch 1 as the task asks; no unrelated lines are touched and later batches are left to their own tasks."
+
+[[finding]]
+what = "Later: Forgejo task #182's body says specs 0027 and 0049 are amended but not that spec 0067's probe set, Order digest and Coarse digest bullets are amended too (docs/specs/0067-method-chains.md:35-39, 48-50, 60-61); update the task body when the work lands."
+fixed = true
+
+[[finding]]
+what = "Later: the proof for #182 is the spec's test list, built by Codex; the review records stand as proof for the docs change, and the test proof must be posted on #182 when Codex's work lands."
+fixed = true

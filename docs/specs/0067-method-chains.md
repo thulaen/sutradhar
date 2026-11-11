@@ -32,7 +32,11 @@ of every other counted method.
   the set for its shape's input kind and the output kind of the shape's
   last slot, the same set a single method of those kinds uses. Every
   comparison below is between members run on the same probe set, and
-  admission refuses a shape that has no such set.
+  admission refuses a shape that has no such set. One exception: a
+  single method whose added column or score depends on seeded columns
+  of spec 0068, such as fusion or the weighted combination run alone,
+  is never paired with a chain (spec 0068, "Output kinds and probe
+  sets", item 7).
 - Behaviour digest: as spec 0055 defines it, worked out for a chain on
   its probe set.
 - Order digest: the BLAKE3 digest of the rank order of a member's
@@ -41,7 +45,9 @@ of every other counted method.
   as numbers take equal rank, the lowest rank of their tied group, with
   -0.0 equal to +0.0; a score that is not a number fails the member's
   checks. Scores and orderings are one output kind, as spec 0055's
-  probe sets take them. For any other output kind the order digest
+  probe sets take them. For spec 0068's feature table it is taken on
+  the column the member's last step added (spec 0068, "Output kinds and
+  probe sets", item 5). For any other output kind the order digest
   equals the behaviour digest.
 - Coarse digest: the order digest with each rank replaced by its band.
   The protected policy sets the number of bands, b, at least 1. In a
@@ -51,7 +57,8 @@ of every other counted method.
   equals its order digest. A change that keeps every item in its band
   gives the same coarse digest; a change that moves an item across a
   band edge is left to item 5 of "Proving chains differ" (SUT-503). For
-  any other output kind it equals the behaviour digest.
+  a feature table it is taken on the same column as the order digest;
+  for any other output kind it equals the behaviour digest.
 - The order and coarse digests are used only to find members that
   behave the same; spec 0055's behaviour digest keeps every other use.
 
