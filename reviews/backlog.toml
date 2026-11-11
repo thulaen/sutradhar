@@ -1,5 +1,13 @@
 skill = "backlog"
-change = "sha256:1b8cbe088d5c00396f5f4c84458430a1298357ec61933e6606d199cebf19dc04"
+change = "sha256:9ca487b14a69cb72e1c70a6255e6bf17c34f05b33c8d834e9e936df3accb0b80"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read task #149 (Phase 2, item 15) and the staged diff of docs/specs/features.md and docs/specs/0027-candidates-ranking.md. Every 'as <product> does' phrase is gone from 670 to 686, the heading no longer says 'named tools' and its one cross-reference in spec 0027 matches, the clean-room note covers 670 to 686 without denying the Google data sources of 685 and 686, and nothing outside item 15 is changed; 687 to 712 stay for later batches."
+summary = "Read the staged diff of docs/specs/features.md (round 4), task #149 item 13 in Forgejo (Phase 2, part of #137) and ADR-0013. The change rewrites only features 224, 397, 527 and 701 and adds one feature-list rule matching ADR-0013; nothing outside item 13 is touched, and items 9 and 16 stay for later batches."
+
+[[finding]]
+what = "Later: gate/metrics.toml entries for the numbers in 224, 397, 527 and 701, with minimum counts for thin data, are implementation work for when each feature is built; already logged on #149."
+fixed = true
+
+[[finding]]
+what = "Later: other features that still name scores (52, 217, 235, 257, 427, 449, 764, 1279, 1326) need the same rewrite; already logged on #149 as a later batch."
+fixed = true

@@ -1,5 +1,9 @@
 skill = "security"
-change = "sha256:1b8cbe088d5c00396f5f4c84458430a1298357ec61933e6606d199cebf19dc04"
+change = "sha256:9ca487b14a69cb72e1c70a6255e6bf17c34f05b33c8d834e9e936df3accb0b80"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged diff (docs/specs/features.md features 670 to 686, the renamed heading, the new clean-room note, and the matching cross-reference in spec 0027). Docs only: no code, inputs, secrets, access rules, crypto or dependencies change; the wording edits do not widen any feature's reach (683 custom user agents and 685 Business Profile photos keep their scope and [Approval] tag), and no stale reference to the old heading remains."
+summary = "Read the staged diff of docs/specs/features.md (new metrics rule, features 224, 397, 527, 701) against HEAD. Docs only: no code, inputs, secrets, crypto, access checks or dependencies change. 527 now shows only darshak's engaged-visit rate and uses the visit count only to hide thin pages, never showing it, which fits spec 0034; 224, 397 and 701 report aggregates per section, per review site and per topic, not per person."
+
+[[finding]]
+what = "Later: feature 701 (docs/specs/features.md, sentiment per forum topic) names no minimum number of posters before a topic's sentiment is shown, so a topic with one or two posters could reveal how a named member feels. The old text had the same gap, and it is logged on #149. When 701 is specified, add a floor and hide topics below it."
+fixed = true

@@ -1,5 +1,9 @@
 skill = "defects"
-change = "sha256:1b8cbe088d5c00396f5f4c84458430a1298357ec61933e6606d199cebf19dc04"
+change = "sha256:9ca487b14a69cb72e1c70a6255e6bf17c34f05b33c8d834e9e936df3accb0b80"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged diff of docs/specs/features.md (features 670 to 686, the renamed heading and the new clean-room note) and docs/specs/0027-candidates-ranking.md (the renamed cross-reference). Checked that no 'as <product> does' phrase remains in 670 to 686, that no staged file still names the old heading 'More from the named tools', that the rewrapped lines keep their tags and stay within line width, and that the note no longer denies the Google Business Profile and Search Console data sources of 685 and 686."
+summary = "Read the staged diff of docs/specs/features.md (task #149 item 13, round 4) against ADR-0013, gate/metrics.toml, spec 0034 lines 271-282 and features 340, 349 and 350. Features 224, 397, 527 and 701 each now name one approved source, a single measure and a comparison, with no blended score, and the new rule matches ADR-0013."
+
+[[finding]]
+what = "Later: features.md 397 says 'compared with the period before' without naming the length of the period (224 says 28 days, 701 a month); state the reporting period when the feature is built and its gate/metrics.toml entry is written."
+fixed = true

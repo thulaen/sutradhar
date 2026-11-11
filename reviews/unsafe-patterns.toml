@@ -1,5 +1,9 @@
 skill = "unsafe-patterns"
-change = "sha256:1b8cbe088d5c00396f5f4c84458430a1298357ec61933e6606d199cebf19dc04"
+change = "sha256:9ca487b14a69cb72e1c70a6255e6bf17c34f05b33c8d834e9e936df3accb0b80"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged docs-only diff (docs/specs/features.md features 670 to 686, the renamed heading and the clean-room note; one cross-reference in docs/specs/0027-candidates-ranking.md) against HEAD. No code changed, so none of the hidden unsafe code patterns can occur; checked that no tag ([Paid], [Approval], [WP], [Public]) or safety limit (aggregated form only, same offer page for every visitor) was dropped, no product name is left in 670 to 686, and no reference to the old heading remains in the staged tree."
+summary = "Read the staged diff of docs/specs/features.md (new feature-list rule and round 4 rewrites of 224, 397, 527 and 701) against ADR-0013 and spec 0034. Docs only, no code: no error-to-default, overflow, lock, check-then-use, unclosed resource, unbounded input, trusted outside value or weakened test is introduced. 397 now always has a comparison, and 527 uses the visit count only to hide thin pages, never shows it, so no count leaks as page views under another name."
+
+[[finding]]
+what = "Later: 397 (docs/specs/features.md line 859), 527 (line 1052) and 701 (line 1352) divide by a count that can be zero or tiny, and 527 says 'too few visits' without naming the minimum. When each feature is built, its gate/metrics.toml entry should say an empty period shows no value rather than zero, and AGENTS.md should hold the minimum count once. Already logged on #149 as a round 3 Later item."
+fixed = true

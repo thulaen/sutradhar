@@ -1,9 +1,9 @@
 skill = "style-docs"
-change = "sha256:1b8cbe088d5c00396f5f4c84458430a1298357ec61933e6606d199cebf19dc04"
+change = "sha256:9ca487b14a69cb72e1c70a6255e6bf17c34f05b33c8d834e9e936df3accb0b80"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged diff (round 2) of docs/specs/features.md (features 670 to 686, the renamed heading and the clean-room note) and docs/specs/0027-candidates-ranking.md:364 against AGENTS.md and the features.md clean-room rule. No 'as <product> does' is left in 670 to 686, the heading and its one cross-reference in spec 0027 match and no other reference to the old heading remains, rewrapped lines stay within 80 columns with tags kept, the note no longer denies the data-source names in 685 and 686, and the wording is plain British English with no status words."
+summary = "Read the staged docs/specs/features.md diff (new feature-list rule and rewritten features 224, 397, 527, 701) against AGENTS.md section 6, ADR-0013, gate/metrics.toml, spec 0034 and features 340, 349, 350. Plain British English, no status words, names say what each feature shows, the new rule points to ADR-0013 rather than restating it in full, no other doc names the old feature titles, and changed lines stay within 80 columns."
 
 [[finding]]
-what = "Later: docs/specs/features.md:1293 the heading 'More analytics, workflow, crawl and press features' does not cover every item under it (for example 672 staff advocacy, 673 review benchmarking, 684 store locator, 695 to 700 social items). Harmless as a 'More ...' catch-all; a later batch of task #149 could split the section or widen the name, updating docs/specs/0027-candidates-ranking.md:364 with it."
+what = "Later: docs/specs/features.md feature 397 says 'compared with the period before' without saying how long a period is; set the period length when the feature is built and its gate/metrics.toml entry is written."
 fixed = true

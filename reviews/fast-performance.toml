@@ -1,5 +1,9 @@
 skill = "fast-performance"
-change = "sha256:1b8cbe088d5c00396f5f4c84458430a1298357ec61933e6606d199cebf19dc04"
+change = "sha256:9ca487b14a69cb72e1c70a6255e6bf17c34f05b33c8d834e9e936df3accb0b80"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged diff (round 2): docs/specs/features.md features 670 to 686 lose their product names, the heading is renamed, one clean-room note is added, and the matching cross-reference in spec 0027 is renamed. Docs only: no code, hot path, loop, cache, queue or time limit changes, and no feature's scope or data volume changes (686 already kept the full history), so there is nothing to measure."
+summary = "Read the staged diff of docs/specs/features.md (task #149 item 13: features 224, 397, 527, 701 and the new number rule). Docs only, no code or hot path; checked that each rewritten feature asks for bounded per-group aggregates (per section, per review site, per page against its section kind, per topic per month) over data already kept, with no whole-history rescans, unbounded lists or cut text implied."
+
+[[finding]]
+what = "Later: features 527 (each page compared with pages of the same kind in its section) and 701 (sentiment per topic against the month before) imply grouped aggregates over all pages and topics; when built, compute them incrementally per period and bound the groups held in memory, rather than rescanning all history per request. Already logged on #149 in round 2 as incremental per-section and per-topic aggregates."
+fixed = true

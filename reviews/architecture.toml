@@ -1,5 +1,13 @@
 skill = "architecture"
-change = "sha256:1b8cbe088d5c00396f5f4c84458430a1298357ec61933e6606d199cebf19dc04"
+change = "sha256:9ca487b14a69cb72e1c70a6255e6bf17c34f05b33c8d834e9e936df3accb0b80"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged diff (docs/specs/features.md features 670 to 686, their heading and clean-room note, and the one cross-reference in spec 0027). Docs only: no module walls, composition root, events or data flow change; the renamed heading has no other reference left in the staged tree, spec 0027's job mapping still points at the right section, and no feature moves between modules."
+summary = "Read the staged diff of docs/specs/features.md (task #149 item 13, round 4) against ADR-0013, gate/metrics.toml and spec 0034. The new feature-list rule matches ADR-0013 (one approved source, a decision, a comparison, no blending); 224, 397, 527 and 701 each name one measure from one source with a comparison, and 527 reads darshak only through its rate-only public API, so no module wall or data-flow rule is broken. Docs only; no code, wiring or settings change."
+
+[[finding]]
+what = "Later: feature 397 reads ratings collected by features 340, 349 and 350; when built, it must take them through those modules' public API or typed outbox events (AGENTS.md section 5), not by reading their stores."
+fixed = true
+
+[[finding]]
+what = "Later: feature 527 needs a per-page engaged-visit rate, but darshak's GET /api/darshak/features (spec 0034) offers rates per thread and day to ranking only; spec 0034 must add a rate-only per-page output for analytics before 527 is built (already logged on #149, round 3)."
+fixed = true

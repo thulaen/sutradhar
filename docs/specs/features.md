@@ -38,6 +38,9 @@ Rules that hold for every feature:
   through feature 378.
 - Every feature that changes a site records its effect through feature
   20, before-and-after proof.
+- A feature reports a number only when `gate/metrics.toml` lists it with
+  one approved source, a decision and a comparison (ADR-0013); it never
+  blends different measures or sources into one score.
 - Features that use reader behaviour read only darshak's grouped data,
   which carries no cookies (spec 0034). darshak adds differential
   privacy (added noise that hides any one person) from the OpenDP
@@ -568,7 +571,9 @@ the writing brief (36, task #54).
 
 223. Daily position history: Keep daily position history from Search Console and
      Bing.
-224. Visibility index: Show a visibility index, overall and by section.
+224. Visibility by section: Show the change in Search Console impressions and
+     average position for each section, compared with the previous 28 days; no
+     total for the whole site and no blended index.
 225. Position distribution charts: Chart how positions are distributed.
 226. Regular-expression query segments: Define query segments with regular
      expressions.
@@ -851,7 +856,11 @@ the writing brief (36, task #54).
 395. Topic and hashtag tracking: Tracks chosen topics and hashtags.
 396. Share of voice in mentions: Shows the brand's share of mentions compared
      with others.
-397. Reputation score over time: Tracks a reputation score over time.
+397. Review rating over time: Tracks the average rating in new reviews for each
+     review site that features 340, 349 and 350 watch, each site on its own,
+     compared with the period before until a year of reviews exists and then
+     with the same period a year before; no average across sites and no
+     blended score.
 398. Crisis mode: Gives a step-by-step playbook to follow in a crisis.
 399. Sponsor and partner mentions in forum: Finds mentions of sponsors and
      partners inside the forum.
@@ -1040,7 +1049,9 @@ the writing brief (36, task #54).
 524. Content analytics: Shows how content performs by author, section and tag.
 525. Members compared with guests: Compares how members and guests use the site.
 526. Real-time dashboard: Shows site activity as it happens.
-527. Engagement score per page: Gives each page an engagement score.
+527. Engagement per page: Shows each page's darshak engaged-visit rate,
+     compared with pages of the same kind in its section; the visit count only
+     hides pages with too few visits and is never shown. No blended score.
 528. Registration and upgrade conversion: Shows how many visitors register or
      upgrade from each page.
 529. Paywalled content structured data: Adds structured data for content behind
@@ -1338,8 +1349,9 @@ the writing brief (36, task #54).
 699. Link-in-bio page: Builds a link-in-bio page. [WP] [Public]
 700. Print campaign QR codes: Makes QR codes for print campaigns, with tracking.
      [Public]
-701. Community sentiment index: Tracks how members feel about forum topics over
-     time.
+701. Community sentiment by topic: Tracks how members feel about each forum
+     topic, from our own analytics, compared with the month before; no blended
+     index.
 702. Product feedback mining: Finds feature requests and complaints about the
      owner's own products.
 703. Competitor mentions in the forum: Finds where members mention competitors
