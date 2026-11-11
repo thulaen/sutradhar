@@ -1,8 +1,7 @@
-//! Holes in container images (task #114; the rule is in AGENTS.md
-//! section 5.7). Every image pinned in `gate/tools.toml` is scanned with
-//! the pinned Grype, and a high or critical hole that has a fix is
-//! refused unless `allowed` lets it through for now. The images the
-//! set-up files under `docker/` and `deploy/` name must be pinned ones.
+//! Container image holes (task #114; AGENTS.md section 5.7).
+//! Pinned Grype scans every pinned image. Fixable high or critical holes
+//! are refused unless `allowed` permits them. Images named in `docker/`
+//! and `deploy/` must be pinned.
 //!
 //! The list of holes is kept outside the repository, in the folder
 //! `AEGIS_GRYPE_DB` names, and fetched there first, outside any seal.
@@ -14,10 +13,11 @@
 use std::path::{Component, Path, PathBuf};
 use std::process::Command;
 
-use serde_json::Value;
-
 use crate::Finding;
 use crate::tools_list;
+
+#[path = "images_report.rs"]
+mod report;
 
 const CHECK: &str = "images.holes";
 
@@ -39,45 +39,7 @@ const SCAN_SECONDS: &str = "600";
 /// # Errors
 /// When the text is not a `CycloneDX` report.
 pub fn holes(report: &str) -> Result<Vec<String>, String> {
-    let report: Value = serde_json::from_str(report)
-        .map_err(|e| format!("the scanner's report cannot be read: {e}"))?;
-    if report.get("bomFormat").and_then(Value::as_str) != Some("CycloneDX") {
-        return Err("the scanner's report is not a CycloneDX report".into());
-    }
-    let text = |v: Option<&Value>| {
-        v.and_then(Value::as_str).unwrap_or_default().to_owned()
-    };
-    let none = Vec::new();
-    let found = report
-        .get("vulnerabilities")
-        .and_then(Value::as_array)
-        .unwrap_or(&none);
-    let mut out = Vec::new();
-    for hole in found {
-        let ratings = hole.get("ratings").and_then(Value::as_array);
-        let serious = ratings.into_iter().flatten().find_map(|r| {
-            let level = text(r.get("severity")).to_ascii_lowercase();
-            matches!(level.as_str(), "high" | "critical").then_some(level)
-        });
-        let Some(level) = serious else { continue };
-        let id = text(hole.get("id"));
-        let parts = hole.get("affects").and_then(Value::as_array);
-        let mut named: Vec<String> = parts
-            .into_iter()
-            .flatten()
-            .map(|p| text(p.get("ref")))
-            .map(|r| r.split('?').next().unwrap_or_default().to_owned())
-            .collect();
-        if named.is_empty() {
-            named.push("a part the report does not name".to_owned());
-        }
-        out.extend(
-            named.iter().map(|what| format!("{id} ({level}) in {what}")),
-        );
-    }
-    out.sort();
-    out.dedup();
-    Ok(out)
+    report::holes(report)
 }
 
 /// The folder for the list of holes: it must be named, and lie outside

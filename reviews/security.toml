@@ -1,5 +1,5 @@
 skill = "security"
-change = "sha256:4294cc1185c912e03e7171f22d4e7f6e20703cba770bba5b6a635157b017fe46"
+change = "sha256:26bc57662d3f1501035d72e9aabf48624f93719b6b77a4e0a4231715e8870fb1"
 verdict = "pass"
-agent = "claude subagent"
-summary = "Read the whole staged diff (spec 0039 to 0048 openings, README roadmap column, features.md map). Docs only: no code, inputs, secrets, addresses, crypto or dependencies. Checked that the map's clash rule keeps each spec's own rules (such as 0040's read-only, no-write rule against feature 80) and that no feature is listed twice."
+agent = "codex"
+summary = "Reviewed all eight changed files and verified their hashes against the supplied proof. Traced scanner input through consumed-field validation, severity filtering, errors and unchanged exception handling; checked matching immutable image pins and SBOM, removal of exactly eight obsolete exceptions, preserved expiry and container restrictions, and absence of new secrets, dependencies or command interpolation."

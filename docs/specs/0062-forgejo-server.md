@@ -2,11 +2,12 @@
 
 Forgejo is the source of truth for code, tasks, milestones and releases
 ([AGENTS.md sections 2, 8 and 9](../../AGENTS.md)). It runs on Dell
-from `docker/forgejo/compose.yaml`: Forgejo 15.0.11 (long-term
-support), rootless, pinned by digest, reached from Dell only on
-`127.0.0.1:3000`. It may use 1 GB of memory and one processor, has a
-read-only file system with a small temporary folder, and holds no
-special rights.
+with a rootless build whose exact version and digest are pinned in
+[the tool list](../../gate/tools.toml) and used by
+[the compose file](../../docker/forgejo/compose.yaml). It is reached
+from Dell only on `127.0.0.1:3000`. It may use 1 GB of memory and one
+processor, has a read-only file system with a small temporary folder,
+and holds no special rights.
 
 ## Settings
 

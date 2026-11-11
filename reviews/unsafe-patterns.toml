@@ -1,9 +1,5 @@
 skill = "unsafe-patterns"
-change = "sha256:4294cc1185c912e03e7171f22d4e7f6e20703cba770bba5b6a635157b017fe46"
+change = "sha256:26bc57662d3f1501035d72e9aabf48624f93719b6b77a4e0a4231715e8870fb1"
 verdict = "pass"
-agent = "claude subagent"
-summary = "Read the whole staged diff (git diff --cached): docs only, specs 0039 to 0048 openings, docs/specs/README.md roadmap column and the new features.md section mapping features to specs. No code, tests or proofs change, so none of the hidden unsafe patterns (errors turned into defaults, overflow, locks, check-then-use, leaked handles, unbounded input, trusted outside paths, weakened tests) can occur. Also checked that no feature number appears twice in the map, and that each README Phase 6 item list matches the map's feature numbers when items 1 to 4 are read as features 1 to 112, 113 to 712, 713 to 1312 and 1313 to 1357."
-
-[[finding]]
-what = "Later: docs/specs/README.md cites 'Phase 6 item N', but neither the README nor docs/roadmap.md ('the first range', 'the second range') says which feature numbers each item covers. There are five range tasks (#54, #55, #56, #57, #164) for four roadmap items, so a reader has to work out that item 1 covers #54 and #55. A later docs change could name each item's feature span in the roadmap. The check that every feature has a spec (task #181) could also check the README items against it."
-fixed = true
+agent = "codex"
+summary = "Reviewed all eight changed files after the preliminary commit checks, including report defaults, error propagation, borrowing, counts, paths, process handling and test preservation. Present consumed fields with malformed types now fail before immutable extraction; no unsafe pattern was introduced or worsened, and the inherited uncapped scanner capture remains open under task #130 comment 2772."

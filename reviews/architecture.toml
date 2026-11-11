@@ -1,9 +1,7 @@
 skill = "architecture"
-change = "sha256:4294cc1185c912e03e7171f22d4e7f6e20703cba770bba5b6a635157b017fe46"
+change = "sha256:26bc57662d3f1501035d72e9aabf48624f93719b6b77a4e0a4231715e8870fb1"
 verdict = "pass"
-agent = "claude subagent"
-summary = "Read the staged diff for task #149 item 16 (docs only): the new 'Which spec designs each feature' map in docs/specs/features.md, the README roadmap-item column and the openings of specs 0039 to 0048. Checked one home per feature (no number listed twice across both columns), README Phase 6 items against the feature ranges in features.md (range 1 = 1-112, 2 = 113-712, 3 = 713-1312, 4 = 1313-1357; every row matches its listed features), range-task table against Forgejo #54/#55/#56/#57/#164, and spot-checked 16 rows against spec text (2/0023, 26/0051, 36/0041, 70, 82, 113, 1325/0044, 79, 314/0048, 140, 344/0047, 235/0042, 264/0046, 308/0043, 483/0040, 1302/0020). No status claims; the Part-of and clash rule keep a single owner and defer clashes to the owner under AGENTS.md section 13. No code, so Boot conventions do not apply."
-
-[[finding]]
-what = "Later: docs/specs/features.md map lists 1325 (adaptive crawl pace) as wholly designed by 0044, but 0044 section on slowing down (staged lines 114-117) designs only slowing and pausing, not 'speeds up again with care'; 1325 may belong under Part of. Already among the round 3 Later items for #149."
-fixed = true
+agent = "codex"
+summary = """
+Reviewed AGENTS.md, the architecture skill, ADR-0017, all eight changed files, surrounding image-scan and allowance code, existing integration and end-to-end tests, failed-first parser evidence, and exact-candidate verification proof. Responsibilities remain clear: tools.toml owns the pin, compose consumes it, the generated SBOM agrees, and the private report module validates consumed fields behind the unchanged public API. Errors still reach the blocking scan finding; filtering, fallback, sorting and deduplication remain unchanged. The extraction is readable and keeps the existing Rust repair within its permitted scope. Compared keeping parsing inline, introducing typed report structures, and adding a shared parser framework: the private module is the smallest clear equivalent here, with no unnecessary abstraction, extension points, dead logic or duplicated implementation. Reviewed proof reports 393 passing sealed workspace tests, strict Clippy, formatting and deterministic SBOM regeneration; existing tests cover planted holes, scanner integration and allowance handling end to end. No Boot wiring, product layers, dependencies, globals or module cycles are introduced. This pass covers the source/configuration commit candidate only. Live daily-image compatibility and recovery remain unproven under task #130; retained vulnerabilities are not treated as repaired.
+"""

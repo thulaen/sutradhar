@@ -15,10 +15,10 @@ sha256 = "b6d8368292fabbbc739eb366f006edf1c2f06ba3919051743e8d610beab72ca6"
 
 [[tool]]
 name = "forgejo"
-version = "15.0.11"
-source = "codeberg.org/forgejo/forgejo"
-image = "codeberg.org/forgejo/forgejo"
-digest = "sha256:3cd6bc2b74c87cbde0a0fd527c9665cb416f5a0540dee54fe5afb3fa2df9f40c"
+version = "15.0-test"
+source = "codeberg.org/forgejo-experimental/forgejo"
+image = "codeberg.org/forgejo-experimental/forgejo"
+digest = "sha256:4c1d7e7d22200d4d91c7794422ed467c37c8a73b674b628170cc04dc8e3b67d4"
 
 [[tool]]
 name = "shellcheck"

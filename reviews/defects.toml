@@ -1,9 +1,5 @@
 skill = "defects"
-change = "sha256:4294cc1185c912e03e7171f22d4e7f6e20703cba770bba5b6a635157b017fe46"
+change = "sha256:26bc57662d3f1501035d72e9aabf48624f93719b6b77a4e0a4231715e8870fb1"
 verdict = "pass"
-agent = "claude subagent"
-summary = "Read every staged line (specs 0039 to 0048 openings, features.md map, README rows and intro). Checked no feature is listed twice (130 distinct numbers), every README Phase 6 item matches the four features.md ranges for the listed numbers, the range-task table covers 1 to 1357 with no gap, and spot-checked 21 rows against spec text (2, 5, 26, 36, 70, 79, 82, 164, 224, 241, 264, 278, 287, 308, 314, 344, 483, 539, 564, 585, 1302). No status claims found."
-
-[[finding]]
-what = "Later: docs/specs/0041-editorial-coach.md lines 16 to 28 use archive feature numbers (16, 245, 483 among them) that collide with features.md numbers the new map assigns to 0044, 0042 and 0040; a reader may take them as features.md numbers. Renumber or drop them when 0041 is next edited."
-fixed = true
+agent = "codex"
+summary = "Read every changed line, parser callers, exception handling, surrounding tests and SBOM generation. Verified the patch, all eight changed file hashes and locked scan hash. Malformed consumed field types refuse before severity filtering; valid severity, fallback, sorting and deduplication behaviour is preserved. The scan supports removing exactly eight obsolete exceptions. Inspected supplied red/green and 393-test sealed evidence; did not independently rerun tests, recalculate the supplied fingerprint or run the full gate. No new correctness or test defect found."

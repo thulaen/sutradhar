@@ -1,29 +1,16 @@
 skill = "red-team"
-change = "sha256:4294cc1185c912e03e7171f22d4e7f6e20703cba770bba5b6a635157b017fe46"
+change = "sha256:26bc57662d3f1501035d72e9aabf48624f93719b6b77a4e0a4231715e8870fb1"
 verdict = "pass"
-agent = "claude subagent"
-summary = "Round 4. Three red agents attacked the staged map, README column and spec openings: break it (38 map rows checked against spec text, duplicates), get round it (two homes or none, shared parts, range tasks against the four ranges, every touched README row against the map) and abuse it (Part-of loopholes on safety rules, links and anchors, task numbers, product names, status claims). No feature appears twice, every README Phase 6 item matches its map rows and the ranges in features.md, every added link and the AGENTS.md section 13 anchor resolve, and no new text states status or names a product. Each report was checked against the staged text; what remains is later work."
-
-[[finding]]
-what = "Later: features.md 'Which spec designs each feature' sends 'a feature not named below' to its range task, but the range-task table and the later 'Shared parts' and 'Clean-room notes' sections also name features below it. Say 'not listed in the spec table below' so the check in task #181 has one reading."
-fixed = true
-
-[[finding]]
-what = "Later: rows listed as designed in whole whose spec support is one line or a flag rather than the feature's full wording; consider Part of: 245 (0042 flags an uncited claim, the feature requires citations), 116 (0044 list mode gives no paste or upload input), 546, 545, 548 (0048 one line each, no test), 164, 201, 204, 205, 70 (0044 one line each, no test), 264 (0046 report 6 is a gap list, not an overlap), 1302 (0020 has no test that a revoked token is refused), 3 (0047 sorts by demand only with search data)."
-fixed = true
-
-[[finding]]
-what = "Later: features.md:83-85 says the work in old slots belongs to editor scoring (235, task #56) and the writing brief (36, task #54), while the map names 0042 and 0041 as their designs. Say the task builds them to that spec, so no one reads the task as their design home."
-fixed = true
-
-[[finding]]
-what = "Later: 0041:15-28 still uses archive feature numbers (except 36 and 235), so its 'feature 483' and 'feature 245' differ from the map's 483 (0040) and 245 (0042). Renumber 0041's table to features.md numbers."
-fixed = true
-
-[[finding]]
-what = "Later: shared parts can be built before their full design: 107 (range 1) uses 1316, which 0044 designs only in part with the rest on task #164 (range 4); 15 uses 1326, which has no spec. Say where a shared part's design lives when its first user is built in an earlier range."
-fixed = true
-
-[[finding]]
-what = "Later: the Part-of paragraph lets a range task change a spec's existing rule in the same change that designs the rest (for example 0040's no-sitemap-submission rule against feature 80). Say a range task never removes a stated rule; that is a separate owner question. The range tasks #54 to #57 and #164 say only 'Build', while the map says they write the specification; align the task bodies."
-fixed = true
+agent = "codex"
+summary = """
+Checked the three independent goals: Break it, Get round it and Abuse it.
+Read every fixture and independently executed all twelve synthetic tests
+sealed against the verified candidate library; all passed. Malformed
+consumed field types are refused, including after a serious finding.
+No introduced or worsened hole was found. Static comparison confirms
+the inherited parser, exemption-ID and diagnostic behaviours remain
+unchanged; they remain open and unwaived under task #130 comment 2775,
+alongside uncapped capture in comment 2772. This assessment covers bounded
+synthetic tests and source inspection; it claims no full-gate pass,
+real-image scan, deployment or resource-stress proof.
+"""
