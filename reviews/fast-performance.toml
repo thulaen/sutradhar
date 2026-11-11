@@ -1,9 +1,9 @@
 skill = "fast-performance"
-change = "sha256:1962a6a58bbccf972ee7bb3f50091e322950926c21b90a3f55c11c65de94d461"
+change = "sha256:71c0f536c0c731a50ad1adfb12e3a119c905ac87b91dfac1fac120a806d89848"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged docs-only diff (features.md range 2 and 3 rewrites for task #149 items 10 and 11, round 4: 1303 owner starts every session, 1305 dashboards in the site's admin pages, and the group name in spec 0027). No code or hot path changes; checked that the reworded features add no per-request work, unbounded growth or per-visitor rendering beyond what is already logged as Later on #149."
+summary = "Read the staged docs-only diff to spec 0064 (task #64, #180 item 46 round 5: signed run id and run purpose in the ledger, replay context looked up by signed run id, shared ledger validator, current-invocation attempt-id exclusion, one run-ledger head read after the replay's own attempts and verdict, history checked over every candidate entry in that range whatever its run kind, replay's policy digest check against the current protected policy, and the acceptance cases including same-kind refused or interrupted runs and the changed-policy case). No code changes. The text keeps one read of the checked ledger bytes for both paths, one run-id lookup before any evidence is opened, an exclusion set bounded by the current invocation's attempts, a single bounded history scan from the previous ledger's head to one exact head, and the new policy digest check is one comparison of values already loaded; nothing adds a second read, an unbounded structure or a blocking call."
 
 [[finding]]
-what = "Later: 376 and 700 now carry [Public]; their specs must set a footprint budget and count clicks off the render path (already logged on #149, round 1). 1309 timed removal should sweep an indexed expiry time rather than scan all grants (already logged on #149, round 2). 1305 writer dashboards sit in the site's admin pages, so they add nothing to public page footprint. The change does not make any of these worse."
+what = "Later: docs/specs/0064-v1-qualification.md lines 45-62 and 364-391. When implemented, the run-id lookup in the policy's run records should be keyed, not a scan of every issued record, and the current invocation's attempt ids should be held as a set during the single history read, so replay cost stays proportional to history for the candidate since the previous ledger's head. Not made worse by this change; already logged on #180."
 fixed = true

@@ -1,13 +1,9 @@
 skill = "security"
-change = "sha256:1962a6a58bbccf972ee7bb3f50091e322950926c21b90a3f55c11c65de94d461"
+change = "sha256:71c0f536c0c731a50ad1adfb12e3a119c905ac87b91dfac1fac120a806d89848"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged diff of docs/specs/features.md (features 376, 675, 698, 700, 1245, 1250, 1261, 1294, 1303 to 1312, range 3 line) and spec 0027 line 386 against AGENTS.md sections 5.3 to 5.5 and the features.md rules. Checked that no feature now opens the MCP server to outside people, acts on the live site without a person's Accept, crosses sites in one session, or shows different public pages to different visitors. None does."
+summary = "Read the staged diff of docs/specs/0064-v1-qualification.md (round 5 of #180 item 46) against HEAD aa43114 and the surrounding reader-check, run-id and history rules. Checked that replay takes its trust context only from the signed run id and the protected policy's record, that neither submitted data nor caller options can select kind, purpose, signing purpose or exclusions, that the current-invocation exclusion is verifier-only and never hides failures, that the reader check stays release-only for both callers, that replay checks the policy digest against the current protected policy, and that the new acceptance case matches the history rules. No open defect found."
 
 [[finding]]
-what = "Later: features.md 376 and 700 (shared link and QR click tracking, now [Public]) will likely need a redirect or counting endpoint on the public site; their specs must make it accept only Sutradhar-signed or registered targets so it cannot be used as an open redirect, and must not log visitor IP addresses or set cookies."
-fixed = true
-
-[[finding]]
-what = "Later: features.md 1308, 1309 and 1312 have Sutradhar grant and remove site-account roles; their specs must state that Sutradhar's own site token can only assign a fixed draft-only role (never raise a role, never admin), and that the grant and removal are logged in the publication log (1260)."
+what = "Later: docs/specs/0064-v1-qualification.md:45-61 and 365-370 do not say the run id used for the policy lookup is read from the same checked bytes after the signature check passes, rather than from a pre-parse; state that a signature failure refuses before the policy record is consulted (already logged on #180 as a round 4 Later item)."
 fixed = true

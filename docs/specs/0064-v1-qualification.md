@@ -12,11 +12,11 @@ and nothing depends on it. It owns the verified ledger and publishes it
 as a file signed under its own ledger signing purpose. The ledger holds
 the six qualified counts (the method, capability and variant totals, the
 method and capability in-scope totals, and the ranking subtotal) and no
-member rows. It also carries the run kind, which is one of release,
-pilot or fixture, the run manifest digest, the candidate, catalogue and
-current protected policy digests, the head of the Dell run ledger it was
-built from, and a sequence number for that candidate and run kind that
-only goes up.
+member rows. It also carries the run id the protected policy issued, the
+run kind, which is one of release, pilot or fixture, the run purpose,
+the run manifest digest, the candidate, catalogue and current protected
+policy digests, the head of the Dell run ledger it was built from, and a
+sequence number for that candidate and run kind that only goes up.
 
 The ledger type, its encoding and its one reader check live in
 `sutradhar-methods`, using tijori's signature checks; `qualify` writes
@@ -41,6 +41,24 @@ When it refuses, `sutra methods count` shows the qualified counts as
 unverified rather than printing them. `sutra methods count`, which
 judges no release, compares against the frozen candidate the ledger
 names and the catalogue it reads.
+
+The reader check uses one shared ledger validator for the bounded-byte,
+signature, binding and freshness checks above. The shared validator
+checks the run kind and ledger signing purpose against a trusted run
+context. For replay, the caller names the run only by the run id signed
+in the previous ledger. `qualify` looks that id up in the record the
+protected policy issued for it ("Evidence records and groups"), which
+fixes the run's kind and run purpose, and in the approved run inputs
+that "Freeze the run" loads, before any submitted evidence is opened.
+Replay refuses if no trusted record matches, or if the record's run id,
+kind or purpose differs from the ledger's. Protected policy fixes the
+expected ledger signing purpose for that kind. A run purpose is distinct
+from a signing purpose. Neither submitted data nor a caller option may
+change this context. The reader check keeps its fixed release-only
+restriction for both of its callers, with no option to admit a pilot or
+fixture ledger. The reader check and verifier replay both use the same
+checked bytes and trust checks; they never reopen an unchecked copy to
+obtain counts.
 
 ## What the product covers
 
@@ -343,17 +361,34 @@ bytes differ.
 
 Build the verified ledger in isolation. Publish its totals only after
 the whole input passes. A retry or replay of the same verified run first
-runs the reader check on the previous ledger and refuses if it refuses,
-then re-reads the run-ledger history for that candidate and run kind
-since the head the previous ledger names, leaving out the replay's own
-attempts, refuses if that history has changed or if any test failure on
-the candidate in a release or pilot run has been recorded since that
-head, refuses if any of its own attempts fails, and otherwise returns
-the same counts in a new ledger with the new run-ledger head and the
-next sequence number. A changed manifest, missing member, overlapping
-group or duplicate behaviour refuses the input. The previous ledger then
-stays unchanged on disk, and readers refuse it until a new verified run
-publishes. Compute the method and capability scope shares separately
+runs the shared ledger validator on the previous ledger against the
+approved original run's trusted context and refuses if that validation
+refuses. This permits replay of pilot and fixture runs without admitting
+their ledgers to the reader check. Replay preserves the original run
+kind, run purpose and ledger signing purpose; it grants no release
+credit to a pilot or fixture. It checks the policy digest against the
+current protected policy, as the reader check does. The new ledger
+carries the original run id. After the replay's own attempts and final
+verdict are recorded, replay reads the run-ledger head once and checks
+every entry for that candidate from the head the previous ledger names
+up to that exact head, whatever its run kind. In both this history check
+and the initial shared validation, the trusted supervisor supplies the
+exact current replay invocation and its ordered attempt ids. Exclude
+only those ids from newer-attempt freshness; never exclude their test
+failures or failed replay verdicts. All other attempts remain subject to
+the existing history and frozen retry rules, including refused and
+interrupted runs and the permitted passing gate, nightly and soak
+exclusion. Submitted data cannot name exclusions. This
+current-invocation exclusion is available only inside verifier replay,
+never to the reader check. Replay refuses if that history for its own
+run kind has otherwise changed or if any test failure on the candidate
+in a release or pilot run has been recorded in that range, refuses if
+any of its own attempts fails, and otherwise returns the same counts in
+a new ledger that names exactly that head and carries the next sequence
+number. A changed manifest, missing member, overlapping group or
+duplicate behaviour refuses the input. The previous ledger then stays
+unchanged on disk, and the reader check refuses it until a new verified
+run publishes. Compute the method and capability scope shares separately
 with checked integer arithmetic. Check the ranking subtotal within the
 method ledger.
 
@@ -391,6 +426,30 @@ Reorder the group inputs and replay. The totals and verified member
 set must agree. Replay a previously accepted run to prove idempotence.
 The fixture uses its own `FX-` identities in a separate fixture
 catalogue and carries no release credit.
+
+Replay accepted fixture and pilot ledgers through the verifier with
+their own protected run contexts and require the same counts. Offer
+those same correctly signed ledgers to the reader check through both of
+its callers, `sutra methods count` and release criterion 7, and require
+refusal. Name a run id that differs from the one signed in the ledger
+and require refusal. Offer a ledger to replay with another approved
+run's context and require refusal, even when its signature is otherwise
+valid. Check a request to select the expected run kind, run purpose,
+ledger signing purpose or excluded attempt ids from submitted data or a
+caller option: it must not change the trusted context. Record the
+current replay attempt before its initial validation and require a valid
+replay to pass. Add a newer attempt from another invocation and require
+refusal under the existing history rules. Record a real failure in the
+current replay, then a pass, and require refusal. After the replay's own
+attempts begin and before its final head read, record another run's
+qualification attempt, or a refused or interrupted run, of the same run
+kind, or a test failure on the candidate in a release or pilot run, and
+require refusal; record a passing gate, nightly or soak attempt, or a
+refused or interrupted run of another kind, there instead and require
+the replay to pass. Change the protected policy between the run and the
+replay and require refusal. These cases retain signature, policy,
+freshness, retry and input-binding checks; run-kind isolation grants no
+exception to them.
 
 Plant one fault at a time. Check an identity repeated across groups, the
 same behaviour under a new id, an alias or setting counted as new, a

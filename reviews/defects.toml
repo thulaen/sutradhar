@@ -1,5 +1,5 @@
 skill = "defects"
-change = "sha256:1962a6a58bbccf972ee7bb3f50091e322950926c21b90a3f55c11c65de94d461"
+change = "sha256:71c0f536c0c731a50ad1adfb12e3a119c905ac87b91dfac1fac120a806d89848"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 4 of task #149 batch 3: read every staged line of docs/specs/features.md and the one line of spec 0027 against AGENTS.md sections 5.3 to 5.5 and the features.md rules. Checked the [Public] tags on 376, 698, 700 and 1294, the 675 rewrite (same page for every visitor, no named product), the MCP rewrites of 1245, 1250, 1261 and 1303 to 1312, the round 3 fixes to 1303 and 1305 (site's admin pages, matching AGENTS.md section 5.4), and that no staged doc still names the old heading or feature names. Nothing blocking found; earlier Later items stay logged on #149."
+summary = "Read every staged line of docs/specs/0064-v1-qualification.md (#180 item 46, round 5) with the surrounding reader check, Replay and refusal, Fixture and pilot cases and acceptance text. Checked the round 4 fixes: the same-kind versus other-kind history acceptance case now matches the replay history rule and the reader check's freshness rule (including refused or interrupted nightly runs counting against a release ledger), 'replay reads' names the actor, and replay's policy digest check against the current protected policy has a matching refusal case. No new defect found; earlier Later items stay logged on #180."

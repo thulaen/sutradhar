@@ -1,5 +1,9 @@
 skill = "backlog"
-change = "sha256:1962a6a58bbccf972ee7bb3f50091e322950926c21b90a3f55c11c65de94d461"
+change = "sha256:71c0f536c0c731a50ad1adfb12e3a119c905ac87b91dfac1fac120a806d89848"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read task #149 and its comments, and the staged diff of docs/specs/features.md and spec 0027 line 386. The change does items 10 and 11 of #149 (Phase 2, status/working) and nothing else: [Public] on 376, 698, 700 and 1294; 675 rewritten without the named product; 1245, 1250, 1261 and 1303 to 1312 brought under AGENTS.md section 5.5 and the human-Accept rule; the group rename is carried into spec 0027 and the range 3 description. Later items from rounds 1 to 3 are logged on #149, and 8 tasks carry status/ready (at most 10)."
+summary = "Round 5 backlog review of the staged docs/specs/0064-v1-qualification.md diff for #64 / #180 item 46 (pilot and fixture replay). Read the task and its #180 comments, the staged diff and surrounding spec text; the change fixes only the replay contradiction and its review follow-ups, stays in the current campaign, and earlier rounds' Later items are logged on #180."
+
+[[finding]]
+what = "Later: post the round 5 outcome and proof on #180 item 46 once the commit lands (blocked behind #130), and mark items 35, 48 and 49 as covered there, as the earlier comments plan."
+fixed = true

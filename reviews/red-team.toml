@@ -1,25 +1,25 @@
 skill = "red-team"
-change = "sha256:1962a6a58bbccf972ee7bb3f50091e322950926c21b90a3f55c11c65de94d461"
+change = "sha256:71c0f536c0c731a50ad1adfb12e3a119c905ac87b91dfac1fac120a806d89848"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 4 of task #149 batch 3 (docs only: features.md and spec 0027 line 386). Two red agents attacked the staged diff, one getting round the rules (MCP reach, Accept, one site per session, same page for every visitor, [Public], clean-room) and one breaking and abusing it (stale names, cross-references, outsider routes to MCP or publishing). Each claim was checked against the staged text. No stale names remain, the 0027 group list matches the new heading, and no guest, sponsor or agency writer can reach the MCP server or publish without a person's Accept. Claims already on the #149 Later lists were dropped, and the rest are Later items."
+summary = "Two red agents (get round it; break it) attacked the staged spec 0064 replay text for #180 item 46 round 5. Each claim was checked against the staged file (git show :docs/specs/0064-v1-qualification.md). No path admits a pilot or fixture ledger to the reader check, and the round 5 acceptance case (same-kind refused or interrupted runs refuse, other-kind ones pass) matches the reader check at lines 34-36 and the replay rule at lines 378-384; line 272 speaks of purpose within a kind, not of other kinds. The remaining claims are clarity gaps, logged as Later."
 
 [[finding]]
-what = "Later: features.md 1305 shows writer dashboards in the site's admin pages, but 1308, 1309 and 1311 give writers draft-only roles, and on XenForo only administrators can open the admin control panel. The writer-dashboards spec should say which role sees the page (each writer sees only their own drafts, and no writer gets admin or moderator rights to see it), or show XenForo as not applicable."
+what = "Later: line 441 'Add a newer attempt from another invocation and require refusal under the existing history rules' names no run kind; say same run kind, since a newer pilot attempt during a release replay must pass (lines 383, 475-476)."
 fixed = true
 
 [[finding]]
-what = "Later: features.md 1303 says who starts a session and where it runs, but not who drives it. It should say plainly that the writer never reaches the MCP server, for example through a relay or remote desktop."
+what = "Later: lines 373-374 'from the head the previous ledger names up to that exact head' should say the range excludes the previous ledger's own head entry (entries recorded after it), as the reader check's 'recorded since' does."
 fixed = true
 
 [[finding]]
-what = "Later: features.md 1310 says 'Only the owner's own sessions do this', but under 1303 the owner starts every session, including those under writer profiles. The spec should name the profile, or say no writer profile is used."
+what = "Later: lines 374-376 say the supervisor supplies the invocation's ordered attempt ids for the initial validation too, but later attempts do not exist yet; say the initial check uses the ids recorded so far."
 fixed = true
 
 [[finding]]
-what = "Later: features.md 698 and 1294 are now tagged [Public], but no spec gives them a footprint budget yet, so the footprint tests refuse them until their specs set one. This is the same Later item as the budgets for 376 and 700."
+what = "Later: say whether an infrastructure interruption of the replay's own attempt, retried under the frozen retry policy, lets the replay pass (lines 272, 377-380), and add a case for it."
 fixed = true
 
 [[finding]]
-what = "Later: features.md 1308 and 1312 change site-account roles. The global rule covers them, but unlike 1309 they do not say the change goes through the review page with a person's Accept. Also, the sponsor disclosure in 1310 may need a [Public] tag. Both gaps were there before this diff."
+what = "Later: line 46 'binding' checks for replay should name that the candidate, catalogue and manifest digests are compared with the approved run inputs for the signed run id (line 51), not with the ledger's own fields."
 fixed = true

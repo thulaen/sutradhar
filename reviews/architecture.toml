@@ -1,13 +1,9 @@
 skill = "architecture"
-change = "sha256:1962a6a58bbccf972ee7bb3f50091e322950926c21b90a3f55c11c65de94d461"
+change = "sha256:71c0f536c0c731a50ad1adfb12e3a119c905ac87b91dfac1fac120a806d89848"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged diff of docs/specs/features.md and spec 0027 line 386 for task #149 items 10 and 11 against AGENTS.md sections 5.3, 5.4 and 5.5 and the features.md rules. The [Public] tags, the same-page offer pages in 675, the draft-and-accept flows in 1245 and 1250, the owner-only switch in 1261 and the staff access in 1303 to 1312 (owner-started sessions on the owner's PC, one site per session, site-account permissions instead of MCP, dashboards in the site's admin pages) now fit the module walls; the round 3 fixes are in."
+summary = "Round 5 of task #64 / #180 item 46: read the staged diff of docs/specs/0064-v1-qualification.md against aa43114 and the staged sections it relies on (reader check, Freeze the run, Evidence records and groups, Replay and refusal). Checked that the reader check stays one release-only check in sutradhar-methods behind QualifyTrust, that replay reuses one shared validator with a trusted context fixed by the signed run id, kind and purpose and the protected policy's run record, that replay now checks the policy digest against the current protected policy as the reader check does, that the current-invocation exclusion stays inside verifier replay, and that the acceptance case for refused or interrupted runs now matches the same-run-kind history rule. No module-wall, composition or data-flow defect found."
 
 [[finding]]
-what = "Later: 1305 puts writer dashboards in the site's admin pages, which the add-on must render from data the service pushes over the signed site link (AGENTS.md section 5.4, the site never calls the PC); spec 0027 or the add-on spec should say the add-on renders them from pushed data and give them a footprint budget if any reach public pages."
-fixed = true
-
-[[finding]]
-what = "Later: 1303 keeps per-writer assistant profiles, but every session is owner-started on the owner's PC; the spec should say how a writer's drafts are attributed to that writer in the publication log (1260) when the owner runs the session."
+what = "Later: docs/specs/0064-v1-qualification.md lines 45-61 and 364-391 name what replay reads (the policy's run record, approved run inputs, the current protected policy digest, and the supervisor's invocation and attempt ids) but not through which trait; the reader check reads Dell state through QualifyTrust (spec 0055). Name the trusted port replay uses (QualifyTrust or a verifier-only extension) so replay inputs keep one typed entry point and stay out of product callers. Already logged on #180 from round 4."
 fixed = true
