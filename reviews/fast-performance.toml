@@ -1,13 +1,13 @@
 skill = "fast-performance"
-change = "sha256:1a608cfaf80a6c059c812c967e085d31b57aa8b9ae3fee28874c2d77982aa377"
+change = "sha256:e32adefeefddd19647812232809913cf7e5825f497b4f859ac5432d5f5936b25"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 3. Read the whole staged diff (glossary, vocabulary.md, features.md, specs 0014, 0015, 0020, 0021, 0027, 0037, 0038, 0041, 0042, 0052, 0056). Docs only; checked the new behaviour for per-request and per-keystroke work and unbounded growth. Round 3 narrows feature 235 scoring to saved guest-visible drafts, stored through the platform contract on the service's next call, with no requests while typing; the barred-content check is one bounded pass per saved version plus one on the approved version; the brief minimum is a count check; shared fakes move to a development-only crate outside the product build. No slow path is introduced."
+summary = "Read the staged diff of docs/specs/features.md, docs/specs/0034-analytics.md and docs/specs/0048-fix-list.md (task #149 batch 2, round 4). Docs only, no code or hot path changed; checked the new rules (Rhai then steps limited to item 2 actions, small-group noise on top of floors, 378 approvals, feature 20 records) for per-page or per-request work, unbounded growth, calls with no limit and text cut short. Nothing blocks."
 
 [[finding]]
-what = "Later: spec 0052 step 3 does not say how the site policy's barred words and claims are matched. When built it should be one pass over the whole draft with a matcher prebuilt when the policy changes (a set or multi-pattern automaton), not a scan of every policy entry per draft, and it must read the whole draft without cutting text short."
+what = "Later: features.md 185, 467 and 1324 and 0048-fix-list.md Rules item 3 run Rhai user scripts on every crawled page and as rule then steps. Spec 0043 (owned by #145) should give each script run an operation and time limit (Rhai max_operations and a wall-clock cap) and compile each script once per crawl or rule save, not once per page or run. Not made worse by this docs change; belongs with #145."
 fixed = true
 
 [[finding]]
-what = "Later: spec 0042 'Editor content score display' says the service scores a saved version when it next calls the site but not that it skips versions already scored. When built, scoring should be keyed by saved version and measure version (as test EA13 already implies) so each call scores only new or changed versions, not every draft every call."
+what = "Later: 0034-analytics.md small-group line adds OpenDP noise to figures darshak gives other features. When implemented, compute the noisy figure once per group per day close and serve that, not fresh noise per request, so cost and privacy budget stay bounded."
 fixed = true

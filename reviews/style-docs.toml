@@ -1,9 +1,9 @@
 skill = "style-docs"
-change = "sha256:1a608cfaf80a6c059c812c967e085d31b57aa8b9ae3fee28874c2d77982aa377"
+change = "sha256:e32adefeefddd19647812232809913cf7e5825f497b4f859ac5432d5f5936b25"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 3 of task #149 batch 1. Read every staged line in the glossary, vocabulary.md, features.md and specs 0014, 0015, 0020, 0021, 0027, 0037, 0038, 0041, 0042, 0052 and 0056 against AGENTS.md section 6 and the module labels. The three round 2 defects are fixed: 0041 numbers features 36 and 235 as in features.md, pariksha's label 'Evaluation library' is unique, and the ganit engine rows lead with their vocabulary meaning. Alias targets 933, 1283 and 1165 exist, no doc still cites the retired feature texts, and no fake is left in pariksha."
+summary = "Read the staged diff of features.md, 0034-analytics.md and 0048-fix-list.md for task #149 items 3-8, 12 and 14 (round 4) against AGENTS.md and the brief: plain British English, no status words, names, no drift between features.md, 0034 and 0048, clean-room notes. Round 3 fixes are in: 0034 small-group noise matches features.md and sits on top of the visit and pair floors; 0048 Rules item 3 and the Rhai line agree that a then step may be a Rhai script limited to item 2 actions."
 
 [[finding]]
-what = "Later: docs/glossary.md has no rows for the module vastu or for the ganit engines satya, parivartan, vichalan, bhavishya, anukaran, niyantran, kshamata, chitran, karan and ayu, which vocabulary.md lists; and glossary prahari ('outside tester that checks the gate') differs from its label 'Edit safety'. Both gaps predate this change, which does not make them worse."
+what = "Later: 0048 Rules item 3 and the Rust-libraries line both state the item 2 action limit for Rhai scripts; same file, low drift risk, but a future edit should keep them in step or have the second line point at item 3 only."
 fixed = true

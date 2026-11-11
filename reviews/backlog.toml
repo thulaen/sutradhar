@@ -1,13 +1,5 @@
 skill = "backlog"
-change = "sha256:1a608cfaf80a6c059c812c967e085d31b57aa8b9ae3fee28874c2d77982aa377"
+change = "sha256:e32adefeefddd19647812232809913cf7e5825f497b4f859ac5432d5f5936b25"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 3. Read task #149 and its comments, the roadmap phases, spec 0064's names table and the staged diff of the glossary, vocabulary.md, features.md and specs 0014, 0015, 0020, 0021, 0027, 0037, 0038, 0041, 0042, 0052 and 0056. The batch does #149 item 2 (1000, 1284 and 1285 are historical references to 933, 1283 and 1165; their behaviour now lives in features 235, 714 and 36 with specs 0042, 0052 and 0041) and the component-name repairs, and nothing beyond them. The glossary agrees with spec 0064. The task is Phase 2 work, no task is marked next, and the gaps found are recorded as Later items on #149."
-
-[[finding]]
-what = "Later: features.md line 3 still says the list is numbered 1 to 1357 with a design for each, and the clean-room note for feature 36 sits in the Range 4 notes. Already recorded as Later item 9 on #149; this batch does not make it worse."
-fixed = true
-
-[[finding]]
-what = "Later: no spec names the module, karya job or event that computes and writes the feature 235 score. Already recorded as Later item 8 on #149."
-fixed = true
+summary = "Round 4: read the staged diff of docs/specs/features.md, 0034-analytics.md and 0048-fix-list.md against #149 items 3 to 8, 12 and 14, the 11 November owner answer on auto-accept and the #145 Rhai decision. Each item is done as asked and nothing more; both round 3 fixes are in (0034 small-group noise on top of the floors, research sets the size; 0048 Rules item 3 and the Rhai line limit scripts to the item 2 actions); spec 0043 text and feature 774 stay with #145; items 9 to 11, 13, 15 and 16 stay for later batches; the task is in the current phase (Phase 2). No status/next label exists in Forgejo, so the at-most-10-next check has nothing to count."

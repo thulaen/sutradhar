@@ -32,6 +32,23 @@ Rules that hold for every feature:
   as "not applicable" with the reason.
 - Every change to a site goes through the review page, needs a person's
   Accept, applies through the platform's own functions and can be undone.
+  No setting, workflow, script or token accepts a change in a person's
+  place (owner, 11 November 2026).
+- A post to a social network goes out only after a person approves it
+  through feature 378.
+- Every feature that changes a site records its effect through feature
+  20, before-and-after proof.
+- Features that use reader behaviour read only darshak's grouped data,
+  which carries no cookies (spec 0034). darshak adds differential
+  privacy (added noise that hides any one person) from the OpenDP
+  library to figures for small groups.
+- No feature touches members' private data, private drafts or private
+  messages.
+- Nudges shown to members are off until the owner turns them on. They
+  have a rate limit, and each member can turn them off.
+- Where an SEO plugin on the site, such as Yoast or Rank Math, already
+  does the job, the feature leaves it to that plugin and says so in the
+  app.
 - New content is only ever a draft. It cites the posts it came from and
   never invents facts. Staff publish it under a staff account.
 - Heavy work runs on the owner's PC or the owner's cloud helpers, never
@@ -350,6 +367,8 @@ the writing brief (36, task #54).
 
 107. Event detection: Add Event structured data for meetup and launch threads,
      validated by Rust shape checks. This needs an approved footprint exception.
+     The shape checks are our own Rust rewrite of SHACL checks, with the same
+     aim.
 108. Video key moments: Add VideoObject structured data for embedded videos,
      with timestamps where the thread references them. This needs an approved
      footprint exception.
@@ -481,7 +500,7 @@ the writing brief (36, task #54).
      expressions.
 184. Custom search: Search for any text or code across the site.
 185. Custom rule checks: Run custom checks on every crawled page, written as
-     declarative rules in a TOML file and run by a Rust rule engine.
+     user scripts in Rhai, a small scripting language run inside Sutradhar.
 186. Spelling and grammar checks: Check staff-written pages with a self-hosted
      LanguageTool. Check members' posts only if the owner opts in.
 187. Crawl segments: Segment crawls by section, template or author, usable in
@@ -661,8 +680,8 @@ the writing brief (36, task #54).
 289. Citation tracking: Track which pages AI answers cite.
 290. AI share of voice: Measure AI share of voice against competitors.
 291. AI answer sentiment: Measure the sentiment of AI answers about the brand.
-292. Accuracy checker: Find wrong facts about the brand in AI answers, with
-     evidence.
+292. Accuracy checker: Find claims in AI answers that the site's own published
+     pages contradict, with evidence. It keeps no stored list of facts.
 293. Source gap: Find sites AI cites instead of yours, by topic.
 294. AI visibility by language: Show AI visibility for each language.
 295. AI answer change alerts: Alert when an AI answer about the brand changes.
@@ -670,7 +689,9 @@ the writing brief (36, task #54).
 297. AI crawler access check: Check AI crawler access for each page.
 298. AI answer snapshot archive: Keep an archive of AI answer snapshots.
 299. AI tracking costs: Estimate and cap the cost of AI tracking.
-300. Brand facts page draft: Draft a clear, citable page of official facts.
+300. Brand facts page draft: Draft a clear, citable page of official facts, from
+     the site's own pages. Staff publish it. It keeps no stored list of
+     facts.
 301. AI misinformation correction: Run a workflow for correcting AI
      misinformation.
 302. AI product descriptions: Show how AI describes the owner's products.
@@ -784,8 +805,8 @@ the writing brief (36, task #54).
 367. Telegram channel posting: Posts to a Telegram channel.
 368. Cross-network post scheduler: Schedules posts and shows them on one
      calendar across all networks.
-369. Auto-sharing of hub pages: Shares approved hub pages and top threads on
-     social networks without manual steps.
+369. Sharing of hub pages: Drafts social posts for approved hub pages and top
+     threads. Each post waits for a person's approval through feature 378.
 370. Best time to post: Shows the best time to post on each network.
 371. Composer with previews: Writes posts with a preview for each network and
      checks each post's length.
@@ -798,7 +819,7 @@ the writing brief (36, task #54).
 376. Shared link click tracking: Counts clicks on links shared on social
      networks.
 377. Evergreen recycling queue: Keeps a queue of lasting posts to share again
-     over time.
+     over time. Each post waits for a person's approval through feature 378.
 378. Social post approvals: Lets a person approve social posts before they go
      out.
 379. Social profile audit: Checks the brand's social profiles across networks.
@@ -807,8 +828,8 @@ the writing brief (36, task #54).
      posts.
 382. YouTube channel analytics: Shows how the YouTube channel performs. [Own
      account]
-383. Automatic posting from feeds: Posts to social networks automatically from
-     any feed.
+383. Posting from feeds: Drafts social posts from any feed. Each post waits for
+     a person's approval through feature 378.
 
 ### Brand monitoring and listening
 
@@ -944,8 +965,7 @@ the writing brief (36, task #54).
      steps and sends alerts.
 466. Branching, loops and data mapping: Lets workflows branch, loop and map data
      between steps.
-467. Rule steps: Lets workflow steps use declarative rules in a TOML file run by
-     a Rust rule engine.
+467. Script steps: Lets workflow steps run user scripts written in Rhai.
 468. AI steps: Lets workflow steps use the local AI model.
 469. Human approval steps: Adds steps that wait for a person's approval.
 470. Workflow versions and rollback: Keeps versions of each workflow and can
@@ -2397,8 +2417,9 @@ design, as set out here.
   estimating, named on the screen; no other tool's rating scale.
 - 1322 Off-topic page finder: our own measure, the distance of a page's
   embedding from the centre of its section, using our own embedder.
-- 1324 Tunable issue rules: our own issue catalogue and TOML rule format
-  (feature 185); no copied issue names or default thresholds.
+- 1324 Tunable issue rules: our own issue catalogue, with custom checks as
+  Rhai user scripts (feature 185); no copied issue names or default
+  thresholds.
 - 1326 Checks by page importance: importance is our own score, made from
   the need inputs of ganit job 324 and the page's share of search; no
   other product's method.

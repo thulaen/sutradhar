@@ -1,9 +1,9 @@
 skill = "architecture"
-change = "sha256:1a608cfaf80a6c059c812c967e085d31b57aa8b9ae3fee28874c2d77982aa377"
+change = "sha256:e32adefeefddd19647812232809913cf7e5825f497b4f859ac5432d5f5936b25"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged #149 batch 1 docs (glossary, vocabulary, features.md, specs 0014, 0015, 0020, 0021, 0027, 0037, 0038, 0041, 0042, 0052, 0056) against AGENTS.md section 5 and spec 0064. Module boundaries hold: dwarpal authorisation and its signed-message guard are separate and tijori holds keys and signing with no dependency loop; pariksha is a production evaluation library and shared fakes sit in a development-only test-support crate that product code never depends on; feature 235 keeps the one-way site contract (service writes the stored score into the add-on's or plugin's tables, the editors never call the service); the forbidden-content check sits once in the content module's shared draft flow and fails closed; the brief minimum stays with spec 0041's tool; the glossary rows agree with spec 0064's names table and have no duplicates."
+summary = "Round 4 of task #149 batch 2: read the staged diff of docs/specs/features.md, 0034-analytics.md and 0048-fix-list.md against the module walls, one-way-per-job and jobs/scheduler rules. The round 3 fixes hold: 0034's small-group OpenDP line matches features.md and sits on top of the floors; 0048 Rules item 3 keeps one scheduler (spec 0019) and limits Rhai then-steps to the item 2 actions, enforced by the runner; no TOML rule engine is left in the three files."
 
 [[finding]]
-what = "Later: spec 0014 lines 186-190 put the ConfirmationCheck fake for a trait vinyas declares in sutradhar-test-support. If test-support depends on vinyas and vinyas's own unit tests dev-depend on test-support, Cargo builds two copies of vinyas and the fake will not satisfy the trait under test. Spec 0014 should say such shared fakes are used only from integration tests (tests/), or that a fake for a crate's own trait stays in that crate."
+what = "Later: 0048 Rules item 3 and the 0048 Rhai line point at feature 467 for script steps, so the fix list depends on the shared Rhai runner; the runner's sandbox and allowed-call surface belong in spec 0043 under #145 (already logged), and rhai and opendp need gate/packages.toml entries when code lands (already logged)."
 fixed = true

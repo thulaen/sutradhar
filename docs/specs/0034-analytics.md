@@ -358,6 +358,11 @@ The rules for using these inputs live in spec 0027 only.
   nothing. Working data is dropped with the hash at day close. Only
   human visits count, and the opt-outs apply. Until research settles how
   a pair is formed, the pair rate shows "not measured".
+- Small groups: reader-behaviour figures for small groups (the size is
+  set by research) that darshak gives other features carry differential
+  privacy noise from the OpenDP library, so no one visitor shows. The
+  noise comes on top of the floors above: nothing under a floor is ever
+  given.
 - An individual path never leaves darshak. The privacy page names the
   pair count and the referring-site count.
 - Proxy headers are trusted only from the configured reverse proxy.

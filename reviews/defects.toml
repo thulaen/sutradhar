@@ -1,13 +1,9 @@
 skill = "defects"
-change = "sha256:1a608cfaf80a6c059c812c967e085d31b57aa8b9ae3fee28874c2d77982aa377"
+change = "sha256:e32adefeefddd19647812232809913cf7e5825f497b4f859ac5432d5f5936b25"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 3: read every staged line of task #149 batch 1 (glossary, vocabulary, features.md, specs 0014, 0015, 0020, 0021, 0027, 0037, 0038, 0041, 0042, 0052, 0056). Checked the alias targets (933 Static maps, 1283 No member impersonation, 1165 AI-assistance labels), that no staged doc still treats 1000, 1284 or 1285 as features or puts fakes in pariksha, that the round 2 WordPress gap is closed in feature 235, spec 0042 and EA13, that 0052's barred check holds back missing-policy, failed and timed-out cases with a test, and that glossary ganit and module rows match vocabulary.md. No open defects; remaining gaps are already Later items 1-11 in the #149 comments."
+summary = "Read every staged line of features.md, 0034 and 0048 for task #149 batch 2 round 4 (items 3-8, 12, 14), with the surrounding rule sections. Checked the round 3 fixes: the 0034 small-group noise line now matches features.md and sits on top of the visit and pair floors; 0048 Rules item 3 and the Rhai line agree that then steps may be Rhai scripts limited to item 2 actions. No stale TOML rule engine, auto-posting or auto-accept wording remains in the staged files."
 
 [[finding]]
-what = "Fixed from round 2: docs/specs/0042-coach-additions.md (Editor content score display), EA13 and features.md feature 235 now name the WordPress plugin's tables and routes as well as the XenForo add-on's."
-fixed = true
-
-[[finding]]
-what = "Later: glossary rows still missing for vastu and the ganit engines satya, parivartan, vichalan, bhavishya, anukaran, niyantran, kshamata, chitran, karan and ayu that vocabulary.md lists; already recorded as Later item 10 in #149."
+what = "Later: docs/specs/0048-fix-list.md Rules item 2 says saving a rule that asks for more is refused, but a Rhai then step can only be fully checked at run time (item 3 runner refusal). When 0048 is next touched, say what the save-time check does for scripts (for example, it rejects calls to names outside item 2 found in the script) so both checks are stated."
 fixed = true

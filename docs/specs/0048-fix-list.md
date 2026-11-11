@@ -252,8 +252,11 @@ Recency is a choice.
    never change the site, place or remove a link, change member text,
    change a setting, publish or call outside. Saving a rule that asks for
    more is refused.
-3. Rules are declarative entries run on the durable jobs system (spec
-   0019), with its waits, limits and the load governor. No second
+3. Rules are entries run on the durable jobs system (spec 0019). The
+   when and if parts are declarative; a then step may be a Rhai user
+   script (feature 467). A script can call only the actions in item 2;
+   the runner refuses any other call while the script runs. Rules use
+   the jobs system's waits, limits and load governor. No second
    scheduler. A rule cannot be saved without its caps: runs an hour and
    actions a run.
 4. The first save is a dry run that shows what the rule would do and
@@ -569,8 +572,8 @@ property tests where noted:
 - Forecasts, fits and effects run in ganit, the Rust numerical engine.
 - Screens, heavy visuals and the rule canvas are a Dioxus app built from
   SDS components, not browser-side code.
-- Owner-written rule steps, if ever wanted, are declarative TOML rules
-  run by the Rust rule engine.
+- Owner-written rule steps are Rhai user scripts (feature 467), limited
+  to the actions in Rules item 2.
 - XLSX import and export wait for a Rust library pinned as AGENTS.md
   section 4 sets out.
 - Faults in Sutradhar itself go to autoissues (spec 0063); Forgejo

@@ -1,29 +1,21 @@
 skill = "red-team"
-change = "sha256:1a608cfaf80a6c059c812c967e085d31b57aa8b9ae3fee28874c2d77982aa377"
+change = "sha256:e32adefeefddd19647812232809913cf7e5825f497b4f859ac5432d5f5936b25"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 3 of task #149 batch 1 (staged docs only). Three red agents ran on the staged diff: break it (cross-reference, alias, glossary and test-ID consistency), get round it (literal-wording loopholes in the barred-content check, editor score, brief minimum, test-support crate, dwarpal/tijori split) and abuse it (outsider-controlled posts, drafts and requests). I checked each report against the staged text with git show. The aliases 1000/1284/1285 to 933/1283/1165 are the task's decision; glossary rows agree with spec 0064 and 0050; 0052 binds the check to every saved version and the exact approved version, keeping a version back on a match, missing policy, failure or timeout. No staged defect blocks; the gaps below are later build or wording work."
+summary = "Task #149 batch 2, round 4: staged features.md, 0034 and 0048 only. Two red agents: get round it (auto-accept, auto-post, private data and script reach past the new every-feature rules) and break or abuse it (re-identify a visitor from darshak figures, hostile feeds, pages and AI answers). The round 3 block is fixed: 0048 Rules item 3 and line 575 now limit Rhai then-steps to the item 2 actions with the runner refusing any other call. No hole the change creates; gaps found are earlier or already logged."
 
 [[finding]]
-what = "Later: docs/specs/0052-hubs-summaries-drafts.md step 3 and step 4: the text binds the barred-content check to the version approved but does not say publishing sends exactly that approved version and that a later saved version cancels the approval. Pre-existing approval-to-publish gap, not made worse."
+what = "Later: docs/specs/0034-analytics.md:361-365 adds noise only to small groups. Two exact large-group figures that differ by one visit (a segment with and without one page or day) can still be subtracted, and fake visits that pass the human checks can pad a group past a floor. The line 'so no one visitor shows' therefore promises more than the floors and small-group noise give. Research should set the small-group size above every floor and cover differencing alongside the privacy budget already logged."
 fixed = true
 
 [[finding]]
-what = "Later: docs/specs/0052 barred-content check: define text normalisation (NFKC, invisible characters, case), the fields checked (title, body, link text, alt text) and treat an empty policy like a missing one."
+what = "Later: docs/specs/features.md:683-684 and 692-694 (292, 300) treat 'the site's own published pages' as the reference, and on a forum those include member posts, so a member can plant a contradiction or a 'fact'. Say which pages count (staff-written pages, for example). Staff publishing and evidence-only output limit the harm for now."
 fixed = true
 
 [[finding]]
-what = "Later: docs/specs/0042-coach-additions.md Editor content score display: say how a draft held only in the app (spec 0052) appears in the WordPress or XenForo editor, what guest-visible means for an unpublished WordPress draft (public type, no password, not private), that the service re-checks visibility itself, who may see the panel and its evidence, that panel polling and editor autosave do not trigger scoring, and bind the stored score to the version's content hash."
+what = "Later: docs/specs/0048-fix-list.md:258 'refuses any other call while the script runs' sits beside item 2's refusal at save (line 254) and the test at line 536. Say that saving refuses a script naming any action outside item 2, and the runner also refuses at run time. Feature 467 workflow scripts and 185 crawl-check scripts have no stated action, time or memory limits yet: covered by the Rhai sandbox limits in 0043 already logged under #145."
 fixed = true
 
 [[finding]]
-what = "Later: docs/specs/0041-editorial-coach.md feature 36 brief minimum: define 'distinct' (different threads and authors, near-duplicates merged) and apply the minimum to any path that makes a brief, not only prepare_writing_brief. The new test bullet has no EC id, like the existing unnumbered MCP-draft bullet; number both (EC15, EC16)."
-fixed = true
-
-[[finding]]
-what = "Later: docs/specs/0021-forum-contracts-ingestion.md:67 diagram still says 'dwarpal signs' and line 601 lists dwarpal.sign; consistent with dwarpal building signed messages through tijori, but say 'dwarpal signs through tijori' to avoid the old reading."
-fixed = true
-
-[[finding]]
-what = "Later: docs/specs/0014 and 0056: 'product dependencies never include that test-support crate' should say it appears only under [dev-dependencies] and in no shipped binary's tree; a vastu check can enforce it. docs/standards/vocabulary.md still labels shikhar 'Trends' while the glossary and spec 0050 say votes, usefulness formulas, sorting and flags (pre-existing)."
+what = "Later: some existing features now need to show the new preamble rules in their own text: 103 Solved-marking nudges (features.md:355) and 448 Welcome sequences (features.md:934) for the members' nudge rule, and 339, 354, 366 and 367 for 378 approval. The preamble already covers them, so nothing contradicts it now."
 fixed = true
