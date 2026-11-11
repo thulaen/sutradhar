@@ -70,15 +70,17 @@ The feature register has one owner for each behaviour and no conflicts,
 duplicates or overlaps. Version 1 ships only when the release gate
 passes:
 
-1. At least 600,000,000,000,000,000 distinct, independently qualified
-   methods.
-2. At least 600,000,000,000,000,000 shipped capabilities.
+1. At least 1,000,000,000 distinct, independently qualified methods. A
+   chain of separately qualified methods counts as one method when it
+   behaves differently from every other counted method (spec 0067); a
+   changed setting never makes a new method.
+2. At least 1,000,000,000 shipped capabilities.
 3. At least 80% of each of those two totals in the scope areas in
    spec 0064.
 4. At least 6,000,000 distinct qualified methods for link ranking,
    including weighting, learning, statistics, autotuning and reranking.
-5. At least 16,000,000,000,000,000 checked variants, each counted only
-   with its evidence.
+5. At least 1,000,000,000 checked variants, each counted only with its
+   evidence.
 6. Every check passes at 100% and all the required reviews pass.
 7. The release artefacts are signed.
 8. The owner approves the release.

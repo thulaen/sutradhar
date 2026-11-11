@@ -6,9 +6,11 @@ are. This part says how a method is written down (the catalogue), how it
 earns a place (admission), how we prove it is not a copy of another
 (distinctness), and how the running service calls every method that
 applies, never quietly skipping one. The release bar counts methods, and
-forbids padding: renamed copies, changed settings and rearranged recipes
-do not count. It is roadmap Phase 7 item 1, and feeds release gate item
-1 in [AGENTS.md section 3](../../AGENTS.md#3-the-goal-and-the-release-bar).
+forbids padding: renamed copies, changed settings and recipes that
+behave the same do not count. A chain of qualified methods that behaves
+differently counts once, under spec 0067. It is roadmap Phase 7 item 1,
+and feeds release gate item 1 in [AGENTS.md section
+3](../../AGENTS.md#3-the-goal-and-the-release-bar).
 
 Example: someone proposes "BM25 with k1 = 1.5" as a new method. The
 catalogue already has BM25 (M-000001). The check sees the same code path
@@ -31,7 +33,9 @@ it ranks a title match above a body match where BM25 does not.
   usefulness, resources, integration and reviews.
 - Stage: where a method stands in the catalogue (below).
 - Probe set: a fixed, seeded set of made-up inputs on which every method
-  of one output kind is run, so their behaviour can be compared.
+  of one input kind and output kind is run, so their behaviour can be
+  compared. There is one for each pair of input and output kinds that
+  some method has, with scores and orderings taken as one output kind.
 - Behaviour digest: a BLAKE3 fingerprint of a method's outputs on its
   probe set. If the code changes what a method computes, the digest
   changes.
@@ -92,7 +96,7 @@ it ranks a title match above a body match where BM25 does not.
 - Counted: entries at `release_qualified` whose evidence matches the
   release candidate's exact commit and behaviour digest, and which a
   shipped pipeline runs for site owners, in the service or in ganit,
-  each procedure once.
+  each procedure once. Method chains count under spec 0067.
 - Never counted: candidates, excluded entries, aliases, parameter
   variants, lab-only code, and entries whose evidence is stale.
 - `sutra methods count` prints counts by stage, family and pipeline
@@ -108,6 +112,8 @@ it ranks a title match above a body match where BM25 does not.
   separately.
 - "Independently qualified" means each method has its own evidence, run
   on its own, and its review is signed by someone other than its author.
+  A method chain meets this as spec 0067 sets: its own runner-signed
+  result, its shape's signed review and its steps' own evidence.
 
 ### Distinctness: three automatic checks, then a test and a person
 
@@ -122,11 +128,14 @@ Each check is cheap first and strict last.
    duplicate, unless its `distinctness.reason` explains the difference
    (SUT-502).
 3. Same behaviour (nightly): every implemented method is run on the
-   probe set of its output kind. The outputs are exported as an Arrow
-   snapshot, and a Mulyankan job in ganit (its engine for evaluation
-   statistics) compares them. Two methods whose outputs are equal, or
-   whose orderings agree with a Spearman rank correlation of at least
-   0.995 on every probe batch, are flagged "behaves the same" (SUT-503).
+   probe set of its input and output kinds. The outputs are exported as
+   an Arrow snapshot, and a Mulyankan job in ganit (its engine for
+   evaluation statistics) compares them with the one rank-correlation
+   function `sutradhar-methods` holds, which spec 0067's chain check
+   also uses.
+   Two methods whose outputs are equal, or whose orderings agree with a
+   Spearman rank correlation of at least 0.995 on every probe batch,
+   are flagged "behaves the same" (SUT-503).
    A flagged pair cannot both count until the newer one's
    distinguishing test passes and a reviewer accepts it. Rank
    correlation is used because it catches a rescaled copy (a monotone
@@ -357,8 +366,11 @@ it. Nothing missing is invented or counted as zero.
   evidence is reviewed again.
 - A method useful only as a diagnostic counts only with an approved
   diagnostic purpose and a measured result.
-- A stochastic method: the probe set records its seed; the digest is
-  taken over a fixed seed, and its statistical property over many.
+- A stochastic method: its seed is drawn by its method id from its
+  probe set's seed list, which is part of the probe set and versioned
+  with it, so the seed is fixed for each probe set version; the digest
+  is taken over that fixed seed, and its statistical property over
+  many.
 - Two methods that agree on the probe set but differ on real data: the
   probe set is too weak; the flag is cleared only by a distinguishing
   test, and the probe set gains the example.

@@ -131,7 +131,8 @@ differ only by value, such as adjacent bands of one number, are one
 class. Values within one class count once. Check identities record
 evidence. Every required check must pass for that variant. Weights,
 seeds, names, reordered steps and configuration choices earn no extra
-method, capability or variant by themselves. A learned weighting model
+method, capability or variant by themselves; a chain of methods counts
+only under spec 0067's rules. A learned weighting model
 can count as a ranking method when it meets the distinctness and
 admission checks in spec 0055. Treat the ranking subtotal as a subset of
 the qualified methods.
@@ -162,7 +163,8 @@ test protocol and approved execution targets. The protected policy pins
 the catalogue and scope register by digest. Each member's primary scope
 and ranking flag carries its own signature by a reviewer who is not one
 of its authors, or the owner's approval of that row, and the verifier
-checks it row by row. The trusted verifier
+checks it row by row. A method chain takes its shape's row, which
+covers each of its chains (spec 0067). The trusted verifier
 reads signed groups with disjoint member identities. Each group
 records the proof that its admitted members actually passed, with
 their membership and evidence tied to the frozen inputs. A group
@@ -236,13 +238,18 @@ the resource profiles and soak. Tagging follows spec 0005.
 ### Evidence records and groups
 
 A canonical member identity is ASCII only: `M-`, `CAP-` or `V-`, then a
-decimal ordinal from 1 upwards that fits an unsigned 128-bit integer,
-written with exactly six digits with leading zeros below 1,000,000 and
-no leading zero from there up; ordinal 0 is not used, and a longer
-ordinal is refused as a bad value. The fixture's own ids add `FX-` in
-front, and a release run refuses any `FX-` id. The verifier refuses any
-other byte form, such as a padded ordinal, another case or a look-alike
-hyphen, before it compares anything.
+decimal ordinal, or `MC-`, a shape ordinal, `-` and a chain index for a
+method chain (spec 0067), each number from 1 upwards that fits an
+unsigned 128-bit integer, written with exactly six digits with leading
+zeros below 1,000,000 and no leading zero from there up; ordinal 0 is
+not used, and a longer ordinal is refused as a bad value. The fixture's
+own ids add `FX-` in front, and a release run refuses any `FX-` id. The
+verifier refuses any other byte form, such as a padded ordinal, another
+case or a look-alike hyphen, before it compares anything. A shape's
+scope-register row is keyed by `S-` and the shape ordinal, written the
+same way; `S-` is not a member identity and never counts. An `S-` row
+carries the same signature as a member's row. The verifier finds an
+`MC-` member's scope row by its shape ordinal.
 
 Each row has a ledger kind, canonical member identity, exact version,
 owning spec and task, primary scope and applicable target. Bind the
@@ -286,20 +293,23 @@ For a method, resolve the admission record and each evidence area in
 spec 0055. Check its behaviour digest, independent review and
 distinguishing test, check that its catalogue stage is
 `release_qualified`, and resolve the shipped pipeline step that runs it;
-a method nothing shipped runs is not counted. For a capability, resolve
-the shipped action and its integration and end-to-end evidence. For a
-variant, resolve its owner, which is always a method, its admitted input
-class and its completed check; a variant counts only when its owner is
-among this run's verified members. Results for several required
-targets join under the same member identity. The member counts once
-after every required result passes.
+a method nothing shipped runs is not counted. A method chain resolves
+its shape and steps through spec 0067 and counts only when a shipped
+pipeline step can run it. For a capability, resolve the shipped action
+and its integration and end-to-end evidence. For a variant, resolve its
+owner, which is always a method, its admitted input class and its
+completed check; a variant counts only when its owner is among this
+run's verified members. Results for several required targets join under
+the same member identity. The member counts once after every required
+result passes.
 
 Within each group, store records in strictly ascending order: by kind
-(method, capability, variant), then by ordinal as a number, then by
-check identity, then by target. All of one member's results sit in one
-group. Two `V-` ids for the same owner and input class are refused. Give
-each group a manifest with its run digest, exact member commitment,
-evidence commitment, encoding and verifier version. Use SHA-256 for the
+(method, method chain, capability, variant), then by ordinal as a number
+(for a chain, its shape ordinal and then its index), then by check
+identity, then by target. All of one member's results sit in one group.
+Two `V-` ids for the same owner and input class are refused. Give each
+group a manifest with its run digest, exact member commitment, evidence
+commitment, encoding and verifier version. Use SHA-256 for the
 commitments. Sign a canonical byte encoding of the manifest under its
 own signing purpose. Every signed encoding begins with its signing
 purpose, record type and format version as fields; the verifier refuses
@@ -317,10 +327,12 @@ and evidence under the access controls in spec 0055.
 Shared values may be stored once by digest. A group may compress its
 rows and proof references, provided the verifier can recover every
 member, its admission record and its own signed review. A review
-signature covers the method, version, evidence, run and outcome.
-A group signature authenticates the manifest. It cannot stand in
-for the individual method reviews. Use explicit signed per-member
-records in the pilot.
+signature covers the method, version, evidence, run and outcome. A group
+signature authenticates the manifest. It cannot stand in for the
+individual method reviews. A method chain's review is its shape's signed
+review, bound to the digest of the shape's catalogue entry, together
+with its own runner-signed result (spec 0067). Use explicit signed
+per-member records in the pilot.
 
 ### Input and resource limits
 

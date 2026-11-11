@@ -1,11 +1,29 @@
 skill = "red-team"
-change = "sha256:ded670f0757639c234835520561bd4575b1b3610e0873078c2bc2f17b78b2ed2"
+change = "sha256:a03b1d584fbc6e1ec06da3cef499ff639b52743eb2492c70e5ab147cfc9030f6"
 verdict = "pass"
-agent = "codex"
-summary = "Refreshed the red-team review after parent 8f5308ad790a6e01eb3b52b90703cde1233daafa. Verified all ten scanner source/test blobs, accepted patch bytes and frozen library bytes are unchanged from the repaired candidate. Read the parent signing and trust-boundary changes in specs 0003, 0008, 0065 and the specs index for compatibility. Reused the original independent robustness (break it), rule-enforcement (get round it) and diagnostic-privacy (abuse it) reports for the byte-identical scanner code, then independently recompiled their unchanged proof sources and reran all nine robustness, five rules and five privacy tests through sealed pankti for this exact tree: nineteen passed. Original affected-reference separator regressions preserve exact allowance IDs; malformed input, duplicate fields, Unicode, bounded I/O and private diagnostic canaries retain their required decisions. The original finding is verified fixed. Proofs are preserved in scanner-red-rebased-130. This is a scoped red-team review, with no full-gate, publication or release claim."
+agent = "claude subagent"
+summary = "Round 11 red team of the staged chains change (AGENTS.md section 3, specs 0055, 0064, 0067, specs README). Three red agents ran: break it (empty, one-item and tied batches, reversals, band counts, rank-order form, repeated steps, other output kinds), get round it (padding by noise slots with no base shape, reorders with an extra step, per-batch perturbation, probe-keyed steps) and abuse it (probe set versions, seed lists, signers, identity forms, forged or swapped lists). I checked each report against the staged text. The round 11 fixes hold: the tie check works on the rank order's form alone and pins the largest rank to n - k + 1, each step's seed comes from a probe set that 0055 guarantees exists for its kinds, and signers are kept apart from authors. No agent found a contradiction with 0055 or 0064 on identity, stages, evidence groups or scope rows. What remains is later work already recorded or noted below."
 
 [[finding]]
-what = "The earlier candidate recovered a finding's ID from display text and could treat an affected-reference separator as part of the ID. The unchanged repair keeps id, level and part in an opaque Hole until allowance filtering. All four original reference cases were independently recompiled and rerun successfully on this refreshed exact tree; each records only the complete vulnerability ID."
+what = "Later: 0067-method-chains.md:98-102 places 'Every signature on a shape, on its reviews and on its S- scope row' under the verified bullet, so it could be read as limited to that stage or as covering the owner's spec_approved signature; say once, outside the stage list, which signatures it covers."
 fixed = true
 
-# Defects: none remain.
+[[finding]]
+what = "Later: 0067-method-chains.md:173-174 'a rank v held by k items must be ... followed by v + k' means the next distinct rank value, not the next item in the list; say 'the next larger rank is v + k'."
+fixed = true
+
+[[finding]]
+what = "Later: 0067-method-chains.md:124-125 records each probe set version a chain draws seeds from but does not say it must equal the version at the release candidate that the step's own evidence names (0055:253); within one run this follows from condition 1, so state it."
+fixed = true
+
+[[finding]]
+what = "Later: 0067-method-chains.md:198-205 claims a shape adding near-identity or small-noise slots gains nothing, but only against admitted shapes; shapes [A,N1,C], [A,C,N2], [N3,A,C] with no admitted [A,C] are two positions apart from each other and never paired. Same family as the recorded 'chains two or more steps apart' item; narrow the claim or add a step-removal pairing."
+fixed = true
+
+[[finding]]
+what = "Later: SUT-503 with lowest-rank ties (0067:192-195, 0055:137) gives a correlation that differs from average-rank Spearman and is undefined for all-tied or one-item batches, and a reversed order (Spearman -1) is never flagged; these join the recorded small-batch, all-tied and reversed-order items."
+fixed = true
+
+[[finding]]
+what = "Later: shape usefulness is judged for the shape as a whole (0067:96-98), so a slot of many weak but distinct steps counts every passing chain; a per-chain usefulness floor or a reviewer note per slot is later work."
+fixed = true

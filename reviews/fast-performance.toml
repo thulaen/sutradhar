@@ -1,5 +1,21 @@
 skill = "fast-performance"
-change = "sha256:ded670f0757639c234835520561bd4575b1b3610e0873078c2bc2f17b78b2ed2"
+change = "sha256:a03b1d584fbc6e1ec06da3cef499ff639b52743eb2492c70e5ab147cfc9030f6"
 verdict = "pass"
-agent = "codex"
-summary = "Refreshed the performance review against parent 8f5308ad790a6e01eb3b52b90703cde1233daafa. Confirmed the scanner patch is byte-for-byte unchanged and checked the changed signing and trust specifications for affected contracts. Bounded capture, diagnostic checks before copies, and structured allowance matching remain intact. Refreshed sealed evidence records 415 passing tests across 39 suites; preliminary checks refuse only eight stale reviews. No timing, baseline, full coverage or full gate claim is made."
+agent = "claude subagent"
+summary = "Round 11 performance review of the staged docs change (AGENTS.md section 3, specs 0055, 0064, 0067 and the specs README). Checked the round 11 changes against the hot paths of a qualified run: the tie check on the rank order's form (smallest rank 1, a rank v held by k items is the largest or is followed by v + k) is one counting pass per batch over rank orders qualify already reads; drawing each step's seed by method id from its own probe set's seed list keeps the seed independent of the slot, so shared chain starts stay reusable, and the probe sets a shape's steps draw from are fixed by the pinned catalogue; the signer rule adds no work in the run. Sorts stay on disk under spec 0064's scratch-space limit and both refusals use checked arithmetic. Nothing was timed because the change is docs only. Earlier Later items stay recorded."
+
+[[finding]]
+what = "Later: docs/specs/0067-method-chains.md 'Words used here' coarse digest entry and 'Proving chains differ' item 4: where the band count b is n or more for every batch of a probe set, the coarse digest equals the order digest and the item 4 sort repeats item 3's work; let qualify skip the coarse sort for such probe sets when it is written."
+fixed = true
+
+[[finding]]
+what = "Later: docs/specs/0067-method-chains.md 'Performance' second bullet: the time refusal names the sorts, keys, pair check and replay but not the pass in Proving item 2 that rereads every runner-signed rank order, checks its length, range and tie form, and recomputes two digests per member; add that pass to the estimate alongside the signature checks already recorded as Later."
+fixed = true
+
+[[finding]]
+what = "Later: docs/specs/0067-method-chains.md 'Performance' first bullet: a step takes the same seed by method id as a single method, so its output on a given input could also be shared with that method's own single run on the same probe set; name that reuse when the runner is written, or say why each member is run on its own."
+fixed = true
+
+[[finding]]
+what = "Later: docs/specs/0067-method-chains.md 'Chain identity' item 4 (lines 124-125): a chain's evidence records the version of every probe set it draws seeds from, but that list is the same for every chain of a shape; record it once per shape in the run (or in the shape's evidence row) rather than once per chain, so evidence for a billion chains does not repeat it a billion times."
+fixed = true

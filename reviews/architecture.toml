@@ -1,5 +1,21 @@
 skill = "architecture"
-change = "sha256:ded670f0757639c234835520561bd4575b1b3610e0873078c2bc2f17b78b2ed2"
+change = "sha256:a03b1d584fbc6e1ec06da3cef499ff639b52743eb2492c70e5ab147cfc9030f6"
 verdict = "pass"
-agent = "codex"
-summary = "Refreshed against parent8f5308ad790a6e01eb3b52b90703cde1233daafa; verified all ten scanner blobs and refreshed parent specs0003/0008/0065/README. Signing bootstrap remains under AGENTS7.3. The repair adds no signer/key/product/dependency/Go scope. Typed Hole separates complete identity from diagnostic text with restricted fields; capture, parsing and policy have clear responsibilities and explicit inputs without globals/cycles. Budgets precede copies and formatting; arithmetic fails closed. Compared separator parsing, rejecting harmless references and sequential capture; bounded helpers and typed value are clearer, readable and justified. No dead or duplicated logic. Source review only; no final gate/push/coverage/release/live upgrade claim."
+agent = "claude subagent"
+summary = "Round 11: read the staged AGENTS.md section 3 edits, the 0055, 0064 and README hunks and the whole of spec 0067; checked data ownership (probe sets and seed lists in 0055, shape types and id rules in sutradhar-methods, identity, S- rows and record order in 0064), the new rank-form tie check, per-step seed source and signer rule, and the sort-based distinctness proof. The round 10 findings are fixed and nothing blocking is left."
+
+[[finding]]
+what = "Fixed: docs/specs/0067-method-chains.md:169-174 now checks the tie form on ranks alone (smallest rank 1; a rank v held by k items is the largest or is followed by v + k), which matches the lowest-rank rule at 0067:40-41 and needs no scores."
+fixed = true
+
+[[finding]]
+what = "Fixed: 0067:121-125 draws each step's seed from the seed list of the step's own probe set by method id, and the chain's evidence records every probe set version it draws from, so seed data has one owner (0055:369-373)."
+fixed = true
+
+[[finding]]
+what = "Later: 0067:99-101 requires every signature on a shape, its reviews and its S- row to come from a non-author of the shape or any step, while 0064 lets a member's row be signed by a non-author reviewer or approved by the owner and says an S- row carries the same signature as a member's row; say whether the owner's approval of an S- row is allowed and whether the owner's spec_approved sign-off counts as a signature under this rule."
+fixed = true
+
+[[finding]]
+what = "Later: spec 0055's typed catalogue.stage_changed event and the counted gauge name only method ids and families, while shapes move through sutra methods advance (already recorded)."
+fixed = true

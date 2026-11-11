@@ -1,9 +1,9 @@
 skill = "unsafe-patterns"
-change = "sha256:ded670f0757639c234835520561bd4575b1b3610e0873078c2bc2f17b78b2ed2"
+change = "sha256:a03b1d584fbc6e1ec06da3cef499ff639b52743eb2492c70e5ab147cfc9030f6"
 verdict = "pass"
-agent = "codex"
-summary = "Refreshed against parent8f5308ad, verified unchanged ten-file patch and source hashes, checked four parent specs and relevant callers. IDs stay separate through allowance/stale decisions. Capture bounds, arithmetic, parsing, privacy, thread/pipe lifetimes, child waiting and timeout preservation remain sound. Inspected refreshed415sealed tests/39suites; all preliminary non-review checks pass, stale records alone refuse. No fullgate/push/coverage/mutation/live upgrade/release claim."
+agent = "claude subagent"
+summary = "Read the staged diff of AGENTS.md section 3, specs 0055, 0064, the specs README and the new 0067 for overflow, unbounded inputs, errors turned into defaults, check-then-use gaps, trusted outside values and weakened tests. The round 11 tie check is now a rank-order form qualify can check (smallest rank 1, a rank v held by k items is the largest or is followed by v + k), which with the 1 to n range check pins lowest-rank ties exactly; seeds come from each step's own probe set with every probe set version recorded; signatures exclude shape and step authors. Ids, counts, bands, keys and cost products use checked arithmetic; nothing blocks."
 
 [[finding]]
-what = "Package text no longer affects recovered identity: typed Hole ID feeds matching and seen records before formatting."
+what = "Later: docs/specs/0067-method-chains.md:173-174 says a rank v held by k items 'must be the largest rank or be followed by v + k'. 'Followed by' could be read as the next entry in the list rather than the next larger distinct rank. Say 'the next larger rank present is v + k'."
 fixed = true

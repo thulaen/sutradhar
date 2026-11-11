@@ -1,13 +1,17 @@
 skill = "style-docs"
-change = "sha256:ded670f0757639c234835520561bd4575b1b3610e0873078c2bc2f17b78b2ed2"
+change = "sha256:a03b1d584fbc6e1ec06da3cef499ff639b52743eb2492c70e5ab147cfc9030f6"
 verdict = "pass"
-agent = "codex"
-summary = "Re-read unchanged ten-file patch against parent8f5308ad and relevant specs0003/0008/0065/README; signing/provenance contracts do not conflict. Names, comments, item docs and British English are clear; source/function limits hold. No dead or duplicated logic or speculative extension points. Opaque Hole is clearer than recovering identity from display text; typed fields, object-only wrapper and bounded readers each have one justified purpose. Budgets precede copies/formatting and public holes string API remains. Regression, scanner integration and end-to-end allowance proofs cover full IDs/reference separators. Refreshed415sealed tests and non-review checks pass; stale records refuse. No fullgate/commit/push/coverage/release claim."
+agent = "claude subagent"
+summary = "Read the staged round 11 change (AGENTS.md section 3 items 1, 2 and 5; spec 0055 opening, probe set definition, counting bullets, SUT-503 item and stochastic edge case; spec 0064 scope, identity, record order, pipeline and review sentences; new spec 0067; specs README) against AGENTS.md sections 3, 6 and 12 and docs/standards. The round 11 edits read clearly: the tie check is stated on the rank order's form alone, each step's seed comes from its own probe set's seed list as spec 0055 says, and the signature rule for shapes is stricter than, and does not contradict, spec 0064's row rule. Plain British English, no status words, no new numbers in rules, no old floors or 'frozen run seeds' left in the staged tree, and cross-references and item numbers resolve."
 
 [[finding]]
-what = "The four wide fixture lines remain repaired without weaker assertions."
+what = "Later: docs/specs/0067-method-chains.md:99-100, the comma after 'on its `S-` scope row' splits the subject from 'comes'; drop it."
 fixed = true
 
 [[finding]]
-what = "Object<T>/field and findings/Hole APIs retain clear item docs."
+what = "Later: docs/specs/0067-method-chains.md:188-191, item 4 says 'the members left after item 3' and then again 'judged on the set left after item 3'; drop the second phrase."
+fixed = true
+
+[[finding]]
+what = "Later: docs/specs/0067-method-chains.md:192-196, item 5's opening lines are wrapped unevenly ('ranks tied scores as the order digest does, on every' is short); rewrap the paragraph."
 fixed = true
