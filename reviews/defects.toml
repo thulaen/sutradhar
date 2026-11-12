@@ -1,17 +1,9 @@
 skill = "defects"
-change = "sha256:cae0eb7ca370a896f857981e1e42a03d06e51f40701de55b9c11fadbb1963c3f"
+change = "sha256:4ca6e863cc83b04756e241155d2853fdfca025eb453f371d33034bd53fddad71"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged diff of specs 0066, 0026, 0027, 0013, 0049, the glossary and the specs README in full. Checked the widened input rule and test 9 against every dataset spec 0026 trains or scores on (usable data list, stage 1 measures, names, stage 2b, stage 3a, training route), the CoNLL-U and forum gold-set wording in 0026 against 0066, the job 49, 258 and 218 fixes across all staged docs, the 23 glossary engine rows against 0066, and line lengths."
+summary = "Read the staged specs 0012 and 0013 (round 26) and checked the three round 25 findings against the new text and its tests: fresh buffers (inputs and in-out buffers hold a fresh copy of the case's input, output-only buffers are zero-filled, capacity equals length, rule at 262-267 and test at 1053-1057 agree); the flag exception (only flags the file holding `main` defines inside `main` and parses once under a `fixture.arguments` grant, with package-level `var n = flag.Int(..)` refused, consistent with the non-constant initialiser ban and the adapter-route ban on `flag.Parse`); the UnsafeCell rule with trait objects and type parameters, tested by `static S: &dyn Any`; and the 'Changes from the source' line. Also checked that 0013's acceptance record matches 0012's acceptance list and the effect-contract section, and line lengths. No open defects."
 
 [[finding]]
-what = "Round 5 finding on test 9 is fixed: docs/specs/0066-ganit.md test 9 now makes both the training entry point and held-out scoring on admitted test sets refuse any sentence from no dataset in spec 0026's usable data, matching the input rule at lines 294 to 302."
-fixed = true
-
-[[finding]]
-what = "Later: docs/specs/0066-ganit.md lines 296 to 298 let the language layer's training read only sentences from spec 0026's usable data, but that list also holds word lists that are not sentences (Open English WordNet, UniMorph English, VADER's lexicon), and spec 0026's model file, written by ganit, carries a lemma_lexicon whose source spec 0026 never names. If ganit builds that lexicon from WordNet or UniMorph, the rule should say 'sentences and word-list entries'. Not a contradiction today because spec 0026 does not say ganit reads those lists."
-fixed = true
-
-[[finding]]
-what = "Later: spec 0026 stage 3b scores tone on a staff-labelled forum set with agreement (kappa), which is neither the forum gold set nor usable data. Kappa on labels is ids and numbers under 0066's general rule, but neither spec says that set reaches ganit only as labels and ids; say so once if stage 3b is approved."
+what = "Later: round 25 Later items stand (first-touch page cost of fresh buffers; a pinned allow-list for process-wide APIs; splitting the state-ban list; failing-case feedback bits; products that read the hidden tests writing fixtures; naming hidden files in the acceptor list), as do the writers of the safety validator, analyser and compiler pins, which the acceptance names but the acceptor-separation list at 0012 lines 389-396 does not. Not made worse by this change."
 fixed = true

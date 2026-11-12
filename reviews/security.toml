@@ -1,17 +1,9 @@
 skill = "security"
-change = "sha256:cae0eb7ca370a896f857981e1e42a03d06e51f40701de55b9c11fadbb1963c3f"
+change = "sha256:4ca6e863cc83b04756e241155d2853fdfca025eb453f371d33034bd53fddad71"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged spec 0066 and the staged edits to specs 0026, 0027, 0013, 0049, the glossary and the specs README. Docs only. The widened input rule (spec 0066 lines 291 to 301) matches spec 0026: training and held-out scoring on admitted test sets read only sentences from spec 0026's usable data (treebanks, WikiNER, LitBank, Few-NERD), never post text, names from posts, search terms or tagged copies of real posts; spec 0026's CoNLL-U section now says annotations of real posts never reach ganit as CoNLL-U and the forum gold set reaches it only as ids and positions; test 9 refuses sentences from no usable dataset on both paths and any word, lemma or sentence text in gold-set scoring; the gold set stays on Dell. Entry-point names are never numbers, so ganit.<name> kinds cannot clash with numbered jobs; unknown names are refused on all three interfaces. No secrets, no outgoing calls chosen by input, no new trust boundary."
+summary = "Read the staged specs 0012 and 0013 (git diff --cached), focusing on the round 26 changes: fresh buffers before every timed call, with input and in-out buffers holding a fresh copy of the case's input and output-only buffers zero-filled, capacity equal to length (0012 lines 262 to 267, test at 1053 to 1057); the flag exception limited to flags the file holding `main` defines inside `main` and parses once under a `fixture.arguments` grant, with package-level `var n = flag.Int(..)` refused (lines 134 to 139, test at 1045 to 1052); the Rust UnsafeCell test treating a trait object or type parameter as possibly holding one, with the `static S: &dyn Any` test (lines 603 to 606, 1040 to 1042); and the whole-file line in 'Changes from the source' (line 1179 to 1180). Traced build-time and run-time routes for candidate, dependency, adapter and pinned-tool code to hidden evaluation inputs, ungranted actions, state kept between timed calls and self-acceptance; no route opens, and 0013's acceptance record still matches 0012's list."
 
 [[finding]]
-what = "Later: spec 0026's training route also runs 'the reconstruction comparison' on link reconstruction samples, which are private data built from real links; spec 0066 does not say whether ganit scores it, and if so that it reads only ids and numbers. Spec 0066 could name it once beside the forum gold set. Not made worse by this change."
-fixed = true
-
-[[finding]]
-what = "Later: the input rule says 'with one exception' while the exception now covers training and held-out scoring; and spec 0026's usable data also lists lexicons (WordNet, UniMorph, VADER) that hold no sentences, so 'sentences from the datasets' reads a little loosely. Wording only; no input is let through that should not be."
-fixed = true
-
-[[finding]]
-what = "Later: earlier Later items stand (admitted datasets checked by pinned digest; live call limits and outsider abuse paths such as member-made rings and search-box flooding; word-id reconstruction; schema-based text refusal; per-entry-point input size limits). Not made worse by this change."
+what = "Later: the round 25 flag item is now resolved by line 136 (the entry file is the file that holds `main`). Earlier Later items stand (first-touch page cost of fresh buffers; a pinned allow-list for process-wide APIs; splitting the state-ban list; failing-case feedback bits; products that read the hidden tests writing fixtures; naming hidden files in the acceptor list; scope of 'base' across sibling files and dependencies; reads of hidden inputs from checked copies after the pre-launch hash check; panic hooks and GC statistics; base hash, validator and compiler pin writers; timing side channels on generated inputs). Not made worse by this change."
 fixed = true

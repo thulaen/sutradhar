@@ -17,15 +17,19 @@ The research card below is "King Solomon's card" in the owner's words.
 1. Every algorithm question and every feature idea starts with a
    research card. It is not a second route; it is the front of the
    GanitEvolve and lab routes.
-2. A card holds: the wish in plain words; how it works now; what must
-   not break; the nearest thing already known (memory, method
-   catalogue, feature list); the budget; and one test that would show
-   the idea wrong; and its scope, the exact paths it covers, with no
-   wildcards. It is kept in the repository, and a receipt names it by
-   its hash. A card is accepted by a record in `reviews/` that names its
-   hash and the agent of another product who accepted it; any edit to
-   the card makes that record stale, so it is a draft again. It never
-   makes up a number. A needed value is written "to research".
+2. A card holds: the wish in plain words; how it works now; what must not
+   break; the nearest thing already known (memory, method catalogue,
+   feature list); the budget; and one test that would show the idea wrong;
+   and its scope, the exact paths it covers, with no wildcards. It is kept
+   in the repository, and a receipt names it by its hash. A card is
+   accepted by a record in `reviews/` that names its hash and the agent of
+   another product who accepted it; for a GanitEvolve problem the record
+   also names every hash that 0012's paragraph on the card's acceptance
+   record lists, and the accepting product follows the stricter rule in
+   0012, "The effect contract". Any edit to the card, or for a GanitEvolve
+   problem to anything whose hash the record names, makes that record
+   stale, so it is a draft again. It never makes up a number. A needed
+   value is written "to research".
 3. A gate check refuses a feature specification or change with no card.
    For source files this is `ganit.every-change` (0012): every receipt
    names its card, and agents must start each change from one (owner,

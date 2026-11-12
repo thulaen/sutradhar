@@ -1,17 +1,13 @@
 skill = "style-docs"
-change = "sha256:cae0eb7ca370a896f857981e1e42a03d06e51f40701de55b9c11fadbb1963c3f"
+change = "sha256:4ca6e863cc83b04756e241155d2853fdfca025eb453f371d33034bd53fddad71"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 6: read the staged diff of specs 0066, 0026, 0027, 0013, 0049, the glossary and the specs README. Checked that 0066's widened input rule and test 9 match the sentence datasets spec 0026 trains and scores on (EWT test, Few-NERD test, LitBank) while keeping post text and the forum gold set's words out, that 0026's CoNLL-U section agrees, the entry-point name rule, test 5's empty graph, line lengths, plain British English, no status words, the glossary engine rows and the job 49, 258 and 218 fixes."
+summary = "Read the staged specs 0012 and 0013 (round 26) against AGENTS.md sections 4, 6 and 12, checking British spelling, line lengths, trailing spaces, status words, new numbers, defined terms, repeated statements and that each round 26 rule has a matching test. The fresh-buffer rule in step 4 (inputs and in-out buffers holding a fresh copy, output-only buffers zero-filled, capacity equal to length) and its test agree word for word; the flag exception (the entry file, defined as the file that holds `main`, defining flags inside `main` and parsing once under a `fixture.arguments` grant) agrees with its test, which refuses package-level `var n = flag.Int(..)`; the `UnsafeCell` rule now counts a trait object or type parameter as possibly holding one, matched by the `static S: &dyn Any` test; and the 'Changes from the source' line reads plainly. No added lines over 80 characters outside tables, no American spellings, no trailing spaces, no new numbers, and dates sit only in the 'Changes from the source' list."
 
 [[finding]]
-what = "Later: docs/specs/0066-ganit.md test 9 (lines 440 to 442) says 'refuse any sentence from no dataset in spec 0026's usable data'; plainer is 'refuse any sentence that is not from a dataset in spec 0026's usable data'."
+what = "Later: 0012 step 2's parenthetical list of state bans, now with the entry-file flag exception inside it, still runs to a dozen lines with nested 'such as' lists. In a later edit, move the state ban and its exceptions into their own short list under step 2."
 fixed = true
 
 [[finding]]
-what = "Later: docs/specs/0066-ganit.md line 54 puts 'where a name is never a number' inside the list of three ways an entry point runs, which makes the sentence hard to follow; the name rule could be its own sentence."
-fixed = true
-
-[[finding]]
-what = "Later: docs/specs/0066-ganit.md line 296 says the training entry point reads 'only sentences' from spec 0026's usable data, but that list also holds word lexicons (Open English WordNet, UniMorph English, VADER's lexicon) and the model file ganit writes carries a lemma_lexicon (spec 0026). If ganit builds that lexicon from those word lists, the rule should say 'sentences and lexicon entries'."
+what = "Later: 0012 line 718 says the first fixture adapters 'have no receipt yet'. It is ordering against a named commit, not work status, but 'yet' reads like status; a later edit could say 'and so have no receipt'. Line 1042's 'and so is ..., and so is ...' could also become one list."
 fixed = true

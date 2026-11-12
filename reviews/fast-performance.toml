@@ -1,9 +1,9 @@
 skill = "fast-performance"
-change = "sha256:cae0eb7ca370a896f857981e1e42a03d06e51f40701de55b9c11fadbb1963c3f"
+change = "sha256:4ca6e863cc83b04756e241155d2853fdfca025eb453f371d33034bd53fddad71"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged diff of spec 0066 (how jobs run, Jaal, limits, tests) and the staged hunks in specs 0013, 0026, 0027, 0049, the glossary and the specs README. Round 6 changes only the input rule's exception, test 5's empty-graph case, test 9's dataset check and spec 0026's CoNLL-U wording; none adds a hot path, a copy, unbounded growth or a call without a time limit. Live calls keep a strict time limit with degraded mode, batch jobs run one at a time in the heavy job slot with checkpoints, snapshots stream in bounded batches, and memory points to spec 0027 and AGENTS.md section 5.6."
+summary = "Read the staged docs-only change to specs 0012 and 0013 (round 26), concentrating on the fresh buffers passed before every timed call (in-out buffers now holding a fresh copy of the case's input, output-only buffers zero-filled, capacity equal to length), the narrowed flag exception for the command-line entry file, and the Rust UnsafeCell check that treats trait objects and type parameters as possibly holding one. The new checks are static analyses run once before any compile, and buffer set-up happens before each timed call, outside the timed part, applied the same way to baseline and candidate; there is no unbounded growth, call without a time limit or text cut short."
 
 [[finding]]
-what = "Later: test 9's check that every training or held-out sentence comes from a dataset in spec 0026's usable data should be done once per dataset file by its pinned digest, not by a per-sentence lookup, so the check costs nothing on large treebanks (overlaps the round 3 Later item on pinned digests)."
+what = "Later: docs/specs/0012-ganit-evolve.md lines 263 to 266, a fresh allocation from the operating system can be mapped lazily, so the first write to each page faults inside the timed call and adds noise to both baseline and candidate times; the implementation should touch every page of the new buffers (by writing the copy or the zeros) before the first time is taken, and copy inputs from one pristine generated copy rather than regenerating them. Carried over from round 25."
 fixed = true

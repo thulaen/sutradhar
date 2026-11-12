@@ -1,21 +1,34 @@
 skill = "architecture"
-change = "sha256:cae0eb7ca370a896f857981e1e42a03d06e51f40701de55b9c11fadbb1963c3f"
+change = "sha256:4ca6e863cc83b04756e241155d2853fdfca025eb453f371d33034bd53fddad71"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 6: read the staged diff (specs 0066, 0026, 0027, 0013, 0049, the specs README and the glossary) and checked the widened input rule against every dataset spec 0026 trains or scores on. Training and held-out scoring read only sentences from spec 0026's usable data (EWT, GUM genres, WikiNER, LitBank, Few-NERD), which covers EWT test, Few-NERD test and LitBank evaluation; the forum gold set reaches ganit only as ids and positions, which covers UPOS accuracy, noun-phrase and entity F1, LAS and UAS; real posts never reach ganit. Spec 0066 points to spec 0026's list rather than copying it, so there is one home for the data list. Test 9 now checks both entry points. The live module, batch runner and Dell program interface keep one public interface wired at the composition root; ganit stays apart from GanitEvolve and its callers; jobs 49, 218 and 258 agree across the staged docs; the glossary rows match spec 0066."
+summary = """
+Read the staged diff of specs 0012 and 0013 (round 26). Checked that \
+step 4's buffer rule (inputs and in-out buffers newly allocated with a \
+fresh copy of the case's input, output-only buffers newly allocated and \
+zero-filled, capacity equal to length) matches the spare-capacity marker \
+test, so a GEMM-style in-out buffer keeps its input; that the flag \
+exception in step 2 (flags defined inside main in the file that holds \
+main, parsed once under a fixture.arguments grant) matches its test, \
+which refuses package-level 'var n = flag.Int(..)'; that the UnsafeCell \
+rule now treats a trait object or type parameter as possibly holding \
+one and the 'static S: &dyn Any' test agrees; that the 'Changes from the \
+source' line matches item 6's whole-file rules; that the effects/ \
+records, the acceptance list in 0012 and 0013's card record still agree; \
+that adapters and pinned tools stay our own Go programs or gate/tools.toml \
+entries, in line with AGENTS.md section 4; that data comes before the \
+steps that use it, no layer or option is added for no current need, no \
+line passes 80 characters outside tables, and no new number or status \
+claim appears in a rule.
+"""
 
 [[finding]]
-what = "Fixed: docs/specs/0066-ganit.md:293-301 and test 9 (lines 438-443) now cover held-out scoring on admitted test sets as well as training, and name spec 0026's usable data, so Few-NERD test and LitBank evaluation are no longer outside the rule."
-fixed = true
-
-[[finding]]
-what = "Fixed: docs/specs/0026-text-engine.md:724-730, the CoNLL-U section now limits the exchange with ganit to sentences from the usable data and says the forum gold set reaches ganit only as ids and positions."
-fixed = true
-
-[[finding]]
-what = "Later: spec 0066 line 299-301 and spec 0026 line 1295-1298 list 'gold and predicted tag ids' for forum gold-set scoring; entity F1 needs entity label ids on each span. Saying 'spans as token ranges with label ids' would make the entity measure plainly covered."
-fixed = true
-
-[[finding]]
-what = "Later: spec 0026 line 1281-1287 says ganit computes held-out measures with paired bootstrap intervals and also says 'statistics only in mulyankan'; whether this scoring is a ganit job or a Mulyankan job could be stated once, when either spec is next edited."
+what = """
+Later: docs/specs/0012-ganit-evolve.md, step 2's flag exception. A Go \
+flag defined inside main still registers on the process-wide \
+flag.CommandLine; it is safe only because each test case and timing \
+repeat gets a fresh process. The validator could tie the exception to \
+that fresh-process rule by name when it is built, so a later change to \
+process reuse cannot widen it silently. Not a hole in this change.
+"""
 fixed = true

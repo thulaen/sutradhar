@@ -1,13 +1,13 @@
 skill = "backlog"
-change = "sha256:cae0eb7ca370a896f857981e1e42a03d06e51f40701de55b9c11fadbb1963c3f"
+change = "sha256:4ca6e863cc83b04756e241155d2853fdfca025eb453f371d33034bd53fddad71"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 6. Read the staged diff (new spec 0066; edits to specs 0013, 0026, 0027, 0049, the specs README and the glossary) against Forgejo task #32 (Phase 5 item 4, open, milestone Phase 5: Core, title 'jobs 1 to 354 and named entry points'). The change stays inside the task: one home for ganit plus the job 49, 258 and 218 fixes the owner's brief named, and nothing else. The widened input rule in spec 0066 (training and held-out scoring on admitted test sets read only sentences from spec 0026's usable data) covers every set spec 0026 trains or scores on (UD English-EWT, GUM's admitted genres, WikiNER, Few-NERD, LitBank), while post text, names from posts, search terms and tagged copies of real posts stay out, and the forum gold set still reaches ganit only as ids and positions; test 9 and spec 0026's CoNLL-U section and training route say the same. No added line passes 80 characters outside tables; no status or date claims."
+summary = "Round 26. Read the staged diff of specs 0012 and 0013 against Forgejo task #157 (Phase 2 item 6, the current phase) and the owner's answer of 11 November 2026. The change stays inside 0012 and 0013, touches no unrelated line, keeps every line outside tables within 80 characters and adds no new number to a rule. Each round 26 fix has its rule and its test: fresh input and in-out copies and zero-filled output-only buffers with capacity equal to length (0012 lines 262-267, test at 1053-1057); the flag exception limited to flags the entry file defines inside main under a fixture.arguments grant, with package-level var n = flag.Int(..) refused (lines 132-139, test at 1045-1052); a trait object or type parameter counted as possibly holding UnsafeCell (line 604, test for static S: &dyn Any at 1040-1042); and the 'Changes from the source' line on whole-file problems (lines 1179-1180). 0013 point 2 still matches 0012's acceptance record."
 
 [[finding]]
-what = "Later: docs/specs/0066-ganit.md test 9 checks that a sentence comes from a dataset in spec 0026's usable data; how the check knows (for example the dataset hashes in models.lock's data section) belongs with the language layer's build task."
+what = "Later: the round 25 Later items the brief lists (first-touch page cost of fresh buffers; a pinned allow-list for process-wide APIs; splitting the state-ban list; failing-case feedback bits; products that read the hidden tests writing fixtures; naming hidden files in the acceptor list), with the Later items of rounds 1 to 24, are not yet Forgejo tasks; file them as Later tasks on #157 when the work is committed."
 fixed = true
 
 [[finding]]
-what = "Later: Forgejo task #32's body still says 353 jobs while its title and spec 0066 say 1 to 354; tidy the task text when the task is next touched."
+what = "Later: the owner's answer of 11 November 2026 ('Approve scoped safety profiles (Recommended)') is quoted in 0012 'Changes from the source' but is not yet recorded on Forgejo task #157; post it there with the commit proof. Task #157's six forced-speed checks stay open and need their own spec work."
 fixed = true

@@ -1,29 +1,25 @@
 skill = "red-team"
-change = "sha256:cae0eb7ca370a896f857981e1e42a03d06e51f40701de55b9c11fadbb1963c3f"
+change = "sha256:4ca6e863cc83b04756e241155d2853fdfca025eb453f371d33034bd53fddad71"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 6 of spec 0066 (ganit) and the staged edits to specs 0026, 0027, 0013, 0049, the glossary and the specs README, attacked by three red agents (break it, get round it, abuse it), each report checked against the staged specs 0026 and 0066. The round 5 blocker is closed: the input rule's exception (0066 lines 292-301) and test 9 now admit sentences from every dataset spec 0026 lists as usable data (UD treebanks, GUM on its admissible genres, WikiNER, LitBank, Few-NERD), which covers the names model's training and test sets, while post text and the forum gold set's words stay out; spec 0026's CoNLL-U section and training route agree. No new contradiction found; the remaining gaps are later work the change does not make worse."
+summary = "Round 26 of spec 0012 (safety profiles) and 0013's card acceptance record, reviewed as the staged index only. Three red agents ran, with the goals break it, get round it and abuse it, and I checked each report against the staged text. The round 25 holes are closed. Fresh input and in-out buffers now hold a copy of the input, output-only buffers are zero-filled, and the rule and its test agree. The flag exception is limited to flags defined inside main in the entry file. The UnsafeCell rule covers trait objects and has a static S: &dyn Any test. The acceptance list, effects/ and 0013 agree. Every remaining report is either covered by the general clauses in the staged text or is a later-work gap the change does not make worse. Hidden-case feedback bits remain a recorded round 25 Later item."
 
 [[finding]]
-what = "Later: 0066 lines 294-298 and test 9 do not say how a sentence's dataset is proven. A caller could relabel a tagged real post with an EWT sent_id, send GUM's excluded genres from the GUM repository, or swap a mirror file. Suggested: ganit takes these sentences only as whole dataset files whose SHA-256 matches models.lock's data section (spec 0026), with a per-document genre allowlist for GUM; test 9 adds a forged sent_id case and an excluded-genre GUM case. Extends the round 3 Later item on pinned digests."
+what = "Later: 0012 lines 127-139. The process-wide state ban covers these cases in general terms ('globals that hold state', 'any standard-library or dependency API that affects the whole process'), but neither the text nor a test names the following: a Go assignment to another package's exported variable used as a cache (such as time.Local, strconv.ErrRange or io.EOF), or a Rust std::panic::set_hook closure that carries a cache from one call to the next. Add both to the pinned allow-list for process-wide APIs, which is already a Later item, and give each a refusal test."
 fixed = true
 
 [[finding]]
-what = "Later: 0066 line 297's examples 'such as the treebanks and the named-entity sets' can be read to include sets spec 0026 excludes (Penn Treebank, the Stanford Sentiment Treebank, CoNLL-2003, WikiANN, MultiNERD). The restrictive clause governs, but naming the sets (such as UD English-EWT, WikiNER, LitBank and Few-NERD) would remove the doubt."
+what = "Later: 0012 lines 145 and 163-166. With a fixture.arguments grant, flag.Lookup or flag.CommandLine.Lookup called with a name that is not a constant cannot be checked against 'a flag the candidate did not define'. Refuse every flag lookup whose name is not a constant, and every direct use of flag.CommandLine, and add a test for each."
 fixed = true
 
 [[finding]]
-what = "Later: forum gold-set scoring (0066 lines 299-302; 0026 training route) passes spans as token ranges with no label id, while 0026's names stage measures entity F1 by label on the forum gold set. Say that each span carries its gold and predicted label ids. Also bound tag and relation ids to the fixed UPOS and relation lists so an id cannot carry a word index."
+what = "Later: 0012 lines 263-267 and 1053-1057. Which parameters count as input, in-out or output-only is decided by the pinned fixed part or harness, not by a record. Consider recording a role for each entrypoint parameter and refusing a parameter with no role. Also say that a buffer of length zero is passed empty, since it cannot be 'newly allocated' in Rust or Go."
 fixed = true
 
 [[finding]]
-what = "Later: 0026 stage 3b's staff-labelled forum tone set is real-post scoring that the input rule neither admits nor routes elsewhere; say where it is scored if the owner turns tone on."
+what = "Later: 0012 lines 580-585 and 1179. A Go or Rust entry file (package main, or a binary crate) has no public-interface tests that the whole-file rule can count, so only the hidden tests the pinned harness runs over the pipe cover it. State how an entry file is tested and timed in a whole-file problem. In the UnsafeCell rule at line 604, 'type parameter' has no test, and it may be dead text for a static."
 fixed = true
 
 [[finding]]
-what = "Later: 'a name is never a number' (0066 line 54) has no grammar; '+251', '0251' or full-width digits could parse as job numbers. Suggested: names match [a-z][a-z0-9_-]*."
-fixed = true
-
-[[finding]]
-what = "Later: an isolated or unreachable node's click depth has no stated value; if written as infinity, test 8's guard refuses the whole output on any site with an orphan (round 2 Later on unreachable click depth). Job 258 is cleared by a link from any throwaway third thread; it matches spec 0027 rule 8 and is only a hint."
+what = "Later: 0012 lines 382-397 and 523-524. The pinned base tree and the base's public-interface tests, which are the correctness step of a whole-file problem, are not among the hashes the acceptance names, so a later change to them does not make the acceptance stale. Each product-separation rule also relies on product identity, which the archive records as the agent reports it. Bind the base and its tests into the acceptance hashes, and tie product identity to a sign-in or key."
 fixed = true
