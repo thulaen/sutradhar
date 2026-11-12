@@ -7,6 +7,10 @@ rust-version.workspace = true
 license.workspace = true
 publish.workspace = true
 
+[[test]]
+name = "tdd_blob_race"
+harness = false
+
 [dev-dependencies]
 proptest = { version = "1", default-features = false, features = ["std"] }
 

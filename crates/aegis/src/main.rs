@@ -54,7 +54,7 @@ fn run(args: &[&str]) -> Result<Vec<Finding>, String> {
             let mut out = commit_msg::check(&text);
             out.extend(aegis::private::check_message(&text));
             let staged = aegis::history::staged_paths(&repo)?;
-            out.extend(aegis::tdd::check_paths(&text, &staged));
+            out.extend(aegis::tdd::check(&repo, &text, &staged, "HEAD", ""));
             Ok(out)
         }
         ["commit"] => tiers::commit(&repo),

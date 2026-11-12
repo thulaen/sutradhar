@@ -1,25 +1,5 @@
 skill = "red-team"
-change = "sha256:4ca6e863cc83b04756e241155d2853fdfca025eb453f371d33034bd53fddad71"
+change = "sha256:37f83808112d0105833cccc635aba6645d86c8385476de933b8f381461f740e7"
 verdict = "pass"
-agent = "claude subagent"
-summary = "Round 26 of spec 0012 (safety profiles) and 0013's card acceptance record, reviewed as the staged index only. Three red agents ran, with the goals break it, get round it and abuse it, and I checked each report against the staged text. The round 25 holes are closed. Fresh input and in-out buffers now hold a copy of the input, output-only buffers are zero-filled, and the rule and its test agree. The flag exception is limited to flags defined inside main in the entry file. The UnsafeCell rule covers trait objects and has a static S: &dyn Any test. The acceptance list, effects/ and 0013 agree. Every remaining report is either covered by the general clauses in the staged text or is a later-work gap the change does not make worse. Hidden-case feedback bits remain a recorded round 25 Later item."
-
-[[finding]]
-what = "Later: 0012 lines 127-139. The process-wide state ban covers these cases in general terms ('globals that hold state', 'any standard-library or dependency API that affects the whole process'), but neither the text nor a test names the following: a Go assignment to another package's exported variable used as a cache (such as time.Local, strconv.ErrRange or io.EOF), or a Rust std::panic::set_hook closure that carries a cache from one call to the next. Add both to the pinned allow-list for process-wide APIs, which is already a Later item, and give each a refusal test."
-fixed = true
-
-[[finding]]
-what = "Later: 0012 lines 145 and 163-166. With a fixture.arguments grant, flag.Lookup or flag.CommandLine.Lookup called with a name that is not a constant cannot be checked against 'a flag the candidate did not define'. Refuse every flag lookup whose name is not a constant, and every direct use of flag.CommandLine, and add a test for each."
-fixed = true
-
-[[finding]]
-what = "Later: 0012 lines 263-267 and 1053-1057. Which parameters count as input, in-out or output-only is decided by the pinned fixed part or harness, not by a record. Consider recording a role for each entrypoint parameter and refusing a parameter with no role. Also say that a buffer of length zero is passed empty, since it cannot be 'newly allocated' in Rust or Go."
-fixed = true
-
-[[finding]]
-what = "Later: 0012 lines 580-585 and 1179. A Go or Rust entry file (package main, or a binary crate) has no public-interface tests that the whole-file rule can count, so only the hidden tests the pinned harness runs over the pipe cover it. State how an entry file is tested and timed in a whole-file problem. In the UnsafeCell rule at line 604, 'type parameter' has no test, and it may be dead text for a static."
-fixed = true
-
-[[finding]]
-what = "Later: 0012 lines 382-397 and 523-524. The pinned base tree and the base's public-interface tests, which are the correctness step of a whole-file problem, are not among the hashes the acceptance names, so a later change to them does not make the acceptance stale. Each product-separation rule also relies on product identity, which the archive records as the agent reports it. Bind the base and its tests into the acceptance hashes, and tie product identity to a sign-in or key."
-fixed = true
+agent = "codex"
+summary = "Task #130 combined source, tests and three image-pin changes reviewed against parent 2cf61476708de82b110791b25fffc85c5f4ff62e. Three fresh independent reviewers ran concurrently: /root/combined_red_break (break it: malformed input, Unicode, bounds and digest scans), /root/combined_red_rules (get round it: immutable object, literal path and mode binding, digest-only scope and container-only SBOM), and /root/combined_red_abuse (abuse it: controlled files, Git/YAML boundaries and image substitution). All inspected the full relevant diff and existing executed proof; no introduced defect was found. I consolidated their reports with my own source and regression-evidence review. Literal path and exact metadata checks bind plain mode, size and contents to one immutable Git object. Parsed comparison plus unchanged surrounding bytes restricts the exemption to image digests; non-container SBOM hashes remain refused. Saved regressions cover the earlier path-pattern, mutable-index, repeated-scan and non-container masking faults; the saved workspace log reports passing tests and the combined commit-tier proof reports 100/100 for this fingerprint. Tools, Compose and SBOM share the replacement digest without changing repository, version or exceptions. Historical old-index membership is not independently proved; no publisher-signature or build-provenance claim is made. Existing Forgejo critical and Ubuntu high vulnerabilities remain open under unchanged exceptions. This was static review and inspection of saved executed proof: no new payloads, attacks, tests, network actions or deployment. Final combined parent-failure/candidate-success replay and full push/publication proof remain pending. Passing is limited to this review scope, not full version-1 qualification. Defects: no introduced defect found; existing image vulnerabilities and recorded review parent-binding limitation remain open."

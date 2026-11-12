@@ -1,34 +1,47 @@
 skill = "architecture"
-change = "sha256:4ca6e863cc83b04756e241155d2853fdfca025eb453f371d33034bd53fddad71"
+change = "sha256:37f83808112d0105833cccc635aba6645d86c8385476de933b8f381461f740e7"
 verdict = "pass"
-agent = "claude subagent"
+agent = "codex"
 summary = """
-Read the staged diff of specs 0012 and 0013 (round 26). Checked that \
-step 4's buffer rule (inputs and in-out buffers newly allocated with a \
-fresh copy of the case's input, output-only buffers newly allocated and \
-zero-filled, capacity equal to length) matches the spare-capacity marker \
-test, so a GEMM-style in-out buffer keeps its input; that the flag \
-exception in step 2 (flags defined inside main in the file that holds \
-main, parsed once under a fixture.arguments grant) matches its test, \
-which refuses package-level 'var n = flag.Int(..)'; that the UnsafeCell \
-rule now treats a trait object or type parameter as possibly holding \
-one and the 'static S: &dyn Any' test agrees; that the 'Changes from the \
-source' line matches item 6's whole-file rules; that the effects/ \
-records, the acceptance list in 0012 and 0013's card record still agree; \
-that adapters and pinned tools stay our own Go programs or gate/tools.toml \
-entries, in line with AGENTS.md section 4; that data comes before the \
-steps that use it, no layer or option is added for no current need, no \
-line passes 80 characters outside tables, and no new number or status \
-claim appears in a rule.
-"""
+Independent reviewer combined_architecture reviewed the complete combined
+change against parent 2cf61476708de82b110791b25fffc85c5f4ff62e, not merely
+the three image lines. Read the architecture skill, retained-tool rules,
+TDD reader and normalisers, digest scan, command and push wiring, bounded
+YAML and Git readers, integration and race fixtures, image configuration,
+and preserved failing-first, workspace and scan evidence. Independently
+matched this fingerprint and confirmed the source and image bytes equal
+the previously tested final tree. No new tests were run by this reviewer.
 
-[[finding]]
-what = """
-Later: docs/specs/0012-ganit-evolve.md, step 2's flag exception. A Go \
-flag defined inside main still registers on the process-wide \
-flag.CommandLine; it is safe only because each test case and timing \
-repeat gets a fresh process. The validator could tie the exception to \
-that fresh-process rule by name when it is built, so a later change to \
-process reuse cannot widen it silently. Not a hole in this change.
+This repairs an existing operations tool under the Rust migration
+exception; Boot product wiring does not apply. Git evidence, recognised
+configuration shapes and digest scanning have clear separate purposes.
+The existing Repo and parsers are reused, with no new dependency, global
+state, service locator, storage layer or speculative extension point.
+Exact immutable blob identities bind mode, size and content; failure to
+read or prove a recognised change retains the named-test requirement.
+Commit-message and per-commit push paths share the same proof. Parsed
+non-image equality and remaining-byte equality both matter: a path-only
+allowance or generic configuration exemption would be simpler but would
+admit executable changes. The narrow normalisers and one digest scan are
+the smallest clear equivalent design found. Responsibilities, readability,
+abstraction and maintenance pass; no dead or duplicated logic is added.
+
+The command-level regression fixtures cover normal and alternate indexes,
+worktree divergence, Unicode, executable modes, path patterns, ambiguous
+data, mixed source and individual history. The dedicated Git wrapper
+exercises an actual index replacement between listing and content read.
+Preserved evidence reports real failing assertions before those repairs
+and the final workspace pass; fresh combined admission checks remain a
+separate gate obligation. This is not a full product end-to-end claim.
+
+The tool registry, deployment and generated inventory use the same
+fetchable Linux amd64 image digest. Ports, resource limits, rootless
+configuration, volumes, scan thresholds and vulnerability exceptions stay
+unchanged. Direct platform pinning does not prove other-host support or
+historical membership in the unavailable original index. Combining the
+repair with this required pin permits the old trusted door to judge one
+named-test change; it neither replaces the door early nor bypasses it.
+Existing image vulnerabilities remain open under task 130. No live
+deployment, remote acceptance or replication is claimed by this review.
+No introduced architecture finding remains.
 """
-fixed = true

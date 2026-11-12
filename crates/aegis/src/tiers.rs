@@ -215,7 +215,7 @@ pub fn push(
     };
     for commit in &commits {
         out.extend(commit_msg::check(&commit.message));
-        out.extend(crate::tdd::check_paths(&commit.message, &commit.paths));
+        out.extend(crate::tdd::committed(repo, commit));
         out.extend(secrets::check("(commit message)", &commit.message));
         out.extend(private("(commit message)", &commit.message));
         out.extend(crate::reviews::of_pushed(repo, base, &commit.id)?);

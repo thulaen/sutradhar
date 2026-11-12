@@ -62,6 +62,53 @@ fn docs_only_commits_may_touch_only_markdown() {
 }
 
 #[test]
+fn configuration_without_content_proof_still_needs_a_named_test() {
+    let message = "fix: pin an image\n\nTDD: none (docs only)\n";
+    let paths = [
+        "gate/tools.toml",
+        "gate/sbom.cdx.json",
+        "docker/forgejo/compose.yaml",
+    ]
+    .map(str::to_owned);
+    assert_eq!(check_paths(message, &paths).len(), paths.len());
+}
+
+#[test]
+fn no_code_commits_refuse_sources_and_unknown_paths() {
+    let message = "fix: pin an image\n\nTDD: none (docs only)\n";
+    let refused = [
+        "crates/a/src/lib.rs",
+        "ops/gate/main.go",
+        "ui/ts/bridge.ts",
+        "ui/styles/app.css",
+        "addons/xenforo/src/A.php",
+        "addons/wordpress/a.php",
+        "migrations/0001_init.sql",
+        "tools/a.sh",
+        ".githooks/pre-commit",
+        "policy/a.cedar",
+        "policy/a.rego",
+        "docker/a/Dockerfile",
+        "docker/a/Containerfile",
+        ".cargo/config.toml",
+        "crates/a/.cargo/config.toml",
+        "reviews/notes.toml",
+        "src/a.js",
+        "src/a.html",
+        "src/a.py",
+        "notes.txt",
+        "Makefile",
+        "src/noext",
+    ];
+    for path in refused {
+        let paths = ["README.md".to_owned(), path.to_owned()];
+        let found = check_paths(message, &paths);
+        assert_eq!(found.len(), 1, "{path}");
+        assert_eq!(found.first().map(|f| f.path.as_str()), Some(path));
+    }
+}
+
+#[test]
 fn a_docs_only_commit_may_carry_its_review_records() {
     let m = "docs: x\n\nTDD: none (docs only)\n";
     let paths = [
