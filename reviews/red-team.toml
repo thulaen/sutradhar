@@ -1,33 +1,17 @@
 skill = "red-team"
-change = "sha256:d142b654fc78ea16afcc94c94a4efb1cbbe9fc2a63d0a02a20817695de358919"
+change = "sha256:5c404f867f2686531b74d68c9c466d9f0c6e21cb060c004faa51975b6899a527"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 10. Three red agents (break it, get round it, abuse it) attacked the staged spec 0071 and the 0064 and README edits against specs 0055, 0064 and 0067 to 0070; I checked each report against the staged text. The round 9 blocker is closed: a shape's claim entry review must be signed by someone who is not an author of the entry or of the code holding its named points, is bound to the entry's digest, and admission refuses a mismatch, with tests for both. No new contradiction. The remaining reports are gaps that rest on review or on later wording, recorded as Later items."
+summary = "Three red agents (break it, get round it, abuse it) attacked the staged AGENTS.md section 3 change: methods, capabilities and checked variants at 32,000 each, link ranking at 3,200, scope share still 80%. I checked each report against the staged tree. The four numbers match the owner's decision and are written only in AGENTS.md. No staged spec, test, crate or doc states or depends on the old floors. Specs 0055, 0064 and 0067 to 0071 say 'the floor' without a number, and their id bounds stay above it. No code reads these figures. There is no status or date claim, and every line fits in 80 characters."
 
 [[finding]]
-what = "Round 9 blocker closed: spec 0071 'Which classes a member claims' item 1 now bars authors from signing a claim entry review and binds the review to the claim entry's digest (tests claim_review_for_another_entry_digest_is_refused and author-signed claim review refused)."
+what = "Later: at 32,000 and 3,200, one admitted shape can meet items 1, 3 and 4 almost by itself. Spec 0069's 5,805,676,800 chain ids need only a tiny surviving fraction, and a small grid of near-identical slot rows reaches 3,200 chains. That leaves the distinctness proofs in specs 0067, 0070 and 0071 as the only real guard. This follows from the owner's choice and does not make the text untrue. A later item could add a measure that shows how counts are spread across shapes."
 fixed = true
 
 [[finding]]
-what = "Later: nothing compares a new class with its sibling classes, only with its neighbour (class lists item 3), so a later class reaching another step on the same batch and twin as an admitted class (say slot 12's fuse on class 4's input) could double variants; admission could refuse a class whose batch and twin match an admitted class's. The nine staged classes do not do this."
+what = "Later: spec 0055's benchmark sizes (10,000 catalogue entries, a sweep of 2,000 methods) are below the new 32,000 floor. They were far below the old floor too, so the change does not make this worse."
 fixed = true
 
 [[finding]]
-what = "Later: the class check needs every named point in a chain's own steps to be reached; a claim entry naming, for class 4, caution points the 'Closed' batch never reaches (spam risk, self-promotion), or both a proximity and a length point for class 3, makes every claiming chain a test failure. Say the claim entry names only points the class batch is built to reach."
-fixed = true
-
-[[finding]]
-what = "Later: when chains share a prefix's outputs on class batches and twins (Performance), the text does not say whose branch record a shared output carries; say a shared output carries the branch record of the run that made it."
-fixed = true
-
-[[finding]]
-what = "Later: signed results name the class through the check identity but not whether a result is from the class batch or the twin, nor the class set digest; bind each to its pinned input so the fold cannot file a result under the wrong role."
-fixed = true
-
-[[finding]]
-what = "Later: class 9 applies only to feature tables, so its owners are lone methods, which per spec 0069 item 3 read no text view; the twin reason 'the view maps the word to a known one' may never occur, leaving such members 'same as neighbour'. Restate class 9's twin for members without a view."
-fixed = true
-
-[[finding]]
-what = "Later: method catalogue entries carry claims too (item 1), but only the shape claim entry review is stated as digest-bound and author-barred in spec 0071; say a method entry's claim review follows the same rule, and test it. Also a Rust path re-export can give one decision two paths, evading the one-point-two-classes refusal."
+what = "Later: the owner's decision is recorded only in a Forgejo comment posted by the agent account (#64 comment 3029). Nothing requires a decision that lowers a release floor to be confirmed from the owner's own account. A later item could make that a rule."
 fixed = true

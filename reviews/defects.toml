@@ -1,13 +1,5 @@
 skill = "defects"
-change = "sha256:d142b654fc78ea16afcc94c94a4efb1cbbe9fc2a63d0a02a20817695de358919"
+change = "sha256:5c404f867f2686531b74d68c9c466d9f0c6e21cb060c004faa51975b6899a527"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read every staged line of spec 0071, the two spec 0064 sentences and the specs README row and list, against specs 0055 and 0064. The round 9 blocker is closed: a shape's claim entry is admitted and re-admitted with a review signed by someone who is not an author of the entry or of the code holding its named points, bound to the entry's digest, with tests for a mismatched digest and an author-signed review. No new contradiction, line over 80 characters, status claim or new rule number found."
-
-[[finding]]
-what = "Later: docs/specs/0071-checked-variants.md:146-147 says the claim review is signed by 'someone who is not an author'; spec 0064 judges authorship by stable principal from authenticated authors. A later edit could cite spec 0064's author rule here so the two cannot drift, and say how authors of 'the code holding its named points' are found."
-fixed = true
-
-[[finding]]
-what = "Later: docs/specs/0071-checked-variants.md:148 binds the claim review to the claim entry's digest only; if the code at a named Rust path changes while the claim entry stays the same, the review is not repeated. The behaviour digest pinned with the catalogue may already cover this; a later edit could say so."
-fixed = true
+summary = "Read the staged AGENTS.md section 3 hunk: release gate items 1, 2 and 5 now say 32,000 and item 4 says 3,200 (100,000,000 scaled by the same factor), matching the owner's decision; the 80% share is unchanged. Searched the staged docs/, crates/, gate/ and .claude/ for the old numbers and 'billion'; none remain as floors. Specs 0055, 0064 and 0067 to 0071 refer to the floor without restating it, and their paper bounds (for example 23,222,707,200 variant ids in 0071) stay true at the smaller floors. No code parses the floors, and no status claim was added."

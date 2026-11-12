@@ -1,13 +1,5 @@
 skill = "security"
-change = "sha256:d142b654fc78ea16afcc94c94a4efb1cbbe9fc2a63d0a02a20817695de358919"
+change = "sha256:5c404f867f2686531b74d68c9c466d9f0c6e21cb060c004faa51975b6899a527"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged spec 0071, the spec 0064 owner and counting sentences and the README rows. Traced every untrusted input (member output, class entries, the reviewed claim entries in catalogue/claims/, review signatures, branch records, rerun rows, V- ids) to where it is used. The round 10 change makes a shape's claim entry review independent of the claim entry's authors and of the code holding its named points, and binds it to the claim entry's digest, matching the class review rule; both refusals are tested. Claims only select which checks run; every variant still needs a runner-signed class pass and a failing twin with a named point missing from the harness-written branch record. No secrets, crypto, paths, shell or libraries are added; no line outside tables passes 80 characters."
-
-[[finding]]
-what = "Later: docs/specs/0071-checked-variants.md:141-149 and 244-248, the V- reader's 'claimed by that owner' test and a replay should be stated to use the claim entry digest pinned for that run's protected policy, so a later withdrawal neither fails replay of an earlier signed run nor reads a newer claim into it."
-fixed = true
-
-[[finding]]
-what = "Later: docs/specs/0071-checked-variants.md:146-147, 'an author of the code holding its named points' for a shape's claim entry spans every slot row's step code; the spec could say how authorship of that code is read (for example from the reviewed catalogue entries of those steps), so the independence check is mechanical rather than left to the reviewer."
-fixed = true
+summary = "Read the staged diff: AGENTS.md section 3 release gate items 1, 2, 4 and 5 change their numbers only. Docs only; no input handling, secrets, access checks, crypto or libraries are touched. Searched staged docs and crates for the old floor numbers; the remaining hits are byte counts and model sizes, not floors."

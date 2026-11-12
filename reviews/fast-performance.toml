@@ -1,9 +1,9 @@
 skill = "fast-performance"
-change = "sha256:d142b654fc78ea16afcc94c94a4efb1cbbe9fc2a63d0a02a20817695de358919"
+change = "sha256:5c404f867f2686531b74d68c9c466d9f0c6e21cb060c004faa51975b6899a527"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged spec 0071, the spec 0064 sentences and the README row, focusing on the round 10 change (an independent, digest-bound review of a shape's claim entry). The change adds an admission-time check only, nothing on any run or request path; the fold stays one on-disk sort and one pass per target, the count one merged pass over sorted lists, and all growth is bounded by the frozen layout bounds and the class list length."
+summary = "Read the staged AGENTS.md section 3 diff (release gate items 1, 2, 4 and 5 lowered to 32,000 and 3,200) and searched staged docs and crates for the old floor numbers and for performance limits sized against the floors. The change is docs only, adds no hot path, and makes every floor-sized workload smaller."
 
 [[finding]]
-what = "Later: admission compares the claim review's digest and signer against the claim entry and the authors of the code holding its named points; working out those authors should read the pinned history once per admission, not once per named point."
+what = "Later: spec 0055 Limits are sized at 10,000 catalogue entries and a 2,000-method nightly fingerprint sweep, below the 32,000 method floor in AGENTS.md section 3; the gap predates this change and is smaller now. Resize those limits to the floor and measure the sweep time on Dell."
 fixed = true
