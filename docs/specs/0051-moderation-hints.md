@@ -60,9 +60,14 @@ used, and no hint input type has an email field.
 
 ### The review queue
 
-1. Moderators with the "View account hints" permission see each hint:
-   the accounts, the families that matched, and the evidence. IP
-   addresses show only to those XenForo already lets view IPs.
+The queue also carries SpamGuard's content hints. Spec 0072 sets their
+evidence, permission and closing rule; items 1 to 4 below are for
+account hints and item 5 is for content hints.
+
+1. Moderators with the "View account hints" permission see each
+   account hint: the accounts, the families that matched, and the
+   evidence. IP addresses show only to those XenForo already lets view
+   IPs.
 2. Three choices: dismiss, keep watching, or open the accounts in
    XenForo to act there. Sutradhar records the decision and never acts
    itself. No hint path calls any XenForo write.
@@ -70,8 +75,16 @@ used, and no hint input type has an email field.
    where staff can still restore it, and is removed for ever 90 days
    later. An erasure request removes a member's hints from the trash bin
    at once.
-4. A hint closes when its account is deleted, or when the banned
-   account is later unbanned.
+4. An account hint closes when its account is deleted, or when the
+   banned account is later unbanned.
+5. Holders of the "View content hints" permission see each content
+   hint: the content, its revision, the families that matched and the
+   evidence, never accounts. Three choices: dismiss, keep watching, or
+   open the content in XenForo to act there. Sutradhar records the
+   decision and never acts itself. Dismissed content hints follow item
+   3's trash times; its erasure clause is for account hints only, since
+   content hints hold no accounts. A content hint closes by spec 0072's
+   rule, including on kavach's `spam.content_hint_withdrawn`.
 
 ### Turning hints on
 
@@ -125,6 +138,11 @@ if a job is late.
 - `hint`: id, accounts, families, scores, state, decided by, decided at,
   expires at.
 - `hint_evidence`: hint id, family, summary, strength; no IP addresses.
+- `content_hint`: id, content id, revision, finding id, families,
+  scores, state, decided by, decided at, expires at; no accounts.
+- `content_hint_evidence`: content hint id, family, reason codes,
+  strength, and a summary built from those codes; no IP addresses,
+  anchors or post text.
 - `expert_pref`: member id, opted in, muted topics.
 - `expert_invite`: thread id, member id, reason, state, moderator, sent
   at.
@@ -138,7 +156,10 @@ if a job is late.
   `GET /api/experts/candidates/{thread}`, `POST /api/experts/invite`,
   `PUT /api/experts/prefs/{member}`.
 - Events: `hint.raised`, `hint.decided`, `expert.suggested`,
-  `expert.invited`.
+  `expert.invited`. `hint.raised` and `hint.decided` carry a hint kind,
+  account or content. The hints module consumes kavach's
+  `spam.content_hint_raised` and `spam.content_hint_withdrawn` events
+  (spec 0072).
 - Commands: `sutra panchayat hints`, `sutra uttar experts <thread>`.
 
 ### Failures

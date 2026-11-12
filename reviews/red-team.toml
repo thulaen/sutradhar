@@ -1,5 +1,33 @@
 skill = "red-team"
-change = "sha256:9b1c852a47478e1e12e051f29688fa9176cfaa3d99457fe34e0d32fcde50ac9e"
+change = "sha256:d246beade545c2ad59f2df92bec2b606025fd006b54c49b0e38ca7cdd6c63fca"
 verdict = "pass"
-agent = "codex"
-summary = "Three fresh concurrent reviewers passed: ubuntu130_red_inputs checked malformed, duplicate, Unicode and bound cases; ubuntu130_red_rules checked exemption boundaries and independently ran14 existing tests; ubuntu130_red_boundary checked contributor-controlled bytes, image authority and exception preservation. No new defect. No live image execution or full-gate claim by reviewers."
+agent = "claude"
+summary = "Round 70 of spec 0072 with its 0021, 0026, 0027, 0043, 0051, 0055 and README hunks, read from the staged index only. Three fresh red agents ran at once, aiming to break it (reordered, coalesced or restored deliveries, nested and unclosed blockquotes, huge or odd input), get round it (routes from SpamGuard or the estimate into relevance, member actions or unpermitted readers, and counting loopholes under 0055 and 0064) and abuse it (an outsider controlling posts, quotes, links or deliveries). I checked every report against the staged text of 0072, 0021, 0026, 0027, 0069, 0020 and 0019. No agent found a way to frame an innocent original, leak post text, let SpamGuard or the estimate act on a member, or put the estimate into the gate. The round 70 fixes in 0043's Event bands line, 0021's WordPress Data lead-in and 0072's 'the door's trust signal' are correct, and no staged prose line passes 80 characters. What remains are gaps in what SpamGuard detects, each one the spec already accepts in kind ('can let a copy escape') and none made worse by this change, so all are Later items."
+
+[[finding]]
+what = "Later: on WordPress, an author who wraps a whole post, links included, in one unclosed blockquote makes it one wp_quote zone (0026 lines 225-233). Kavach leaves all of that zone's text and links out of every family (0072 lines 113-118), and the short-post rule also sees the post as short. Yet the post stays readable and rankable, with a clean 'no finding' SpamSignal. The person who can do this publishes on WordPress, and the outsider guarantee already excludes such users (0072 lines 238-241). The exclusion predates this round's zone bullet. Consider counting the post author's own blockquote links, or record this as a known limit."
+fixed = true
+
+[[finding]]
+what = "Later: under the short-post rule (0072 lines 100-107), one author can post many stubs such as 'Hi' and then edit each into the same spam. The pair exemption then removes the whole flood's content family. Only link support is left, so SpamSignal still lowers it, but no content hint is ever raised. Consider confining the exemption to the side whose short first revision was later expanded, so a same-author flood keeps duplicate evidence against its copies."
+fixed = true
+
+[[finding]]
+what = "Later: posts first shown guest-visible by a moderator's approval, such as XenForo's queue for new members, or by WordPress cron, carry author id 0 (0021 lines 420-432, 0072 lines 234-238). They therefore never meet the same-author rules, which is where most moderated spam sits. SG01 states this on purpose. An erased member's stored author id is removed as well (0072 line 159). Record this coverage limit for the owner."
+fixed = true
+
+[[finding]]
+what = "Later, carried from round 33: spam risk is an existing 0027 relevance method fused with a positive weight (0069 lines 79-82 and 303-316). So a current 'no finding' value adds that column's full weight, while 0069 item 5 promises only that raising a caution never raises the fused score. State the baseline: a gate result with 'no finding' equals the result with the column absent, or the monotone rule that replaces it."
+fixed = true
+
+[[finding]]
+what = "Later: some reader rules lean on declarations alone, with nothing that traces where a value came from. 'Any value computed from either' (0072 lines 314-317) literally covers the fused score, so the checks need an explicit exemption for the readers listed at lines 299-307. Lab comparisons and release evidence may 'measure' the fused score, but whether they may also use it as a label or split is not stated. And a lab trial's exported numbers (line 400) carry no record of their source. Consider a source field on exported trial results and fused-score readers."
+fixed = true
+
+[[finding]]
+what = "Later: spam.content_hint_raised and the estimate events carry families, reason codes and per-page bands (0072 lines 373-376 and 424). Spec 0020's outside event stream carries ids only, so nothing leaks today. Still, no spec states that subscribing to these topics needs 'View content hints'. State it alongside the screen rule."
+fixed = true
+
+[[finding]]
+what = "Later, minor: (a) kavach treats the resource description as the first update row (0072 lines 145-147), while 0021 line 407 gives the resource its own content state and counter, so it is unclear which counter and number order a description. (b) Counting blockquotes for wp_quote does not follow how browsers close elements implicitly (a closing div or li) or ignore a stray closing blockquote inside a table, so only the post's own author can shift its own zones. (c) Titles that are not valid UTF-8, from old latin1 WordPress tables, may hash differently in PHP and Rust, which silently drops the author id to 0. (d) Akismet can be installed and active with no API key, and then checks nothing, yet the explanation does not say comments are unchecked (0072 lines 91-96, 0021 line 632)."
+fixed = true

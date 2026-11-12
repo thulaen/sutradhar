@@ -222,6 +222,15 @@ so no link is placed: the post is shown as skipped with SUT-424.
 - `zones` lists in stored code points every quote, attribution, code
   block, spoiler, link, bare address, mention, custom tag, smilie,
   mask, data tag and extra, for the post X-ray and 0022.
+- In WordPress HTML, `zones` also lists each `blockquote` element, as
+  a zone of its own kind, `wp_quote`, for kavach (spec 0072). The
+  parser counts open blockquote elements, without limit, and lists
+  only the outermost 20 levels as zones: a deeper blockquote and its
+  matching closing tag lie inside the innermost listed zone. A closing
+  tag when none is open is ignored, and an unclosed blockquote's zone
+  runs to the end of the post. It is not skipped: it stays readable
+  text for pieces, and its links keep their normal flag and count, so
+  indexing (0022) and the link allowance (0028) are unchanged.
 - Never-anchor: link text, bare addresses and any text that is an
   address or domain; mentions, custom tags, `[PLAIN]`; masks and
   smilies; extras. Skipped zones are not in readable text at all.
@@ -1047,12 +1056,13 @@ whose footprint the staff suggestions spec (0028) owns.
   character mapped, cluster boundaries); decomposed and composed posts
   give the same readable text with stored text unchanged; no masked
   character in readable text, match key, pieces, candidates or errors;
-  no candidate overlaps a zone, mask or smilie or cuts a word or
-  cluster; insertion removes cleanly, falls on boundaries, nests no
-  link and adds exactly one; insert, edit elsewhere, undo gives the
-  edited input; word boundaries are cluster boundaries and sentences
-  cover paragraphs; 0022's piece properties with the fake counter;
-  the same input always gives the same output.
+  no candidate overlaps a mask, a smilie or any zone except
+  `wp_quote`, or cuts a word or cluster; insertion removes cleanly,
+  falls on boundaries, nests no link and adds exactly one; insert,
+  edit elsewhere, undo gives the edited input; word boundaries are
+  cluster boundaries and sentences cover paragraphs; 0022's piece
+  properties with the fake counter; the same input always gives the
+  same output.
 - Generators weight every tag and custom tags with random options,
   random nesting, malformed forms (unclosed, tangled, stray, mixed
   case, unbalanced quotes), smilies, every address form, and text
@@ -1247,7 +1257,15 @@ Starred (★) cases block any release they touch.
   `parse` with `readable` on the conformance corpus; SH109 no piece
   holds over 64 KiB of text, a 70 KiB word splits at grapheme boundaries
   and is counted; SH110 a part whose checksum fails is not parsed and
-  nothing from it is stored.
+  nothing from it is stored; SH111 a WordPress post with blockquotes
+  nested two deep lists each as a `wp_quote` zone, its text stays in
+  pieces, its links keep their flag and count, and an anchor candidate
+  may sit inside it; a 16 MiB post of nested blockquotes lists at most
+  20 open `wp_quote` zones at once and stays within the 4 MiB parser
+  limit; 40 nested blockquotes list 20 zones, each closed by its own
+  matching tag, and after 21 openings and 20 closings a link still sits
+  in a `wp_quote` zone; a stray closing tag is ignored, and an unclosed
+  blockquote's zone runs to the end of the post.
 
 ### Link reconstruction and model choice
 

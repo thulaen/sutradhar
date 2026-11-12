@@ -267,13 +267,20 @@ rows or 8 MiB of message text, whichever comes first
 (`sampark.batch.rows`, `sampark.batch.bytes`).
 
 - Threads: id, section, title, type, state, first post id, reply count,
-  view count, post and last post dates, prefix, and a redirect's target.
+  view count, post and last post dates, prefix, a redirect's target, and
+  the thread's change counter (outbox item 6), read in the same
+  statement (item 6 defines a thread's content state).
 - Posts: id, thread, position, user id (an id only), state, post and
-  last edit dates, edit count, the stored `message` in full, and its
-  SHA-256 computed by the database (`SHA2(message, 256)`).
+  last edit dates, edit count, the stored `message` in full, its
+  SHA-256 computed by the database (`SHA2(message, 256)`), and its
+  change counter (outbox item 6), all read in one statement. Every
+  slice of a long message must report the same change counter; if one
+  differs, the read starts again, with the same restart limit as the
+  WordPress ranged fetch (SUT-347).
 - Sections: the tree (id, parent, type, display order).
 - Attachment names, when guests may see attachments.
-- Resources, updates and categories when Resource Manager is present.
+- Resources, updates and categories when Resource Manager is present,
+  each with its change counter read in the same statement.
 - The forum profile: custom tags with their options, smilie codes and
   the mirrored options, versioned by a BLAKE3 hash, so a change makes a
   new profile version. shodhan masks censored words itself.
@@ -346,18 +353,24 @@ to the forum, the decision is taken again.
 1. The add-on listens to XenForo's entity saves and deletions and,
    inside the same transaction, inserts one note in
    `xf_sutradhar_outbox` for each change that can matter:
-   - posts saved, edited, soft-deleted, hard-deleted, restored,
-     approved, moved or merged; threads saved, renamed, moved, merged,
-     split, redirected, deleted or restored; sections created, moved or
-     deleted;
+   - posts created, edited, soft-deleted, hard-deleted, restored,
+     approved, unapproved, moved or merged; threads created, edited,
+     renamed, moved, merged, split, redirected, approved, unapproved,
+     deleted or restored; sections created, moved or deleted;
    - permission entries changed on a section or user group, and permission
      rebuilds finishing;
    - custom tags, smilies and mirrored options changed;
-   - attachments added or removed; resources and their updates;
+   - attachments added or removed; resources and resource updates
+     created, edited, approved, unapproved, moved, deleted or restored,
+     and any other save of them;
    - its own heartbeat, once a minute, from a XenForo cron.
 2. A note holds the outbox id, kind, content type, content id, a few
-   related ids (such as a moved post's old thread), the time and the
-   contract version. Never text. A rolled-back save rolls its note back.
+   related ids (such as a moved post's old thread), the content's change
+   counter after the save (item 6), the acting member's id, whether the
+   save was made through XenForo's public post, reply, edit or thread
+   forms, or Resource Manager's add, update or edit forms, by the
+   content's own author, the time and the contract version. Never text.
+   A rolled-back save rolls its note back.
 3. sampark polls for new notes every 250 ms while busy (1 second when
    idle). For each it publishes a sanchar event and saves its cursor in
    the same transaction as the events, so each note becomes events
@@ -371,6 +384,60 @@ to the forum, the decision is taken again.
    `sampark.outbox.max_rows` (default 5 million, about 1 GB); beyond
    that the add-on stops adding notes and records a gap (SUT-339), and
    Sutradhar runs a full reconciliation when it returns.
+6. The add-on keeps a change counter per content item in
+   `xf_sutradhar_change`, raised by one in the save transaction on every
+   change to its body, title, links, status or visibility, whatever
+   XenForo's own edit count does. The same row holds the shown-before
+   flag: set, and never cleared, in the save transaction whenever the
+   content's own XenForo state is visible before or after a save,
+   visible meaning approved and not deleted, to any reader, whatever the
+   section permissions. A row is written clear when an item is first
+   created after install; at install the flag is set for every existing
+   item, and an existing item with no row counts as set. sampark keeps a
+   per-site delivery sequence counter and its epoch in
+   `forum_delivery_counter`. The cursor transaction of item 3 gives each
+   note the next number as it publishes the note's sanchar event. These
+   transactions run one at a time per site, so the number is strictly
+   increasing in commit order. A content state is a change counter
+   together with the SHA-256 of the content's text: the message for a
+   XenForo post or resource update, the title and body for a WordPress
+   post (the SHA-256 of the title's UTF-8 byte length as an 8-byte
+   big-endian integer, then the title's UTF-8 bytes, then the body's,
+   computed the same way by the plugin and by sampark across parts), the
+   description for a resource, and the title for a thread. The number
+   belongs to the first content state recorded with the change counter
+   the note holds (item 2). A delivery carries the number only when all
+   of these hold: its handler reads that state; the note's kind is a
+   post, resource or resource update created, edited or approved, or a
+   thread created (item 1), a creation or approval counting only while
+   the shown-before flag was clear before the save, never a move, merge,
+   split, restore or any other kind; and its outbox id is above every id
+   already numbered. So a note found only on asking again (item 4)
+   carries no number. A delivery that coalesces notes of different kinds
+   carries a number only when every one of them may. Any other delivery,
+   and every delivery with no note (backfill, reconciliation or the
+   permission watch), carries no number. The number, the site's counter
+   epoch, the note's kind (item 1) and the content's author id are
+   carried in the delivery event: the XenForo member id only when the
+   note's save was made through XenForo's public post, reply, edit or
+   thread forms, or Resource Manager's add, update or edit forms, by
+   that member, and 0 for a guest, the feed reader, an import, the admin
+   control panel, cron or a save by another member, as the note records.
+   The author id is the acting member's id that the note recorded at
+   save time, never the content's current user id. A delivery carries a
+   non-zero author id only when its handler reads exactly the content
+   state recorded with its note and that note records an own-author
+   save, and a delivery that coalesces notes carries it only when every
+   one of them records an own-author save by that same member; every
+   other delivery, and every delivery with no note, carries 0. The
+   public API read carries the same author id, and the public API
+   returns the current counter value with its epoch, so readers can
+   order deliveries without relying on outbox ids, event ids or handling
+   order (spec 0072). The number is never taken from a host clock or a
+   date the author sets. `forum_delivery_counter` is never reset with
+   the index; if it is lost, a new row is created with a fresh random
+   epoch, and sampark publishes the change in a typed event,
+   `sampark.epoch_started`, in the same transaction.
 
 ### Noticing changes: permissions, reconciliation, heartbeat
 
@@ -379,11 +446,12 @@ to the forum, the decision is taken again.
    `visibility.nodes_changed`, even with no note (for example after a
    database restore). Sections that lost guest access leave serving at
    once and are purged; sections that gained it are queued for reading.
-2. Every 5 minutes, threads and posts made or edited in the last two
-   hours are compared with what Sutradhar recorded (ids, states, section,
-   thread, position, edit count, last edit date).
+2. Every 5 minutes, threads, posts, resources and resource updates made
+   or edited in the last two hours are compared with what Sutradhar
+   recorded (ids, states, section, thread, position, edit count, change
+   counter, last edit date).
 3. Every 24 hours (`reading.reconcile.interval_hours`) the same runs
-   over every thread and post, in the backfill lane; a weekly pass also
+   over every one of them, in the backfill lane; a weekly pass also
    compares each message's SHA-256. Differences become ordinary events.
 4. No heartbeat for 5 minutes: health says "the forum add-on is not
    reporting; changes may be missed" (SUT-340), an alert is raised, and
@@ -425,7 +493,10 @@ moderator approve each such change, with undo and recheck as usual.
 In the forum's database, owned by the add-on (times as Unix integers):
 
 - `xf_sutradhar_outbox`: `outbox_id`, `kind`, `content_type`,
-  `content_id`, `related` (JSON of ids), `created_date`, `contract`.
+  `content_id`, `related` (JSON of ids), `change_counter`,
+  `acting_user_id`, `own_author_save`, `created_date`, `contract`.
+- `xf_sutradhar_change`: `content_type`, `content_id`,
+  `change_counter` and `shown_before` (outbox item 6).
 - `xf_sutradhar_board_profile`: `option_key`, `option_value`,
   `updated_date`, for the mirrored options only.
 - `xf_sutradhar_nonce`: `key_id`, `nonce`, `expires_date`.
@@ -435,28 +506,42 @@ In the forum's database, owned by the add-on (times as Unix integers):
 - `xf_sutradhar_key`: the add-on's encrypted private key, its key id,
   and the service's public keys.
 
+In the WordPress database, owned by the plugin, under the site's table
+prefix, written only by its save hook; its event rows are pruned as
+the "WordPress" section says:
+
+- `sutradhar_change`: `post_id`, `change_counter`, `shown_before`.
+- `sutradhar_event`: `event_id`, `kind`, `post_id`, `change_counter`,
+  `acting_user_id`, `own_author_save`, `saved_sha256`, `created_date`.
+
 In Sutradhar's PostgreSQL, schemas `sampark` and `dwarpal`, every row
 carrying its site:
 
 - `forum_cursor`: the outbox cursor, the missing ids with first-seen
   times, the last heartbeat seen.
-- `forum_item_state`: per thread and post: ids, states, section, thread,
-  position, edit count, last edit date, message SHA-256 and whether it
-  was guest-visible, as last seen. Never text.
+- `forum_delivery_counter`: per site, the counter epoch and the delivery
+  sequence counter (outbox item 6). The epoch is a fresh random value
+  written when the row is first created, so a missing row means a new
+  epoch.
+- `forum_item_state`: per thread, post, resource and resource update:
+  ids, states, section, thread, position, edit count, change counter,
+  last edit date, text SHA-256 (outbox item 6) and whether it was
+  guest-visible, as last seen. Never text.
 - `forum_permission_digest`: per section, the digest and when it changed.
 - `forum_quarantine`: quarantined sections with code and time, cleared by
   an administrator after the cause is fixed.
 - `signed_nonce`: `key_id`, `nonce`, `expires_at`.
 
-RLS is on and forced on each: `forum_cursor`, `forum_item_state` and
-`forum_permission_digest` are written by the worker role only and read
-by the serve role for health; `forum_quarantine` is inserted by the
-worker and cleared only by serve after the action layer's check;
-`signed_nonce` rows are inserted by the receiving role, never updated,
-and deleted after expiry.
+RLS is on and forced on each: `forum_cursor`, `forum_item_state`,
+`forum_delivery_counter` and `forum_permission_digest` are written by
+the worker role only and read by the serve role for health;
+`forum_quarantine` is inserted by the worker and cleared only by serve
+after the action layer's check; `signed_nonce` rows are inserted by the
+receiving role, never updated, and deleted after expiry.
 
 Uninstall: the add-on's tables go with it; Sutradhar's forum tables are
-derived and go with the index; published links stay.
+derived and go with the index, except `forum_delivery_counter` (outbox
+item 6); published links stay.
 
 ### Failure handling
 
@@ -484,7 +569,7 @@ dwarpal uses SUT-300 to SUT-329, sampark SUT-330 to SUT-399:
 | SUT-344 | The breaker on the site is open |
 | SUT-345 | A test profile pointed at a site that is not a test site |
 | SUT-346 | A post over 2 MB is skipped for link insertion |
-| SUT-347 | A WordPress post's part or whole checksum failed; read restarted |
+| SUT-347 | A WordPress post's part or whole checksum failed, or a WordPress part or XenForo slice reported a different change counter; read restarted |
 
 - Site slow or unreachable: the breaker opens; backfill pauses; live
   reads retry with backoff; notes wait in the outbox; suggestions made
@@ -540,11 +625,51 @@ dwarpal uses SUT-300 to SUT-329, sampark SUT-330 to SUT-399:
 
 ### WordPress
 
-The WordPress plugin uses its own versioned contract on the same
-signing rules and pairing. It has its own visibility facts, native
-capabilities and content validator; neither adapter inherits the
-other's visibility or save rules. Its events, pause and conditional
-writes are tested on their own.
+The WordPress plugin uses its own versioned contract on the same signing
+rules and pairing. It has its own visibility facts, native capabilities
+and content validator; neither adapter inherits the other's visibility
+or save rules. Its events, pause and conditional writes are tested on
+their own. Its signed plugin facts include one boolean, whether Akismet
+is installed and active, read once at the start of each kavach run (spec
+0072). The plugin keeps the same per-content change counter as outbox
+item 6 in its own table, `sutradhar_change` (see Data), which no role,
+REST route or custom field can write. Only the plugin's save hook raises
+it, in the plugin's own database transaction together with the change
+event row, on every change to a post's body, title, links, status or
+visibility. Change events are rows of `sutradhar_event` (see Data),
+which no role, REST route or custom field can write either. The plugin
+prunes event rows, stops at the same limit and records a gap exactly as
+outbox item 5 does for notes. The plugin's reads return the change
+counter in the same statement as the content, with the same counter for
+every part, as the Posts read under "Reading content" requires. sampark
+numbers those events from the same per-site delivery sequence counter,
+in its one-at-a-time transaction that publishes them, exactly as item 6
+describes. Its change events carry kinds like a XenForo note's (item 1):
+created, published and edited, which are numbered as item 6 describes.
+The plugin keeps the same shown-before flag in the same table, set by
+its save hook, and never cleared, whenever a post is published, private
+or password-protected before or after a save, and otherwise written and
+set as item 6 describes. Only a post's publication while the flag was
+clear before the save, such as a new post published in its first save or
+a draft, scheduled or pending post going live for the first time, is the
+numbered kind published. Every other change that makes a post
+guest-visible, such as removing a password, making a private post public
+or publishing again, is a kind of its own, made public, even when the
+same save changes other things, and such a delivery carries no number.
+Each change event also carries whether the save came through WordPress's
+own editing paths for that post (the classic editor's post.php, the
+block editor's REST request for that post under a logged-in session, or
+quick edit) by a user who is the post's author and holds the publish
+capability, read in the save hook; it is false for every other save,
+whoever the acting user is, such as one by another user, by cron, by a
+feed importer, through a form, or through REST or XML-RPC with an
+application password. sampark carries the content's author id in the
+delivery event and its public API read: the acting user's id that the
+change event row recorded in the save hook, never the post's current
+author, when the event records that fact as true, under the same rules
+as item 6 for reading the event's own state and for coalesced
+deliveries, and only when sampark's read has the SHA-256 that the hook
+recorded of the text the acting request itself saved; 0 otherwise.
 
 **`ReadRange`, the WordPress ranged fetch.** A WordPress post may be
 longer than 16 MiB. The service reads it in parts of at most 16 MiB,
@@ -559,22 +684,23 @@ each fetched in slices of at most 1 MiB (spec 0022). Nothing is cut.
   slice's byte start and length within the post. A part is a fixed
   byte range: part n starts at n × 16 MiB, moved back to a character
   boundary.
-- Reply: post id, content version, part number, the slice's actual
-  start and length (the plugin ends a slice only between characters,
-  so it may be a few bytes short), the slice bytes in base64, and three
-  SHA-256 checksums: of the slice, of the whole part, and of the whole
-  post, plus the post's length in bytes. Every slice of a version
-  carries the same part and whole checksums. The plugin works out the
-  part and whole checksums once per content version, reading the post
-  from the database in 1 MiB chunks, and keeps them with that version
-  until the post changes. It never holds the whole post in memory, so
-  PHP's 8 MB limit holds for any size of post.
+- Reply: post id, content version, part number, the slice's actual start
+  and length (the plugin ends a slice only between characters, so it may
+  be a few bytes short), the slice bytes in base64, and three SHA-256
+  checksums: of the slice, of the whole part, and of the whole post,
+  plus the post's length in bytes and its change counter. Every slice of
+  a version carries the same part and whole checksums. The plugin works
+  out the part and whole checksums once per content version, reading the
+  post from the database in 1 MiB chunks, and keeps them with that
+  version until the post changes. It never holds the whole post in
+  memory, so PHP's 8 MB limit holds for any size of post.
 - Checks in the service: each slice's checksum on arrival; the part's
   checksum once its slices are joined, before the part is parsed; the
-  whole post's checksum over all parts, before any piece is served. A
-  failed check, or a content version that changes, restarts the read
-  from part 0 (SUT-347). After three restarts the post is marked
-  failed (SUT-338), never read in part.
+  whole post's checksum over all parts, before any piece is served; and
+  that every part reports the same change counter. A failed check, or a
+  content version that changes, restarts the read from part 0 (SUT-347).
+  After three restarts the post is marked failed (SUT-338), never read
+  in part.
 - Limits: a slice at most 1 MiB of text; the reply body at most
   1.5 MiB, the stated exception to the 1 MiB body limit, to hold the
   base64 slice; a part at most 16 MiB; one post read in parts at a
@@ -724,7 +850,8 @@ Noticing changes:
 28. An edit whose note was lost is found by the 5-minute pass.
 29. No heartbeat for 5 minutes: health shows SUT-340 and an alert.
 30. Notes acknowledged up to 500, then Sutradhar away for days: nothing
-    above 500 is pruned, and the outbox survives a PHP restart.
+    above 500 is pruned, and the outbox survives a PHP restart. The
+    same holds for WordPress change events in `sutradhar_event`.
 
 Edits, versions and limits:
 
@@ -758,7 +885,47 @@ Edits, versions and limits:
     part or whole checksum made wrong in the test gives SUT-347 and a
     restart from part 0, with nothing served; three restarts give
     SUT-338. A stale time, a reused nonce and a bad signature are
-    refused with their usual codes. No reply body passes 1.5 MiB.
+    refused with their usual codes. No reply body passes 1.5 MiB. A
+    part that reports a different change counter from part 0 gives
+    SUT-347 and a restart from part 0.
+43. Change counter and order (PHP, test forum): a save raises the
+    item's change counter by one in its transaction and a rolled-back
+    save leaves it unchanged; a XenForo read whose slices report
+    different counters restarts with SUT-347; deliveries carry
+    strictly increasing numbers in commit order; a note found only on
+    asking again, a move, and a coalesced edit and move carry none.
+44. Shown-before flag: a new post's first creation or approval is
+    numbered; after it is unapproved and approved again, or for any
+    item that existed at install or has no row, the approval carries
+    no number; on WordPress, removing a password, making a private
+    post public and publishing again after a draft are the unnumbered
+    kind made public.
+45. `forum_delivery_counter` survives an index reset and an
+    uninstall; when its row is lost, a new row with a fresh random
+    epoch and `sampark.epoch_started` are written in one transaction.
+46. SQL and PHP tests: no role, REST route or custom field can write the
+    WordPress `sutradhar_change` and `sutradhar_event` tables, and only
+    the worker role can write `forum_delivery_counter`.
+47. A WordPress post saved by its publish-capable author in the
+    editor reaches kavach with its user id; one saved by another user,
+    by cron, by a feed importer (including a "fetch now" from wp-admin),
+    through a form, or through REST with the admin's application
+    password reaches it with author id 0; when the author's save is
+    followed by another user's save before it is delivered, the
+    delivery carries author id 0, including when the other save writes
+    its body before the author's hook runs; a post with a non-ASCII
+    title read in several parts gives the same hash in PHP and Rust
+    (PHP and Rust).
+48. On XenForo, a post made by the feed reader, by an import run from
+    the admin control panel or by cron, and a revision saved by a
+    member other than the post's author, reach kavach with author id 0;
+    a post its author saves through the public post form, and a resource
+    update its author adds through Resource Manager's form, reach it
+    with the member id; a delivery that coalesces the author's note with
+    another member's edit, or whose handler reads a later save by
+    another member, carries id 0; a user merge or a staff reassignment
+    of the author between the save and its delivery leaves the recorded
+    id, never the new one (PHP, test forum).
 
 Release tier for every add-on release: fault injection, defect and
 security checks, resource, memory and storage checks, profiling, load

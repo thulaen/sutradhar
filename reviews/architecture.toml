@@ -1,5 +1,9 @@
 skill = "architecture"
-change = "sha256:9b1c852a47478e1e12e051f29688fa9176cfaa3d99457fe34e0d32fcde50ac9e"
+change = "sha256:d246beade545c2ad59f2df92bec2b606025fd006b54c49b0e38ca7cdd6c63fca"
 verdict = "pass"
-agent = "codex"
-summary = "Reviewer ubuntu130_arch_review: exact staged candidate and final style delta reviewed. Existing bounded parsers reused; runner digest bytes alone may change; ordered exception deletion keeps meaningful bytes. Checked arithmetic and unchanged fixture bytes are clear; simpler semantic-only comparison would weaken evidence."
+agent = "claude"
+summary = "Round 70: read the whole staged index (new spec 0072 and the staged hunks in 0021, 0026, 0027, 0043, 0051, 0055 and the specs README) against AGENTS.md section 5, spec 0019's events (hints, ids and counts only, handlers read current state), 0021, 0022, 0027's order stage and trust door, 0028's suggestion states and events, 0051's hint rules, 0055, 0066's jobs 45, 46, 74, 147 and 286, and 0069. The three round 70 fixes hold: 0043 now ties the update study to its event bands and separate series and the estimate to the separate series only, matching 0072's estimate and update-study paragraphs; 0021's WordPress Data lead-in says only event rows are pruned, matching its WordPress section and outbox item 5; and 'the door's trust signal' names the trust door's own output. Module walls hold: kavach reads sampark, sujhav and the Akismet fact only through public APIs and typed events, the hints module consumes kavach's typed outbox events and reads kavach by finding id, shodhan declares the content-hints trait that panchayat implements, wired in the composition root, and forum_delivery_counter and the plugin tables belong to their own owners under RLS. SpamGuard reaches ranking only through the lowering-only spam risk method and traffic only freezes evidence through the trust door; no hint or score acts on members; the estimate stays a labelled report outside SpamSignal, the gate and every method objective except its own GanitEvolve search. No new layer, setting or hook without a current need."
+
+[[finding]]
+what = "Later, not a blocker (unchanged by this round): docs/specs/0072-ranking-and-spam.md, section 'Our estimate of a search engine's spam view', says estimate events carry IDs, bands and reason codes only but names no event kind or consumer; when the estimate is built, name its typed outbox event and consumers in 0072 under spec 0019 item 5."
+fixed = true

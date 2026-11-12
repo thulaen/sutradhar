@@ -294,7 +294,11 @@ Rows are derived data, purged with their subject.
 - `sutra methods list [--stage] [--family] [--pipeline]`, `show <id>`
   and `count`.
 - `sutra methods check`: every catalogue rule here; the gate runs it on
-  every commit.
+  every commit. It also refuses every declaration spec 0072 forbids, for
+  `SpamSignal`, the spam risk column, kavach's other findings, the fused
+  score, the calibrated probability, content-hint data, our estimate,
+  search-update chart observations, the site's Search Console and GA4
+  series, and any value computed from them.
 - `sutra methods advance <id> <stage>`: moves one entry forward after
   checking its evidence, and writes the change for the commit.
 - `sutra methods exclude <id> --reason <category>`: records an exclusion

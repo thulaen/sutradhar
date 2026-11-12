@@ -1,5 +1,9 @@
 skill = "style-docs"
-change = "sha256:9b1c852a47478e1e12e051f29688fa9176cfaa3d99457fe34e0d32fcde50ac9e"
+change = "sha256:d246beade545c2ad59f2df92bec2b606025fd006b54c49b0e38ca7cdd6c63fca"
 verdict = "pass"
-agent = "codex"
-summary = "Reviewer ubuntu130_style_review: clear responsibilities, reuse and proportionate private helper; no material duplication or dead logic. Generic normalisation would add complexity or lose byte protection. Staged whitespace clean; bootstrap Rust guide absent, existing conventions used. Final split strings preserve bytes."
+agent = "claude"
+summary = "Round 70: read the whole staged spec 0072 and every staged hunk in specs 0021, 0026, 0027, 0043, 0051, 0055 and the specs README against AGENTS.md. The three round 70 fixes are in and read clearly: 0043's Event bands line (the update study uses the bands and the separate series, the estimate uses the separate series only) agrees with 0072's update study and estimate sections; 0021's WordPress Data lead-in now says only event rows are pruned, which matches the WordPress section; and 0072 line 341's 'the door's trust signal' is now plain. I checked again: no added line over 80 characters outside tables and Sources links; no US spellings; no status words ('pending' is the WordPress post state); the terms used are all defined (the trust and quality doors and rule 4 in 0027, the spam risk column, wp_quote, the shown-before flag, forum_delivery_counter, the 4 MiB parser limit, 'View content hints'); the estimate is called our estimate everywhere and stays out of the gate; the only new numbers are setting defaults and test-fixture values. Nothing blocks. One Later note."
+
+[[finding]]
+what = "Later: docs/specs/0027-candidates-ranking.md ('Where ranking sits') and docs/specs/0055-method-research-catalogue.md (the sutra methods check bullet) each repeat the same list of what 0072 forbids (SpamSignal, the spam risk column, kavach's other findings, the fused score, the calibrated probability, content-hint data, our estimate, search-update chart observations, the Search Console and GA4 series). This copies 0072's reader rules into two more places, so they could drift. Cut both down to a pointer, for example 'It also refuses every declaration that spec 0072's reader rules forbid', and keep the list only in 0072."
+fixed = true

@@ -78,6 +78,14 @@ training and tuning from decisions (spec 0053); settings storage
 
 ### Where ranking sits
 
+Spec 0072 owns RankMedulla's full-body method and the evidence behind
+kavach's `SpamSignal`. Both use the decision path here. The gate check
+also refuses every declaration spec 0072 forbids, for `SpamSignal`, the
+spam risk column, kavach's other findings, the fused score, the
+calibrated probability, content-hint data, our estimate, search-update
+chart observations, the site's Search Console and GA4 series, and any
+value computed from them.
+
 For one source post, after spec 0023 has reranked its candidates:
 
 1. Gather evidence for each pair: matching's scores; destination facts
@@ -517,7 +525,10 @@ real difference and an executable expected outcome.
 - The explanation lists each method's score, weight and reason, each
   feature's importance (job 46), graph relevance on its own line, the
   PageRank gain if accepted (job 259), the confidence and range, and
-  every version used. Ids and numbers only.
+  every version used. Ids and numbers only. The spam risk method's
+  reason codes by family appear only to holders of "View content
+  hints" (spec 0072); other reviewers see its score, weight and
+  importance and that a spam caution applied.
 - "Why no suggestions?" lists matching's filter reasons, no acceptable
   anchor, below the display threshold, or methods waiting.
 - Review priority comes from job 4 (the queue order giving the most

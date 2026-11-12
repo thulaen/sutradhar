@@ -11,8 +11,8 @@ each feature.
 Specifications 0003 to 0057, 0061, 0063 and 0066 are rewritten from the
 private archive `archive-2026-11-08-old-repo` on Dell; the table below
 names each one's source files. Specifications 0001, 0002, 0058 to
-0060, 0062, 0064, 0065, 0067, 0068, 0069, 0070 and 0071 were written
-fresh.
+0060, 0062, 0064, 0065, 0067, 0068, 0069, 0070, 0071 and 0072 were
+written fresh.
 
 | No. | Title | Roadmap item | Archive source (under `docs/specifications/`) |
 |---|---|---|---|
@@ -87,3 +87,4 @@ fresh.
 | [0069](0069-wide-link-ranking.md) | Wide link ranking shape | Phase 7 item 1 | written fresh |
 | [0070](0070-capability-workflows.md) | Capability workflows | Phase 7 item 1 | written fresh |
 | [0071](0071-checked-variants.md) | Checked variants | Phase 7 item 1 | written fresh |
+| [0072](0072-ranking-and-spam.md) | RankMedulla and SpamGuard | Phase 6 | written fresh, using the archive's ADR-0063 item 3 and interview Q049 |

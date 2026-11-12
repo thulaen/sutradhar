@@ -122,6 +122,10 @@ the decision it serves, what it is compared with). No entry, no line.
 
 ### Event bands
 
+The update study in spec 0072 uses these bands and the separate metric
+series here; the spam-view estimate there uses the separate metric
+series only.
+
 Three kinds: search update notices from the backlink crawl's outside
 notices; Sutradhar's own changes from the audit log (an approved link
 batch, an undo); notes an admin types. Events close together merge into
