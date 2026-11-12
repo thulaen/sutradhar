@@ -23,7 +23,7 @@ them gets a graph reason: "both about the Pixel 9 series".
    ambiguity checks; tag-description drafts, preview, batch approval,
    applying and undo.
 2. There is no linking to XenForo tag pages.
-3. The graph maths runs in ganit (spec 0064). Pixie-style walks stay
+3. The graph maths runs in ganit (specs 0064 and 0066). Pixie-style walks stay
    a lab candidate until the method lab admits them (spec 0056).
    Anchors are in spec 0023 and drafting is in spec 0052.
 

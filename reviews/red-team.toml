@@ -1,17 +1,29 @@
 skill = "red-team"
-change = "sha256:5c404f867f2686531b74d68c9c466d9f0c6e21cb060c004faa51975b6899a527"
+change = "sha256:cae0eb7ca370a896f857981e1e42a03d06e51f40701de55b9c11fadbb1963c3f"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Three red agents (break it, get round it, abuse it) attacked the staged AGENTS.md section 3 change: methods, capabilities and checked variants at 32,000 each, link ranking at 3,200, scope share still 80%. I checked each report against the staged tree. The four numbers match the owner's decision and are written only in AGENTS.md. No staged spec, test, crate or doc states or depends on the old floors. Specs 0055, 0064 and 0067 to 0071 say 'the floor' without a number, and their id bounds stay above it. No code reads these figures. There is no status or date claim, and every line fits in 80 characters."
+summary = "Round 6 of spec 0066 (ganit) and the staged edits to specs 0026, 0027, 0013, 0049, the glossary and the specs README, attacked by three red agents (break it, get round it, abuse it), each report checked against the staged specs 0026 and 0066. The round 5 blocker is closed: the input rule's exception (0066 lines 292-301) and test 9 now admit sentences from every dataset spec 0026 lists as usable data (UD treebanks, GUM on its admissible genres, WikiNER, LitBank, Few-NERD), which covers the names model's training and test sets, while post text and the forum gold set's words stay out; spec 0026's CoNLL-U section and training route agree. No new contradiction found; the remaining gaps are later work the change does not make worse."
 
 [[finding]]
-what = "Later: at 32,000 and 3,200, one admitted shape can meet items 1, 3 and 4 almost by itself. Spec 0069's 5,805,676,800 chain ids need only a tiny surviving fraction, and a small grid of near-identical slot rows reaches 3,200 chains. That leaves the distinctness proofs in specs 0067, 0070 and 0071 as the only real guard. This follows from the owner's choice and does not make the text untrue. A later item could add a measure that shows how counts are spread across shapes."
+what = "Later: 0066 lines 294-298 and test 9 do not say how a sentence's dataset is proven. A caller could relabel a tagged real post with an EWT sent_id, send GUM's excluded genres from the GUM repository, or swap a mirror file. Suggested: ganit takes these sentences only as whole dataset files whose SHA-256 matches models.lock's data section (spec 0026), with a per-document genre allowlist for GUM; test 9 adds a forged sent_id case and an excluded-genre GUM case. Extends the round 3 Later item on pinned digests."
 fixed = true
 
 [[finding]]
-what = "Later: spec 0055's benchmark sizes (10,000 catalogue entries, a sweep of 2,000 methods) are below the new 32,000 floor. They were far below the old floor too, so the change does not make this worse."
+what = "Later: 0066 line 297's examples 'such as the treebanks and the named-entity sets' can be read to include sets spec 0026 excludes (Penn Treebank, the Stanford Sentiment Treebank, CoNLL-2003, WikiANN, MultiNERD). The restrictive clause governs, but naming the sets (such as UD English-EWT, WikiNER, LitBank and Few-NERD) would remove the doubt."
 fixed = true
 
 [[finding]]
-what = "Later: the owner's decision is recorded only in a Forgejo comment posted by the agent account (#64 comment 3029). Nothing requires a decision that lowers a release floor to be confirmed from the owner's own account. A later item could make that a rule."
+what = "Later: forum gold-set scoring (0066 lines 299-302; 0026 training route) passes spans as token ranges with no label id, while 0026's names stage measures entity F1 by label on the forum gold set. Say that each span carries its gold and predicted label ids. Also bound tag and relation ids to the fixed UPOS and relation lists so an id cannot carry a word index."
+fixed = true
+
+[[finding]]
+what = "Later: 0026 stage 3b's staff-labelled forum tone set is real-post scoring that the input rule neither admits nor routes elsewhere; say where it is scored if the owner turns tone on."
+fixed = true
+
+[[finding]]
+what = "Later: 'a name is never a number' (0066 line 54) has no grammar; '+251', '0251' or full-width digits could parse as job numbers. Suggested: names match [a-z][a-z0-9_-]*."
+fixed = true
+
+[[finding]]
+what = "Later: an isolated or unreachable node's click depth has no stated value; if written as infinity, test 8's guard refuses the whole output on any site with an orphan (round 2 Later on unreachable click depth). Job 258 is cleared by a link from any throwaway third thread; it matches spec 0027 rule 8 and is only a hint."
 fixed = true

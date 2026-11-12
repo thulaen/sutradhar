@@ -1,9 +1,9 @@
 skill = "fast-performance"
-change = "sha256:5c404f867f2686531b74d68c9c466d9f0c6e21cb060c004faa51975b6899a527"
+change = "sha256:cae0eb7ca370a896f857981e1e42a03d06e51f40701de55b9c11fadbb1963c3f"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged AGENTS.md section 3 diff (release gate items 1, 2, 4 and 5 lowered to 32,000 and 3,200) and searched staged docs and crates for the old floor numbers and for performance limits sized against the floors. The change is docs only, adds no hot path, and makes every floor-sized workload smaller."
+summary = "Read the staged diff of spec 0066 (how jobs run, Jaal, limits, tests) and the staged hunks in specs 0013, 0026, 0027, 0049, the glossary and the specs README. Round 6 changes only the input rule's exception, test 5's empty-graph case, test 9's dataset check and spec 0026's CoNLL-U wording; none adds a hot path, a copy, unbounded growth or a call without a time limit. Live calls keep a strict time limit with degraded mode, batch jobs run one at a time in the heavy job slot with checkpoints, snapshots stream in bounded batches, and memory points to spec 0027 and AGENTS.md section 5.6."
 
 [[finding]]
-what = "Later: spec 0055 Limits are sized at 10,000 catalogue entries and a 2,000-method nightly fingerprint sweep, below the 32,000 method floor in AGENTS.md section 3; the gap predates this change and is smaller now. Resize those limits to the floor and measure the sweep time on Dell."
+what = "Later: test 9's check that every training or held-out sentence comes from a dataset in spec 0026's usable data should be done once per dataset file by its pinned digest, not by a per-sentence lookup, so the check costs nothing on large treebanks (overlaps the round 3 Later item on pinned digests)."
 fixed = true

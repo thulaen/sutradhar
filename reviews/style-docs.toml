@@ -1,5 +1,17 @@
 skill = "style-docs"
-change = "sha256:5c404f867f2686531b74d68c9c466d9f0c6e21cb060c004faa51975b6899a527"
+change = "sha256:cae0eb7ca370a896f857981e1e42a03d06e51f40701de55b9c11fadbb1963c3f"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged AGENTS.md section 3 change: release gate items 1, 2 and 5 now say 32,000 and item 4 says 3,200, matching the owner's decision, with the 80% share unchanged. Searched the staged docs, crates, skills and gate for the old floor numbers and billion wording and found none; specs 0055, 0064 and 0067 to 0071 refer to the floor only by reference, and 0071's id count is still above it. Lines are short, the English is plain British and there are no status words."
+summary = "Round 6: read the staged diff of specs 0066, 0026, 0027, 0013, 0049, the glossary and the specs README. Checked that 0066's widened input rule and test 9 match the sentence datasets spec 0026 trains and scores on (EWT test, Few-NERD test, LitBank) while keeping post text and the forum gold set's words out, that 0026's CoNLL-U section agrees, the entry-point name rule, test 5's empty graph, line lengths, plain British English, no status words, the glossary engine rows and the job 49, 258 and 218 fixes."
+
+[[finding]]
+what = "Later: docs/specs/0066-ganit.md test 9 (lines 440 to 442) says 'refuse any sentence from no dataset in spec 0026's usable data'; plainer is 'refuse any sentence that is not from a dataset in spec 0026's usable data'."
+fixed = true
+
+[[finding]]
+what = "Later: docs/specs/0066-ganit.md line 54 puts 'where a name is never a number' inside the list of three ways an entry point runs, which makes the sentence hard to follow; the name rule could be its own sentence."
+fixed = true
+
+[[finding]]
+what = "Later: docs/specs/0066-ganit.md line 296 says the training entry point reads 'only sentences' from spec 0026's usable data, but that list also holds word lexicons (Open English WordNet, UniMorph English, VADER's lexicon) and the model file ganit writes carries a lemma_lexicon (spec 0026). If ganit builds that lexicon from those word lists, the rule should say 'sentences and lexicon entries'."
+fixed = true

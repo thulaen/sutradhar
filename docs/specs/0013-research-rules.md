@@ -349,8 +349,8 @@ arithmetic range or of checks means "unresolved", never "different".
    identical workers, random arrivals and job times: the chance of
    waiting and the mean wait); M/G/1 (one worker, any spread of job
    times: the mean wait).
-2. They cross-check ganit jobs 226, 218 and 245, beside the simulation
-   job 226 already uses. They never decide.
+2. They cross-check ganit jobs 226 and 245, beside the simulation job
+   226 already uses. They never decide.
 3. The screen shows "formula says X, measured says Y". Beyond
    `research.queue.disagree_margin` it adds a tip that arrivals may come
    in bursts or jobs may vary more than assumed. A tip changes no

@@ -537,9 +537,9 @@ Nightly, in ganit's batch runs, shadow-tested and activated here:
   alternatives per post, never above five), 35 (per-site reranker
   threshold).
 - Shiksha: 45 (scoring model), 46 (feature importance), 47 and 48
-  (link density and same-target caps, inside the allowance), 51
-  (anchor quality), 52 (linkability), 66 (thread type), 68 (likely
-  solution).
+  (link density and same-target caps, inside the allowance), 49
+  (diminishing returns), 51 (anchor quality), 52 (linkability), 66
+  (thread type), 68 (likely solution).
 - Anuman: 94 (acceptance priors), 95 (exploration posteriors), 97
   (targets that attract rejections), 109 (outdated solved answers).
 - Samanjan: 115 (BM25 k1 and b and other retrieval settings; the rerank
@@ -549,9 +549,10 @@ Nightly, in ganit's batch runs, shadow-tested and activated here:
   rates scored offline).
 - Bahav: 192 (score shift after a change, triggering recalibration).
 - Gati: 222 (attention decay, for freshness).
-- Jaal: 49 (diminishing returns), 251 (internal PageRank), 253 (orphans
-  and click depth), 256 (link-prediction scores and candidates), 258
-  (spam-pattern flags), 259 (PageRank gain if accepted).
+- Jaal: 251 (internal PageRank), 253 (orphans and click depth), 256
+  (link-prediction scores and candidates), 258 (pairs of threads that
+  link only to each other, as spam-pattern flags), 259 (PageRank gain
+  if accepted).
 - Varnakram: 276 (spectral graph embeddings as features), 278 (topic
   communities, a part of graph relevance).
 - Sannidhya: 286 (near-duplicate clusters and canonical threads).

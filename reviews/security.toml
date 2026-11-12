@@ -1,5 +1,17 @@
 skill = "security"
-change = "sha256:5c404f867f2686531b74d68c9c466d9f0c6e21cb060c004faa51975b6899a527"
+change = "sha256:cae0eb7ca370a896f857981e1e42a03d06e51f40701de55b9c11fadbb1963c3f"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged diff: AGENTS.md section 3 release gate items 1, 2, 4 and 5 change their numbers only. Docs only; no input handling, secrets, access checks, crypto or libraries are touched. Searched staged docs and crates for the old floor numbers; the remaining hits are byte counts and model sizes, not floors."
+summary = "Read the staged spec 0066 and the staged edits to specs 0026, 0027, 0013, 0049, the glossary and the specs README. Docs only. The widened input rule (spec 0066 lines 291 to 301) matches spec 0026: training and held-out scoring on admitted test sets read only sentences from spec 0026's usable data (treebanks, WikiNER, LitBank, Few-NERD), never post text, names from posts, search terms or tagged copies of real posts; spec 0026's CoNLL-U section now says annotations of real posts never reach ganit as CoNLL-U and the forum gold set reaches it only as ids and positions; test 9 refuses sentences from no usable dataset on both paths and any word, lemma or sentence text in gold-set scoring; the gold set stays on Dell. Entry-point names are never numbers, so ganit.<name> kinds cannot clash with numbered jobs; unknown names are refused on all three interfaces. No secrets, no outgoing calls chosen by input, no new trust boundary."
+
+[[finding]]
+what = "Later: spec 0026's training route also runs 'the reconstruction comparison' on link reconstruction samples, which are private data built from real links; spec 0066 does not say whether ganit scores it, and if so that it reads only ids and numbers. Spec 0066 could name it once beside the forum gold set. Not made worse by this change."
+fixed = true
+
+[[finding]]
+what = "Later: the input rule says 'with one exception' while the exception now covers training and held-out scoring; and spec 0026's usable data also lists lexicons (WordNet, UniMorph, VADER) that hold no sentences, so 'sentences from the datasets' reads a little loosely. Wording only; no input is let through that should not be."
+fixed = true
+
+[[finding]]
+what = "Later: earlier Later items stand (admitted datasets checked by pinned digest; live call limits and outsider abuse paths such as member-made rings and search-box flooding; word-id reconstruction; schema-based text refusal; per-entry-point input size limits). Not made worse by this change."
+fixed = true

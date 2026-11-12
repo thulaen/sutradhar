@@ -59,9 +59,19 @@ Plain meanings of the names and terms used in Sutradhar.
 | Bahav | Ganit engine name | Distribution drift and recalibration signals |
 | Gati | Ganit engine name | Dynamics, such as attention decay and freshness |
 | Jaal | Ganit engine name | Graph analysis: graph algorithms and graph-based signals |
-| Varnakram | Ganit engine name | Spectral analysis of graphs |
+| Varnakram | Ganit engine name | Spectral methods and linear algebra, such as graph embeddings and embedding whitening |
 | Sannidhya | Ganit engine name | Embedding geometry, such as near-duplicate clusters |
 | Padbandh | Ganit engine name | Phrase statistics, such as generic-anchor detection |
+| Satya | Ganit engine name | Label truth and agreement between judges, moderators and checks |
+| Parivartan | Ganit engine name | Changepoints: when a series of numbers changes its level or trend |
+| Vichalan | Ganit engine name | Anomalies: values far from what is expected |
+| Bhavishya | Ganit engine name | Forecasts with ranges |
+| Anukaran | Ganit engine name | Replay and simulation of past or projected work |
+| Niyantran | Ganit engine name | Feedback controllers that keep a value near its target |
+| Kshamata | Ganit engine name | Cost, memory and capacity models |
+| Chitran | Ganit engine name | Graph layouts for pictures of the link map |
+| Karan | Ganit engine name | Causal effects: whether a change caused a result |
+| Ayu | Ganit engine name | Survival analysis: how long something lasts |
 | darshak | Hindi: "viewer" | Visitor statistics that resist bots |
 | tijori | Hindi: "strongbox" | Keys, signing and the release key guard |
 | hisaab | Hindi: "accounts" | Books and reports |

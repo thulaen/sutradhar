@@ -8,7 +8,7 @@ is tested. How specifications are named and approved is in
 The feature list, features 1 to 1357, is in [features.md](features.md).
 Its section "Which spec designs each feature" names the one home of
 each feature.
-Specifications 0003 to 0057, 0061 and 0063 are rewritten from the
+Specifications 0003 to 0057, 0061, 0063 and 0066 are rewritten from the
 private archive `archive-2026-11-08-old-repo` on Dell; the table below
 names each one's source files. Specifications 0001, 0002, 0058 to
 0060, 0062, 0064, 0065, 0067, 0068, 0069, 0070 and 0071 were written
@@ -81,6 +81,7 @@ fresh.
 | [0063](0063-autoissues.md) | autoissues, the fault tracker | Later (task #23) | `autoissues/*.md` |
 | [0064](0064-v1-qualification.md) | Version 1 scope and qualification | Phase 6; Phase 7 item 1 | written fresh |
 | [0065](0065-tijori.md) | tijori's signing core | Phase 2 item 8; Phase 3 item 8; Phase 5 items 1 and 5; Phase 7 items 1 and 3 | written fresh, using the archive's ADR-0050 |
+| [0066](0066-ganit.md) | ganit, the shared maths engine | Phase 5 item 4 | the archive's `docs/dev/ganit.md` to `ganit-5.md` |
 | [0067](0067-method-chains.md) | Method chains | Phase 7 item 1 | written fresh |
 | [0068](0068-chain-shapes-ranking-graph.md) | Chain shapes for link ranking and graph relevance | Phase 7 item 1 | written fresh |
 | [0069](0069-wide-link-ranking.md) | Wide link ranking shape | Phase 7 item 1 | written fresh |

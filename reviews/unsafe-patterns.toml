@@ -1,5 +1,9 @@
 skill = "unsafe-patterns"
-change = "sha256:5c404f867f2686531b74d68c9c466d9f0c6e21cb060c004faa51975b6899a527"
+change = "sha256:cae0eb7ca370a896f857981e1e42a03d06e51f40701de55b9c11fadbb1963c3f"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged AGENTS.md section 3 change: release gate items 1, 2 and 5 fall to 32,000 and item 4 to 3,200, matching the owner's decision, with the 80% share unchanged. Searched the staged docs, crates, gate and skills for the old floor numbers and found none left; specs 0055, 0064 and 0067 to 0071 refer to the floor without restating it, and spec 0071's worked id count stays above the new floor. Docs only, so no overflow, lock, resource or input-limit pattern applies; lowering the floors is the owner's recorded decision, not a check weakened to make it pass."
+summary = "Read the staged docs-only change for spec 0066 round 6 (the widened input rule, test 9, the entry-point naming rule, test 5's empty graph and the spec 0026 CoNLL-U and training route edits) for patterns tools miss: inputs trusted from outside, unknown names, unbounded inputs, silent defaults and weakened tests. Unknown job numbers and entry-point names are refused on all three interfaces, entry-point names cannot clash with numbered jobs, NaN and out-of-range outputs are refused with the last good one kept, the empty graph has a defined empty result, and the widened input rule is bounded to spec 0026's usable data with post text and forum gold-set words still kept out; no test was weakened."
+
+[[finding]]
+what = "Later: test 9's refusal of 'any sentence from no dataset in spec 0026's usable data' (docs/specs/0066-ganit.md, input rule and test 9) needs a stated check of provenance, such as a pinned digest per admitted dataset file, so a caller cannot simply label a sentence as coming from a usable dataset; already recorded in round 3's Later items, not made worse here."
+fixed = true

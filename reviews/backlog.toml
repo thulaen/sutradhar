@@ -1,5 +1,13 @@
 skill = "backlog"
-change = "sha256:5c404f867f2686531b74d68c9c466d9f0c6e21cb060c004faa51975b6899a527"
+change = "sha256:cae0eb7ca370a896f857981e1e42a03d06e51f40701de55b9c11fadbb1963c3f"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged AGENTS.md section 3 diff, Forgejo task 64 and the owner decision in comment 3029. The four numbers match the decision exactly (32,000 for methods, capabilities and checked variants; 3,200 for ranking; 80% share unchanged), appear only in AGENTS.md, and no other line changes. Searched docs, crates and skills for the old floors: none remain (crates/pankti/src/space.rs divides bytes by 1_000_000_000 for gigabytes, unrelated). Specs 0055, 0064 and 0067 to 0071 refer to the floor by section only; 0071's bound of 23,222,707,200 ids stays above the new floor and nothing claims a run cannot reach it. No status or date claims, no scope creep."
+summary = "Round 6. Read the staged diff (new spec 0066; edits to specs 0013, 0026, 0027, 0049, the specs README and the glossary) against Forgejo task #32 (Phase 5 item 4, open, milestone Phase 5: Core, title 'jobs 1 to 354 and named entry points'). The change stays inside the task: one home for ganit plus the job 49, 258 and 218 fixes the owner's brief named, and nothing else. The widened input rule in spec 0066 (training and held-out scoring on admitted test sets read only sentences from spec 0026's usable data) covers every set spec 0026 trains or scores on (UD English-EWT, GUM's admitted genres, WikiNER, Few-NERD, LitBank), while post text, names from posts, search terms and tagged copies of real posts stay out, and the forum gold set still reaches ganit only as ids and positions; test 9 and spec 0026's CoNLL-U section and training route say the same. No added line passes 80 characters outside tables; no status or date claims."
+
+[[finding]]
+what = "Later: docs/specs/0066-ganit.md test 9 checks that a sentence comes from a dataset in spec 0026's usable data; how the check knows (for example the dataset hashes in models.lock's data section) belongs with the language layer's build task."
+fixed = true
+
+[[finding]]
+what = "Later: Forgejo task #32's body still says 353 jobs while its title and spec 0066 say 1 to 354; tidy the task text when the task is next touched."
+fixed = true

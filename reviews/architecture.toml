@@ -1,5 +1,21 @@
 skill = "architecture"
-change = "sha256:5c404f867f2686531b74d68c9c466d9f0c6e21cb060c004faa51975b6899a527"
+change = "sha256:cae0eb7ca370a896f857981e1e42a03d06e51f40701de55b9c11fadbb1963c3f"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged AGENTS.md section 3 change (release gate items 1, 2, 4 and 5 lowered to 32,000, 32,000, 3,200 and 32,000, matching the owner's decision on task 64) and searched the staged docs, crates, skills and gate for the old floor numbers. The numbers live only in AGENTS.md; specs 0055, 0064 and 0067 to 0071 refer to the floor without restating it, and their paper bounds and refusal sentences stay true at the smaller floors. No module, wiring or data-shape change is involved."
+summary = "Round 6: read the staged diff (specs 0066, 0026, 0027, 0013, 0049, the specs README and the glossary) and checked the widened input rule against every dataset spec 0026 trains or scores on. Training and held-out scoring read only sentences from spec 0026's usable data (EWT, GUM genres, WikiNER, LitBank, Few-NERD), which covers EWT test, Few-NERD test and LitBank evaluation; the forum gold set reaches ganit only as ids and positions, which covers UPOS accuracy, noun-phrase and entity F1, LAS and UAS; real posts never reach ganit. Spec 0066 points to spec 0026's list rather than copying it, so there is one home for the data list. Test 9 now checks both entry points. The live module, batch runner and Dell program interface keep one public interface wired at the composition root; ganit stays apart from GanitEvolve and its callers; jobs 49, 218 and 258 agree across the staged docs; the glossary rows match spec 0066."
+
+[[finding]]
+what = "Fixed: docs/specs/0066-ganit.md:293-301 and test 9 (lines 438-443) now cover held-out scoring on admitted test sets as well as training, and name spec 0026's usable data, so Few-NERD test and LitBank evaluation are no longer outside the rule."
+fixed = true
+
+[[finding]]
+what = "Fixed: docs/specs/0026-text-engine.md:724-730, the CoNLL-U section now limits the exchange with ganit to sentences from the usable data and says the forum gold set reaches ganit only as ids and positions."
+fixed = true
+
+[[finding]]
+what = "Later: spec 0066 line 299-301 and spec 0026 line 1295-1298 list 'gold and predicted tag ids' for forum gold-set scoring; entity F1 needs entity label ids on each span. Saying 'spans as token ranges with label ids' would make the entity measure plainly covered."
+fixed = true
+
+[[finding]]
+what = "Later: spec 0026 line 1281-1287 says ganit computes held-out measures with paired bootstrap intervals and also says 'statistics only in mulyankan'; whether this scoring is a ganit job or a Mulyankan job could be stated once, when either spec is next edited."
+fixed = true

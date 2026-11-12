@@ -1,5 +1,17 @@
 skill = "defects"
-change = "sha256:5c404f867f2686531b74d68c9c466d9f0c6e21cb060c004faa51975b6899a527"
+change = "sha256:cae0eb7ca370a896f857981e1e42a03d06e51f40701de55b9c11fadbb1963c3f"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged AGENTS.md section 3 hunk: release gate items 1, 2 and 5 now say 32,000 and item 4 says 3,200 (100,000,000 scaled by the same factor), matching the owner's decision; the 80% share is unchanged. Searched the staged docs/, crates/, gate/ and .claude/ for the old numbers and 'billion'; none remain as floors. Specs 0055, 0064 and 0067 to 0071 refer to the floor without restating it, and their paper bounds (for example 23,222,707,200 variant ids in 0071) stay true at the smaller floors. No code parses the floors, and no status claim was added."
+summary = "Read the staged diff of specs 0066, 0026, 0027, 0013, 0049, the glossary and the specs README in full. Checked the widened input rule and test 9 against every dataset spec 0026 trains or scores on (usable data list, stage 1 measures, names, stage 2b, stage 3a, training route), the CoNLL-U and forum gold-set wording in 0026 against 0066, the job 49, 258 and 218 fixes across all staged docs, the 23 glossary engine rows against 0066, and line lengths."
+
+[[finding]]
+what = "Round 5 finding on test 9 is fixed: docs/specs/0066-ganit.md test 9 now makes both the training entry point and held-out scoring on admitted test sets refuse any sentence from no dataset in spec 0026's usable data, matching the input rule at lines 294 to 302."
+fixed = true
+
+[[finding]]
+what = "Later: docs/specs/0066-ganit.md lines 296 to 298 let the language layer's training read only sentences from spec 0026's usable data, but that list also holds word lists that are not sentences (Open English WordNet, UniMorph English, VADER's lexicon), and spec 0026's model file, written by ganit, carries a lemma_lexicon whose source spec 0026 never names. If ganit builds that lexicon from WordNet or UniMorph, the rule should say 'sentences and word-list entries'. Not a contradiction today because spec 0026 does not say ganit reads those lists."
+fixed = true
+
+[[finding]]
+what = "Later: spec 0026 stage 3b scores tone on a staff-labelled forum set with agreement (kappa), which is neither the forum gold set nor usable data. Kappa on labels is ids and numbers under 0066's general rule, but neither spec says that set reaches ganit only as labels and ids; say so once if stage 3b is approved."
+fixed = true

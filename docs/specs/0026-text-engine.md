@@ -722,9 +722,12 @@ shodhan reads the exported model and computes no statistics.
 ### CoNLL-U and the model file
 
 - CoNLL-U (ten tab-separated columns, `#` comments, blank line after
-  each sentence) is the exchange with ganit. `conllu::read` keeps
-  comments, multiword ranges (`1-2`) and empty words (`1.1`), and
-  refuses a word line without ten columns or a numeric ID (SUT-431).
+  each sentence) is the exchange with ganit for sentences from the
+  usable data below only; annotations of real posts never reach ganit
+  as CoNLL-U, and the forum gold set reaches it only as ids and
+  positions (spec 0066). `conllu::read` keeps comments, multiword
+  ranges (`1-2`) and empty words (`1.1`), and refuses a word line
+  without ten columns or a numeric ID (SUT-431).
   `conllu::retag` replaces LEMMA and UPOS, keeping everything else.
   `conllu::from_annotation` writes `# sent_id`, `# text` and
   `SpaceAfter=No`; HEAD and DEPREL stay `_` until stage 2.
@@ -1289,7 +1292,10 @@ Starred (★) cases block any release they touch.
   recording data hashes and commit; exports the model and a parity
   set (shodhan must pick the same tags on every sentence, scores within
   a tolerance set by research); shodhan retags held-out data and ganit
-  scores it; the reconstruction comparison runs; the winner is pinned
+  scores it, reading the forum gold set only as token positions, gold
+  and predicted tag ids, spans as token ranges and arcs as head
+  positions with relation ids, never a word, lemma or sentence text
+  (spec 0066); the reconstruction comparison runs; the winner is pinned
   in `models.lock`, and passing rivals stay selectable.
 
 ## Changes from the source
