@@ -7,9 +7,3 @@ image = "forgejo"
 id = "CVE-2026-4738"
 task = 130
 until = "2026-12-09"
-
-[[hole]]
-image = "ubuntu-image"
-id = "CVE-2026-109518"
-task = 130
-until = "2026-12-09"

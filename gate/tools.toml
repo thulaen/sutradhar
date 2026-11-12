@@ -50,7 +50,7 @@ name = "ubuntu-image"
 version = "26.04"
 source = "docker.io/library/ubuntu:26.04 (official image)"
 image = "docker.io/library/ubuntu"
-digest = "sha256:6a06111c3b0a8600feadb270aec771dc239bf407b25625f93f44ab00e11f4d3c"
+digest = "sha256:0d5255be560e2d2ddcfbfda88549e9e815ef29e7cd7fc62183d5709e6e2963c6"
 note = "the container each runner job starts from"
 
 [[tool]]

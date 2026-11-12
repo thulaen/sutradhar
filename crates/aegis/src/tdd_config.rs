@@ -10,6 +10,9 @@ use crate::tools_list::is_hex64;
 #[path = "tdd_digest.rs"]
 mod digest;
 
+#[path = "tdd_image_data.rs"]
+mod image_data;
+
 const DIGEST_SEPARATOR: &str = "@sha256:";
 
 #[derive(PartialEq)]
@@ -26,9 +29,15 @@ pub(super) fn data_only(
     if kind_of(path, TypeScript::Off) != Some(Kind::Config) {
         return false;
     }
+    if path == crate::images::allowed::PATH {
+        return read(path).is_some_and(|(before, after)| {
+            image_data::removed_holes(&before, &after)
+        });
+    }
     let normalise: fn(&str) -> Option<Data> = match path {
         crate::tools_list::PATH => tools,
         crate::sbom::PATH => sbom,
+        "deploy/runner/config.yml" => image_data::runner,
         _ if (path.starts_with("docker/") || path.starts_with("deploy/"))
             && (path.ends_with("/compose.yaml")
                 || path.ends_with("/compose.yml")) =>

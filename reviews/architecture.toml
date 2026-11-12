@@ -1,47 +1,5 @@
 skill = "architecture"
-change = "sha256:37f83808112d0105833cccc635aba6645d86c8385476de933b8f381461f740e7"
+change = "sha256:9b1c852a47478e1e12e051f29688fa9176cfaa3d99457fe34e0d32fcde50ac9e"
 verdict = "pass"
 agent = "codex"
-summary = """
-Independent reviewer combined_architecture reviewed the complete combined
-change against parent 2cf61476708de82b110791b25fffc85c5f4ff62e, not merely
-the three image lines. Read the architecture skill, retained-tool rules,
-TDD reader and normalisers, digest scan, command and push wiring, bounded
-YAML and Git readers, integration and race fixtures, image configuration,
-and preserved failing-first, workspace and scan evidence. Independently
-matched this fingerprint and confirmed the source and image bytes equal
-the previously tested final tree. No new tests were run by this reviewer.
-
-This repairs an existing operations tool under the Rust migration
-exception; Boot product wiring does not apply. Git evidence, recognised
-configuration shapes and digest scanning have clear separate purposes.
-The existing Repo and parsers are reused, with no new dependency, global
-state, service locator, storage layer or speculative extension point.
-Exact immutable blob identities bind mode, size and content; failure to
-read or prove a recognised change retains the named-test requirement.
-Commit-message and per-commit push paths share the same proof. Parsed
-non-image equality and remaining-byte equality both matter: a path-only
-allowance or generic configuration exemption would be simpler but would
-admit executable changes. The narrow normalisers and one digest scan are
-the smallest clear equivalent design found. Responsibilities, readability,
-abstraction and maintenance pass; no dead or duplicated logic is added.
-
-The command-level regression fixtures cover normal and alternate indexes,
-worktree divergence, Unicode, executable modes, path patterns, ambiguous
-data, mixed source and individual history. The dedicated Git wrapper
-exercises an actual index replacement between listing and content read.
-Preserved evidence reports real failing assertions before those repairs
-and the final workspace pass; fresh combined admission checks remain a
-separate gate obligation. This is not a full product end-to-end claim.
-
-The tool registry, deployment and generated inventory use the same
-fetchable Linux amd64 image digest. Ports, resource limits, rootless
-configuration, volumes, scan thresholds and vulnerability exceptions stay
-unchanged. Direct platform pinning does not prove other-host support or
-historical membership in the unavailable original index. Combining the
-repair with this required pin permits the old trusted door to judge one
-named-test change; it neither replaces the door early nor bypasses it.
-Existing image vulnerabilities remain open under task 130. No live
-deployment, remote acceptance or replication is claimed by this review.
-No introduced architecture finding remains.
-"""
+summary = "Reviewer ubuntu130_arch_review: exact staged candidate and final style delta reviewed. Existing bounded parsers reused; runner digest bytes alone may change; ordered exception deletion keeps meaningful bytes. Checked arithmetic and unchanged fixture bytes are clear; simpler semantic-only comparison would weaken evidence."
