@@ -1,5 +1,25 @@
 skill = "architecture"
-change = "sha256:4cb2e55fd732e321863af5c723e88150306eef7c0497cdcd6baeb8dc60a71355"
+change = "sha256:32956f21be4ab1eba42b494838e4bb974538dd6c06c05eac450f54e0dd28a11a"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read pinB-brief.md, pin.diff, the post-change tree, the round-1 and round-3 architecture records, gate/image-holes.toml and scan-7ce1.json, and compared the three changed files with HEAD in the main checkout (read only). The change is three one-line digest swaps (gate/tools.toml, docker/forgejo/compose.yaml, gate/sbom.cdx.json); the new digest sha256:7ce191cc... is the same in all three and the old 26ffa955 appears nowhere in them. No Rust or Go code, Boot module, wiring, setting, event or hook is touched, so Boot conventions do not apply; AGENTS.md 5.7 is met (pinned by digest, tools.toml and compose agree). The scan names only CVE-2026-4738, listed in gate/image-holes.toml for task 130 until 2026-12-09, and a Medium below the bar. The label 15.0-test and the 'rootless' compose comment are byte-identical to HEAD, and no deploy step or backup text is added or removed, so the change neither introduces nor worsens the label or backup items, which stay open on Forgejo #130 comment 3322. Being digest bytes only, it fits the narrow digest-only admission in crates/aegis/src/tdd_config.rs. It adds no option and has no simpler form. I did not rerun aegis sbom or the gate."
+summary = "Round 2. Read the staged crates sutradhar-tijori (purpose, verify, check) and tijori (log, index), the packages.toml, glossary and spec 0065 edits against spec 0065 (signing purposes, checking signatures items 2, 4 and 5, the signature log) and AGENTS.md sections 5.1, 5.7, 6 and 7.3. The crate split holds (no private-key code in sutradhar-tijori; the Trust trait keeps file reading out of the library and now answers digest and key from one copy of the policy; the log is pure with the clock passed in), ed25519-compact fits one job, and the round-1 finding is fixed: a bad purpose field now returns CheckError::BadPurposeField with its real reason and WrongPurpose is only the registry's refusal."
+
+[[finding]]
+what = "Round 1: crates/sutradhar-tijori/src/check.rs mapped every PurposeError to WrongPurpose, hiding the real cause. Fixed: CheckError::BadPurposeField(PurposeError) at check.rs:73 and :149, displayed with the inner reason."
+fixed = true
+
+[[finding]]
+what = "Later: sutradhar-tijori and tijori have no caller and no composition root yet; when the socket and the policy trust source land (#167 later packages; spec 0065 'Checking signatures' item 2 puts the real Trust implementation in sutradhar-tijori) the Trust implementation, Chain::resume and Index::matches must be wired at tijori's start-up, and both crates move onto Boot's error type, health and lifecycle in Phase 3."
+fixed = true
+
+[[finding]]
+what = "Later: gate/packages.toml admits ed25519-compact for the whole workspace, and the crate carries signing code (KeyPair, sign). Spec 0065 says product crates never link key-handling code; add a gate check that only sutradhar-tijori and tijori may depend on ed25519-compact directly."
+fixed = true
+
+[[finding]]
+what = "Later: crates/tijori/src/index.rs Index<K> length-prefixes the whole key only; spec 0065 item 3's principal, purpose and bytes-hash key must be built with each part length-prefixed by one shared encoder (as log.rs push_field does) so two keys cannot collide. Do this when the signature entry is written."
+fixed = true
+
+[[finding]]
+what = "Later: spec 0065 'Checking signatures' item 4 lists 'policy older than the one in force' as a refusal; CheckError has no such variant yet. Add it with the policy trust source, which is where the version comparison lives."
+fixed = true

@@ -1,5 +1,29 @@
 skill = "unsafe-patterns"
-change = "sha256:4cb2e55fd732e321863af5c723e88150306eef7c0497cdcd6baeb8dc60a71355"
+change = "sha256:32956f21be4ab1eba42b494838e4bb974538dd6c06c05eac450f54e0dd28a11a"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read pin.diff and the tree in pin/. The change is three digest-byte swaps (26ffa955... to 7ce191cc...) in gate/tools.toml, docker/forgejo/compose.yaml and gate/sbom.cdx.json; the new digest appears exactly once in each, the old one nowhere in the tree, and the compose image still parses to the same digest. scan-7ce1.json targets exactly that digest and lists only CVE-2026-4738 (critical, zlib, in gate/image-holes.toml for task 130 until 2026-12-09; that file is byte-identical to the main checkout) and GHSA-j6qf-3m9c-vwj3 (medium). No code, error handling, lock, file, input limit or test is touched, so none of the hidden-pattern checks apply, and no check was loosened. Weighed against HEAD: the 15.0-test label and the 'rootless' comment are unchanged from HEAD, and no deploy or backup step is added or removed, so this change neither introduces nor worsens items (a) or (b), which stay open on #130 comment 3322. Limits: I did not run aegis sbom or recompute the fingerprint, and did not query the registry; I rely on the brief's fingerprint and the scan file for those."
+summary = "Round 2. Read every staged line of sutradhar-tijori (purpose, verify, check, tests) and tijori (log, index, tests), plus ed25519-compact 2.6.0's VerifyingState path, and ran both crates' tests (all pass). Checked errors-to-defaults, overflow, check-then-use, unbounded input, trusted outside values and weakened tests. The round 1 blocker is fixed: Trust::lookup returns the digest and the key from one copy, and a reloading-trust test proves one call. The usize-to-u64 unwrap_or(u64::MAX) calls cannot fire on any target Rust supports; strip bounds the input length against the bytes held; counters use checked_add; Index::insert now refuses a counter that does not move forward; tests assert exact error values."
+
+[[finding]]
+what = "crates/sutradhar-tijori/src/check.rs: check-then-use across two Trust calls (digest checked, then key read from a possibly reloaded policy). Fixed in round 2: Trust::lookup returns both from one copy, and a_reload_during_a_check_cannot_mix_two_policies shows the check asks once."
+fixed = true
+
+[[finding]]
+what = "crates/tijori/src/index.rs: Index::insert let latest go backwards. Fixed in round 2: insert refuses a counter not above latest with CounterWentBack and leaves latest and the running hash unchanged, which a test checks."
+fixed = true
+
+[[finding]]
+what = "Later: crates/sutradhar-tijori/src/verify.rs:57. ed25519-compact 2.6.0 uses the cofactored equation ([s]B - [h]A - R of small order) and refuses only small-order keys, not mixed-order ones. Signer-registry admission should refuse a key with a torsion part and spec 0065 should name the equation (already recorded as Later on #167)."
+fixed = true
+
+[[finding]]
+what = "Later: crates/sutradhar-tijori/src/verify.rs:4-5 says a signature whose R has small order is refused. ed25519-compact does refuse it (decode_point_negated maps it to InvalidSignature), but no test in tests/verify.rs signs with a small-order R, so a library swap could drop that refusal unseen. Add a test with R set to a small-order point."
+fixed = true
+
+[[finding]]
+what = "Later: crates/tijori/src/log.rs:209. Chain::append silently uses the previous time when the clock goes back, so a clock jumped far forward then corrected freezes every later entry's time with no signal to the caller. Covered by the clock-bound Later item on #167; the core should report a clock that went back."
+fixed = true
+
+[[finding]]
+what = "Later: no size limit yet on Signed.bytes, Entry.body, index keys or Purpose::new's max_len (taken from the policy). The socket and policy-reading packages of #167 must cap them (already recorded as the request-size-caps Later item)."
+fixed = true

@@ -1,5 +1,13 @@
 skill = "backlog"
-change = "sha256:4cb2e55fd732e321863af5c723e88150306eef7c0497cdcd6baeb8dc60a71355"
+change = "sha256:32956f21be4ab1eba42b494838e4bb974538dd6c06c05eac450f54e0dd28a11a"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read Forgejo #130 (body and all 64 comments by guest GET, newest 3322 of 13 Nov), pin.diff, the pin tree, HEAD's gate/tools.toml and scan-7ce1.json. The change is three one-line digest swaps (gate/tools.toml, docker/forgejo/compose.yaml, gate/sbom.cdx.json), 26ffa955 to 7ce191cc, the same in all three, with the old digest gone from the tree. That is what #130 asks (pin images so pushes can go in again) and nothing more: the version label 15.0-test and the rootless comment are unchanged from HEAD, the live Forgejo is not touched, and gate/image-holes.toml is unchanged. The scan of this exact digest shows only CVE-2026-4738 (critical, already excepted for task 130 until 2026-12-09) and one Medium, so no new idea needs a Later task. The deferred label fix and the backup step are recorded as open on #130 comment 3322 with owner and resume event. #130 is in milestone Phase 1, which is open; zero tasks carry status/ready, so the limit of 10 holds. Note, not a finding: comment 3322's 'Changed' line names a version-label change this digest-only content does not make. The final proof posted on #130 must describe the digest-only change and name the follow-up label change."
+summary = "Round 2. Read the brief, task #167 plan (comments 3481 and 3482, Phase 2 item 8, current phase), AGENTS.md 7.3 and 10, the backlog skill and the staged diff, and compared it with the round 1 scope. The round 2 edits (one-call Trust lookup, BadPurposeField with the real reason, Index::insert refusing a counter that goes back, doc fixes) are fixes to round 1 review findings, so they count as asked. The change is still plan packages 1 to 3 only: the two crates split as spec 0065 says, ed25519-compact admitted with Cargo.lock and SBOM entries from its own manifests, the glossary line, and the spec 0065 edit naming SHA-256. No new public surface beyond what those packages need, no unrelated tidying, no later-package work (socket, sealed keys, policy file, relay, release guards) and no task marked status/ready."
+
+[[finding]]
+what = "Later: the proof posted on #167 after the commit should say ed25519-compact 2.6.0 was admitted instead of ed25519-dalek (named in comment 3481) and why (cargo deny bans on duplicate sha2, digest and syn), and list packages 4 to 6 as still open on the same task."
+fixed = true
+
+[[finding]]
+what = "Later: the round 2 Later list (cofactored equation and mixed-order keys at registry admission, a gate rule limiting ed25519-compact to the two tijori crates, length-prefixed index keys, append before a failed durable write, the policy-older and other-instance refusals, the clock bound, request size caps, allocation-free hashing, borrowing lookups) is to be recorded on #167 after commit. Items that are not part of #167's own later packages should be filed as tasks in Later, not only as a comment, so they are not lost."
+fixed = true

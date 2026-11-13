@@ -74,6 +74,7 @@ Plain meanings of the names and terms used in Sutradhar.
 | Ayu | Ganit engine name | Survival analysis: how long something lasts |
 | darshak | Hindi: "viewer" | Visitor statistics that resist bots |
 | tijori | Hindi: "strongbox" | Keys, signing and the release key guard |
+| sutradhar-tijori | sutradhar + tijori | tijori's check library: the signed-record layout and signature checks, with no private key |
 | hisaab | Hindi: "accounts" | Books and reports |
 | setu | Hindi: "bridge" | The link between the service and the site add-ons |
 | sutra | Hindi: "thread" | The command-line tool |

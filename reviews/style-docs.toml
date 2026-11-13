@@ -1,5 +1,25 @@
 skill = "style-docs"
-change = "sha256:4cb2e55fd732e321863af5c723e88150306eef7c0497cdcd6baeb8dc60a71355"
+change = "sha256:32956f21be4ab1eba42b494838e4bb974538dd6c06c05eac450f54e0dd28a11a"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read pin.diff, the pinned tree, the round-1 and pin3 style-docs records, Forgejo #130 comment 3322, and HEAD plus commits dbb9221 and 1f2a515 for docker/forgejo/compose.yaml and gate/tools.toml. Each of the three files differs from HEAD only in the digest line, and the new digest is identical in all three. The old digest appears nowhere else in the tree, and no doc or spec names either digest. The compose comment ('v15 LTS branch daily (15.0-test), rootless') and version = \"15.0-test\" are unchanged from HEAD. The label was already there before this change: 1f2a515 kept the declared version on purpose and did not prove which child image the old digest held. The new digest is the rootless index of the 15.0-test branch, so the comment is no less true than before. This change neither adds nor worsens the label wording or the missing backup step. Both stay open on #130 comment 3322 with an owner and a resume event, and the label fix will follow in its own change with a test. No new names, comments, settings or status words. Nothing is left open that this change introduced."
+summary = "Round 2. Read every staged line of sutradhar-tijori (lib, purpose, verify, check), tijori (lib, log, index), all five test files, both Cargo.toml files, the glossary row, packages.toml and the spec 0065 edit against AGENTS.md section 6, the style-docs checklist and specs 0064/0065. All three round-1 findings are fixed: the crate doc names purpose, verify and check; BadPurposeField(PurposeError) now carries the purpose-field refusals so WrongPurpose's doc and text are true; the tijori description no longer says 'on Dell'. Names, doc comments, error text and spec wording are plain and match the code."
+
+[[finding]]
+what = "crates/sutradhar-tijori/src/lib.rs:1-4: round-1 finding (crate doc named only the purpose field) is fixed."
+fixed = true
+
+[[finding]]
+what = "crates/sutradhar-tijori/src/check.rs:69-73: round-1 finding (WrongPurpose doc and text untrue for a bad purpose field) is fixed by the BadPurposeField(PurposeError) variant."
+fixed = true
+
+[[finding]]
+what = "crates/tijori/Cargo.toml:4: round-1 finding (description said 'on Dell') is fixed."
+fixed = true
+
+[[finding]]
+what = "Later: crates/sutradhar-tijori/tests/check.rs:83-85: the fake's doc says the purpose check is driven 'with a purpose whose field the test builds by hand below'; since round 2 the tests sign real prefixed bytes with the sign helper, so the comment could say that plainly."
+fixed = true
+
+[[finding]]
+what = "Later: spec 0065 'Checking signatures' item 4 lists a refusal for a policy older than the one in force; CheckError has no such reason yet. It belongs with the policy trust source package of #167, which this slice does not include."
+fixed = true

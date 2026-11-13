@@ -1,5 +1,13 @@
 skill = "defects"
-change = "sha256:4cb2e55fd732e321863af5c723e88150306eef7c0497cdcd6baeb8dc60a71355"
+change = "sha256:32956f21be4ab1eba42b494838e4bb974538dd6c06c05eac450f54e0dd28a11a"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read pin.diff in full and diffed pin/ against a fresh export of HEAD: only the three digest lines differ (compose.yaml, tools.toml, sbom.cdx.json), all carrying the same new digest 7ce191cc..., and the old digest is gone from pin/. Read the TDD data-only proof in crates/aegis/src/tdd_config.rs (tools, sbom and compose normalisers mask only digest bytes), so a digest-only change is admitted without a new test. Read scan-7ce1.json: CVE-2026-4738 (listed in gate/image-holes.toml, task 130, until 2026-12-09) and one Medium. The label 15.0-test beside a rootless comment and the missing pre-deploy backup are both already in HEAD (compose comment and tools.toml version unchanged by this diff); this change neither adds nor worsens them, and they stay open on Forgejo #130 comment 3322 for their own change with a test. No defects introduced by this change."
+summary = "Round 2. Read every staged line of crates/sutradhar-tijori (purpose, verify, check and their tests) and crates/tijori (log, index and their tests), the spec 0065 diff, packages.toml and the Cargo.toml files, against spec 0065 'Signing purposes', 'Checking signatures' and 'The signature log'. Ran cargo test for both crates: all 50 tests pass. All round 1 findings are fixed: Trust is one lookup with a reload test, the WrongPurpose test now signs good runner-result bytes so only the registry can refuse them, BadPurposeField carries the real reason, Index::insert refuses a counter that does not go up, and the crate docs name all three modules. Purpose field encoding, strict checks, refusal order and revoked versus retired match the spec."
+
+[[finding]]
+what = "Later: crates/sutradhar-tijori/tests/check.rs fake() doc says the RFC vector signs an empty message so the purpose check is driven by a field built by hand; the tests now sign with sign(). Reword the comment when the file is next touched."
+fixed = true
+
+[[finding]]
+what = "Later: sutradhar-tijori's own code holds no private-key code, but it links ed25519-compact, whose KeyPair and SecretKey::sign are public API. Spec 0065 'Instances' item 4 says product crates never link key-handling code. Decide with the gate rule limiting ed25519-compact to the two tijori crates whether a verify-only use is enforced (for example a lint or a check that sutradhar-tijori's src never names KeyPair, SecretKey or Seed)."
+fixed = true

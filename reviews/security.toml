@@ -1,5 +1,29 @@
 skill = "security"
-change = "sha256:4cb2e55fd732e321863af5c723e88150306eef7c0497cdcd6baeb8dc60a71355"
+change = "sha256:32956f21be4ab1eba42b494838e4bb974538dd6c06c05eac450f54e0dd28a11a"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read pin.diff and the pin tree. The change swaps only digest bytes on three lines (gate/tools.toml, docker/forgejo/compose.yaml, gate/sbom.cdx.json). The new digest 7ce191cc... is the same in all three, and the old 26ffa955... appears nowhere in the tree. I queried the registry again today with an anonymous pull token: the new digest returns 200, the old one returns 404, and the 15.0-test-rootless tag resolves to exactly 7ce191cc.... scan-7ce1.json (Grype 0.121.0, target is this digest) lists only CVE-2026-4738 (critical, zlib, already in gate/image-holes.toml under task 130 until 2026-12-09) and GHSA-j6qf-3m9c-vwj3 (medium). The change touches no untrusted input, secret, code path, library or check. The version label 15.0-test and the 'rootless' comment are word for word the same as HEAD (checked with git show HEAD), so this change neither adds nor worsens (a). It does not touch the deploy path or the backup steps, so (b) is not made worse either. Both stay open on #130 comment 3322. The commit changes no live service (AGENTS.md 11), and a pin change loosens no check, so 7.2 needs no signature."
+summary = "Round 2. Read every staged line of sutradhar-tijori (purpose, verify, check) and tijori (log, index), the check tests, Cargo.toml files, Cargo.lock, gate/packages.toml and the spec 0065 edit, against spec 0065 'Checking signatures' and 'The signature log'. Traced the untrusted inputs (key id, signed bytes, signature, purpose length prefix): Trust::lookup now returns digest and key from one copy, so a reload cannot mix policies; strip bounds the u64 length before slicing and its error carries only the expected purpose, never attacker bytes; revoked and wrong-purpose keys are refused before the signature; no input reaches a path, shell, log or outgoing call. Re-read ed25519-compact 2.6.0: VerifyingState::new refuses non-canonical S and non-canonical or small-order A and R, so verify_strict meets item 5. No secrets beyond the public RFC 8032 test seed, no private-key code in sutradhar-tijori's src, no home-made crypto; ed25519-compact is MIT, from crates.io, default features off, no required dependencies."
+
+[[finding]]
+what = "Later: ed25519-compact's final check is ([s]B - [h]A - R) has small order, the cofactored equation, so a key with a torsion part can verify a signature the cofactorless equation refuses. Refuse keys with a torsion part at registry admission and name the equation in spec 0065 (already listed as Later on #167)."
+fixed = true
+
+[[finding]]
+what = "Later: crates/tijori/src/log.rs Chain::append clamps a clock that went back to the previous entry's time but has no stop when the clock is behind the log by more than the policy's bound (spec 0065 'The signature log' item 2); it needs the policy bound a later package reads."
+fixed = true
+
+[[finding]]
+what = "Later: crates/sutradhar-tijori/src/check.rs has no 'policy older than the one in force' refusal and the Trust trait does not yet refuse a policy naming another instance (spec 0065 'Checking signatures' items 3 and 4). Both belong to the policy trust source, a later package; give CheckError the older-policy reason then."
+fixed = true
+
+[[finding]]
+what = "Later: crates/sutradhar-tijori/tests/verify.rs tests only the identity point as a small-order key. Add an order-8 public key and a small-order R in an otherwise valid signature, so a library swap that drops either check fails a test."
+fixed = true
+
+[[finding]]
+what = "Later: crates/tijori/src/index.rs hashes the key bytes as given; the principal, purpose and bytes-hash key must be built from length-prefixed fields so two triples never give the same bytes. Enforce with a key type when the signing path lands."
+fixed = true
+
+[[finding]]
+what = "Later: ed25519-compact carries signing code, so a gate rule should limit it to the two tijori crates, keeping private-key use out of every other crate (already listed as Later on #167)."
+fixed = true

@@ -458,25 +458,25 @@ the owner's approval screen. Everywhere else it signs bytes.
 
 ### The signature log
 
-1. Every signature goes in an append-only log entry. The head is the
-   latest entry's hash with its counter, so changing any earlier entry
-   changes every head after it. Each entry has a kind: `signature`,
-   `release-pending`, `policy-applied`, `policy-record-reset`,
-   `site-key-change`, `site-key-record-reset`, `key-destroyed` or
-   `recovery`. Every entry has the time, kind, counter and previous
-   entry's hash. A `signature` entry also has the caller, purpose, key
-   id, bytes hash, signature and both indexes' running hashes, and for a
-   release-key signature also the version, candidate, manifest digest
-   and ledger digest; a `release-pending` entry the version and manifest
-   digest; a `policy-applied`, `policy-record-reset`, `site-key-change`
-   or `site-key-record-reset` entry the version, digest and, for a
-   reset, the counter it was made against (the service's instance writes
-   the site-key kinds); a `key-destroyed` entry the key id; and a
-   `recovery` entry the step and the owner's signature. Only `signature`
-   entries go in the indexes and the repeat rule, and only signed
-   releases count towards the release limit. The release key's
-   `release-pending` and `signature` entries are the ones copied to
-   GitHub.
+1. Every signature goes in an append-only log entry. Every hash in the
+   log and its indexes is SHA-256. The head is the latest entry's hash
+   with its counter, so changing any earlier entry changes every head
+   after it. Each entry has a kind: `signature`, `release-pending`,
+   `policy-applied`, `policy-record-reset`, `site-key-change`,
+   `site-key-record-reset`, `key-destroyed` or `recovery`. Every entry
+   has the time, kind, counter and previous entry's hash. A `signature`
+   entry also has the caller, purpose, key id, bytes hash, signature and
+   both indexes' running hashes, and for a release-key signature also
+   the version, candidate, manifest digest and ledger digest; a
+   `release-pending` entry the version and manifest digest; a
+   `policy-applied`, `policy-record-reset`, `site-key-change` or
+   `site-key-record-reset` entry the version, digest and, for a reset,
+   the counter it was made against (the service's instance writes the
+   site-key kinds); a `key-destroyed` entry the key id; and a `recovery`
+   entry the step and the owner's signature. Only `signature` entries go
+   in the indexes and the repeat rule, and only signed releases count
+   towards the release limit. The release key's `release-pending` and
+   `signature` entries are the ones copied to GitHub.
 2. The counter is an unsigned 64-bit number that only goes up. When it
    reaches its largest value, signing stops and the owner is told; it
    never wraps round. An entry's time is the later of the clock and the

@@ -122,6 +122,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "ed25519-compact"
+version = "2.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1454db4f2edb7f0e8fe0c5b375b0c978fc63244cc9f010d160e417eb10139aa8"
+
+[[package]]
 name = "foldhash"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -399,6 +405,13 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "023a211cb3138dbc438680b32560ad89f699977624c9f8dbb95a47d5b4c07dd3"
 
 [[package]]
+name = "sutradhar-tijori"
+version = "0.1.0"
+dependencies = [
+ "ed25519-compact",
+]
+
+[[package]]
 name = "syn"
 version = "3.0.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -427,6 +440,13 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn",
+]
+
+[[package]]
+name = "tijori"
+version = "0.1.0"
+dependencies = [
+ "sha2",
 ]
 
 [[package]]

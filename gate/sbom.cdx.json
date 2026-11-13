@@ -192,6 +192,19 @@
       "version": "0.11.3"
     },
     {
+      "bom-ref": "cargo:ed25519-compact@2.6.0",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "1454db4f2edb7f0e8fe0c5b375b0c978fc63244cc9f010d160e417eb10139aa8"
+        }
+      ],
+      "name": "ed25519-compact",
+      "purl": "pkg:cargo/ed25519-compact@2.6.0",
+      "type": "library",
+      "version": "2.6.0"
+    },
+    {
       "bom-ref": "cargo:foldhash@0.2.0",
       "hashes": [
         {
@@ -589,6 +602,17 @@
       "version": "0.10.1"
     },
     {
+      "bom-ref": "cargo:sutradhar-tijori@0.1.0",
+      "licenses": [
+        {
+          "expression": "AGPL-3.0-or-later"
+        }
+      ],
+      "name": "sutradhar-tijori",
+      "type": "library",
+      "version": "0.1.0"
+    },
+    {
       "bom-ref": "cargo:syn@3.0.9",
       "hashes": [
         {
@@ -626,6 +650,17 @@
       "purl": "pkg:cargo/thiserror@2.0.21",
       "type": "library",
       "version": "2.0.21"
+    },
+    {
+      "bom-ref": "cargo:tijori@0.1.0",
+      "licenses": [
+        {
+          "expression": "AGPL-3.0-or-later"
+        }
+      ],
+      "name": "tijori",
+      "type": "library",
+      "version": "0.1.0"
     },
     {
       "bom-ref": "cargo:toml@1.2.1+spec-1.1.0",
@@ -991,6 +1026,10 @@
     },
     {
       "dependsOn": [],
+      "ref": "cargo:ed25519-compact@2.6.0"
+    },
+    {
+      "dependsOn": [],
       "ref": "cargo:foldhash@0.2.0"
     },
     {
@@ -1191,6 +1230,12 @@
     },
     {
       "dependsOn": [
+        "cargo:ed25519-compact@2.6.0"
+      ],
+      "ref": "cargo:sutradhar-tijori@0.1.0"
+    },
+    {
+      "dependsOn": [
         "cargo:proc-macro2@1.0.107",
         "cargo:quote@1.0.47",
         "cargo:unicode-ident@1.0.27"
@@ -1210,6 +1255,12 @@
         "cargo:thiserror-impl@2.0.21"
       ],
       "ref": "cargo:thiserror@2.0.21"
+    },
+    {
+      "dependsOn": [
+        "cargo:sha2@0.11.1"
+      ],
+      "ref": "cargo:tijori@0.1.0"
     },
     {
       "dependsOn": [
@@ -1268,6 +1319,8 @@
         "cargo:forge-sync@0.1.0",
         "cargo:nirikshak@0.1.0",
         "cargo:pankti@0.1.0",
+        "cargo:sutradhar-tijori@0.1.0",
+        "cargo:tijori@0.1.0",
         "tool:cargo-deny@0.20.2",
         "tool:cargo-machete@0.9.2",
         "tool:forgejo-runner@13.2.1",

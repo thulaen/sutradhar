@@ -40,3 +40,7 @@ job = "running rules written in Rego"
 [[package]]
 name = "proptest"
 job = "property and fuzz tests with random inputs"
+
+[[package]]
+name = "ed25519-compact"
+job = "Ed25519 signatures with strict checks, for tijori's signing core"

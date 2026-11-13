@@ -1,5 +1,17 @@
 skill = "fast-performance"
-change = "sha256:4cb2e55fd732e321863af5c723e88150306eef7c0497cdcd6baeb8dc60a71355"
+change = "sha256:32956f21be4ab1eba42b494838e4bb974538dd6c06c05eac450f54e0dd28a11a"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read pin.diff and compared the pin tree against HEAD for docker/forgejo/compose.yaml, gate/tools.toml and gate/sbom.cdx.json: each differs from HEAD only in the digest bytes 26ffa955... to 7ce191cc..., the new digest is the same in all three, and the old one appears nowhere in the pin tree. No code, loops, request paths, caches, queues, blocking calls or text handling change, so there is no hot path and nothing to measure. The label and the backup issue, (a) and (b), are already in HEAD and this change does not touch them or affect performance. The only runtime effect is which image the next Forgejo start pulls: the same 15.0-test rootless line, with the compose mem_limit unchanged. The new image's speed and memory were not measured."
+summary = "Read every staged source file in sutradhar-tijori (purpose, verify, check) and tijori (log, index) again after the round 2 fixes, for per-check and per-entry work, allocations, copies and unbounded growth. The one-call Trust::lookup asks the trust source once per check, check still refuses cheap faults (policy, key, registry purpose, purpose field) before the Ed25519 check, strip borrows, Index::insert's new counter check is one compare before any work, and no call blocks or cuts text. Only small allocation costs and a later memory question remain, all already recorded as Later on #167."
+
+[[finding]]
+what = "Later: crates/tijori/src/log.rs:113-115 Entry::hash builds the whole encoding in a fresh Vec with no capacity and then hashes it, once per entry in log::check over a whole log; crates/tijori/src/index.rs:63-68 Index::insert does the same per insert, which an index rebuild repeats per signature entry. Feeding each length prefix and field straight into Sha256::update gives the same digest with no allocation (recorded on #167 as allocation-free hashing)."
+fixed = true
+
+[[finding]]
+what = "Later: crates/sutradhar-tijori/src/check.rs:24 and 96-106 Trust::lookup returns an owned KeyEntry (principal, the whole purposes map and every scope string) on every check, and check then clones the scopes again although it owns the entry; key.purposes.remove(purpose.as_str()) would drop the second copy. When the real policy trust source lands, a borrowing lookup lets a check copy only the one purpose's scopes (recorded on #167 as borrowing lookups)."
+fixed = true
+
+[[finding]]
+what = "Later: crates/tijori/src/index.rs:28-32 Index keeps every key in an in-memory HashMap that grows with every signature for the life of the log, with no limit. When the durable index (spec 0065 'The signature log' item 3) lands in a later package of #167, decide whether the core keeps the whole index in memory and measure its size against the core's memory limit, as spec 0065 asks."
+fixed = true
