@@ -1,21 +1,17 @@
 skill = "red-team"
-change = "sha256:32956f21be4ab1eba42b494838e4bb974538dd6c06c05eac450f54e0dd28a11a"
+change = "sha256:8928b8fd536c48463296c871512ed8f4521ca8cfdfc7ffb66ebae4f24135fd5f"
 verdict = "pass"
 agent = "claude subagent"
-summary = """Round 2. Three red agents with fresh context, each given the staged diff, a scratch copy of the staged index and one goal: break it (empty, huge, malformed and overflowing inputs to purpose, verify, check, log and index), get round it (a wrong purpose, a revoked or unknown key, a policy not in force, a trust source that reloads between calls, non-canonical or malleable signatures, R + torsion, a tampered or reordered log, a reordered or falling index), and abuse it (an outsider who controls bytes, keys, logs, the trust source or the dependency; supply chain and the no-private-key rule). Each ran its claims as tests in its own copy. I checked each report against the staged code and specs 0064 and 0065. No bypass held: the one-call Trust lookup cannot mix two policies; truncated, impossible and other-purpose fields return BadPurposeField; WrongPurpose is only the registry's refusal; non-canonical keys, R and S and small-order keys are refused; revoked keys fail and retired keys pass; Index::insert refuses an equal, lower or zero counter and leaves the hash unchanged; the log refuses gaps, repeats, broken links, time going back and counter wrap; the ed25519-compact 2.6.0 lock checksum and SBOM hash match the cached crate (MIT, no build script, no dependencies). The mixed-order key acceptance the break agent reported is the cofactored-equation item already recorded as Later on #167. Remaining gaps are later work, below."""
+summary = "Three red agents attacked crates/sutradhar-tijori/src/policy.rs against spec 0065 Checking signatures item 3: break it (empty, cut-short, u64::MAX versions and length prefixes, weak keys), get round it (non-canonical S, purpose prefix confusion such as policy-change-x, rollback, same-version byte swap, cross-purpose signature reuse) and abuse it (eleven code mutations, every one caught by the tests). No unsigned, rolled-back or swapped policy was accepted; the check order matches the spec."
 
 [[finding]]
-what = "Later: crates/sutradhar-tijori/src/verify.rs verify_strict accepts signatures under a key A = aB + T (T of order 8) that a cofactorless verifier refuses (break agent: 26 of 32 messages). Only the key holder can make them. Already recorded on #167: refuse keys with a torsion part at registry admission and name the equation in spec 0065."
+what = "Later: accept takes any newer owner-signed version without checking the previous-policy digest the spec requires (spec 0065 test list: N+2 built on a held-back N+1 must be refused); Policy has no field for it. Already a Later item on #167; the accept doc could name it so callers do not think rollback is fully handled."
 fixed = true
 
 [[finding]]
-what = "Later: crates/tijori/src/log.rs:174 Chain::resume takes any Head, including counter 0 with a non-zero hash; the next append then makes an entry that log::check refuses as BrokenChain. Fail-closed caller misuse; when the start-up path is built, resume should take only a head that log::check returned and that matches the confirmed head."
+what = "Later: at the same version with a matching digest, accept returns Ok without checking the signature (an all-zero signature passes). Safe while the record digest only comes from a signature-checked accept; if an owner reset ever writes a digest, the per-load owner-signature re-check (Later on #167) must cover it. A one-line doc note on accept would make it explicit."
 fixed = true
 
 [[finding]]
-what = "Later: crates/sutradhar-tijori/src/check.rs has no separate refusal for a policy older than the one in force (spec 0065 'Checking signatures' item 4); it reports PolicyNotInForce. And check always strips a purpose field, so site-message bytes (no field) are refused. Both fail closed and are already recorded on #167 for the policy-reading and site-message packages."
-fixed = true
-
-[[finding]]
-what = "Later: crates/tijori/src/index.rs hashes caller-built keys; tests join fields with '|', so a future caller that does the same with names containing '|' could make two (principal, purpose, hash) triples collide. Already recorded on #167 as length-prefixed index keys; also add a loader check of stored contents against the running hash when the index is read from disk."
+what = "Later: PolicyTrust::new takes any digest and registry and lookup always returns Some, so nothing ties it to an accepted Record or lets it refuse checks; already a Later item on #167."
 fixed = true

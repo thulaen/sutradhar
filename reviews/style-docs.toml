@@ -1,25 +1,13 @@
 skill = "style-docs"
-change = "sha256:32956f21be4ab1eba42b494838e4bb974538dd6c06c05eac450f54e0dd28a11a"
+change = "sha256:8928b8fd536c48463296c871512ed8f4521ca8cfdfc7ffb66ebae4f24135fd5f"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 2. Read every staged line of sutradhar-tijori (lib, purpose, verify, check), tijori (lib, log, index), all five test files, both Cargo.toml files, the glossary row, packages.toml and the spec 0065 edit against AGENTS.md section 6, the style-docs checklist and specs 0064/0065. All three round-1 findings are fixed: the crate doc names purpose, verify and check; BadPurposeField(PurposeError) now carries the purpose-field refusals so WrongPurpose's doc and text are true; the tijori description no longer says 'on Dell'. Names, doc comments, error text and spec wording are plain and match the code."
+summary = "Round 2. Read every staged line: sutradhar-tijori src/policy.rs, src/lib.rs, tests/policy.rs, Cargo.toml, Cargo.lock and SBOM lines, against AGENTS.md section 6, the style-docs checklist and spec 0065 'Checking signatures' items 2 to 4. All three round-1 findings are fixed: the purpose field has its own NotPolicyChange error with a true message, NotOwnerSigned means only the signature check, PURPOSE_LEN's doc says what it is for, the strip has a comment, the message test is renamed and lists every variant, and the other-bytes test is explained. Names, doc comments and messages are plain and true."
 
 [[finding]]
-what = "crates/sutradhar-tijori/src/lib.rs:1-4: round-1 finding (crate doc named only the purpose field) is fixed."
+what = "Later: the module doc cites spec 0065 item 2's policy trust source, which item 2 says reads the policy file and record; PolicyTrust holds an already accepted copy and reads nothing. When the file-reading piece of #167 lands, the module doc, PolicyTrust's doc and spec item 2 must describe the same thing. The policy byte encoding is also still unset in spec 0065."
 fixed = true
 
 [[finding]]
-what = "crates/sutradhar-tijori/src/check.rs:69-73: round-1 finding (WrongPurpose doc and text untrue for a bad purpose field) is fixed by the BadPurposeField(PurposeError) variant."
-fixed = true
-
-[[finding]]
-what = "crates/tijori/Cargo.toml:4: round-1 finding (description said 'on Dell') is fixed."
-fixed = true
-
-[[finding]]
-what = "Later: crates/sutradhar-tijori/tests/check.rs:83-85: the fake's doc says the purpose check is driven 'with a purpose whose field the test builds by hand below'; since round 2 the tests sign real prefixed bytes with the sign helper, so the comment could say that plainly."
-fixed = true
-
-[[finding]]
-what = "Later: spec 0065 'Checking signatures' item 4 lists a refusal for a policy older than the one in force; CheckError has no such reason yet. It belongs with the policy trust source package of #167, which this slice does not include."
+what = "Later: crates/sutradhar-tijori/tests/policy.rs:225 names sutradhar_tijori::verify::VerifyError by full path while every other type is imported at the top; import it with the others when the file is next touched."
 fixed = true

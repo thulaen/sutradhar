@@ -1,29 +1,17 @@
 skill = "security"
-change = "sha256:32956f21be4ab1eba42b494838e4bb974538dd6c06c05eac450f54e0dd28a11a"
+change = "sha256:8928b8fd536c48463296c871512ed8f4521ca8cfdfc7ffb66ebae4f24135fd5f"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 2. Read every staged line of sutradhar-tijori (purpose, verify, check) and tijori (log, index), the check tests, Cargo.toml files, Cargo.lock, gate/packages.toml and the spec 0065 edit, against spec 0065 'Checking signatures' and 'The signature log'. Traced the untrusted inputs (key id, signed bytes, signature, purpose length prefix): Trust::lookup now returns digest and key from one copy, so a reload cannot mix policies; strip bounds the u64 length before slicing and its error carries only the expected purpose, never attacker bytes; revoked and wrong-purpose keys are refused before the signature; no input reaches a path, shell, log or outgoing call. Re-read ed25519-compact 2.6.0: VerifyingState::new refuses non-canonical S and non-canonical or small-order A and R, so verify_strict meets item 5. No secrets beyond the public RFC 8032 test seed, no private-key code in sutradhar-tijori's src, no home-made crypto; ed25519-compact is MIT, from crates.io, default features off, no required dependencies."
+summary = "Read the staged policy.rs, its tests, lib.rs, Cargo.toml, Cargo.lock and SBOM changes against spec 0065 'Checking signatures' items 2 and 3. Traced the untrusted inputs (policy bytes, signature, caller-decoded instance and version, version record) to accept(): a newer version is accepted only after the policy-change purpose strip and a strict Ed25519 check with the caller's owner key; the same version only on a SHA-256 match with a record that was itself raised after a signed accept or an owner-signed reset; missing record, other instance and older version are refused before any signature work. No secrets, no file or shell use, no home-made crypto; sha2 0.11.1 is already admitted and used by aegis and tijori. Policy tests pass (10)."
 
 [[finding]]
-what = "Later: ed25519-compact's final check is ([s]B - [h]A - R) has small order, the cofactored equation, so a key with a torsion part can verify a signature the cofactorless equation refuses. Refuse keys with a torsion part at registry admission and name the equation in spec 0065 (already listed as Later on #167)."
+what = "Later: crates/sutradhar-tijori/src/policy.rs:62 - accept() trusts the caller-decoded instance and version; a caller that takes them from outside the signed bytes could pass a relabelled policy (another instance's, or a replayed one under a higher version). Contract is documented and pinned by a test; move the decoding into accept() once spec 0065 sets the policy byte encoding (already a Later item on #167)."
 fixed = true
 
 [[finding]]
-what = "Later: crates/tijori/src/log.rs Chain::append clamps a clock that went back to the previous entry's time but has no stop when the clock is behind the log by more than the policy's bound (spec 0065 'The signature log' item 2); it needs the policy bound a later package reads."
+what = "Later: crates/sutradhar-tijori/src/policy.rs:184 - PolicyTrust::new takes any digest and registry, so nothing ties it to a policy that accept() passed. When the tijori trust source is built, construct PolicyTrust only from an accepted policy (already a Later item on #167)."
 fixed = true
 
 [[finding]]
-what = "Later: crates/sutradhar-tijori/src/check.rs has no 'policy older than the one in force' refusal and the Trust trait does not yet refuse a policy naming another instance (spec 0065 'Checking signatures' items 3 and 4). Both belong to the policy trust source, a later package; give CheckError the older-policy reason then."
-fixed = true
-
-[[finding]]
-what = "Later: crates/sutradhar-tijori/tests/verify.rs tests only the identity point as a small-order key. Add an order-8 public key and a small-order R in an otherwise valid signature, so a library swap that drops either check fails a test."
-fixed = true
-
-[[finding]]
-what = "Later: crates/tijori/src/index.rs hashes the key bytes as given; the principal, purpose and bytes-hash key must be built from length-prefixed fields so two triples never give the same bytes. Enforce with a key type when the signing path lands."
-fixed = true
-
-[[finding]]
-what = "Later: ed25519-compact carries signing code, so a gate rule should limit it to the two tijori crates, keeping private-key use out of every other crate (already listed as Later on #167)."
+what = "Later: crates/sutradhar-tijori/src/policy.rs:154 - the same-version path answers from the digest match alone, without re-checking the owner signature. Safe only while the version record has its one writer (tijori, after a signed accept or an owner-signed reset) and is protected from other writers; the record writer and reset piece must keep that, or the load path should re-check the signature (already a Later item on #167)."
 fixed = true

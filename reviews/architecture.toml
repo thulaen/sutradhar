@@ -1,25 +1,13 @@
 skill = "architecture"
-change = "sha256:32956f21be4ab1eba42b494838e4bb974538dd6c06c05eac450f54e0dd28a11a"
+change = "sha256:8928b8fd536c48463296c871512ed8f4521ca8cfdfc7ffb66ebae4f24135fd5f"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 2. Read the staged crates sutradhar-tijori (purpose, verify, check) and tijori (log, index), the packages.toml, glossary and spec 0065 edits against spec 0065 (signing purposes, checking signatures items 2, 4 and 5, the signature log) and AGENTS.md sections 5.1, 5.7, 6 and 7.3. The crate split holds (no private-key code in sutradhar-tijori; the Trust trait keeps file reading out of the library and now answers digest and key from one copy of the policy; the log is pure with the clock passed in), ed25519-compact fits one job, and the round-1 finding is fixed: a bad purpose field now returns CheckError::BadPurposeField with its real reason and WrongPurpose is only the registry's refusal."
+summary = "Round 2. Read the staged policy.rs, its tests, lib.rs, Cargo.toml, Cargo.lock and SBOM changes against spec 0065 'Checking signatures' items 2 and 3 and AGENTS.md sections 5, 6 and 7.3. accept is a pure function in the tijori library's one public API, reads no file and writes no record (the tijori program stays the record's one writer, every trust source only reads), refuses missing record, other instance, older version, same version with other bytes, then a newer version without a policy-change purpose or a strict owner signature, matching item 3; the same-version-same-digest path needs no signature re-check by the spec. The purpose error now carries its PurposeError like check.rs, so the error shape is consistent. sha2 is admitted in gate/packages.toml and pinned as in aegis and tijori. No globals, no hidden wiring, no unused hook. Noted for the Phase 3 move onto Boot."
 
 [[finding]]
-what = "Round 1: crates/sutradhar-tijori/src/check.rs mapped every PurposeError to WrongPurpose, hiding the real cause. Fixed: CheckError::BadPurposeField(PurposeError) at check.rs:73 and :149, displayed with the inner reason."
+what = "Later: crates/sutradhar-tijori/src/policy.rs PolicyTrust::new is public and takes any digest and registry, so nothing ties a PolicyTrust to a policy that accept() passed. When the trust source and the policy encoding land, build PolicyTrust only from accepted bytes (one constructor that runs accept and decodes the registry from the same bytes). Already a Later item on #167."
 fixed = true
 
 [[finding]]
-what = "Later: sutradhar-tijori and tijori have no caller and no composition root yet; when the socket and the policy trust source land (#167 later packages; spec 0065 'Checking signatures' item 2 puts the real Trust implementation in sutradhar-tijori) the Trust implementation, Chain::resume and Index::matches must be wired at tijori's start-up, and both crates move onto Boot's error type, health and lifecycle in Phase 3."
-fixed = true
-
-[[finding]]
-what = "Later: gate/packages.toml admits ed25519-compact for the whole workspace, and the crate carries signing code (KeyPair, sign). Spec 0065 says product crates never link key-handling code; add a gate check that only sutradhar-tijori and tijori may depend on ed25519-compact directly."
-fixed = true
-
-[[finding]]
-what = "Later: crates/tijori/src/index.rs Index<K> length-prefixes the whole key only; spec 0065 item 3's principal, purpose and bytes-hash key must be built with each part length-prefixed by one shared encoder (as log.rs push_field does) so two keys cannot collide. Do this when the signature entry is written."
-fixed = true
-
-[[finding]]
-what = "Later: spec 0065 'Checking signatures' item 4 lists 'policy older than the one in force' as a refusal; CheckError has no such variant yet. Add it with the policy trust source, which is where the version comparison lives."
+what = "Later: crates/sutradhar-tijori/src/policy.rs Policy has public instance and version fields decoded by the caller beside the signed bytes, so a wrong decode accepts a relabelled policy (pinned by the a_mislabelled_policy test). Once spec 0065 sets the policy byte encoding, decode instance and version inside this module from policy.signed and drop the separate fields. Already a Later item on #167."
 fixed = true

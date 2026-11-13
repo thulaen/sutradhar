@@ -1,13 +1,13 @@
 skill = "defects"
-change = "sha256:32956f21be4ab1eba42b494838e4bb974538dd6c06c05eac450f54e0dd28a11a"
+change = "sha256:8928b8fd536c48463296c871512ed8f4521ca8cfdfc7ffb66ebae4f24135fd5f"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 2. Read every staged line of crates/sutradhar-tijori (purpose, verify, check and their tests) and crates/tijori (log, index and their tests), the spec 0065 diff, packages.toml and the Cargo.toml files, against spec 0065 'Signing purposes', 'Checking signatures' and 'The signature log'. Ran cargo test for both crates: all 50 tests pass. All round 1 findings are fixed: Trust is one lookup with a reload test, the WrongPurpose test now signs good runner-result bytes so only the registry can refuse them, BadPurposeField carries the real reason, Index::insert refuses a counter that does not go up, and the crate docs name all three modules. Purpose field encoding, strict checks, refusal order and revoked versus retired match the spec."
+summary = "Round 2. Read every staged line (policy.rs, tests/policy.rs, lib.rs, Cargo.toml, Cargo.lock, SBOM) and the purpose and verify code it calls, against spec 0065 'Checking signatures' item 3. Ran the 10 policy tests: all pass. Both round 1 blockers are fixed: the digest is pinned to SHA-256 of the exact signed bytes, and a bad purpose field is refused as NotPolicyChange with the real reason. accept refuses a missing record first, then another instance, an older version, the same version with other bytes, and a newer version without the policy-change purpose field or a strict owner signature; no path accepts a newer policy the owner did not sign. Accepting the same version with a matching digest without re-checking the signature is right, since only a signed accept or an owner reset writes the record. Removing any one refusal makes its test fail. The purpose length limit (64 here, 32 in tests) does not affect strip."
 
 [[finding]]
-what = "Later: crates/sutradhar-tijori/tests/check.rs fake() doc says the RFC vector signs an empty message so the purpose check is driven by a field built by hand; the tests now sign with sign(). Reword the comment when the file is next touched."
+what = "Later: crates/sutradhar-tijori/tests/policy.rs:231 asserts that a relabelled policy is accepted (Ok(9)), pinning the current caller-decodes contract. When spec 0065 sets the policy byte encoding and decoding moves into accept, flip this test to expect a refusal so it guards the fix instead of the gap."
 fixed = true
 
 [[finding]]
-what = "Later: sutradhar-tijori's own code holds no private-key code, but it links ed25519-compact, whose KeyPair and SecretKey::sign are public API. Spec 0065 'Instances' item 4 says product crates never link key-handling code. Decide with the gate rule limiting ed25519-compact to the two tijori crates whether a verify-only use is enforced (for example a lint or a check that sutradhar-tijori's src never names KeyPair, SecretKey or Seed)."
+what = "Later: crates/sutradhar-tijori/src/policy.rs:161-162: Purpose::new(POLICY_PURPOSE, PURPOSE_LEN) cannot fail for a fixed valid name, so its NotPolicyChange mapping is unreachable. Harmless; when the purpose length comes from the decoded policy, pass that limit instead of the local constant."
 fixed = true

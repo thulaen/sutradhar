@@ -1,29 +1,13 @@
 skill = "unsafe-patterns"
-change = "sha256:32956f21be4ab1eba42b494838e4bb974538dd6c06c05eac450f54e0dd28a11a"
+change = "sha256:8928b8fd536c48463296c871512ed8f4521ca8cfdfc7ffb66ebae4f24135fd5f"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 2. Read every staged line of sutradhar-tijori (purpose, verify, check, tests) and tijori (log, index, tests), plus ed25519-compact 2.6.0's VerifyingState path, and ran both crates' tests (all pass). Checked errors-to-defaults, overflow, check-then-use, unbounded input, trusted outside values and weakened tests. The round 1 blocker is fixed: Trust::lookup returns the digest and the key from one copy, and a reloading-trust test proves one call. The usize-to-u64 unwrap_or(u64::MAX) calls cannot fire on any target Rust supports; strip bounds the input length against the bytes held; counters use checked_add; Index::insert now refuses a counter that does not move forward; tests assert exact error values."
+summary = "Round 2. Read the staged policy.rs, tests/policy.rs, lib.rs, Cargo.toml, Cargo.lock and SBOM against spec 0065 Checking signatures item 3. Checked errors turned into defaults, overflow, check-then-use, trusted outside values, unbounded input and weakened tests. Both round 1 findings are handled: purpose failures now carry the PurposeError, and the instance/version contract is documented on Policy and accept and pinned by a test. accept refuses a missing record, another instance, an older version, the same version with other bytes, a wrong or cut-short purpose and a bad owner signature; the same-version path is safe without a signature re-check because a record digest is only produced after a strict owner check (or an owner-signed reset). Every refusal test fails if its check is removed. No blocking pattern found."
 
 [[finding]]
-what = "crates/sutradhar-tijori/src/check.rs: check-then-use across two Trust calls (digest checked, then key read from a possibly reloaded policy). Fixed in round 2: Trust::lookup returns both from one copy, and a_reload_during_a_check_cannot_mix_two_policies shows the check asks once."
+what = "Later: crates/sutradhar-tijori/src/policy.rs:55-69,127-131 still trusts Policy.instance and Policy.version from the caller; tests/policy.rs:230-244 pins that a relabelled old owner-signed body is accepted at a higher version. Safe only while the caller decodes both from `signed`, which is now documented. When spec 0065 sets the policy encoding, move the decoding into accept and flip that test to expect a refusal."
 fixed = true
 
 [[finding]]
-what = "crates/tijori/src/index.rs: Index::insert let latest go backwards. Fixed in round 2: insert refuses a counter not above latest with CounterWentBack and leaves latest and the running hash unchanged, which a test checks."
-fixed = true
-
-[[finding]]
-what = "Later: crates/sutradhar-tijori/src/verify.rs:57. ed25519-compact 2.6.0 uses the cofactored equation ([s]B - [h]A - R of small order) and refuses only small-order keys, not mixed-order ones. Signer-registry admission should refuse a key with a torsion part and spec 0065 should name the equation (already recorded as Later on #167)."
-fixed = true
-
-[[finding]]
-what = "Later: crates/sutradhar-tijori/src/verify.rs:4-5 says a signature whose R has small order is refused. ed25519-compact does refuse it (decode_point_negated maps it to InvalidSignature), but no test in tests/verify.rs signs with a small-order R, so a library swap could drop that refusal unseen. Add a test with R set to a small-order point."
-fixed = true
-
-[[finding]]
-what = "Later: crates/tijori/src/log.rs:209. Chain::append silently uses the previous time when the clock goes back, so a clock jumped far forward then corrected freezes every later entry's time with no signal to the caller. Covered by the clock-bound Later item on #167; the core should report a clock that went back."
-fixed = true
-
-[[finding]]
-what = "Later: no size limit yet on Signed.bytes, Entry.body, index keys or Purpose::new's max_len (taken from the policy). The socket and policy-reading packages of #167 must cap them (already recorded as the request-size-caps Later item)."
+what = "Later: crates/sutradhar-tijori/src/policy.rs:181-190 PolicyTrust::new takes any digest and registry, not one tied to an accepted Record, so a caller could answer checks from a policy accept never saw. Already a Later item on #167; build PolicyTrust from an accepted policy when the loader lands."
 fixed = true
