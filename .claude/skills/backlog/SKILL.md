@@ -20,7 +20,12 @@ the diff, never the agent that wrote the change (AGENTS.md section 7.1).
 
 1. Read the commit's task in Forgejo and the roadmap item it belongs to.
 2. Check:
-   - the change does what the task asks, and nothing it does not ask;
+   - the change does what the task asks, and nothing it does not ask,
+     such as tidying unrelated code in passing; anything the gate needs
+     before it takes this change counts as asked, such as its review
+     records, the `Cargo.lock` and SBOM entries its own manifest edits
+     need, and the fixes to old code the gate demands (AGENTS.md section
+     6 rule 13);
    - the task is in the current phase, or the owner moved it there;
    - new ideas found on the way are tasks in Later, not in this change;
    - work that belongs to a later roadmap item is a task on that item;

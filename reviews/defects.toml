@@ -1,5 +1,13 @@
 skill = "defects"
-change = "sha256:d246beade545c2ad59f2df92bec2b606025fd006b54c49b0e38ca7cdd6c63fca"
+change = "sha256:bc8008944cfbe83fea019a920755a9d9ffb7b985b46090681c5fa315462dc9e5"
 verdict = "pass"
 agent = "claude"
-summary = "Round 70: read every staged line of 0072 and the staged hunks in 0021, 0026, 0027, 0043, 0051, 0055 and the specs README, against 0022, 0027's method table, doors and explanation, 0051's queue and data, and 0066's jobs 33, 34, 45, 46, 74, 147, 192 and 286. The three round 69 fixes are correct. 0043 now gives the update study the bands and the separate series (Search Console, GA4, darshak) and gives the estimate the series only, as 0072 does. 0021's WordPress Data lead-in matches the WordPress section, where only event rows are pruned. 0072 line 341 reads 'the door's trust signal' and is within 80 characters. Item 6's numbering and shown-before rules, the author-id rules and tests 43 to 48 agree with 0072's order rules and SG01. 0026's wp_quote bullet, property test and SH111 nesting arithmetic agree with 0022's quote flag, 0028's allowance and 0072's RM05. SpamSignal reaches relevance only through the spam risk caution. Traffic reaches ranking only through the trust door, which only freezes. The estimate and content-hint data stay out of the gate, out of methods and away from members, with the 0027 and 0055 check pointers matching 0072's reader rules. No line over 80 characters outside tables, no status claim and no new rule number beyond the existing setting-default pattern."
+summary = "Read every staged line of the architecture, backlog and defects skills (round 10) against the staged AGENTS.md sections 5.1, 6, 7.1, 8, 9 and 10 and the tree. The round 9 point is fixed: step 4 now admits outside-program hooks set up by config, an install script or the folder that program reads, matching .githooks/ and deploy/door/install-hook.sh; the defects test line matches section 6 rule 1 and section 9's 'changes no code'; the backlog exception cites section 6 rule 13 correctly; no line adds a rule AGENTS.md lacks, duplicates another check, or passes 80 characters."
+
+[[finding]]
+what = "Round 9 (architecture step 4): 'through config in the change or the tree' did not cover git hooks wired by folder or the door hook wired by deploy/door/install-hook.sh. Now reads 'where the change or the tree sets it up: by config, an install script or the folder that program reads (such as .githooks/)'."
+fixed = true
+
+[[finding]]
+what = "Later (not made worse by this change): nothing in the tree points git at .githooks/; core.hooksPath is set only in each clone's local git config, so the step's '.githooks/' example relies on a setup step the tree does not record. A setup script or doc step that sets core.hooksPath would close it."
+fixed = true

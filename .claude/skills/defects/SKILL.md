@@ -25,7 +25,10 @@ the diff, never the agent that wrote the change (AGENTS.md section 7.1).
    - behaviour the task did not ask for, or that the docs do not match;
    - a test that would still pass if the change were wrong;
    - names, comments and docs that mislead;
-   - code that repeats code elsewhere, or does two jobs in one place.
+   - code that repeats code elsewhere, or does two jobs in one place;
+   - a code change without a test in the diff that fails without the
+     change (AGENTS.md section 6 rule 1); a change to no code, such as
+     docs only, needs none (section 9).
 3. Report each problem with its place. The agent that wrote the change
    fixes it, or says why it is not one, and this review runs again on
    the new content.

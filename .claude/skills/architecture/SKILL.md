@@ -59,8 +59,24 @@ the diff, never the agent that wrote the change (AGENTS.md section 7.1).
    move to Go under ADR-0017 (AGENTS.md section 4). They are held to
    AGENTS.md sections 4, 5.2 (for a tool's own store) and 6, not to
    Boot's conventions.
-4. Look for a simpler design that does the same job with less code.
-5. Report each problem with its place. The agent that wrote the change
+4. Nothing for "maybe one day" (AGENTS.md section 6 rule 7, section 8
+   step 6 and section 10 rule 2). Every setting, option or hook the
+   change adds to what we ship (the product and our tools, not their
+   tests) is read or called by other shipped code, or by the outside
+   program it is written for (such as git, Forgejo, Claude Code or
+   systemd) where the change or the tree sets it up: by config, an
+   install script or the folder that program reads (such as
+   `.githooks/`). It must also serve the task, or a spec in the tree
+   that the task names. A hook compiled only into tests, such as a
+   failure-injection hook under `cfg(test)`, in `tests/` or behind a
+   dev-dependency (section 6 rule 5), is outside this step; one present
+   in what we ship is not. What section 5.1 asks of every part, such as
+   its health and readiness checks, and every limit, check or error path
+   on input the change handles, counts as serving the task. A new
+   setting, option or hook beyond those, including one to tune or switch
+   off such a limit or check, must serve the task on its own.
+5. Look for a simpler design that does the same job with less code.
+6. Report each problem with its place. The agent that wrote the change
    fixes it, or says why it is not one, and this review runs again on
    the new content. Pass only when nothing is left open.
 
