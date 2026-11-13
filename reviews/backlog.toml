@@ -1,9 +1,29 @@
 skill = "backlog"
-change = "sha256:bc8008944cfbe83fea019a920755a9d9ffb7b985b46090681c5fa315462dc9e5"
+change = "sha256:def82b8ae291cd871baad76420e530a26935df6dffbcac7e22423ee1f3fa8293"
 verdict = "pass"
 agent = "claude"
-summary = "Round 10, staged index only (git diff --cached: the architecture, backlog and defects SKILL.md hunks, no added line over 80 characters), read against staged AGENTS.md sections 6, 7.1, 8, 9, 10 and 12, task #111 (open, Phase 2, status/working), Later task #203 (comments 3283 and 3284) and the Forgejo milestones and labels. Scope: the three hunks still carry only the habits #111 asks for. The round 10 edit touches only architecture step 4: 'through config' becomes 'where the change or the tree sets it up: by config, an install script or the folder that program reads (such as .githooks/)', which matches how the tree wires git hooks and deploy/door/install-hook.sh, and the first sentence is split in two. Neither adds work outside the task nor loosens the demand that each addition serves the task or a spec the task names. Round 9 gaps, including my round 9 Later item on the 'marked next' line, are filed on Later task #203 (comment 3284), which sits in the Later milestone. Phase: #111 is in Phase 2 while Phase 1 is open; accepted as owner-placed, since the owner asked for it directly. No task carries status/ready. Proof is due on #111 at the end. The backlog scope line is unchanged since round 6 and still agrees with section 6 rule 13 and section 8. No blocking findings."
+summary = "Round 7, staged AGENTS.md only (sections 4, 8.2 and 11), read against the owner decisions it cites (#69 comment 2765, #166 comments 3097, 3136 and 3293, #66 comment 3140), the maintainer's notes (#166 comments 3290 and 3295, #66 comment 3294), the tasks' milestones and the status/ready count (0 of 10). Each line records one owner decision and no more: the change-over sentence matches comment 3293 ('sessions the owner starts may keep working on the shared account until the locked accounts are ready'), helpers stay inside the session the owner started, a session an agent starts on its own is excluded, and the round 7 last sentence ('Covered sessions stay agents under every rule here.') only restates that the rules still bind and drops the undefined phrase. The 'not contained' part of 3293 is kept by the earlier sentence on shared-account sessions. The Rust-to-Go switch-over stays out as planned, nothing unrelated is touched, no added line is over 80 characters, and the open gaps are later work already filed on #166 or #66."
 
 [[finding]]
-what = "Later: architecture step 4 lets a setting serve 'a spec in the tree that the task names', so a task naming a broad spec could admit a setting for any feature in it; the backlog scope line still limits this to what the task asks. Already on #203; the change does not make it worse."
+what = "Later: the open owner questions on the change-over (who declares the locked accounts ready and what happens to running sessions then; whether a separate session an agent starts at the owner's request is covered; who may start a recovery session) are filed on #166 comment 3295 for the owner. The rule is safe without them, since covered sessions stay agents under every rule."
+fixed = true
+
+[[finding]]
+what = "Later: section 11 states the locked-account rule as the target; no locked account or harness exists yet (#166 comment 3136, root install waits on the owner). The install, the harness proof and spec 0059's sudo route for queueing pankti jobs belong to #166 (comment 3293). Not made worse by this change."
+fixed = true
+
+[[finding]]
+what = "Later: section 8.2 item 6 (56 agents in all) has no enforcement yet; the Go admission work of #166 owns it (comments 3097 and 3290 point 5), and 3295 asks whether off-Dell or idle sessions count. Not made worse by this change."
+fixed = true
+
+[[finding]]
+what = "Later: section 7.1 still says 'an agent with full sudo could write a false one'; once locked accounts are ready it should name an unmanaged session (#166 comment 3290 point 4). Outside this change by design."
+fixed = true
+
+[[finding]]
+what = "Later: task #66 sits in the Later milestone with status/working; the build-cache line rests on the owner's direct instruction (comment 3140), not a phase move. The seven-day sweep and its failing-first test stay work on #66 (comment 3294)."
+fixed = true
+
+[[finding]]
+what = "Later: after the commit lands, post its hash as proof on #69 (pankti may land before Go receipts), #166 (56 ceiling, locked accounts and the change-over) and #66 (build-cache retention)."
 fixed = true

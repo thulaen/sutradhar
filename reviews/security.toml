@@ -1,5 +1,13 @@
 skill = "security"
-change = "sha256:bc8008944cfbe83fea019a920755a9d9ffb7b985b46090681c5fa315462dc9e5"
+change = "sha256:def82b8ae291cd871baad76420e530a26935df6dffbcac7e22423ee1f3fa8293"
 verdict = "pass"
 agent = "claude"
-summary = "Read the staged diff (architecture step 4 with the round 10 hook wording, the backlog scope line, the defects test line) against AGENTS.md sections 6 (rules 1, 5, 7, 13), 7.1, 8, 9 and 10. Docs only: no input, secret, access, crypto or dependency path is added; step 4 keeps every input limit and check in scope, makes a switch to turn one off serve the task on its own, and keeps a failure-injection hook present in shipped code within the step, so no line weakens a security check."
+summary = "Read the staged AGENTS.md diff (section 4 Go bullet, 8.2 item 6, the two section 11 bullets) against owner comments 2765 (#69), 3097, 3136 and 3293 (#166) and 3140 (#66), and checked it against sections 4, 7.1, 7.2, 8.2 and 11, spec 0059 and ADR-0017 for access, secrets and deletion risks. Every line is tighter than or equal to HEAD's 'Agents have sudo'; the round 7 sentence 'Covered sessions stay agents under every rule here' removes the undefined 'owner's powers' without granting anything, covered sessions remain unmanaged and never described as contained (matching comment 3293), and sessions an agent starts on its own stay uncovered. No token path, deletion of protected material or access loosening is added; no open findings, two Later gaps below."
+
+[[finding]]
+what = "Later (task #166, recorded on comments 3290 and 3293, not made worse): covered change-over sessions and their helpers at any depth keep the shared account's sudo, Docker, LXD and token access until the locked accounts are ready, as HEAD already allowed; who declares the accounts ready, what happens to running sessions then, and a sudo-free pankti route for managed agents (spec 0059 Install still needs sudo) are owner questions for #166. crates/chaukidar, spec 0058 and ADR-0008 still say 'Agents have sudo'."
+fixed = true
+
+[[finding]]
+what = "Later (tasks #166, #66 and #69, recorded on comments 3290, 3293 and 3294, not made worse): no enforcement yet of the 56-agent ceiling or the 3 GB agent memory budget; Go build caches have no written sweep guards equal to spec 0059's cargo ones (no link following, fixed roots, no disk crossing, locks held across the in-use check and the delete); pankti lands as Go before Go unsafe-pattern receipts, so its sealing must not be called a containment boundary until the safety-parse commit covers it."
+fixed = true

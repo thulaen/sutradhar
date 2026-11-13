@@ -1,9 +1,33 @@
 skill = "architecture"
-change = "sha256:bc8008944cfbe83fea019a920755a9d9ffb7b985b46090681c5fa315462dc9e5"
+change = "sha256:def82b8ae291cd871baad76420e530a26935df6dffbcac7e22423ee1f3fa8293"
 verdict = "pass"
 agent = "claude"
-summary = "Read the staged diff of the architecture, backlog and defects skills against AGENTS.md sections 5, 6, 7.1, 8, 9, 10 and 12. Round 10's step 4 wording (outside program set up by config, an install script or the folder it reads) matches how .githooks/ and deploy/door/install-hook.sh are wired; the new lines add no rule AGENTS.md lacks, do not clash with section 7.1, do not duplicate another check, and stay within 80 characters."
+summary = "Round 7 of the owner-decision lines in AGENTS.md (section 4 Go bullet, section 8.2 item 6, section 11 locked-account and build-cache bullets), read from the staged index with unstaged hunks and the staged older records ignored. I checked the new last sentence of the locked-account bullet against owner comment 3293 on #166, spec 0059 and sections 4, 7.1, 8.2, 11 and 13: 'Covered sessions stay agents under every rule here' names its subject (the sessions the Until sentence covers), drops the undefined 'owner's powers', leaves pankti's sudo use under spec 0059 unchanged, and matches the owner's answer, since covered sessions stay on the shared account and so are never described as contained. The other lines are unchanged from round 6, where they were found to record their owner decisions exactly; all staged lines are at most 80 characters. Round 6's open finding is fixed and nothing is left open."
 
 [[finding]]
-what = "Later, not made worse: the tree never sets core.hooksPath to .githooks/ (no install script or doc step does it; it lives only in each clone's local git config), so step 4's '.githooks/' example rests on hand set-up. Belongs on Later task #203."
+what = "Section 11, locked-account bullet, last sentence: round 6 found 'use none of the owner's powers' undefined and in clash with pankti's sudo (spec 0059), and 'They' had an unclear subject. Now 'Covered sessions stay agents under every rule here.'"
+fixed = true
+
+[[finding]]
+what = "Later: open owner questions on the change-over, recorded on #166: who declares the locked accounts ready, what happens to running covered sessions then, and whether a separate session an agent starts at the owner's request is covered."
+fixed = true
+
+[[finding]]
+what = "Later: spec 0059 makes queueing a pankti job need sudo, which a managed agent on a locked account lacks; the harness or pankti's Go port must give managed agents a route without sudo. Recorded on #166 comment 3293; not made worse by this change."
+fixed = true
+
+[[finding]]
+what = "Later: section 4, Go bullet. 'pankti, the heavy-job queue manager' names no folder, and pankti is a Rust crate today; when its Go lands, name the folder and say which of spec 0059's parts are the queue manager, and that shared packages it imports are not covered. Recorded on #166 comment 3290."
+fixed = true
+
+[[finding]]
+what = "Later: section 8.2 item 6. Nothing counts agents or refuses the 57th yet, and the ceiling binds together with the 3 GB agent memory budget in section 11. Enforcement belongs to the admission work of #166 (comments 3097, 3290 and 3293)."
+fixed = true
+
+[[finding]]
+what = "Later: crates/chaukidar/src/lib.rs, spec 0058, ADR-0008 and section 7.1 (staged line 521) still speak of agents with sudo; reword them to name the shared account or an unmanaged session when the locked accounts land. Recorded on #166 comments 3290 and 3293."
+fixed = true
+
+[[finding]]
+what = "Later: section 11, build-cache bullet. The remover must measure 'written' by the newest file in the tree, hold the queue and push locks while deleting, never follow links, and exclude evidence kept under target/; spec 0059's one-day sweep of aegis-work copies should be named beside it. Owned by the cache controller on #66 (comment 3294)."
 fixed = true

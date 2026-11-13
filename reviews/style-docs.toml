@@ -1,5 +1,21 @@
 skill = "style-docs"
-change = "sha256:bc8008944cfbe83fea019a920755a9d9ffb7b985b46090681c5fa315462dc9e5"
+change = "sha256:def82b8ae291cd871baad76420e530a26935df6dffbcac7e22423ee1f3fa8293"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 10: read the staged hunks in the architecture, backlog and defects skills (git show :PATH) against AGENTS.md sections 5.1, 6, 7.1, 8, 9, 10 and 12 as staged. Checked line lengths (all at most 80), British spelling, plain English, no status words or dates, that every cited section, rule and step exists and says what the line relies on, that .githooks/ and deploy/door/install-hook.sh exist as the new wording says, that later steps were renumbered with no stale step references, and that no line repeats another check in the same or another skill. The round 9 Later point (split the long first sentence of architecture step 4) is now done. Nothing is left open."
+summary = "Round 7: read the staged AGENTS.md hunks (section 4 Go bullet, section 8.2 item 6, section 11 locked-account bullet, the split checksum-guard bullet and the build-cache bullet) against sections 6, 7.1, 8.2, 11, 12 and 13, the glossary and the cited Forgejo comments 2765, 3097, 3136, 3140 and 3293. Lines are within 80 characters, spelling is British, each line uses the (owner, date, task) pattern, terms are defined in place (managed agent, agent harness, covered sessions) or in the section 2 name table (pankti), no status words appear, and each line says what the owner decided. Nothing blocks; the remaining points are Later items."
+
+[[finding]]
+what = "Later: docs/specs/0006-main-only-publication.md line 204 and docs/specs/0008-trust-boundaries.md lines 93 and 162-163 say 'AGENTS.md section 11 gives agents sudo'. Section 11 now gives managed agents no sudo and lets only covered sessions keep the shared sudo account until the locked accounts are ready. Update both specs with the locked-account work of task #166, alongside chaukidar, spec 0058 and ADR-0008 already listed in comment 3293."
+fixed = true
+
+[[finding]]
+what = "Later: AGENTS.md section 11, 'the program of that task that holds the tokens': 'that task' points back to the citation in brackets of the previous sentence. Saying 'the program of task #166' would read more plainly; the meaning is clear as it stands."
+fixed = true
+
+[[finding]]
+what = "Later: AGENTS.md section 11 writes 'seven days' while sections 8.1 and 10 write '7 days'. The owner's own words were 'seven day', so the wording is faithful; pick one form for day counts when section 11 is next edited."
+fixed = true
+
+[[finding]]
+what = "Later: AGENTS.md section 4 lists 'pankti, the heavy-job queue manager' among 'these Go files'; 'pankti's Go source' would match the other two items. Comment 3295 already asks for its folder to be named."
+fixed = true

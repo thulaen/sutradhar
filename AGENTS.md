@@ -140,10 +140,11 @@ language and every file type not listed here.
   each such check lands in one commit with its planted faults.
   Go files need receipts from the commit that adds the Go safety parse
   (rule 9, section 7.3); that commit also adds GanitEvolve's whole-file
-  problem for Go, so the receipts can be made. Before it, only
-  GanitEvolve's own Go source, its gate check included, and the gate
-  checks that run the pinned Go analysers, with their planted Go
-  faults, may land.
+  problem for Go, so the receipts can be made. Before it, only these Go
+  files may land: GanitEvolve's own Go source, its gate check included;
+  the gate checks that run the pinned Go analysers, with their planted
+  Go faults; and pankti, the heavy-job queue manager (owner, 11 November
+  2026, task #69).
 - No C compiler in our build. The one exception: sealed Go race-test
   jobs may use a pinned C compiler, because Go's race detector needs
   one. Go builds outside those jobs keep cgo off (`CGO_ENABLED=0`), and
@@ -683,6 +684,9 @@ for A2A, the open agent-to-agent protocol, on Dell).
    `<checkout>.push-work.lock`. Never work in the copy: each push
    resets it. Both are safe to delete when no push is running; the next
    push makes them again.
+6. At most 56 agents run at once in all, counting every parent session
+   and every helper of Codex, Claude and Gemini together (owner, 12
+   November 2026, task #166).
 
 ## 9. Git and GitHub
 
@@ -793,13 +797,30 @@ for A2A, the open agent-to-agent protocol, on Dell).
   folder). Only the door writes it (spec 0001).
 - Forgejo's runner jobs run in containers that cannot reach the release
   key, the GitHub tokens or the private notes on Dell.
-- Agents have sudo. Agents never change Forgejo's hooks or settings, or
-  the GitHub CI files, except through a task that changes them in the
-  repository. A checksum guard watches them. If they change any other
-  way, it raises an urgent task in Forgejo and also posts an alert issue
-  on GitHub, which the sync never brings back.
+- A managed agent runs under a locked account with no sudo, no Docker or
+  LXD group and no token (owner, 12 November 2026, task #166). It
+  reaches Forgejo, the mailbox and git only through the agent harness,
+  the program of that task that holds the tokens and acts for it. The
+  owner keeps root. Sessions under the shared account that has sudo are
+  only for the owner's own work and for recovery; such a session is
+  unmanaged and is never described as contained. Until the locked
+  accounts are ready, agent sessions the owner starts, and their helpers
+  at any depth, may keep working under the shared account (owner, 13
+  November 2026, task #166). A session an agent schedules or starts on
+  its own as a new session is not covered. Covered sessions stay agents
+  under every rule here.
+- Agents never change Forgejo's hooks or settings, or the GitHub CI
+  files, except through a task that changes them in the repository. A
+  checksum guard watches them. If they change any other way, it raises
+  an urgent task in Forgejo and also posts an alert issue on GitHub,
+  which the sync never brings back.
 - Never delete, move or weaken protected folders on Dell without the
   owner's explicit instruction naming the material.
+- Cargo build folders and Go build caches that no build has written for
+  seven days may be removed automatically, but never while a build, a
+  push or a running program uses them (owner, 12 November 2026, task
+  #66). Work copies, evidence, journals and protected folders are not
+  build caches.
 - Private material never enters the repository: licence keys, forum
   data, tokens and passwords. Never print a token.
 

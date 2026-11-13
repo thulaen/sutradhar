@@ -1,5 +1,17 @@
 skill = "unsafe-patterns"
-change = "sha256:bc8008944cfbe83fea019a920755a9d9ffb7b985b46090681c5fa315462dc9e5"
+change = "sha256:def82b8ae291cd871baad76420e530a26935df6dffbcac7e22423ee1f3fa8293"
 verdict = "pass"
 agent = "claude"
-summary = "Read the whole staged diff (architecture step 4 with the round 10 wording on where an outside program's hook is set up, the backlog scope line and the defects test line) against staged AGENTS.md sections 6, 7.1, 8, 9 and 10. Docs only, so no code patterns apply; checked that no line weakens a test, proof or check: the defects line adds the section 6 rule 1 test demand and exempts only changes to no code, as section 9's 'TDD: none (docs only)' does; architecture step 4 exempts only hooks compiled into tests (section 6 rule 5) and still covers any hook present in what we ship, including one behind a feature flag, and does not let a new switch turn off an input limit or check unless it serves the task on its own; the backlog line counts only what the gate itself demands as in scope, so it cannot be used to slip in unasked code. All lines are 80 characters or fewer. Nothing open."
+summary = "Round 7. Read the staged AGENTS.md diff only (section 4 pankti Go exception, 8.2 item 6 56-agent ceiling, section 11 locked-account bullet with the change-over sentences ending 'Covered sessions stay agents under every rule here.', and the seven-day build-cache bullet) against owner comments 2765, 3097, 3136, 3140 and 3293. Checked for check-then-use gaps, trusted names, unbounded counts, weakened guards and new unsafe permissions; every line matches the cited decision, the old checksum-guard text is kept unchanged, the cache permission is age-bounded and excludes work copies, evidence, journals and protected folders, and all changed lines are within 80 characters. Nothing open."
+
+[[finding]]
+what = "Section 11 build-cache bullet: 'no build has written for seven days' is checked before removal, then removal follows; a build or push can start between the check and the delete (check-then-use). The rule already forbids removal while anything uses them, so the text is safe; the cache controller under task #66 must take the check and the delete under one lock or reservation. Later item for #66, not a blocker of this rule text."
+fixed = true
+
+[[finding]]
+what = "Section 4 Go bullet: the early-landing exception names pankti by name only, with no path, so whether a Go file 'is pankti' rests on a label rather than a fixed folder the gate can check. Gate enforcement of Go receipts belongs to the Go switch commit of task #166; record there that the exception should be tied to pankti's folder. Later item, not a blocker."
+fixed = true
+
+[[finding]]
+what = "Section 8.2 item 6: the 56-agent ceiling has no enforcement yet (comment 3097 says the admission store is still being built), so today it is a rule agents must follow by hand. Already recorded on #166 comment 3290; Later item."
+fixed = true
