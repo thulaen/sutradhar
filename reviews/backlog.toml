@@ -1,29 +1,5 @@
 skill = "backlog"
-change = "sha256:def82b8ae291cd871baad76420e530a26935df6dffbcac7e22423ee1f3fa8293"
+change = "sha256:4cb2e55fd732e321863af5c723e88150306eef7c0497cdcd6baeb8dc60a71355"
 verdict = "pass"
-agent = "claude"
-summary = "Round 7, staged AGENTS.md only (sections 4, 8.2 and 11), read against the owner decisions it cites (#69 comment 2765, #166 comments 3097, 3136 and 3293, #66 comment 3140), the maintainer's notes (#166 comments 3290 and 3295, #66 comment 3294), the tasks' milestones and the status/ready count (0 of 10). Each line records one owner decision and no more: the change-over sentence matches comment 3293 ('sessions the owner starts may keep working on the shared account until the locked accounts are ready'), helpers stay inside the session the owner started, a session an agent starts on its own is excluded, and the round 7 last sentence ('Covered sessions stay agents under every rule here.') only restates that the rules still bind and drops the undefined phrase. The 'not contained' part of 3293 is kept by the earlier sentence on shared-account sessions. The Rust-to-Go switch-over stays out as planned, nothing unrelated is touched, no added line is over 80 characters, and the open gaps are later work already filed on #166 or #66."
-
-[[finding]]
-what = "Later: the open owner questions on the change-over (who declares the locked accounts ready and what happens to running sessions then; whether a separate session an agent starts at the owner's request is covered; who may start a recovery session) are filed on #166 comment 3295 for the owner. The rule is safe without them, since covered sessions stay agents under every rule."
-fixed = true
-
-[[finding]]
-what = "Later: section 11 states the locked-account rule as the target; no locked account or harness exists yet (#166 comment 3136, root install waits on the owner). The install, the harness proof and spec 0059's sudo route for queueing pankti jobs belong to #166 (comment 3293). Not made worse by this change."
-fixed = true
-
-[[finding]]
-what = "Later: section 8.2 item 6 (56 agents in all) has no enforcement yet; the Go admission work of #166 owns it (comments 3097 and 3290 point 5), and 3295 asks whether off-Dell or idle sessions count. Not made worse by this change."
-fixed = true
-
-[[finding]]
-what = "Later: section 7.1 still says 'an agent with full sudo could write a false one'; once locked accounts are ready it should name an unmanaged session (#166 comment 3290 point 4). Outside this change by design."
-fixed = true
-
-[[finding]]
-what = "Later: task #66 sits in the Later milestone with status/working; the build-cache line rests on the owner's direct instruction (comment 3140), not a phase move. The seven-day sweep and its failing-first test stay work on #66 (comment 3294)."
-fixed = true
-
-[[finding]]
-what = "Later: after the commit lands, post its hash as proof on #69 (pankti may land before Go receipts), #166 (56 ceiling, locked accounts and the change-over) and #66 (build-cache retention)."
-fixed = true
+agent = "claude subagent"
+summary = "Read Forgejo #130 (body and all 64 comments by guest GET, newest 3322 of 13 Nov), pin.diff, the pin tree, HEAD's gate/tools.toml and scan-7ce1.json. The change is three one-line digest swaps (gate/tools.toml, docker/forgejo/compose.yaml, gate/sbom.cdx.json), 26ffa955 to 7ce191cc, the same in all three, with the old digest gone from the tree. That is what #130 asks (pin images so pushes can go in again) and nothing more: the version label 15.0-test and the rootless comment are unchanged from HEAD, the live Forgejo is not touched, and gate/image-holes.toml is unchanged. The scan of this exact digest shows only CVE-2026-4738 (critical, already excepted for task 130 until 2026-12-09) and one Medium, so no new idea needs a Later task. The deferred label fix and the backup step are recorded as open on #130 comment 3322 with owner and resume event. #130 is in milestone Phase 1, which is open; zero tasks carry status/ready, so the limit of 10 holds. Note, not a finding: comment 3322's 'Changed' line names a version-label change this digest-only content does not make. The final proof posted on #130 must describe the digest-only change and name the follow-up label change."

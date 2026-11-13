@@ -1,21 +1,5 @@
 skill = "style-docs"
-change = "sha256:def82b8ae291cd871baad76420e530a26935df6dffbcac7e22423ee1f3fa8293"
+change = "sha256:4cb2e55fd732e321863af5c723e88150306eef7c0497cdcd6baeb8dc60a71355"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 7: read the staged AGENTS.md hunks (section 4 Go bullet, section 8.2 item 6, section 11 locked-account bullet, the split checksum-guard bullet and the build-cache bullet) against sections 6, 7.1, 8.2, 11, 12 and 13, the glossary and the cited Forgejo comments 2765, 3097, 3136, 3140 and 3293. Lines are within 80 characters, spelling is British, each line uses the (owner, date, task) pattern, terms are defined in place (managed agent, agent harness, covered sessions) or in the section 2 name table (pankti), no status words appear, and each line says what the owner decided. Nothing blocks; the remaining points are Later items."
-
-[[finding]]
-what = "Later: docs/specs/0006-main-only-publication.md line 204 and docs/specs/0008-trust-boundaries.md lines 93 and 162-163 say 'AGENTS.md section 11 gives agents sudo'. Section 11 now gives managed agents no sudo and lets only covered sessions keep the shared sudo account until the locked accounts are ready. Update both specs with the locked-account work of task #166, alongside chaukidar, spec 0058 and ADR-0008 already listed in comment 3293."
-fixed = true
-
-[[finding]]
-what = "Later: AGENTS.md section 11, 'the program of that task that holds the tokens': 'that task' points back to the citation in brackets of the previous sentence. Saying 'the program of task #166' would read more plainly; the meaning is clear as it stands."
-fixed = true
-
-[[finding]]
-what = "Later: AGENTS.md section 11 writes 'seven days' while sections 8.1 and 10 write '7 days'. The owner's own words were 'seven day', so the wording is faithful; pick one form for day counts when section 11 is next edited."
-fixed = true
-
-[[finding]]
-what = "Later: AGENTS.md section 4 lists 'pankti, the heavy-job queue manager' among 'these Go files'; 'pankti's Go source' would match the other two items. Comment 3295 already asks for its folder to be named."
-fixed = true
+summary = "Read pin.diff, the pinned tree, the round-1 and pin3 style-docs records, Forgejo #130 comment 3322, and HEAD plus commits dbb9221 and 1f2a515 for docker/forgejo/compose.yaml and gate/tools.toml. Each of the three files differs from HEAD only in the digest line, and the new digest is identical in all three. The old digest appears nowhere else in the tree, and no doc or spec names either digest. The compose comment ('v15 LTS branch daily (15.0-test), rootless') and version = \"15.0-test\" are unchanged from HEAD. The label was already there before this change: 1f2a515 kept the declared version on purpose and did not prove which child image the old digest held. The new digest is the rootless index of the 15.0-test branch, so the comment is no less true than before. This change neither adds nor worsens the label wording or the missing backup step. Both stay open on #130 comment 3322 with an owner and a resume event, and the label fix will follow in its own change with a test. No new names, comments, settings or status words. Nothing is left open that this change introduced."

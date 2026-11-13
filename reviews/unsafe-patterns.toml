@@ -1,17 +1,5 @@
 skill = "unsafe-patterns"
-change = "sha256:def82b8ae291cd871baad76420e530a26935df6dffbcac7e22423ee1f3fa8293"
+change = "sha256:4cb2e55fd732e321863af5c723e88150306eef7c0497cdcd6baeb8dc60a71355"
 verdict = "pass"
-agent = "claude"
-summary = "Round 7. Read the staged AGENTS.md diff only (section 4 pankti Go exception, 8.2 item 6 56-agent ceiling, section 11 locked-account bullet with the change-over sentences ending 'Covered sessions stay agents under every rule here.', and the seven-day build-cache bullet) against owner comments 2765, 3097, 3136, 3140 and 3293. Checked for check-then-use gaps, trusted names, unbounded counts, weakened guards and new unsafe permissions; every line matches the cited decision, the old checksum-guard text is kept unchanged, the cache permission is age-bounded and excludes work copies, evidence, journals and protected folders, and all changed lines are within 80 characters. Nothing open."
-
-[[finding]]
-what = "Section 11 build-cache bullet: 'no build has written for seven days' is checked before removal, then removal follows; a build or push can start between the check and the delete (check-then-use). The rule already forbids removal while anything uses them, so the text is safe; the cache controller under task #66 must take the check and the delete under one lock or reservation. Later item for #66, not a blocker of this rule text."
-fixed = true
-
-[[finding]]
-what = "Section 4 Go bullet: the early-landing exception names pankti by name only, with no path, so whether a Go file 'is pankti' rests on a label rather than a fixed folder the gate can check. Gate enforcement of Go receipts belongs to the Go switch commit of task #166; record there that the exception should be tied to pankti's folder. Later item, not a blocker."
-fixed = true
-
-[[finding]]
-what = "Section 8.2 item 6: the 56-agent ceiling has no enforcement yet (comment 3097 says the admission store is still being built), so today it is a rule agents must follow by hand. Already recorded on #166 comment 3290; Later item."
-fixed = true
+agent = "claude subagent"
+summary = "Read pin.diff and the tree in pin/. The change is three digest-byte swaps (26ffa955... to 7ce191cc...) in gate/tools.toml, docker/forgejo/compose.yaml and gate/sbom.cdx.json; the new digest appears exactly once in each, the old one nowhere in the tree, and the compose image still parses to the same digest. scan-7ce1.json targets exactly that digest and lists only CVE-2026-4738 (critical, zlib, in gate/image-holes.toml for task 130 until 2026-12-09; that file is byte-identical to the main checkout) and GHSA-j6qf-3m9c-vwj3 (medium). No code, error handling, lock, file, input limit or test is touched, so none of the hidden-pattern checks apply, and no check was loosened. Weighed against HEAD: the 15.0-test label and the 'rootless' comment are unchanged from HEAD, and no deploy or backup step is added or removed, so this change neither introduces nor worsens items (a) or (b), which stay open on #130 comment 3322. Limits: I did not run aegis sbom or recompute the fingerprint, and did not query the registry; I rely on the brief's fingerprint and the scan file for those."

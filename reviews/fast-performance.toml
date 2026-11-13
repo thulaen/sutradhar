@@ -1,13 +1,5 @@
 skill = "fast-performance"
-change = "sha256:def82b8ae291cd871baad76420e530a26935df6dffbcac7e22423ee1f3fa8293"
+change = "sha256:4cb2e55fd732e321863af5c723e88150306eef7c0497cdcd6baeb8dc60a71355"
 verdict = "pass"
-agent = "claude"
-summary = "Read the staged AGENTS.md diff for round 7 (git diff --cached -- AGENTS.md: pankti in the section 4 Go landing list, the 56-agent ceiling in 8.2 item 6, the section 11 locked-account bullet whose last sentence is now only 'Covered sessions stay agents under every rule here.', and the seven-day build-cache removal rule) against section 5.6, section 11's Dell budget and owner comments 2765, 3097 and 3140. The change is rule text only, with no code or hot path; no line adds repeated work, unbounded growth, a call with no time limit or text cut short. The 56 ceiling bounds concurrent agents, and cache removal touches only caches unwritten for seven days and never while a build, push or running program uses them, so warm caches stay and no build loses its cache mid-run. The round 7 wording change has no performance effect."
-
-[[finding]]
-what = "Later: section 8.2 item 6 allows up to 56 agents at once, while section 11 gives all agents together 3 GB of Dell's 15 GB. They do not clash, because 56 is only a ceiling and owner comment 3097 keeps every memory requirement, but in practice memory, not the count, will limit how many sessions run. The enforcement work on task #166 should check the memory budget as well as the count."
-fixed = true
-
-[[finding]]
-what = "Later: the seven-day rule in section 11 will in time remove large Cargo build folders (comment 3140 counts sutradhar-main/target at 19 GB), so the next build after a removal is a full cold rebuild. That is the owner's choice, not a defect in the rule; the cache controller on task #66 could log each removal so slow cold builds can be traced to it."
-fixed = true
+agent = "claude subagent"
+summary = "Read pin.diff and compared the pin tree against HEAD for docker/forgejo/compose.yaml, gate/tools.toml and gate/sbom.cdx.json: each differs from HEAD only in the digest bytes 26ffa955... to 7ce191cc..., the new digest is the same in all three, and the old one appears nowhere in the pin tree. No code, loops, request paths, caches, queues, blocking calls or text handling change, so there is no hot path and nothing to measure. The label and the backup issue, (a) and (b), are already in HEAD and this change does not touch them or affect performance. The only runtime effect is which image the next Forgejo start pulls: the same 15.0-test rootless line, with the compose mem_limit unchanged. The new image's speed and memory were not measured."

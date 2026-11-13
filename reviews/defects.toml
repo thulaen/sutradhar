@@ -1,21 +1,5 @@
 skill = "defects"
-change = "sha256:def82b8ae291cd871baad76420e530a26935df6dffbcac7e22423ee1f3fa8293"
+change = "sha256:4cb2e55fd732e321863af5c723e88150306eef7c0497cdcd6baeb8dc60a71355"
 verdict = "pass"
-agent = "claude"
-summary = "Round 7, staged AGENTS.md only (git show :AGENTS.md; section 4 Go bullet, section 8.2 item 6, the locked-account and build-cache bullets of section 11), read against Forgejo #69 comment 2765, #166 comments 3097, 3136 and 3293, #66 comments 3140 and 3294, and staged sections 4, 7.1, 7.2, 8.2, 11 and 13. Each line matches the owner's recorded words with the dates of the comments; no added line passes 80 characters; 56 is written once. The round 6 finding is fixed: the undefined 'the owner's powers' is gone, and 'Covered sessions stay agents under every rule here' adds no new term and forbids nothing pankti's sudo needs. Covered sessions are unmanaged shared-account sessions, so the managed-agent sentence does not apply to them and 'never described as contained' still does, as comment 3293 says. No clash found with sections 7.2, 8.2 item 5 (push copy deletion), the protected-folders bullet or section 13."
-
-[[finding]]
-what = "Round 6 open finding (section 11, undefined 'the owner's powers' clashing with pankti's sudo) is fixed: the last sentence now reads only 'Covered sessions stay agents under every rule here.'"
-fixed = true
-
-[[finding]]
-what = "Later: the change-over sentences admit 'their helpers at any depth' and exclude sessions an agent starts on its own, while comment 3293 names only 'sessions the owner starts'; who declares the locked accounts ready, what happens to running sessions then, and whether a separate session started at the owner's request is covered are open owner questions recorded on #166. Not made worse by this change."
-fixed = true
-
-[[finding]]
-what = "Later: crates/chaukidar/src/lib.rs, spec 0058 and ADR-0008 still say 'Agents have sudo', section 7.1 still speaks of 'an agent with full sudo', spec 0059's queueing needs sudo that a managed agent will lack, and the 56-agent ceiling has no enforcement and should respect the 3 GB agent memory budget; all recorded on #166 comments 3290 and 3293 for the harness and switch-over work."
-fixed = true
-
-[[finding]]
-what = "Later: the build-cache sweep must count age per entry for a shared GOCACHE, hold the build and push locks across the in-use check and the delete, treat future or unreadable times as in use, never follow links, and sit beside spec 0059's size-based nightly sweep; recorded on #66 comment 3294."
-fixed = true
+agent = "claude subagent"
+summary = "Read pin.diff in full and diffed pin/ against a fresh export of HEAD: only the three digest lines differ (compose.yaml, tools.toml, sbom.cdx.json), all carrying the same new digest 7ce191cc..., and the old digest is gone from pin/. Read the TDD data-only proof in crates/aegis/src/tdd_config.rs (tools, sbom and compose normalisers mask only digest bytes), so a digest-only change is admitted without a new test. Read scan-7ce1.json: CVE-2026-4738 (listed in gate/image-holes.toml, task 130, until 2026-12-09) and one Medium. The label 15.0-test beside a rootless comment and the missing pre-deploy backup are both already in HEAD (compose comment and tools.toml version unchanged by this diff); this change neither adds nor worsens them, and they stay open on Forgejo #130 comment 3322 for their own change with a test. No defects introduced by this change."

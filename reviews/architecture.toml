@@ -1,33 +1,5 @@
 skill = "architecture"
-change = "sha256:def82b8ae291cd871baad76420e530a26935df6dffbcac7e22423ee1f3fa8293"
+change = "sha256:4cb2e55fd732e321863af5c723e88150306eef7c0497cdcd6baeb8dc60a71355"
 verdict = "pass"
-agent = "claude"
-summary = "Round 7 of the owner-decision lines in AGENTS.md (section 4 Go bullet, section 8.2 item 6, section 11 locked-account and build-cache bullets), read from the staged index with unstaged hunks and the staged older records ignored. I checked the new last sentence of the locked-account bullet against owner comment 3293 on #166, spec 0059 and sections 4, 7.1, 8.2, 11 and 13: 'Covered sessions stay agents under every rule here' names its subject (the sessions the Until sentence covers), drops the undefined 'owner's powers', leaves pankti's sudo use under spec 0059 unchanged, and matches the owner's answer, since covered sessions stay on the shared account and so are never described as contained. The other lines are unchanged from round 6, where they were found to record their owner decisions exactly; all staged lines are at most 80 characters. Round 6's open finding is fixed and nothing is left open."
-
-[[finding]]
-what = "Section 11, locked-account bullet, last sentence: round 6 found 'use none of the owner's powers' undefined and in clash with pankti's sudo (spec 0059), and 'They' had an unclear subject. Now 'Covered sessions stay agents under every rule here.'"
-fixed = true
-
-[[finding]]
-what = "Later: open owner questions on the change-over, recorded on #166: who declares the locked accounts ready, what happens to running covered sessions then, and whether a separate session an agent starts at the owner's request is covered."
-fixed = true
-
-[[finding]]
-what = "Later: spec 0059 makes queueing a pankti job need sudo, which a managed agent on a locked account lacks; the harness or pankti's Go port must give managed agents a route without sudo. Recorded on #166 comment 3293; not made worse by this change."
-fixed = true
-
-[[finding]]
-what = "Later: section 4, Go bullet. 'pankti, the heavy-job queue manager' names no folder, and pankti is a Rust crate today; when its Go lands, name the folder and say which of spec 0059's parts are the queue manager, and that shared packages it imports are not covered. Recorded on #166 comment 3290."
-fixed = true
-
-[[finding]]
-what = "Later: section 8.2 item 6. Nothing counts agents or refuses the 57th yet, and the ceiling binds together with the 3 GB agent memory budget in section 11. Enforcement belongs to the admission work of #166 (comments 3097, 3290 and 3293)."
-fixed = true
-
-[[finding]]
-what = "Later: crates/chaukidar/src/lib.rs, spec 0058, ADR-0008 and section 7.1 (staged line 521) still speak of agents with sudo; reword them to name the shared account or an unmanaged session when the locked accounts land. Recorded on #166 comments 3290 and 3293."
-fixed = true
-
-[[finding]]
-what = "Later: section 11, build-cache bullet. The remover must measure 'written' by the newest file in the tree, hold the queue and push locks while deleting, never follow links, and exclude evidence kept under target/; spec 0059's one-day sweep of aegis-work copies should be named beside it. Owned by the cache controller on #66 (comment 3294)."
-fixed = true
+agent = "claude subagent"
+summary = "Read pinB-brief.md, pin.diff, the post-change tree, the round-1 and round-3 architecture records, gate/image-holes.toml and scan-7ce1.json, and compared the three changed files with HEAD in the main checkout (read only). The change is three one-line digest swaps (gate/tools.toml, docker/forgejo/compose.yaml, gate/sbom.cdx.json); the new digest sha256:7ce191cc... is the same in all three and the old 26ffa955 appears nowhere in them. No Rust or Go code, Boot module, wiring, setting, event or hook is touched, so Boot conventions do not apply; AGENTS.md 5.7 is met (pinned by digest, tools.toml and compose agree). The scan names only CVE-2026-4738, listed in gate/image-holes.toml for task 130 until 2026-12-09, and a Medium below the bar. The label 15.0-test and the 'rootless' compose comment are byte-identical to HEAD, and no deploy step or backup text is added or removed, so the change neither introduces nor worsens the label or backup items, which stay open on Forgejo #130 comment 3322. Being digest bytes only, it fits the narrow digest-only admission in crates/aegis/src/tdd_config.rs. It adds no option and has no simpler form. I did not rerun aegis sbom or the gate."

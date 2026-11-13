@@ -6,7 +6,7 @@ services:
   forgejo:
     # Forgejo v15 LTS branch daily (15.0-test), rootless, pinned by digest.
     image: "codeberg.org/forgejo-experimental/forgejo@\
-      sha256:26ffa9553c2f9629fe5515c6b59e6b7a08349d0315089eea30e1d7e72507b5ba"
+      sha256:7ce191cccfe126db66867f27793c6bc225d397676d5403228da0ae87f0fc7274"
     container_name: sutradhar-forgejo
     restart: unless-stopped
     ports:
