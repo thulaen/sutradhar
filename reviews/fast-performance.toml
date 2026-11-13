@@ -1,13 +1,17 @@
 skill = "fast-performance"
-change = "sha256:8928b8fd536c48463296c871512ed8f4521ca8cfdfc7ffb66ebae4f24135fd5f"
+change = "sha256:5fb6f6688bdd33e6c610a0000029da215381f3c851fd82fb4dcc3a219b318b8b"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 2: read the staged policy.rs, lib.rs, tests, Cargo.toml, Cargo.lock and SBOM changes. accept runs once per policy load: one SHA-256 over the signed bytes, one short purpose String, one purpose strip and one strict verify; no loops, no file reads, no growth. The round 2 changes (PurposeError carried in NotPolicyChange, doc and test wording, new tests) add no work on any hot path. PolicyTrust answers from one in-memory HashMap with O(1) lookups. sha2 was already in the lock, so no new build cost."
+summary = "Round 6: read the staged core.rs, index.rs, log.rs, signed.rs, purposes.rs and the new test in tests/sign_keys.rs. The only change since round 5 is the test a_retired_key_never_signs_new_bytes, which runs no product code differently. sign is unchanged: one SHA-256 of the bytes, one O(keys) active_key scan, O(1) map lookups for a repeat, one Ed25519 signature, and record stays O(1) per sign through Index::next/apply and a copy of the small chain head. Not measured again: round 3 measured about 41 us per sign, flat to 40,000 entries, and no hot-path code changed since. No loops over the log, no blocking calls, nothing cut short."
 
 [[finding]]
-what = "Later: PolicyTrust::lookup (crates/sutradhar-tijori/src/policy.rs, impl Trust) clones the whole KeyEntry (principal String plus BTreeMap of purpose scope Vecs) on every check, because the existing Trust trait returns an owned Option<KeyEntry>. Cheap at today's registry size and not made worse here; if checks become per-request at volume, let Trust lend the entry (or hold entries in Arc) instead of cloning."
+what = "Later: active_key (crates/tijori/src/core.rs) scans every registry key and collects a Vec on each sign, O(keys). Fine at registry sizes of tens of keys; if the registry grows, index keys by (principal, purpose) when the policy file is read."
 fixed = true
 
 [[finding]]
-what = "Later (minor): accept (crates/sutradhar-tijori/src/policy.rs) hashes policy.signed before the Older version check, so an older policy is hashed for nothing. One hash per load; moving the digest below the Older check would skip it, not needed now."
+what = "Later: entries, issued and both indexes in Core (crates/tijori/src/core.rs) grow with every signature and hold the whole log in memory. By design for this in-memory part; the durable-log part should bound what stays in memory (section 5.6)."
+fixed = true
+
+[[finding]]
+what = "Later (minor): sign (crates/tijori/src/core.rs) clones the principal String and Purpose::prefix copies the caller bytes into a new Vec before signing, one copy of up to max_bytes per sign. Cheap next to the signature; an incremental signer would avoid it if max_bytes grows large."
 fixed = true

@@ -1,13 +1,9 @@
 skill = "defects"
-change = "sha256:8928b8fd536c48463296c871512ed8f4521ca8cfdfc7ffb66ebae4f24135fd5f"
+change = "sha256:5fb6f6688bdd33e6c610a0000029da215381f3c851fd82fb4dcc3a219b318b8b"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 2. Read every staged line (policy.rs, tests/policy.rs, lib.rs, Cargo.toml, Cargo.lock, SBOM) and the purpose and verify code it calls, against spec 0065 'Checking signatures' item 3. Ran the 10 policy tests: all pass. Both round 1 blockers are fixed: the digest is pinned to SHA-256 of the exact signed bytes, and a bad purpose field is refused as NotPolicyChange with the real reason. accept refuses a missing record first, then another instance, an older version, the same version with other bytes, and a newer version without the policy-change purpose field or a strict owner signature; no path accepts a newer policy the owner did not sign. Accepting the same version with a matching digest without re-checking the signature is right, since only a signed accept or an owner reset writes the record. Removing any one refusal makes its test fail. The purpose length limit (64 here, 32 in tests) does not affect strip."
+summary = "Round 6. Read the staged core.rs, purposes.rs, signed.rs and tests/sign_keys.rs, including the one new test a_retired_key_never_signs_new_bytes; product code matches round 5. sign checks size, caller, refused purposes, purpose name, then a repeat (caller still has an active key, logged principal/purpose/bytes hash match, logged key Active or Retired and still the caller's and still lists the purpose) before signing afresh; record checks every failing part before swapping in chain and indexes. Ran all tijori tests (36 pass) on the staged tree. Mutation in a scratch copy: active_key accepting any non-revoked key makes the new test fail at sign_keys.rs:60, so it guards the round 5 gap."
 
 [[finding]]
-what = "Later: crates/sutradhar-tijori/tests/policy.rs:231 asserts that a relabelled policy is accepted (Ok(9)), pinning the current caller-decodes contract. When spec 0065 sets the policy byte encoding and decoding moves into accept, flip this test to expect a refusal so it guards the fix instead of the gap."
-fixed = true
-
-[[finding]]
-what = "Later: crates/sutradhar-tijori/src/policy.rs:161-162: Purpose::new(POLICY_PURPOSE, PURPOSE_LEN) cannot fail for a fixed valid name, so its NotPolicyChange mapping is unreachable. Harmless; when the purpose length comes from the decoded policy, pass that limit instead of the local constant."
+what = "Later: crates/tijori/tests/sign_keys.rs a_retired_key_never_signs_new_bytes uses the single holding() key, so it does not cover a caller with one retired and one active key picking the active one; the existing lowest-id rule plus the two-active-keys Later item from round 4 cover this when the policy reader refuses several active keys."
 fixed = true

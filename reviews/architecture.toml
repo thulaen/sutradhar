@@ -1,13 +1,9 @@
 skill = "architecture"
-change = "sha256:8928b8fd536c48463296c871512ed8f4521ca8cfdfc7ffb66ebae4f24135fd5f"
+change = "sha256:5fb6f6688bdd33e6c610a0000029da215381f3c851fd82fb4dcc3a219b318b8b"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 2. Read the staged policy.rs, its tests, lib.rs, Cargo.toml, Cargo.lock and SBOM changes against spec 0065 'Checking signatures' items 2 and 3 and AGENTS.md sections 5, 6 and 7.3. accept is a pure function in the tijori library's one public API, reads no file and writes no record (the tijori program stays the record's one writer, every trust source only reads), refuses missing record, other instance, older version, same version with other bytes, then a newer version without a policy-change purpose or a strict owner signature, matching item 3; the same-version-same-digest path needs no signature re-check by the spec. The purpose error now carries its PurposeError like check.rs, so the error shape is consistent. sha2 is admitted in gate/packages.toml and pinned as in aegis and tijori. No globals, no hidden wiring, no unused hook. Noted for the Phase 3 move onto Boot."
+summary = "Round 6. Read the staged core.rs, purposes.rs, sign_error.rs, signed.rs, index.rs, log.rs, lib.rs, Cargo.toml and tests/sign_keys.rs against spec 0065 'Signing' items 2 and 3 and AGENTS.md sections 5, 6 and 7.3. Product code is unchanged since round 5; the only new content is the test a_retired_key_never_signs_new_bytes, which pins active_key to Active keys only. Core is built by an explicit constructor and setters with no globals or hidden wiring, depends only on the sutradhar-tijori library's public check, policy and purpose modules (no reach into its insides, no loop), keeps one error enum with plain-English messages, adds ed25519-compact for the one program that holds keys as spec 0065 allows, and record() checks every fallible part (counter, both index nexts, chain append on a copy) before any state changes. No unused setting or hook. Noted for the Phase 3 move onto Boot."
 
 [[finding]]
-what = "Later: crates/sutradhar-tijori/src/policy.rs PolicyTrust::new is public and takes any digest and registry, so nothing ties a PolicyTrust to a policy that accept() passed. When the trust source and the policy encoding land, build PolicyTrust only from accepted bytes (one constructor that runs accept and decodes the registry from the same bytes). Already a Later item on #167."
-fixed = true
-
-[[finding]]
-what = "Later: crates/sutradhar-tijori/src/policy.rs Policy has public instance and version fields decoded by the caller beside the signed bytes, so a wrong decode accepts a relabelled policy (pinned by the a_mislabelled_policy test). Once spec 0065 sets the policy byte encoding, decode instance and version inside this module from policy.signed and drop the separate fields. Already a Later item on #167."
+what = "Later: crates/tijori/src/core.rs Core is wired by hand (new, bind_account, add_key, set_state) with no typed settings struct, health or lifecycle; when tijori moves onto Boot in Phase 3, build it from one typed settings struct and the policy reader in the composition root and drop the public setters (already recorded as a round 4 Later item on #167)."
 fixed = true

@@ -11,6 +11,8 @@ use std::fmt;
 
 use sha2::{Digest, Sha256};
 
+use crate::signed::push_field;
+
 /// Bytes in a SHA-256 digest, the size of every hash in the log.
 pub const HASH_LEN: usize = 32;
 
@@ -128,12 +130,6 @@ impl fmt::Display for LogError {
 }
 
 impl std::error::Error for LogError {}
-
-fn push_field(out: &mut Vec<u8>, field: &[u8]) {
-    let len = u64::try_from(field.len()).unwrap_or(u64::MAX);
-    out.extend_from_slice(&len.to_be_bytes());
-    out.extend_from_slice(field);
-}
 
 impl Entry {
     /// The bytes the entry's hash covers.

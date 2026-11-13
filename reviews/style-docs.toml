@@ -1,13 +1,5 @@
 skill = "style-docs"
-change = "sha256:8928b8fd536c48463296c871512ed8f4521ca8cfdfc7ffb66ebae4f24135fd5f"
+change = "sha256:5fb6f6688bdd33e6c610a0000029da215381f3c851fd82fb4dcc3a219b318b8b"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 2. Read every staged line: sutradhar-tijori src/policy.rs, src/lib.rs, tests/policy.rs, Cargo.toml, Cargo.lock and SBOM lines, against AGENTS.md section 6, the style-docs checklist and spec 0065 'Checking signatures' items 2 to 4. All three round-1 findings are fixed: the purpose field has its own NotPolicyChange error with a true message, NotOwnerSigned means only the signature check, PURPOSE_LEN's doc says what it is for, the strip has a comment, the message test is renamed and lists every variant, and the other-bytes test is explained. Names, doc comments and messages are plain and true."
-
-[[finding]]
-what = "Later: the module doc cites spec 0065 item 2's policy trust source, which item 2 says reads the policy file and record; PolicyTrust holds an already accepted copy and reads nothing. When the file-reading piece of #167 lands, the module doc, PolicyTrust's doc and spec item 2 must describe the same thing. The policy byte encoding is also still unset in spec 0065."
-fixed = true
-
-[[finding]]
-what = "Later: crates/sutradhar-tijori/tests/policy.rs:225 names sutradhar_tijori::verify::VerifyError by full path while every other type is imported at the top; import it with the others when the file is next touched."
-fixed = true
+summary = "Round 6. Read the staged tijori sign step (core.rs, sign_error.rs, signed.rs, purposes.rs, the index.rs, log.rs and lib.rs changes, Cargo.toml) and the new test a_retired_key_never_signs_new_bytes in tests/sign_keys.rs against AGENTS.md section 6 and the style-docs checklist. Every public item has a doc comment that is true of the code; active_key's, repeat's and record's docs match their bodies; error messages are plain English; the length prefix is written once in push_field; files stay under 300 lines. The new test is clearly named, sits with the other key-choice tests and needs no doc change. No product code changed since round 5, whose Later items stand."

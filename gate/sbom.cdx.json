@@ -1259,7 +1259,9 @@
     },
     {
       "dependsOn": [
-        "cargo:sha2@0.11.1"
+        "cargo:ed25519-compact@2.6.0",
+        "cargo:sha2@0.11.1",
+        "cargo:sutradhar-tijori@0.1.0"
       ],
       "ref": "cargo:tijori@0.1.0"
     },

@@ -86,3 +86,26 @@ fn an_index_behind_the_log_does_not_match() {
     index.insert(key("y"), 2).unwrap();
     assert!(!index.matches(1, &at_one));
 }
+
+#[test]
+fn next_changes_nothing_and_refuses_a_counter_that_goes_back() {
+    let mut index = Index::new();
+    index.insert(key("a"), 3).unwrap();
+    let before = (index.latest(), index.running());
+    assert!(index.next(&key("b"), 3).is_err());
+    let _checked = index.next(&key("b"), 4).unwrap();
+    assert_eq!((index.latest(), index.running()), before);
+    assert_eq!(index.get(&key("b")), None);
+}
+
+#[test]
+fn next_then_apply_matches_insert() {
+    let mut one = Index::new();
+    let mut two = Index::new();
+    one.insert(key("a"), 1).unwrap();
+    let next = two.next(&key("a"), 1).unwrap();
+    assert_eq!(next.running(), one.running());
+    two.apply(key("a"), next);
+    assert_eq!((two.latest(), two.running()), (one.latest(), one.running()));
+    assert_eq!(two.get(&key("a")), Some(1));
+}

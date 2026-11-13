@@ -11,6 +11,8 @@ use std::hash::Hash;
 
 use sha2::{Digest, Sha256};
 
+use crate::signed::push_field;
+
 /// Bytes in a SHA-256 digest.
 const DIGEST_LEN: usize = 32;
 
@@ -34,6 +36,23 @@ impl std::fmt::Display for CounterWentBack {
 }
 
 impl std::error::Error for CounterWentBack {}
+
+/// An entry an index has checked and will add, made by [`Index::next`]
+/// and added by [`Index::apply`], so a caller can check every part of a
+/// write before it changes anything.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Next {
+    counter: u64,
+    running: [u8; DIGEST_LEN],
+}
+
+impl Next {
+    /// The running hash once this entry is added.
+    #[must_use]
+    pub const fn running(&self) -> [u8; DIGEST_LEN] {
+        self.running
+    }
+}
 
 /// One index with its running hash.
 #[derive(Debug, Clone)]
@@ -73,23 +92,41 @@ impl<K: Eq + Hash + AsRef<[u8]>> Index<K> {
         key: K,
         counter: u64,
     ) -> Result<(), CounterWentBack> {
+        let next = self.next(&key, counter)?;
+        self.apply(key, next);
+        Ok(())
+    }
+
+    /// Checks adding `key` at `counter` and works out the running hash,
+    /// changing nothing.
+    ///
+    /// # Errors
+    ///
+    /// Refuses a counter that is not above the latest one.
+    pub fn next(&self, key: &K, counter: u64) -> Result<Next, CounterWentBack> {
         if counter <= self.latest {
             return Err(CounterWentBack {
                 latest: self.latest,
                 counter,
             });
         }
-        let key_bytes = key.as_ref();
-        let len = u64::try_from(key_bytes.len()).unwrap_or(u64::MAX);
         let mut fields = Vec::new();
         fields.extend_from_slice(&self.running);
-        fields.extend_from_slice(&len.to_be_bytes());
-        fields.extend_from_slice(key_bytes);
+        push_field(&mut fields, key.as_ref());
         fields.extend_from_slice(&counter.to_be_bytes());
-        self.running = Sha256::digest(&fields).into();
-        self.latest = counter;
-        let _previous = self.map.insert(key, counter);
-        Ok(())
+        Ok(Next {
+            counter,
+            running: Sha256::digest(&fields).into(),
+        })
+    }
+
+    /// Adds `key` with the entry `next` checked; this step cannot fail.
+    /// `next` must come from [`Index::next`] on this index with the same
+    /// key and no change in between.
+    pub fn apply(&mut self, key: K, next: Next) {
+        self.running = next.running;
+        self.latest = next.counter;
+        let _previous = self.map.insert(key, next.counter);
     }
 
     /// The counter recorded for `key`, without scanning the log.

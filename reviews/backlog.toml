@@ -1,21 +1,9 @@
 skill = "backlog"
-change = "sha256:8928b8fd536c48463296c871512ed8f4521ca8cfdfc7ffb66ebae4f24135fd5f"
+change = "sha256:5fb6f6688bdd33e6c610a0000029da215381f3c851fd82fb4dcc3a219b318b8b"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 2. Read the staged diff (policy.rs, tests/policy.rs with its 10 tests, lib.rs, Cargo.toml, Cargo.lock, SBOM) against task #167 package 4 part 1, roadmap Phase 2 and spec 0065 'Checking signatures' items 2 and 3. The round 2 edits are only the fixes the round 1 reviews asked for (purpose error carried in NotPolicyChange, digest pin test, caller-decoding contract in docs and a test, wording); no new scope, nothing unrelated touched, and the Cargo.lock and SBOM edits follow the change's own manifest edit. The Later items below must be listed on #167 with the proof."
+summary = "Round 6. Read task #167 (Phase 2 item 8, status/working, Phase 2 milestone) with comments 3481, 3551 and 3558, AGENTS.md 7.3, and the staged diff: core.rs, purposes.rs, sign_error.rs, signed.rs, index.rs, log.rs, lib.rs, the three test files, Cargo.toml, Cargo.lock and the SBOM. The change is the sign step of plan package 4 in comment 3481 (spec 0065 'Signing' items 2 and 3, 'Callers and their keys' items 1 and 2), the one product code AGENTS.md 7.3 allows before the gate is complete. The only change since round 5 is the asked-for test a_retired_key_never_signs_new_bytes in tests/sign_keys.rs. Nothing unrelated is touched: log.rs only drops its own push_field for the shared one, the index.rs edits are the next/apply split round 2 asked for, and the Cargo.lock and SBOM edits follow the crate's own manifest edit. Socket, durable writes, sealed keys, policy reading, clock bound, waiting requests, sign_release and the missing research card are left to later parts of #167 and recorded there as Later, not done here."
 
 [[finding]]
-what = "Later: spec 0065 sets no byte layout for a policy, so crates/sutradhar-tijori/src/policy.rs takes instance and version from the caller; the contract is now documented on Policy and accept and pinned by a test. When spec 0065 sets the encoding (a spec change on #167), accept should decode instance and version from the signed bytes itself. List on #167 with the proof."
-fixed = true
-
-[[finding]]
-what = "Later: spec 0065 says a policy names the previous policy's digest; accept does not check that link and item 3 does not require it. Decide in spec 0065 whether a newer version must match the record's digest as its previous digest, and list the decision on #167."
-fixed = true
-
-[[finding]]
-what = "Later: PolicyTrust::new takes any digest and registry, not one tied to an accepted policy, and the owner signature is not re-checked on every load. Both are named in the brief as Later items on #167; make sure the proof comment lists them."
-fixed = true
-
-[[finding]]
-what = "Later: comment 3551 Later item 2 (policy-older and other-instance refusals with the policy trust source) is now half done: accept refuses another instance, the policy-older check refusal is still open. The proof comment should say which part this commit closes so the Later list stays true."
+what = "Later: the proof comment for this commit on #167 must list the Later items of rounds 1 to 5 of this piece (as the brief names them, including the missing research card for spec 0065 'Signing' item 1 and the untestable mismatched-logged-entry case), so the task's Later list stays complete."
 fixed = true

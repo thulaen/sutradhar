@@ -1,17 +1,17 @@
 skill = "red-team"
-change = "sha256:8928b8fd536c48463296c871512ed8f4521ca8cfdfc7ffb66ebae4f24135fd5f"
+change = "sha256:5fb6f6688bdd33e6c610a0000029da215381f3c851fd82fb4dcc3a219b318b8b"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Three red agents attacked crates/sutradhar-tijori/src/policy.rs against spec 0065 Checking signatures item 3: break it (empty, cut-short, u64::MAX versions and length prefixes, weak keys), get round it (non-canonical S, purpose prefix confusion such as policy-change-x, rollback, same-version byte swap, cross-purpose signature reuse) and abuse it (eleven code mutations, every one caught by the tests). No unsigned, rolled-back or swapped policy was accepted; the check order matches the spec."
+summary = "Round 6. Three red agents attacked the tijori sign step (core.rs, purposes.rs, signed.rs, sign_error.rs, index.rs next/apply, log.rs) in scratch copies under red-r6 against spec 0065 Signing items 2 and 3 and Callers and their keys items 1 and 2. Break it: empty bytes with max_bytes 0, 64 MiB bytes, now u64::MAX then 0, 20,000 signs over 5,000 requests, bad and look-alike purposes and accounts, keys retired, revoked and replaced between calls; every log body and both index running hashes re-checked from scratch, with no panic, hang or broken log. Get round it: another principal's key, unlisted purposes, the release key, refused purposes, stale and revoked repeats, half-written writes; 23 mutants, 20 killed and the 3 survivors known or Later. Abuse it: purpose-prefix and length-prefix confusion across 7 crafted byte strings and 4 purposes, Unicode look-alike characters, index-key collisions, log body decoded against the returned signature, S+L tampering; all refused. The round 5 blocker is fixed: a_retired_key_never_signs_new_bytes fails when active_key accepts any non-revoked key (checked by mutation). No wrong signature or broken log is reachable through the public API."
 
 [[finding]]
-what = "Later: accept takes any newer owner-signed version without checking the previous-policy digest the spec requires (spec 0065 test list: N+2 built on a held-back N+1 must be refused); Policy has no field for it. Already a Later item on #167; the accept doc could name it so callers do not think rollback is fully handled."
+what = "Later: core.rs:194-197 (repeat): moving the 'caller has an active key' check after the still-good return survives every test. It changes behaviour only when the logged key is Retired and the caller has no active key, which is the recorded round 3 Later item on what 'the caller may still ask' means (retired-with-no-replacement retry). When that item is settled, add a test that signs, retires the only key and repeats, pinning whichever answer the spec chooses."
 fixed = true
 
 [[finding]]
-what = "Later: at the same version with a matching digest, accept returns Ok without checking the signature (an all-zero signature passes). Safe while the record digest only comes from a signature-checked accept; if an owner reset ever writes a digest, the per-load owner-signature re-check (Later on #167) must cover it. A one-line doc note on accept would make it explicit."
+what = "Later: core.rs:96-108 (active_key) skips only keys that list a release purpose; a key that also lists log-head or another NOT_SIGNED_HERE purpose still signs ordinary purposes. The purpose prefix stops those signatures from checking as log-head, so nothing wrong is signed; goes with the recorded policy-reader items (which keys may list which purposes)."
 fixed = true
 
 [[finding]]
-what = "Later: PolicyTrust::new takes any digest and registry and lookup always returns Some, so nothing ties it to an accepted Record or lets it refuse checks; already a Later item on #167."
+what = "Later: core.rs:128-133 (sign) checks the size before the account, so an unknown caller learns max_bytes from TooLarge. The limit is not secret, and size limits come from the policy later; when the socket part lands, consider checking the caller first."
 fixed = true

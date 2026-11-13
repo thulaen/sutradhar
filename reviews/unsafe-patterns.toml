@@ -1,13 +1,13 @@
 skill = "unsafe-patterns"
-change = "sha256:8928b8fd536c48463296c871512ed8f4521ca8cfdfc7ffb66ebae4f24135fd5f"
+change = "sha256:5fb6f6688bdd33e6c610a0000029da215381f3c851fd82fb4dcc3a219b318b8b"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 2. Read the staged policy.rs, tests/policy.rs, lib.rs, Cargo.toml, Cargo.lock and SBOM against spec 0065 Checking signatures item 3. Checked errors turned into defaults, overflow, check-then-use, trusted outside values, unbounded input and weakened tests. Both round 1 findings are handled: purpose failures now carry the PurposeError, and the instance/version contract is documented on Policy and accept and pinned by a test. accept refuses a missing record, another instance, an older version, the same version with other bytes, a wrong or cut-short purpose and a bad owner signature; the same-version path is safe without a signature re-check because a record digest is only produced after a strict owner check (or an owner-signed reset). Every refusal test fails if its check is removed. No blocking pattern found."
+summary = "Round 6. Read the staged crates/tijori core.rs, sign_error.rs, signed.rs, purposes.rs, index.rs, log.rs, lib.rs and tests/core.rs, tests/index.rs, tests/sign_keys.rs; cargo test -p tijori (13 pass) and clippy -D warnings are clean. Checked errors turned into defaults, overflow, check-then-use, trusted outside values, unbounded input and weakened tests. The size check comes before any work; the NOT_SIGNED_HERE match cannot be bypassed because Purpose::new only admits lowercase, digits and '-'; counters use checked_add; record checks both index nexts and appends on a chain copy before swapping anything in, so a failure changes nothing; &mut self rules out a check-then-use race. The new test a_retired_key_never_signs_new_bytes fails if active_key accepts a retired key. No blocking pattern found."
 
 [[finding]]
-what = "Later: crates/sutradhar-tijori/src/policy.rs:55-69,127-131 still trusts Policy.instance and Policy.version from the caller; tests/policy.rs:230-244 pins that a relabelled old owner-signed body is accepted at a higher version. Safe only while the caller decodes both from `signed`, which is now documented. When spec 0065 sets the policy encoding, move the decoding into accept and flip that test to expect a refusal."
+what = "Later: crates/tijori/src/signed.rs:17 push_field turns a failed usize-to-u64 conversion into u64::MAX with unwrap_or. Unreachable on 64-bit targets and already a recorded Later item from round 5; make it a checked error or a compile-time assertion when the durable log lands."
 fixed = true
 
 [[finding]]
-what = "Later: crates/sutradhar-tijori/src/policy.rs:181-190 PolicyTrust::new takes any digest and registry, not one tied to an accepted Record, so a caller could answer checks from a policy accept never saw. Already a Later item on #167; build PolicyTrust from an accepted policy when the loader lands."
+what = "Later: crates/tijori/src/core.rs:39,277 issued holds one Logged per log entry in memory with no bound beyond the log counter. Not worse than the in-memory entries Vec in this part; bound or move it to the durable index when durable writes land."
 fixed = true
