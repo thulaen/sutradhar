@@ -1,9 +1,9 @@
 skill = "security"
-change = "sha256:8d240d80ac532888c53882caca05ddda7c12f84a1826a537a730e97d831ee478"
+change = "sha256:16794aad435904419aaed02fb2a933e281b21825565822caecbe8a238b0ffef3"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Rebase check: read the staged diff against origin/main in the push worktree. Spec 0075 is byte-identical to round 7 and the spec 0053 and README hunks are unchanged; the other staged files are review records. The three upstream tijori commits (14c5588, d419cab, 9a41a3f) touch only tijori crates, spec 0065, the glossary, gate package lists and review records, none of the specs 0075 relies on (0021, 0027, 0032, 0053, 0072). Spec 0075 adds no signing, keys, site messages or add-on traffic, so its trust and privacy rules are unaffected."
+summary = "Read the staged three-line pin change (docker/forgejo/compose.yaml, gate/tools.toml, gate/sbom.cdx.json). The new digest is the same in all three, no old digest remains, and the registry confirms codeberg.org/forgejo-experimental/forgejo:15.0-test-rootless now resolves to sha256:e235b157...8c49. The image stays pinned by digest from the same source, the only scan hole is already allowed in gate/image-holes.toml (CVE-2026-4738, task 130, until 2026-12-09), and no secret, port or setting changes."
 
 [[finding]]
-what = "Later: carried from round 7. docs/specs/0075-indicator-steering.md, group 3 author paragraph: 'a deleted member keeps their user id' differs from spec 0072, which treats a deleted member's id as 0. Say which holds on each site type."
+what = "Later: docker/forgejo/compose.yaml and gate/tools.toml pin a daily build from forgejo-experimental, whose old digests vanish from the registry (this is the second re-pin, after 7ef3e00). Keep a local copy of the pinned image, or move to a release tag once Forgejo 15 ships, so the door does not depend on a digest the registry may drop."
 fixed = true

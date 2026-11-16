@@ -1,9 +1,5 @@
 skill = "style-docs"
-change = "sha256:8d240d80ac532888c53882caca05ddda7c12f84a1826a537a730e97d831ee478"
+change = "sha256:16794aad435904419aaed02fb2a933e281b21825565822caecbe8a238b0ffef3"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Rebase check: read the staged diff against origin/main in claude-65edf579-pushwt. Spec 0075 and spec 0053 are byte-identical to the round 7 content that passed, and the README change is the same sentence and row. The three upstream tijori commits change only tijori code, spec 0065, one glossary row (sutradhar-tijori), gate files and review records. Nothing this change touches or cites (specs 0021, 0023, 0024, 0027, 0041, 0053, 0072, the glossary terms used) changed upstream, so every doc it touches is still true."
-
-[[finding]]
-what = "Later: the round 7 Later notes still apply unchanged: 'post facts' wording in group 3, IS05's 'share of 0', and a few ragged wraps."
-fixed = true
+summary = "Task #130 pin update: read the three one-line changes (docker/forgejo/compose.yaml, gate/tools.toml, gate/sbom.cdx.json) and the lines around them. The old digest 7ce191cc... is gone from the tree, and the new digest appears identically in all three places. The compose comment ('v15 LTS branch daily (15.0-test), rootless, pinned by digest'), tools.toml's version and source, and the SBOM's bom-ref and description are still true. No doc under docs/ or AGENTS.md names the digest. Whether the registry serves this digest is a check for the defects and security reviews, not this one."

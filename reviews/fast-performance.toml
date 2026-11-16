@@ -1,9 +1,5 @@
 skill = "fast-performance"
-change = "sha256:8d240d80ac532888c53882caca05ddda7c12f84a1826a537a730e97d831ee478"
+change = "sha256:16794aad435904419aaed02fb2a933e281b21825565822caecbe8a238b0ffef3"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Rebase check of the round 7 content on origin/main (9a41a3f). Read the staged diff against origin/main: spec 0075, the spec 0053 note and the README row match round 7. The three upstream tijori commits change only tijori crates, spec 0065, the glossary, the gate files and review records. None of AGENTS.md or specs 0024, 0027, 0040, 0041, 0053, 0059 and 0072 changed, so the memory, heavy job slot and time figures spec 0075 relies on still hold."
-
-[[finding]]
-what = "Later, carried from round 7: group 3 rule 2's per-author RSI re-derives bars from labels, so do it only for destinations already above the band. Check that 8 f64 sums are enough for group 4. When measured, check that the heavy job slot's nightly total fits beside ganit's batch."
-fixed = true
+summary = "Read pin.diff and the staged diff (task #130): one line in each of docker/forgejo/compose.yaml, gate/tools.toml and gate/sbom.cdx.json swaps the Forgejo test image digest from 7ce191cc... to e235b157... The three now agree and no old digest is left in the tree. No code, loop, hot path, cache, memory or time limit is touched, so nothing here can slow Sutradhar or grow its memory."

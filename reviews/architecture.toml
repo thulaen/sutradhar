@@ -1,13 +1,5 @@
 skill = "architecture"
-change = "sha256:8d240d80ac532888c53882caca05ddda7c12f84a1826a537a730e97d831ee478"
+change = "sha256:16794aad435904419aaed02fb2a933e281b21825565822caecbe8a238b0ffef3"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Rebase check. Read git diff --cached origin/main in the push worktree and the file list of upstream commits 14c5588, d419cab and 9a41a3f. Spec 0075 is byte-identical to round 7 (same SHA-256), and the spec 0053 and README diffs match the round 7 change line for line. The upstream commits touch only tijori's crates, spec 0065, the glossary, gate/packages.toml, the SBOM and Cargo.lock; spec 0075 names neither tijori nor spec 0065, and none of its doors or owners (specs 0021, 0023, 0024, 0027, 0028, 0040, 0041, 0053, 0056, 0072) changed, so the round 7 review of module walls holds."
-
-[[finding]]
-what = "Rounds 1 to 7: all earlier findings stay fixed; the rebase brings in nothing that crosses spec 0075's module walls."
-fixed = true
-
-[[finding]]
-what = "Later: ranking reads rest labels through the tuning module's public API, and the tuning module replays ranking (spec 0053 step 3). When built, check the replayer does not call ranking's module, or the two modules form a loop (AGENTS.md section 5.1); if it does, ranking can keep its own copy of rest labels from a typed outbox event."
-fixed = true
+summary = "Task #130. Read pin.diff and the staged change in the push worktree on top of c2847c2: one digest line each in docker/forgejo/compose.yaml, gate/tools.toml and gate/sbom.cdx.json, moving the pinned Forgejo test image to sha256:e235b157... The same three files as commit 7ef3e00, no other copy of the old digest left in the tree, no new tool, setting or library, and the tool record stays the single source in gate/tools.toml with the compose file and SBOM following it. Nothing touches the product, Boot or a module wall."

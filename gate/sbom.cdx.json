@@ -824,7 +824,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "7ce191cccfe126db66867f27793c6bc225d397676d5403228da0ae87f0fc7274"
+          "content": "e235b157fc7174141edd9eb241cb41bf3447e77681c5e1252a088d305a9e8c49"
         }
       ],
       "name": "forgejo",

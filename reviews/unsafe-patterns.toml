@@ -1,17 +1,9 @@
 skill = "unsafe-patterns"
-change = "sha256:8d240d80ac532888c53882caca05ddda7c12f84a1826a537a730e97d831ee478"
+change = "sha256:16794aad435904419aaed02fb2a933e281b21825565822caecbe8a238b0ffef3"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Rebase check: the staged change on origin/main (9a41a3f) has a spec 0075 identical to round 7, and spec 0053 and README hunks that match it; upstream commits 14c5588, d419cab and 9a41a3f touch only tijori code and spec 0065, which spec 0075 does not use. Round 7 review: Compared the new spec 0075 line by line with round 6; the spec 0053 hunks are unchanged. The author definition reads sampark's post user id through its public API, never the id of whoever saved the post, and stores no member id. A withdrawn reject now drops out of the ring, which stays at 20 pairs at most. The top-author rule in group 3 rule 2 runs in the nightly job, inside its 10-minute and 256 MB cap, and a site it does not finish carries on the next night. Nothing open; two Later notes on how to build the top-author rule. Commit checks were not run: docs only, and this brief does not allow staging."
+summary = "Task #130. Read the whole staged change: three one-line digest swaps in docker/forgejo/compose.yaml, gate/tools.toml and gate/sbom.cdx.json, the same shape as commit 7ef3e00. Checked the registry with an anonymous pull token: 15.0-test-rootless now resolves to sha256:e235b157...8c49, that digest returns 200, and the old sha256:7ce191cc... returns 404. The image stays pinned by digest, and the old digest is left nowhere outside reviews/. No error-to-default, unbounded input or weakened test. Commit checks were not run: this brief does not allow staging or running the gate."
 
 [[finding]]
-what = "Later: group 3 rule 2's top-author rule needs show counts per author per destination over 7 days. An implementation that builds a map of every author for every destination in memory could break the job's 256 MB cap. Say the nightly job streams shows ordered by destination and then author, keeping one destination's tallies at a time. Show that cap on a site with many authors in the bench."
-fixed = true
-
-[[finding]]
-what = "Later: 'Decisions on posts by that author are left out of the RSI too' cannot come from stored bar values alone. Say the RSI without the top author is rebuilt in the nightly job from spec 0053's stored labels for at most the last (n + 1) × N decisions, so the read stays bounded and the live path never rereads history. Also, IS05 still says a resting destination no longer shown 'has a share of 0', while the rule now says it is not checked against its band: align the wording."
-fixed = true
-
-[[finding]]
-what = "Later, carried from round 3: run rule 8's finite check after a 64-bit to 32-bit conversion. Count the ranking label reads that hit the 5 ms limit, so they do not silently switch rests off."
+what = "Later: the 15.0-test daily tag's old digests are deleted from the registry, so this pin breaks again each time and pushes stop. Consider pinning a released Forgejo 15 image, or mirroring the pinned image into a registry the project controls, so a pin can only change on purpose."
 fixed = true

@@ -1,13 +1,13 @@
 skill = "backlog"
-change = "sha256:8d240d80ac532888c53882caca05ddda7c12f84a1826a537a730e97d831ee478"
+change = "sha256:16794aad435904419aaed02fb2a933e281b21825565822caecbe8a238b0ffef3"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Rebase check. Read git diff --cached origin/main in claude-65edf579-pushwt. The changed lines in docs/specs/0053-feedback-learning.md, docs/specs/0075-indicator-steering.md and docs/specs/README.md match the round 7 change.diff line for line. The new base commits (14c5588, d419cab, 9a41a3f, all tijori) touch spec 0065 and the glossary, not these files. The other staged files are only the eight review records the gate needs, so the change still does what task #218 asked and no more."
+summary = "Read pin.diff, the staged stat in claude-65edf579-pushwt (3 files, 3 lines), task #130 (open, status/working and status/urgent, Phase 1 milestone, roadmap Phase 2 item 3) with its latest comments, and commit 7ef3e00 as the precedent. The change swaps only the dead Forgejo test image digest for the current 15.0-test-rootless one, in compose.yaml, gate/tools.toml and the SBOM, so the door can scan images again. That is what #130 asks for, and nothing else."
 
 [[finding]]
-what = "Checked, no problem: the content is the same as round 7 (Later, task #218; groups 5 to 7 built with spec 0075 as the owner approved; group 8 reports only; owner decision 2 lists specs 0027, 0041, 0053 and 0072). The staged reviews/*.toml still carry the round 7 fingerprint (4f9b...), so they must be replaced by the rebase records before commit or the gate will refuse them."
+what = "Checked, no problem: only the digest bytes change, the same three places as 7ef3e00 under the same task, with no other edit. It is gate work the door needs before any push can go in (AGENTS.md section 6 rule 13), on a task in the current work."
 fixed = true
 
 [[finding]]
-what = "Later: the closing comment on #218 should say that idea 41 and ideas 153, 155, 156 and 158 were left out, with their reasons."
+what = "Later: #130's comment of 16 November says the live Forgejo now runs the patched image 127.0.0.1:3000/sutradhar-owner/forgejo@sha256:3f5833dd..., while docker/forgejo/compose.yaml still names the codeberg experimental test image. This change does not widen that gap, but it should stay an open item on #130: point compose.yaml and gate/tools.toml at the patched image, so the repository matches what runs, and drop this repeated test-tag repinning."
 fixed = true

@@ -1,9 +1,9 @@
 skill = "red-team"
-change = "sha256:8d240d80ac532888c53882caca05ddda7c12f84a1826a537a730e97d831ee478"
+change = "sha256:16794aad435904419aaed02fb2a933e281b21825565822caecbe8a238b0ffef3"
 verdict = "pass"
 agent = "claude subagent"
-summary = """Rebase check of the round 7 change onto origin/main, which gained tijori commits 14c5588, d419cab and 9a41a3f. I confirmed the staged spec 0075 is byte-identical (sha256 1461577…) and the staged 0053 and README edits match the reviewed diff. One red agent (abuse it) read the three upstream commits: tijori's check library, signature log, policy acceptance and sign step, spec 0065's SHA-256 wording and a glossary row. It found no new route to abuse spec 0075 and no conflict. Tijori's signed policy settings and signature log are separate from spec 0014's settings store and spec 0032's audit log. The round 7 Later items still stand."""
+summary = """Task #130 pin update: the Forgejo test image digest moves to sha256:e235b157… in compose.yaml, gate/tools.toml and the SBOM. I checked Codeberg's registry with read-only calls, and one red agent (get round it and abuse it) repeated the checks. The 15.0-test-rootless tag of codeberg.org/forgejo-experimental/forgejo resolves to this digest, the index's own sha256 matches it, and the old 7ce191cc… returns 404. The amd64 image runs as 1000:1000, was built 2026-11-14 and is labelled Forgejo 15.0-test from codeberg.org/forgejo/forgejo. The change has the same shape as 7ef3e00, and no other file holds the digest."""
 
 [[finding]]
-what = """Later: the round 7 Later items carry over unchanged, chiefly the owner decision on resting a destination with 3 cheap accounts (count only authors with standing, require rejects to span several days, or keep the rest to the sections the rejects came from)."""
+what = """Later: the 15.0-test-rootless tag is a daily build, so the pinned digest will expire again, as it did after 7ef3e00. Consider pinning a tagged release, or a scheduled check that warns before the door refuses pushes."""
 fixed = true

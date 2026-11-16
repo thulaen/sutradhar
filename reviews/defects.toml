@@ -1,9 +1,9 @@
 skill = "defects"
-change = "sha256:8d240d80ac532888c53882caca05ddda7c12f84a1826a537a730e97d831ee478"
+change = "sha256:16794aad435904419aaed02fb2a933e281b21825565822caecbe8a238b0ffef3"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Rebase check: read the staged diff against origin/main in the push worktree. Spec 0075 and the 0053 change are byte-identical to the round 7 content that passed, and the README hunk has the same lines; the rest of the staged diff is the reviews/ records. The three upstream commits (14c5588, d419cab, 9a41a3f) touch only tijori code and tests, spec 0065, the glossary, gate package lists and review records. Spec 0075 does not mention tijori, signing or spec 0065 and touches none of those files, so nothing upstream conflicts with or contradicts it. Docs only, so no test is needed."
+summary = "Task #130 pin fix: read the staged diff in the push worktree (identical to pin.diff), three one-line digest changes in docker/forgejo/compose.yaml, gate/tools.toml and gate/sbom.cdx.json, the same three files commit 7ef3e00 changed. The old digest is gone from the tree. Read-only registry calls to codeberg.org confirm that 15.0-test-rootless resolves to sha256:e235b157... (HTTP 200), that the new digest resolves (200), and that the old sha256:7ce191cc... returns 404. The SBOM entry keeps its name, version and bom-ref, and the CVE-2026-4738 hole for image forgejo (task 130) runs until 2026-12-09. The change is a pin with no code, so no test is needed."
 
 [[finding]]
-what = "Later, carried from round 7: reword IS05's 'has a share of 0'; add group 3 rule 2's author reads to the nightly job's budget; batch or cache rule 1's author reads; name group 10's per-author series in spec 0072's list of uses of the author id when it is built; remove the stray blank line under 'Changes from the source'."
+what = "Later: this is the second time in a few days that the daily 15.0-test-rootless digest has vanished from the registry and blocked a push (7ef3e00, now this). Consider pinning a tag that the registry keeps, or mirroring the pinned image on Dell's Forgejo, so images.holes does not depend on a daily build staying online. Belongs with task #130."
 fixed = true
