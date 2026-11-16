@@ -1,17 +1,9 @@
 skill = "fast-performance"
-change = "sha256:5fb6f6688bdd33e6c610a0000029da215381f3c851fd82fb4dcc3a219b318b8b"
+change = "sha256:8d240d80ac532888c53882caca05ddda7c12f84a1826a537a730e97d831ee478"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 6: read the staged core.rs, index.rs, log.rs, signed.rs, purposes.rs and the new test in tests/sign_keys.rs. The only change since round 5 is the test a_retired_key_never_signs_new_bytes, which runs no product code differently. sign is unchanged: one SHA-256 of the bytes, one O(keys) active_key scan, O(1) map lookups for a repeat, one Ed25519 signature, and record stays O(1) per sign through Index::next/apply and a copy of the small chain head. Not measured again: round 3 measured about 41 us per sign, flat to 40,000 entries, and no hot-path code changed since. No loops over the log, no blocking calls, nothing cut short."
+summary = "Rebase check of the round 7 content on origin/main (9a41a3f). Read the staged diff against origin/main: spec 0075, the spec 0053 note and the README row match round 7. The three upstream tijori commits change only tijori crates, spec 0065, the glossary, the gate files and review records. None of AGENTS.md or specs 0024, 0027, 0040, 0041, 0053, 0059 and 0072 changed, so the memory, heavy job slot and time figures spec 0075 relies on still hold."
 
 [[finding]]
-what = "Later: active_key (crates/tijori/src/core.rs) scans every registry key and collects a Vec on each sign, O(keys). Fine at registry sizes of tens of keys; if the registry grows, index keys by (principal, purpose) when the policy file is read."
-fixed = true
-
-[[finding]]
-what = "Later: entries, issued and both indexes in Core (crates/tijori/src/core.rs) grow with every signature and hold the whole log in memory. By design for this in-memory part; the durable-log part should bound what stays in memory (section 5.6)."
-fixed = true
-
-[[finding]]
-what = "Later (minor): sign (crates/tijori/src/core.rs) clones the principal String and Purpose::prefix copies the caller bytes into a new Vec before signing, one copy of up to max_bytes per sign. Cheap next to the signature; an incremental signer would avoid it if max_bytes grows large."
+what = "Later, carried from round 7: group 3 rule 2's per-author RSI re-derives bars from labels, so do it only for destinations already above the band. Check that 8 f64 sums are enough for group 4. When measured, check that the heavy job slot's nightly total fits beside ganit's batch."
 fixed = true

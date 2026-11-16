@@ -1,17 +1,9 @@
 skill = "red-team"
-change = "sha256:5fb6f6688bdd33e6c610a0000029da215381f3c851fd82fb4dcc3a219b318b8b"
+change = "sha256:8d240d80ac532888c53882caca05ddda7c12f84a1826a537a730e97d831ee478"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 6. Three red agents attacked the tijori sign step (core.rs, purposes.rs, signed.rs, sign_error.rs, index.rs next/apply, log.rs) in scratch copies under red-r6 against spec 0065 Signing items 2 and 3 and Callers and their keys items 1 and 2. Break it: empty bytes with max_bytes 0, 64 MiB bytes, now u64::MAX then 0, 20,000 signs over 5,000 requests, bad and look-alike purposes and accounts, keys retired, revoked and replaced between calls; every log body and both index running hashes re-checked from scratch, with no panic, hang or broken log. Get round it: another principal's key, unlisted purposes, the release key, refused purposes, stale and revoked repeats, half-written writes; 23 mutants, 20 killed and the 3 survivors known or Later. Abuse it: purpose-prefix and length-prefix confusion across 7 crafted byte strings and 4 purposes, Unicode look-alike characters, index-key collisions, log body decoded against the returned signature, S+L tampering; all refused. The round 5 blocker is fixed: a_retired_key_never_signs_new_bytes fails when active_key accepts any non-revoked key (checked by mutation). No wrong signature or broken log is reachable through the public API."
+summary = """Rebase check of the round 7 change onto origin/main, which gained tijori commits 14c5588, d419cab and 9a41a3f. I confirmed the staged spec 0075 is byte-identical (sha256 1461577…) and the staged 0053 and README edits match the reviewed diff. One red agent (abuse it) read the three upstream commits: tijori's check library, signature log, policy acceptance and sign step, spec 0065's SHA-256 wording and a glossary row. It found no new route to abuse spec 0075 and no conflict. Tijori's signed policy settings and signature log are separate from spec 0014's settings store and spec 0032's audit log. The round 7 Later items still stand."""
 
 [[finding]]
-what = "Later: core.rs:194-197 (repeat): moving the 'caller has an active key' check after the still-good return survives every test. It changes behaviour only when the logged key is Retired and the caller has no active key, which is the recorded round 3 Later item on what 'the caller may still ask' means (retired-with-no-replacement retry). When that item is settled, add a test that signs, retires the only key and repeats, pinning whichever answer the spec chooses."
-fixed = true
-
-[[finding]]
-what = "Later: core.rs:96-108 (active_key) skips only keys that list a release purpose; a key that also lists log-head or another NOT_SIGNED_HERE purpose still signs ordinary purposes. The purpose prefix stops those signatures from checking as log-head, so nothing wrong is signed; goes with the recorded policy-reader items (which keys may list which purposes)."
-fixed = true
-
-[[finding]]
-what = "Later: core.rs:128-133 (sign) checks the size before the account, so an unknown caller learns max_bytes from TooLarge. The limit is not secret, and size limits come from the policy later; when the socket part lands, consider checking the caller first."
+what = """Later: the round 7 Later items carry over unchanged, chiefly the owner decision on resting a destination with 3 cheap accounts (count only authors with standing, require rejects to span several days, or keep the rest to the sections the rejects came from)."""
 fixed = true

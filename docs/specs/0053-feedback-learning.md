@@ -86,6 +86,14 @@ Reasons are optional buttons, never free text.
 
 ### The tuner, one careful step at a time
 
+Spec 0075's groups 5 to 7 add checks to steps 2, 5 and 6 below, and
+to how a job 45 weight moves toward its target (owner, 16 November
+2026). They are built with spec 0075, not as part of this spec's own
+build. They skip a night, drop proposals, break ties between
+proposals whose gains overlap, make steps smaller, hold promotions, or
+lengthen a watch by at most 28 days; the pass rule, bounds, 5% step
+limit and one-change watch stay as written here.
+
 A nightly durable job sequence at the lowest priority, yielding to live
 work:
 
@@ -296,7 +304,8 @@ The tuner's failures never affect suggestions.
   discrete setting moves one approved step; values stay inside their bound
   and above zero.
 - One step under watch at a time; watch of 14 days or 200 decisions,
-  whichever is later; a reverted setting pauses for 30 days.
+  whichever is later, and up to 28 days longer under spec 0075's brake;
+  a reverted setting pauses for 30 days.
 - At least 200 decisions in the check set; LambdaMART needs at least 2,000.
 - Memory, inside the service slice, within the memory limits in
   AGENTS.md section 5.6: the tuner runs in spec 0024's heavy job slot

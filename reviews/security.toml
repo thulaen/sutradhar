@@ -1,5 +1,9 @@
 skill = "security"
-change = "sha256:5fb6f6688bdd33e6c610a0000029da215381f3c851fd82fb4dcc3a219b318b8b"
+change = "sha256:8d240d80ac532888c53882caca05ddda7c12f84a1826a537a730e97d831ee478"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 6: read the staged core.rs, purposes.rs, sign_error.rs, signed.rs, index.rs and log.rs changes, the three test files, Cargo.toml, Cargo.lock and SBOM against spec 0065 'Signing' items 2 and 3. Traced the untrusted inputs (account, purpose name, bytes, now) to sign(): size, account binding, refused purposes and the purpose-name rule are checked before any key use; the key is chosen only among the caller principal's Active keys that list the purpose and are not release keys; a repeat key holds principal, purpose and bytes hash as length-prefixed fields and a repeat answers only if the logged key is still Active or Retired, still the caller's and still lists the purpose; the signature covers the purpose prefix plus the bytes; the log and indexes change only after every fallible step passed. No secrets in errors or logs, no shell, path or decoding of outside data, no home-made crypto; ed25519-compact 2.6.0 is already admitted in gate/packages.toml and used by sutradhar-tijori. The only change since round 5 is the new test a_retired_key_never_signs_new_bytes; tijori tests pass (36)."
+summary = "Rebase check: read the staged diff against origin/main in the push worktree. Spec 0075 is byte-identical to round 7 and the spec 0053 and README hunks are unchanged; the other staged files are review records. The three upstream tijori commits (14c5588, d419cab, 9a41a3f) touch only tijori crates, spec 0065, the glossary, gate package lists and review records, none of the specs 0075 relies on (0021, 0027, 0032, 0053, 0072). Spec 0075 adds no signing, keys, site messages or add-on traffic, so its trust and privacy rules are unaffected."
+
+[[finding]]
+what = "Later: carried from round 7. docs/specs/0075-indicator-steering.md, group 3 author paragraph: 'a deleted member keeps their user id' differs from spec 0072, which treats a deleted member's id as 0. Say which holds on each site type."
+fixed = true

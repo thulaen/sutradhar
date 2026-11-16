@@ -1,9 +1,13 @@
 skill = "architecture"
-change = "sha256:5fb6f6688bdd33e6c610a0000029da215381f3c851fd82fb4dcc3a219b318b8b"
+change = "sha256:8d240d80ac532888c53882caca05ddda7c12f84a1826a537a730e97d831ee478"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 6. Read the staged core.rs, purposes.rs, sign_error.rs, signed.rs, index.rs, log.rs, lib.rs, Cargo.toml and tests/sign_keys.rs against spec 0065 'Signing' items 2 and 3 and AGENTS.md sections 5, 6 and 7.3. Product code is unchanged since round 5; the only new content is the test a_retired_key_never_signs_new_bytes, which pins active_key to Active keys only. Core is built by an explicit constructor and setters with no globals or hidden wiring, depends only on the sutradhar-tijori library's public check, policy and purpose modules (no reach into its insides, no loop), keeps one error enum with plain-English messages, adds ed25519-compact for the one program that holds keys as spec 0065 allows, and record() checks every fallible part (counter, both index nexts, chain append on a copy) before any state changes. No unused setting or hook. Noted for the Phase 3 move onto Boot."
+summary = "Rebase check. Read git diff --cached origin/main in the push worktree and the file list of upstream commits 14c5588, d419cab and 9a41a3f. Spec 0075 is byte-identical to round 7 (same SHA-256), and the spec 0053 and README diffs match the round 7 change line for line. The upstream commits touch only tijori's crates, spec 0065, the glossary, gate/packages.toml, the SBOM and Cargo.lock; spec 0075 names neither tijori nor spec 0065, and none of its doors or owners (specs 0021, 0023, 0024, 0027, 0028, 0040, 0041, 0053, 0056, 0072) changed, so the round 7 review of module walls holds."
 
 [[finding]]
-what = "Later: crates/tijori/src/core.rs Core is wired by hand (new, bind_account, add_key, set_state) with no typed settings struct, health or lifecycle; when tijori moves onto Boot in Phase 3, build it from one typed settings struct and the policy reader in the composition root and drop the public setters (already recorded as a round 4 Later item on #167)."
+what = "Rounds 1 to 7: all earlier findings stay fixed; the rebase brings in nothing that crosses spec 0075's module walls."
+fixed = true
+
+[[finding]]
+what = "Later: ranking reads rest labels through the tuning module's public API, and the tuning module replays ranking (spec 0053 step 3). When built, check the replayer does not call ranking's module, or the two modules form a loop (AGENTS.md section 5.1); if it does, ranking can keep its own copy of rest labels from a typed outbox event."
 fixed = true

@@ -1,9 +1,9 @@
 skill = "defects"
-change = "sha256:5fb6f6688bdd33e6c610a0000029da215381f3c851fd82fb4dcc3a219b318b8b"
+change = "sha256:8d240d80ac532888c53882caca05ddda7c12f84a1826a537a730e97d831ee478"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 6. Read the staged core.rs, purposes.rs, signed.rs and tests/sign_keys.rs, including the one new test a_retired_key_never_signs_new_bytes; product code matches round 5. sign checks size, caller, refused purposes, purpose name, then a repeat (caller still has an active key, logged principal/purpose/bytes hash match, logged key Active or Retired and still the caller's and still lists the purpose) before signing afresh; record checks every failing part before swapping in chain and indexes. Ran all tijori tests (36 pass) on the staged tree. Mutation in a scratch copy: active_key accepting any non-revoked key makes the new test fail at sign_keys.rs:60, so it guards the round 5 gap."
+summary = "Rebase check: read the staged diff against origin/main in the push worktree. Spec 0075 and the 0053 change are byte-identical to the round 7 content that passed, and the README hunk has the same lines; the rest of the staged diff is the reviews/ records. The three upstream commits (14c5588, d419cab, 9a41a3f) touch only tijori code and tests, spec 0065, the glossary, gate package lists and review records. Spec 0075 does not mention tijori, signing or spec 0065 and touches none of those files, so nothing upstream conflicts with or contradicts it. Docs only, so no test is needed."
 
 [[finding]]
-what = "Later: crates/tijori/tests/sign_keys.rs a_retired_key_never_signs_new_bytes uses the single holding() key, so it does not cover a caller with one retired and one active key picking the active one; the existing lowest-id rule plus the two-active-keys Later item from round 4 cover this when the policy reader refuses several active keys."
+what = "Later, carried from round 7: reword IS05's 'has a share of 0'; add group 3 rule 2's author reads to the nightly job's budget; batch or cache rule 1's author reads; name group 10's per-author series in spec 0072's list of uses of the author id when it is built; remove the stray blank line under 'Changes from the source'."
 fixed = true

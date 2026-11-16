@@ -1,13 +1,17 @@
 skill = "unsafe-patterns"
-change = "sha256:5fb6f6688bdd33e6c610a0000029da215381f3c851fd82fb4dcc3a219b318b8b"
+change = "sha256:8d240d80ac532888c53882caca05ddda7c12f84a1826a537a730e97d831ee478"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 6. Read the staged crates/tijori core.rs, sign_error.rs, signed.rs, purposes.rs, index.rs, log.rs, lib.rs and tests/core.rs, tests/index.rs, tests/sign_keys.rs; cargo test -p tijori (13 pass) and clippy -D warnings are clean. Checked errors turned into defaults, overflow, check-then-use, trusted outside values, unbounded input and weakened tests. The size check comes before any work; the NOT_SIGNED_HERE match cannot be bypassed because Purpose::new only admits lowercase, digits and '-'; counters use checked_add; record checks both index nexts and appends on a chain copy before swapping anything in, so a failure changes nothing; &mut self rules out a check-then-use race. The new test a_retired_key_never_signs_new_bytes fails if active_key accepts a retired key. No blocking pattern found."
+summary = "Rebase check: the staged change on origin/main (9a41a3f) has a spec 0075 identical to round 7, and spec 0053 and README hunks that match it; upstream commits 14c5588, d419cab and 9a41a3f touch only tijori code and spec 0065, which spec 0075 does not use. Round 7 review: Compared the new spec 0075 line by line with round 6; the spec 0053 hunks are unchanged. The author definition reads sampark's post user id through its public API, never the id of whoever saved the post, and stores no member id. A withdrawn reject now drops out of the ring, which stays at 20 pairs at most. The top-author rule in group 3 rule 2 runs in the nightly job, inside its 10-minute and 256 MB cap, and a site it does not finish carries on the next night. Nothing open; two Later notes on how to build the top-author rule. Commit checks were not run: docs only, and this brief does not allow staging."
 
 [[finding]]
-what = "Later: crates/tijori/src/signed.rs:17 push_field turns a failed usize-to-u64 conversion into u64::MAX with unwrap_or. Unreachable on 64-bit targets and already a recorded Later item from round 5; make it a checked error or a compile-time assertion when the durable log lands."
+what = "Later: group 3 rule 2's top-author rule needs show counts per author per destination over 7 days. An implementation that builds a map of every author for every destination in memory could break the job's 256 MB cap. Say the nightly job streams shows ordered by destination and then author, keeping one destination's tallies at a time. Show that cap on a site with many authors in the bench."
 fixed = true
 
 [[finding]]
-what = "Later: crates/tijori/src/core.rs:39,277 issued holds one Logged per log entry in memory with no bound beyond the log counter. Not worse than the in-memory entries Vec in this part; bound or move it to the durable index when durable writes land."
+what = "Later: 'Decisions on posts by that author are left out of the RSI too' cannot come from stored bar values alone. Say the RSI without the top author is rebuilt in the nightly job from spec 0053's stored labels for at most the last (n + 1) × N decisions, so the read stays bounded and the live path never rereads history. Also, IS05 still says a resting destination no longer shown 'has a share of 0', while the rule now says it is not checked against its band: align the wording."
+fixed = true
+
+[[finding]]
+what = "Later, carried from round 3: run rule 8's finite check after a 64-bit to 32-bit conversion. Count the ranking label reads that hit the 5 ms limit, so they do not silently switch rests off."
 fixed = true
