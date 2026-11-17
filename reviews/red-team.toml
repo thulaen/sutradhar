@@ -1,17 +1,25 @@
 skill = "red-team"
-change = "sha256:7e15979e88b430fe6a26815dc513306077567ba057b1d501db622b77a2c46baf"
+change = "sha256:3fed0ffad3193d16e2bb370b28ce882d8f2ea44bd71892390660b77b1ab12f9d"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Three red agents attacked the staged diff (specs 0002, 0003, 0010, 0063, 0065; 83 lines), with goals break it (false or contradictory text, dangling Go/ADR-0017 references, cross-references), get round it (loopholes in the 0065 checking rules) and abuse it (forged, revoked or retired-key signatures, policy rollback, the 0063 store wording). I checked each report against the tree: no Go or ADR-0017 mention is left in the five specs, every ADR-0019 link resolves, item 1's '(item 6)' and item 6's 'The signer registry, items 4 and 5' resolve to the retired-key and revocation answers, interfaces item 5 matches checking item 2, and AGENTS.md section 5.2 supports 'a tool's own store'. No real hole is opened by this change."
+summary = "Round 3 of commit 2c (#325), spec 0012 Go removal up to Build order. Three red agents (general-purpose subagents) ran at once with the diff and one goal each: break it, get round it, abuse it. I checked each report against the full spec, AGENTS.md sections 4 and 7.3 and the HEAD text. No Rust rule was weakened, cross-references hold, and build order item 2 now names its commit and gives its reason; no hole needs a change in this commit."
 
 [[finding]]
-what = "0065 'Checking signatures' item 1: 'the four run tijori-verify' where there is no socket, though the relay and the fetcher always have one (owner's PC). The condition is simply never met for them, so the sentence stays true; no change needed."
+what = "Build order item 2 (lines 691-700): two agents said 'land ... before ganit.every-change is turned on' is not enforced. No change needed: AGENTS.md 7.3 turns it on only once a receipt can be made for any Rust file, and rule 9 would block unreceipted adapters in the turn-on commit itself, so the turn-on must come after the adapters land; the spec states that order with its reference."
 fixed = true
 
 [[finding]]
-what = "0065 item 1 now closes the socket-caller list to four, where the old 'Go tools, such as ...' list was open. A red agent said other tools (nirikshak, the bootstrap supervisor) lose the retired-key answer, but no spec has them checking tijori signatures; the gate, which checks cache signatures (spec 0010 item 5), is among the four. Settled in earlier rounds; no change needed."
+what = "Step 2 (lines 136-149): 'directly or through a dependency' is said only for process arguments, so the identity/call-stack ban could be read as direct-only. No change needed: a dependency's run-time actions are covered by its effect summary, where 'a summary describes, and only a grant authorises' (lines 283-291); the identity ban had no dependency clause before this change either."
 fixed = true
 
 [[finding]]
-what = "Already there before this change, not opened by it: tijori-verify's refusal of 'anything only the log could answer' covers the retired-key question, but the CI test (0065 Tests, 'In a run with no socket ...') names only 'made before revocation'; checking item 3's 'every caller's trait' means callers that have a trait. Both read the same as before; outside this commit's scope."
+what = "Pinned tools (line 342), 'our own Rust program with its receipt': a kept Rust tool that starts a shell (AGENTS.md section 4, commit 7f5ccc9) could qualify. No change needed here: the same paragraph already says a pinned tool is never a shell or any program that runs code it is given, and the exposure existed with the Go wording."
+fixed = true
+
+[[finding]]
+what = "Test section still names Go (lines 772, 824, 853, 892, 967 and others), and line 967 now disagrees with build order item 2 on when grants run. No change needed in this commit: it is the planned next commit 2d, which must fix line 967 to the fixture-actions commit."
+fixed = true
+
+[[finding]]
+what = "Pre-existing, not from this change: aliased macros (use std::include_str as inc), branches on cfg!(debug_assertions), and dependency thread pools outliving 'every thread the candidate started' (line 245). Worth a later look; outside this commit's scope."
 fixed = true

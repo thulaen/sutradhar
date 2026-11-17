@@ -1,13 +1,17 @@
 skill = "unsafe-patterns"
-change = "sha256:7e15979e88b430fe6a26815dc513306077567ba057b1d501db622b77a2c46baf"
+change = "sha256:3fed0ffad3193d16e2bb370b28ce882d8f2ea44bd71892390660b77b1ab12f9d"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the whole staged diff (docs only: specs 0002, 0003, 0010, 0063, 0065) against the staged tree, AGENTS.md sections 4 and 5.2, ADR-0019 and spec 0065 'The signer registry' items 4 and 5, checking each unsafe pattern the skill names as it applies to specified behaviour: no check is weakened, no trust widened, no test case dropped. Commit checks and fingerprint were not run, as the prompt forbids running the gate; no subagents were needed."
+summary = "Read the whole staged diff of docs/specs/0012-ganit-evolve.md (Go removed from the design sections up to Build order) against the full spec, AGENTS.md sections 4 and 7.3 and the context note, looking for any ban or check weakened by the Go removal, a check-then-use gap, input trusted without a limit, or a weakened proof. Docs-only change; no code to run commit checks on, gate not run as instructed."
 
 [[finding]]
-what = "docs/specs/0065-tijori.md 'Checking signatures' items 1 and 6: the gate, GanitEvolve, the relay and the fetcher still check through the socket's verify, so they keep the log-only answers; item 6 now names both (retired-key-active, items 4; before-revocation, item 5), which matches the registry text. Narrowing the in-process checker to 'every other caller' and tijori-verify to 'the four' widens no trust: tijori-verify keeps every refusal (protected-main policy and owner key, rollback, unreadable history). No change needed."
+what = "Step 2 safety bans (0012 lines 125-157): every removed item is Go-only (cgo, .syso, build tags, init functions, runtime settings, flag package, go:embed, go:generate, go:linkname, plugin, unsafe package). Each Rust analog stays banned: statics (so an added #[global_allocator] static is refused), unsafe, asm!/global_asm!/naked_asm!, link attributes, raw system calls, env!/option_env!, include*, process-wide APIs; argument reads are now also refused through a dependency unless a fixture.arguments grant serves them. No hole opened; no change needed."
 fixed = true
 
 [[finding]]
-what = "docs/specs/0065-tijori.md Tests: 'A Go tool's check through the socket's verify' became 'A check through the socket's verify'; the case still demands refusal of small-order keys and non-canonical signatures and that a caller's trait cannot write the policy-version record, so the test is not weakened. Spec 0063 Tests keep every case, now in Rust. No change needed."
+what = "Build order item 2 (0012 lines 686-700): the one-time admission of the first fixture adapters is bounded: pinned by hash, admitted by another product, lost at first change, and AGENTS.md section 7.3 confirms rule 9 blocks for Rust only from the commit that turns on ganit.every-change, so receiptless adapters landing earlier is consistent. Adapter line 295 still points at item 2. No change needed."
+fixed = true
+
+[[finding]]
+what = "The 'How it is tested' section (0012 lines 730-1063, e.g. line 967 'refused before the commit that adds the Go safety parse') still states the old Go ordering and Go bans, so it disagrees with the new build order item 2 until commit 2d lands. Planned for 2d straight after this commit, per the context note; not a blocker for this commit's scope."
 fixed = true

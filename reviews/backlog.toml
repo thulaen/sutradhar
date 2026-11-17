@@ -1,13 +1,17 @@
 skill = "backlog"
-change = "sha256:7e15979e88b430fe6a26815dc513306077567ba057b1d501db622b77a2c46baf"
+change = "sha256:3fed0ffad3193d16e2bb370b28ce882d8f2ea44bd71892390660b77b1ab12f9d"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read task #325 (Phase 2 milestone, parent #324), context.md, ADR-0019, AGENTS.md section 4 and the staged diff to specs 0002, 0003, 0010, 0063 and 0065 (83 changed lines, docs only). Checked each Go line now says Rust under ADR-0019, that 0065 'Checking signatures' items 1, 2 and 6 and service interface item 5 agree with 'The signer registry' items 4 and 5, that no other change rides along, that the only Go-as-our-language spec left is 0012 (a later planned commit), and that no task carries a next label."
+summary = "Read task #325 (job card and earlier text, no comments), context.md, AGENTS.md sections 4, 7.3 and 10, and the staged diff of docs/specs/0012-ganit-evolve.md (one file, 61 added + 84 removed = 145 lines). Checked scope against the task, phase, Later, roadmap fit, proof and the ready count (10 status/ready, at the limit, not over); grepped spec 0012 and docs/ for Go lines left untrue."
 
 [[finding]]
-what = "Task #325 'Files it may touch' lists only specs 0003 and 0010, but this commit also edits specs 0002, 0063 and 0065. No change needed: the task's Aim ('the specs say Go is banned') and its test ('a search of AGENTS.md and docs/ for Go as our language finds none') require these edits; the author may wish to widen the file list on the task when posting the proof."
+what = "Task #325's job card (plan of 17 Nov, #357) lists only AGENTS.md and docs/adr/ under 'Files it may touch' and its Done-when names only commits e2b97b6 and 72c8692, while this commit (like 5dcdff9) edits docs/specs/0012. The kept earlier text's aim ('AGENTS.md, ADR-0017 and the specs say Go is banned') and its test (a search of docs/ finds no Go as our language) do ask for it, so the diff needs no change; when posting the proof, widen the card's file list and name 5dcdff9, this commit and 2d."
 fixed = true
 
 [[finding]]
-what = "Task #325 'Commits' says one or two commits, while the work now lands as a series of small commits under the owner's 300-line rule (#166 comment 5041). No change needed in this diff; the proof comment on #325 should name every commit of the series."
+what = "docs/specs/0012 'How it is tested' (lines ~730-1065, such as line 967 'refused before the commit that adds the Go safety parse', which now contradicts Build order item 2) and 'Changes from the source' (lines ~1157-1159) still name Go. These sections are the planned next commit 2d, which must land straight after this one; the 300-line rule justifies the split, so this commit is complete for its own scope."
+fixed = true
+
+[[finding]]
+what = "docs/specs/0012 step 2: the new 'directly or through a dependency (such as ... an argument-parsing crate)' clause and the new Rust examples (std::env::set_var, std::panic::set_hook) tighten or illustrate Rust rules rather than only deleting Go. They carry over what the removed Go flag-package and process-wide-setting bans covered, so they stay within the task and are not new ideas that belong in Later."
 fixed = true

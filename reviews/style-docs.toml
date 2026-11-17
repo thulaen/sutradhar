@@ -1,13 +1,17 @@
 skill = "style-docs"
-change = "sha256:7e15979e88b430fe6a26815dc513306077567ba057b1d501db622b77a2c46baf"
+change = "sha256:3fed0ffad3193d16e2bb370b28ce882d8f2ea44bd71892390660b77b1ab12f9d"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged diff (Language lines of specs 0002, 0003, 0010 and 0063, spec 0010 'Changes from the source', spec 0063 store, tests and source lines, spec 0065 'Checking signatures' items 1, 2 and 6, the relay, service interface item 5 and a test line), which matches change.diff, against AGENTS.md sections 4 and 6, ADR-0019, the style-docs skill and docs/standards, and grepped the tree for Go and ADR-0017 text this commit leaves untrue. Plain English, no status words, no new setting, no added line over 72 characters; item 1's '(item 6)' and item 6's 'The signer registry, items 4 and 5' now agree with registry items 4 and 5 and with the tests at lines 688 and 821; spec 0063's 'a tool's own store' matches AGENTS.md line 207."
+summary = "Read the staged diff of docs/specs/0012-ganit-evolve.md (61 added, 84 removed, 145 lines) against AGENTS.md sections 4, 6 and 7.3, ADR-0019 and the ADR index; grepped the spec's design sections up to Build order and the tree for Go mentions the change leaves untrue. No Go remains above 'How it is tested'; Build order item 2 now names its commit, agrees with section 7.3, and says why the first adapters lack a receipt."
 
 [[finding]]
-what = "docs/specs/0065-tijori.md 'Checking signatures' item 1 (lines 284 and 296): two lines are wrapped short ('its own process with the check library. Where' and 'back, and it refuses when it cannot'). Renders the same in Markdown; an optional reflow, not required."
+what = "docs/specs/0012-ganit-evolve.md line 967 ('How it is tested'): 'A problem with grants is refused before the commit that adds the Go safety parse' now disagrees with Build order item 2, which says problems with grants run from the commit that adds the fixture actions. Lines 730, 749, 824, 853, 872-914, 938-943, 964, 1001-1063 and 1157-1159 also still name Go. No change needed in this commit: these sections are commit 2d, planned straight after, and the gate still passes. Line 967 mirrors item 2 directly, so 2d should fix it first; it could move into this commit if line room allows."
 fixed = true
 
 [[finding]]
-what = "Remaining Go and ADR-0017 text sits only in spec 0012 (planned for a later commit), AGENTS.md section 4's ban, rule 6's kept-bridge line, line 812's build caches and the ADR files. Nothing in this commit's five specs still says Go. No change needed."
+what = "docs/specs/0012-ganit-evolve.md lines 127-128: 'statics, thread locals, globals that hold state' keeps 'globals' from the Go wording; in Rust statics already cover globals. Harmless and still true; no change needed."
+fixed = true
+
+[[finding]]
+what = "docs/specs/0012-ganit-evolve.md lines 9-11, 95-96, 103-104, 116-117, 135-136, 145-150: short ragged lines left by the edit. Kept on purpose to keep the diff under the 300-line rule; Markdown renders them the same. No change needed."
 fixed = true

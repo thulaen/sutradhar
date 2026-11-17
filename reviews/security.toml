@@ -1,13 +1,17 @@
 skill = "security"
-change = "sha256:7e15979e88b430fe6a26815dc513306077567ba057b1d501db622b77a2c46baf"
+change = "sha256:3fed0ffad3193d16e2bb370b28ce882d8f2ea44bd71892390660b77b1ab12f9d"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the whole staged diff (specs 0002, 0003, 0010, 0063, 0065; matches change.diff) and the surrounding sections of spec 0065 (signer registry, checking signatures, interfaces, tests) and AGENTS.md section 5.2. Docs only: no code, inputs, secrets, crypto or libraries added; the trust rules for signature checks, tijori-verify, policy rollback and revocation are unchanged in substance, and no stale Go or ADR-0017 text is left in the five files."
+summary = "Read the staged diff of docs/specs/0012-ganit-evolve.md (design sections up to Build order), the whole changed sections, AGENTS.md section 7.3 and the context file. Checked that every removed ban was Go-only and that the Rust sandbox bans (unsafe, extern, asm!, link arguments, native libraries, prebuilt objects, build scripts, procedural macros, build-time file reads, process-wide state, argument reads, raw system calls) are all still stated; no input, secret, crypto or dependency surface is added. Docs-only change; no subagents were needed for this review."
 
 [[finding]]
-what = "docs/specs/0065-tijori.md 'Checking signatures' items 1 and 6: the gate, GanitEvolve, the relay and the fetcher now check through the socket's verify by choice, not because they cannot link the library. Item 6 now names both log-only answers, matching 'The signer registry' items 4 and 5, and item 1's '(item 6)' is right. Other callers still check in process and get no log-only answers, which was already so for Rust callers before this change, so no trust is weakened. No change needed."
+what = "Build order item 2 now lets problems with grants run from the commit that adds the fixture actions, while the 'How it is tested' bullet near line 967 still says they are refused before the commit that adds the Go safety parse. The spec briefly contradicts itself on when the receipt-less admission window opens. That section is planned for commit 2d straight after this one, and the new wording keeps the same guard (admitted once by another product, pinned by hash, lost at the first change), so nothing is weakened."
 fixed = true
 
 [[finding]]
-what = "docs/specs/0063-autoissues.md: 'for a Go tool's own store' becomes 'for a tool's own store'; AGENTS.md section 5.2 does cover a tool with its own store (migrations/<tool>/, checksums), and RLS-forced and one-writer rules stay in the spec. No change needed."
+what = "Removed bans (cgo, .syso, Go runtime settings, init functions, flag.Lookup of flags the candidate did not define, //go:linkname, //go:embed, //go:generate, the plugin package) were Go-only. Their Rust counterparts are still listed in step 1 and step 2: native libraries, link arguments and prebuilt objects; extern blocks, asm! and #[link]; process-wide state such as std::env::set_var and std::panic::set_hook; include!/#[path]; and env!/option_env!. So no gap is left."
+fixed = true
+
+[[finding]]
+what = "Step 2 now also bans reads of process arguments made through a dependency, such as an argument-parsing crate, unless a fixture.arguments grant serves them. This is stricter than before and closes a route that the old Rust wording did not name."
 fixed = true

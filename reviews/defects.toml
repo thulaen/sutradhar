@@ -1,17 +1,17 @@
 skill = "defects"
-change = "sha256:7e15979e88b430fe6a26815dc513306077567ba057b1d501db622b77a2c46baf"
+change = "sha256:3fed0ffad3193d16e2bb370b28ce882d8f2ea44bd71892390660b77b1ab12f9d"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read every changed line of specs 0002, 0003, 0010, 0063 and 0065 (commit 2b, task #325), the surrounding sections of 0065 (The signer registry items 4 and 5, Checking signatures items 1 to 6, Interfaces, Tests), AGENTS.md sections 4 and 5.2 and ADR-0019 in the worktree, and grepped the five specs and docs/specs for remaining Go claims. Docs only, so no test is needed (AGENTS.md section 9)."
+summary = "Read every changed line of docs/specs/0012-ganit-evolve.md (61 added, 84 removed; staged diff matches change.diff), the surrounding design sections, AGENTS.md sections 4, 6 rule 9 and 7.3, ADR-0019 and the roadmap, and grepped the tree. The design sections up to 'Build order' hold no Go; the Rust rules are intact; build order item 2 now names its commit and states why the first adapters lack a receipt, consistent with AGENTS.md section 7.3. Docs only, so no test is needed."
 
 [[finding]]
-what = "docs/specs/0065-tijori.md, Checking signatures item 1 and item 6: checked again after round 4. Item 1 now cites item 6, and item 6 names both log-only answers with the right cross-reference ('The signer registry', items 4 and 5: made while a retired key was active, made before revocation), which matches registry items 4 and 5 and the Tests list. No change needed."
+what = "docs/specs/0012-ganit-evolve.md 'How it is tested' (lines 730 to 1063, e.g. line 967 'refused before the commit that adds the Go safety parse') and 'Changes from the source' (lines 1157 to 1159) still name Go and now disagree with the design text and build order item 2. No change in this commit: it is the planned next commit 2d, outside this commit's scope as stated."
 fixed = true
 
 [[finding]]
-what = "docs/specs/0012-ganit-evolve.md lines 10 and 22 still say GanitEvolve is written in Go (ADR-0017). This is out of scope: the context file plans spec 0012 for a later commit, and nothing in this commit says otherwise. No change needed here."
+what = "Step 2 example `std::env::set_var` (around line 130) is itself `unsafe` in Rust edition 2024, so it is already caught by the `unsafe` ban; `std::panic::set_hook` is a safe example. The text stays true as an example of process-wide state, so no change is needed."
 fixed = true
 
 [[finding]]
-what = "docs/specs/0065-tijori.md item 1 has a short line ('its own process with the check library. Where'), left over from rewrapping. It is only cosmetic, renders the same in Markdown and is not a defect. No change needed."
+what = "docs/adr/0017-go-for-tools.md line 34 still speaks of Go receipts; that ADR is replaced by ADR-0019 for its Go part and is a historical record, so the change makes nothing there untrue. No change needed."
 fixed = true

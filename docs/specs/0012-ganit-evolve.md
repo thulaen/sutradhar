@@ -7,8 +7,8 @@ programs supplies the parents and examples for the next proposals. It
 also writes the speed receipt that every new or changed source file must
 carry ([AGENTS.md section 6](../../AGENTS.md#6-code-standards) rule 9).
 It is roadmap Phase 2 item 6. Language: `ganit-evolve` is a developer
-tool written in Go (ADR-0017). ganit stays Rust; the Go tool runs it as
-a separate program through a shared schema, never shared code. The proof
+tool written in Rust (ADR-0019). It runs ganit as a separate program
+through a shared schema, never shared code. The proof
 standard it shares with the lab is in 0013.
 
 ## What it does
@@ -19,7 +19,7 @@ standard it shares with the lab is in 0013.
    packet, proposes a change and submits it, inside its own chat and on
    its own usage. Its tokens are the only model cost. GanitEvolve never
    calls a model and holds no key. Nothing runs unless an agent drives.
-2. **`ganit-evolve`**, a developer tool written in Go, keeps the run,
+2. **`ganit-evolve`**, a developer tool written in Rust, keeps the run,
    builds task packets, checks each submission, runs the evaluators in
    sealed containers through the heavy-job queue, and records results.
 3. **ganit**, the Rust numerical engine, does the maths: choosing parents
@@ -92,25 +92,25 @@ failure, and the failure becomes feedback in the next packet.
    it lists (0013), and, for a whole-file problem, that the candidate tree
    matches the base outside `target.path`; check every file's hash against
    the input list and each dependency's accepted summary; mount files
-   read-only from the copies whose hashes were checked; refuse a
-   dependency that uses cgo (`import "C"`); have the validator prove that
+   read-only from the copies whose hashes were checked; have the
+   validator prove that
    no dependency build script or procedural macro reads a clock, random
    numbers or state kept between runs, and prove, from the source and with
    no summary standing in for that analysis, each dependency build
    script's and procedural macro's reads against `build_reads` and its
    processes and writes against `build_actions` and the directives its
    build script emits against `build_directives`; any link argument,
-   native library, library search path or prebuilt object (such as a Go
-   `.syso` file) is refused; then, for each build this step makes, run the
+   native library, library search path or prebuilt object is refused;
+   then, for each build this step makes, run the
    dependencies' accepted build scripts for that build and add the hashes
    of the files they generate to that build's part of the run's input
-   list, resolve every `cfg` and `cfg_attr` and every Go build tag, expand
+   list, resolve every `cfg` and `cfg_attr`, expand
    every macro call, the candidate's and its dependencies' (procedural
    macros run as part of this expansion), and run the safety parse's check
    for forbidden constructs and build-time reads (step 2). A banned token
    inside a macro argument or a `cfg_attr` counts as used. Only then are
    the candidate and every dependency compiled with the pinned toolchain
-   and strict warnings, each crate or Go package from its own checked
+   and strict warnings, each crate from its own checked
    expansion, so no macro runs again between the check and the compile; a
    candidate the check refuses is never compiled, so no compiler output
    reaches its feedback. Any warning fails.
@@ -125,49 +125,36 @@ failure, and the failure becomes feedback in the next packet.
    checked lies inside the card's scope; the contract records that same
    checked path. An undeclared or unknown action, or one outside its
    bound, is refused. Both profiles ban state kept between calls (statics,
-   thread locals, globals that hold state and Go runtime settings that
-   keep a value, such as `debug.SetMemoryLimit`, `debug.SetGCPercent` and
-   `runtime.GOMAXPROCS`, and Go `init` functions and package-level
-   variables whose initialiser is not a constant, since they run before
-   the first timed moment, and state kept through any standard-library or
-   dependency API that affects the whole process, such as
-   `mime.AddExtensionType`, `expvar.Publish`, `log.SetPrefix`,
-   `gob.Register` or a flag the candidate defines itself, except flags a
-   command-line entry file (the file that holds `main`) defines inside
-   `main` and parses once from the recorded list under a
-   `fixture.arguments` grant and never sets again; only a `fixture.state`
-   grant, which is reset, may keep state), Rust `unsafe`, `#[no_mangle]`,
+   thread locals, globals that hold state, and state kept through any
+   standard-library or dependency API that affects the whole process,
+   such as `std::env::set_var` or `std::panic::set_hook`; only a
+   `fixture.state` grant, which is reset, may keep state), `unsafe`,
+   `#[no_mangle]`,
    `#[export_name]`, `#[link_section]`, `#[link]`, `extern` blocks,
    `asm!`, `global_asm!` and `naked_asm!`, `cfg(test)`, `cfg!(test)`,
    `#[cfg(test)]` and `cfg(doctest)` outside a base test module, code
-   blocks in doc comments the candidate adds or edits, Go's
-   `testing.Testing()`, an import of `testing` outside a test file, reads
-   of process arguments or flags (such as `os.Args`, `flag.Lookup` or
-   Rust's `std::env::args`) other than through a `fixture.arguments`
-   grant, which the harness serves by starting the process with exactly
-   the recorded list as its whole argument list, the first argument
-   included (a fixed recorded name, the same in every build, with no flags
+   blocks in doc comments the candidate adds or edits, reads of process
+   arguments, directly or through a dependency (such as
+   `std::env::args`, or an argument-parsing crate), other than through a
+   `fixture.arguments` grant, which the harness serves by starting the
+   process with exactly the recorded list as its whole argument list,
+   the first argument included (a fixed recorded name, the same in every
+   build, with no flags
    added by the harness), in every build and test (a process it cannot
    start that way, such as a test binary, gets the list only through the
-   grant's adapter, and then every direct read of process arguments or
-   flags, such as `os.Args`, `flag.Args`, `flag.Parse`, `flag.Visit`,
-   `flag.VisitAll`, `std::env::args` or `std::env::args_os`, is refused
+   grant's adapter, and then every read of process arguments, such as
+   `std::env::args`, `std::env::args_os` or one through a dependency, is
+   refused
    before any compile; a process that can be served neither way makes the
    problem refused at acceptance and again before launch), and reads of
    caller identity, the call stack, thread names, the executable path, the
    working directory, the process id, the host name, the user id or build
-   information (such as Rust's `Location::caller()` and
-   `std::thread::current().name()`, or Go's `runtime.Caller`,
-   `runtime.Callers`, `debug.Stack` and `debug.ReadBuildInfo`), Go's
-   `unsafe` package, `//go:linkname`, hand-written assembly, the `plugin`
-   package, `import "C"` and raw system calls. Listing or reading any flag
-   the candidate did not define, such as `test.v` through `flag.Lookup`,
-   `flag.VisitAll` or `flag.CommandLine`, stays banned even with a
-   `fixture.arguments` grant. Both also ban the candidate's own build
-   scripts, procedural macros, `env!`, `option_env!` and `//go:generate`,
-   always, and its own reads of files while it is built (`include!`,
-   `include_str!`, `include_bytes!` and `#[path]` in Rust; `//go:embed` in
-   Go), with one exception for those reads only: a read of a file whose
+   information (such as `Location::caller()` and
+   `std::thread::current().name()`), and raw system calls. Both also ban
+   the candidate's own build scripts, procedural macros, `env!` and
+   `option_env!`, always, and its own reads of files while it is built
+   (`include!`, `include_str!`, `include_bytes!` and `#[path]`), with one
+   exception for those reads only: a read of a file whose
    path resolves inside the candidate tree, never one of the problem's
    fixture files in `effects/` (fixtures reach a candidate only at run
    time, through its grants), with no links and no `..`, and whose hash
@@ -183,7 +170,7 @@ failure, and the failure becomes feedback in the next packet.
    only what the input list names; the hidden evaluation inputs and
    fixture files are not there. Step 1 makes every build: the debug test
    build, the optimised timing build and one build for each feature set
-   and Go build tag that a shipped build, hook or CI step uses;
+   that a shipped build, hook or CI step uses;
    `ganit-evolve` checks this list at acceptance and again before launch.
    Every build process ends before step 3, and steps 3 and 4 run the built
    program in a fresh sealed container holding only the built output and
@@ -255,7 +242,7 @@ failure, and the failure becomes feedback in the next packet.
    item or macro other than the declared entrypoints can reach it); for a
    whole-file problem, the pinned benchmark harness. The second time is
    taken only after pinned code has fully encoded the answer into memory
-   and every thread or goroutine the candidate started has ended. So the
+   and every thread the candidate started has ended. So the
    timed part excludes the pipe and the read-back, and no candidate signal
    moves either time. The harness also compares each timed answer with the
    reference within the problem's tolerance, and a mismatch fails the
@@ -305,7 +292,7 @@ not records, have no schema and are checked by content hash only:
 - A fixture adapter (`ganitevolve-fixture-adapter/v1`) is the pinned
   harness code that serves one grant to the candidate and enforces its
   bound: `action`, `resource`, `bound`, `program` (its hash) and `depends`
-  (the hashes of what it depends on). Its program is our own Go program
+  (the hashes of what it depends on). Its program is our own Rust program
   with its receipt (or, until its receipt is made, an adapter admitted as
   build order item 2 says), never a shell, an interpreter or a compiler.
   Like a pinned tool, it cannot see the hidden evaluation inputs, reaches
@@ -352,7 +339,7 @@ A tool resource pins its program and what it depends on by hash. A pinned
 tool is either an entry in `gate/tools.toml` whose program hash matches
 that entry and that the field `fixture_callable = true` marks as callable
 from a fixture (a missing field means false, and aegis's tools list reader
-accepts the field), or our own Go program with its receipt (AGENTS.md
+accepts the field), or our own Rust program with its receipt (AGENTS.md
 section 4). For a `gate/tools.toml` entry, the acceptance names the hash
 of that entry, flag included, and a false flag is refused at acceptance
 and again before launch. A pinned tool is never a shell, an interpreter, a
@@ -554,7 +541,7 @@ receipt. These records go in the archive, within its cache budgets.
 
 ### A problem definition
 
-Each problem lives in its own folder under the GanitEvolve Go module:
+Each problem lives in its own folder under the GanitEvolve crate:
 
 1. `problem.toml`: name, language, the one source file (its `target.path`)
    and its EVOLVE-BLOCK regions, the hashes of the evaluator's tests, the
@@ -577,12 +564,12 @@ Each problem lives in its own folder under the GanitEvolve Go module:
 5. Objectives are explicit numbers, for example "median seconds for the
    shape set" (lower is better) with "largest scaled error" as a hard
    limit. A candidate that misses a hard limit scores nothing.
-6. A whole-file problem needs no EVOLVE-BLOCK markers and uses the crate's
-   or Go module's own tests as the correctness step, so any Rust or Go
-   file that meets the rules below can be evolved. Those tests are taken
-   from the pinned base, never from the candidate's tree, and only tests
-   that reach the candidate through its public interface count (Rust
-   `tests/`, Go external `_test` packages). A target file's inline
+6. A whole-file problem needs no EVOLVE-BLOCK markers and uses the
+   crate's own tests as the correctness step, so any Rust file that meets
+   the rules below can be evolved. Those tests are taken from the pinned
+   base, never from the candidate's tree, and only tests that reach the
+   candidate through its public interface count (the crate's `tests/`).
+   A target file's inline
    `#[cfg(test)]` test module, if the base has one, is taken unchanged
    from the base and lies outside the part the candidate may edit; it does
    not count as a public-interface test. A candidate that adds or edits a
@@ -596,29 +583,21 @@ Each problem lives in its own folder under the GanitEvolve Go module:
    whole-file problem the state ban in step 2 and the name ban above apply
    to what the candidate adds or changes compared with the pinned base
    (every other ban applies to the whole file); a construct the base
-   already has and the candidate keeps unchanged, such as a Rust immutable
-   `static` lookup table, a Go `var ErrX = errors.New(..)` or the base's
-   own `Result` alias, is not refused for being there. The exemption
-   covers a base construct only when all three hold: it cannot hold
-   mutable state (in Rust, its type has no `UnsafeCell` anywhere inside,
+   already has and the candidate keeps unchanged, such as an immutable
+   `static` lookup table or the base's own `Result` alias, is not refused
+   for being there. The exemption covers a base construct only when all
+   three hold: it cannot hold mutable state (its type has no `UnsafeCell`
+   anywhere inside,
    following references and pointers, and a trait object or type parameter
    counts as possibly holding one, which rules out atomics, cells, locks,
    `OnceLock`, `LazyLock` and types wrapping them, and it is not `static
-   mut` or `thread_local!`; in Go, which has no immutable variables, only
-   a string, a number, a boolean, or an error value made by `errors.New`,
-   or by `fmt.Errorf` with a constant format, constant string or number
-   arguments and no `%w`); the validator proves that nothing reachable
+   mut` or `thread_local!`); the validator proves that nothing reachable
    from the entrypoints, in base or candidate code, writes it, borrows it
    mutably or makes a mutating call on it after its initialiser; and its
    initialiser, with everything it calls, is unchanged. Every other base
-   static, thread local or package-level variable is refused, including a
-   Go slice, array or map table the candidate keeps unchanged, and so is a
-   base Go `init` function; added or changed code that refers to such a
-   variable, or takes the address of or slices a base Go package-level
-   variable, is refused (a Rust shared borrow of an exempt static stays
-   allowed, since its type has no `UnsafeCell`). So a Go file with a
-   package-level table cannot be a whole-file problem; it can be evolved
-   through EVOLVE-BLOCK regions instead.
+   static or thread local is refused, and so is added or changed code
+   that refers to one (a shared borrow of an exempt static stays
+   allowed, since its type has no `UnsafeCell`).
 
 ### The first problem: ganit's matrix kernels
 
@@ -683,7 +662,7 @@ Each problem lives in its own folder under the GanitEvolve Go module:
 6. A language with no safety parse cannot be evolved, and until its
    parse exists its files need no receipt. AGENTS.md section 7.3 sets
    when `ganit.every-change` starts to cover each language. Each
-   language needs its own parse: Rust, Go, TypeScript, CSS, PHP, SQL,
+   language needs its own parse: Rust, TypeScript, CSS, PHP, SQL,
    shell, Cedar and Rego.
 
 ### Hard to skip
@@ -706,18 +685,16 @@ Each problem lives in its own folder under the GanitEvolve Go module:
 1. The `ganit.every-change` check, test first.
 2. The Rust safety parse, with the pinned effect validator for both safety
    profiles, the operations profile's fixture actions and their
-   enforcement, and the whole-file problem for Rust files. Then, in one
-   later commit, the whole-file problem for Go files and the Go safety
-   parse with the same for Go, so a Go receipt can be made from the commit
-   that first requires one (AGENTS.md section 7.3). Which Go source may
-   land before that commit is set in AGENTS.md section 4. The same commit
-   makes aegis's tools list reader accept `fixture_callable`, with an
-   aegis test that the field is accepted and a missing one means false.
-   Problems with grants run only from that later commit, the one that adds
-   the Go safety parse: the first fixture adapters, which land before that
-   commit as GanitEvolve's own Go source and have no receipt yet, are
-   admitted once, by a product other than their writer, pinned by hash in
-   the problem's acceptance, and lose that admission at their first
+   enforcement, and the whole-file problem for Rust files. The commit
+   that adds the fixture actions also makes aegis's tools list reader
+   accept `fixture_callable`, with an aegis test that the field is
+   accepted and a missing one means false. Problems with grants run only
+   from that commit. The first fixture adapters land with it as
+   GanitEvolve's own Rust source, before `ganit.every-change` is turned
+   on (AGENTS.md section 7.3), so they have no receipt yet; since a
+   receipt for an adapter needs a problem with grants, they are admitted
+   once, by a product other than their writer, pinned by hash in the
+   problem's acceptance, and lose that admission at their first
    change: a changed adapter needs its own receipt, made under a problem
    whose adapters are all admitted or receipted, never one the changed
    adapter serves, before any later launch uses it.

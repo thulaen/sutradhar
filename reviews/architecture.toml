@@ -1,13 +1,21 @@
 skill = "architecture"
-change = "sha256:7e15979e88b430fe6a26815dc513306077567ba057b1d501db622b77a2c46baf"
+change = "sha256:3fed0ffad3193d16e2bb370b28ce882d8f2ea44bd71892390660b77b1ab12f9d"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged diff (specs 0002, 0003, 0010, 0063, 0065) in full, the changed sections of each file, AGENTS.md sections 4 and 5.2, ADR-0019 and spec 0065's signer registry, and grepped the tree for remaining Go and ADR-0017 claims. Each Language line now says Rust under ADR-0019, matching AGENTS.md section 4; spec 0063's store wording matches section 5.2's 'a tool with its own store'; spec 0065's checking design is consistent across 'Checking signatures' items 1, 2 and 6, the service interface item 5 and the tests, and item 6 now agrees with 'The signer registry' items 4 and 5. No new setting, option or hook is added. Only spec 0012 still names Go, which is the planned later commit."
+summary = "Read the staged diff of docs/specs/0012-ganit-evolve.md (61 added, 84 removed), the spec's design sections through Build order, AGENTS.md sections 4, 6 rule 9 and 7.3, ADR-0019, the roadmap's Phase 2 lines and context.md; checked the tool/engine wall, the build order against section 7.3, that each removed Go-only ban has a Rust counterpart, that no setting or hook is added, and grepped the tree for claims the change makes untrue."
 
 [[finding]]
-what = "docs/specs/0065-tijori.md 'Checking signatures' item 1: the four tools, now Rust, could link the check library, so routing them through the socket's verify could look like extra design. Not a problem: item 1 now gives the reason (verify adds the log-only answers of item 6, which match 'The signer registry' items 4 and 5), and earlier rounds settled this split. No change needed."
+what = "docs/specs/0012-ganit-evolve.md 'How it is tested' (lines 730 to 1063, e.g. 824 and 892 'our own Go program', 907 'thread or goroutine', 967 'the commit that adds the Go safety parse') and 'Changes from the source' (1157 to 1159) still name Go, so for one commit they disagree with the design sections. No change here: context.md plans commit 2d to land straight after with exactly those sections, and this commit is complete for its stated scope (design sections up to Build order)."
 fixed = true
 
 [[finding]]
-what = "docs/specs/0065-tijori.md item 1, tijori-verify 'refuses anything only the log could answer, such as \"made before revocation\"': still true now that item 6 names two log-only answers, because it reads as an example. No change needed."
+what = "Spec 0012 line 10: 'runs ganit as a separate program through a shared schema, never shared code' was first a language split; with both in Rust it still holds as a wall between a developer tool (AGENTS.md section 4, held to sections 4, 5.2 and 6) and the product engine, so no Boot-convention or Modulith problem. No change needed."
+fixed = true
+
+[[finding]]
+what = "Build order item 2 (spec 0012 lines 686 to 700) now names the commit that adds the fixture actions and says the first adapters land before ganit.every-change is turned on. This matches AGENTS.md section 7.3 (rule 9 blocks for Rust only once GanitEvolve can make a receipt for any Rust file, which needs grants) and roadmap Phase 2's 'build steps 1 and 2 first'; the one-time admission is the only path to the first adapter receipt, so it is not a 'maybe one day' hook. No change needed."
+fixed = true
+
+[[finding]]
+what = "Effect contract step 2 (spec 0012 lines 127 to 157): each dropped Go-only ban has a Rust counterpart that stays: non-constant initialisers need LazyLock/OnceLock, caught by the state ban; flag-registry reads become 'through a dependency (an argument-parsing crate)'; the testing-import ban is covered by the cfg(test) bans; cgo and .syso by the link-argument and prebuilt-object refusal. No new setting, option or hook is added. No change needed."
 fixed = true

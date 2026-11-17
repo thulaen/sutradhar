@@ -1,13 +1,5 @@
 skill = "fast-performance"
-change = "sha256:7e15979e88b430fe6a26815dc513306077567ba057b1d501db622b77a2c46baf"
+change = "sha256:3fed0ffad3193d16e2bb370b28ce882d8f2ea44bd71892390660b77b1ab12f9d"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the whole staged diff (docs only: specs 0002, 0003, 0010, 0063, 0065) and the surrounding sections of spec 0065 (signer registry, checking signatures, relay, interfaces, tests). Checked each changed line for added per-request work, extra round trips, unbounded growth and calls with no time limit; grepped the five specs for leftover Go or ADR-0017 mentions (none). No code or hot path changes."
-
-[[finding]]
-what = "Spec 0065 'Checking signatures' item 1: the gate, GanitEvolve, the relay and the fetcher keep checking through the socket's verify (one local socket round trip per check) although as Rust tools they could now link the check library in process. This is not new cost: the same four callers used the socket before the change, and the socket is needed for the log-only answers named in item 6 (retired-key-active and before-revocation, 'The signer registry' items 4 and 5, both index lookups already specced). The socket's waits stay bounded by the policy's longest wait and waiting count ('The relay' item 7). No change needed."
-fixed = true
-
-[[finding]]
-what = "Spec 0065 item 6 now names two log answers instead of one. The extra answer (made while a retired key was active) was already required by 'The signer registry' item 4 through the log index, so the wording adds no new work to verify. Specs 0002, 0003, 0010 and 0063 only change the stated language; no performance effect. No change needed."
-fixed = true
+summary = "Read the whole staged diff (docs/specs/0012-ganit-evolve.md only, 61+/84-; matches change.diff) and the surrounding Evaluation steps, Measuring, Build order, Limits and Footprint budget sections. The change only removes Go wording and states the Rust tool language; it touches no code, no hot path, no loop, cache, queue or time limit, and cuts no text. The measuring rule (second time taken after every candidate thread has ended, median of three) and the Limits (two jobs, 4 GB, 8 threads, measuring alone, 3 candidates) are unchanged. The added check on argument reads through a dependency runs once at acceptance and before compile, never in the timed part. Go wording left from line 728 on is the planned next commit (2d)."
