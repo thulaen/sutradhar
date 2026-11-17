@@ -1,5 +1,9 @@
 skill = "fast-performance"
-change = "sha256:3fed0ffad3193d16e2bb370b28ce882d8f2ea44bd71892390660b77b1ab12f9d"
+change = "sha256:ee37b7d80796c4a7123251a9cbf93fb45c47aa46d8778bd0899ea52fd3dc3ce5"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the whole staged diff (docs/specs/0012-ganit-evolve.md only, 61+/84-; matches change.diff) and the surrounding Evaluation steps, Measuring, Build order, Limits and Footprint budget sections. The change only removes Go wording and states the Rust tool language; it touches no code, no hot path, no loop, cache, queue or time limit, and cuts no text. The measuring rule (second time taken after every candidate thread has ended, median of three) and the Limits (two jobs, 4 GB, 8 threads, measuring alone, 3 candidates) are unchanged. The added check on argument reads through a dependency runs once at acceptance and before compile, never in the timed part. Go wording left from line 728 on is the planned next commit (2d)."
+summary = "Read the staged diff (docs/specs/0012-ganit-evolve.md only, 53 lines in, 80 out) and the spec's 'How it is tested' and 'Changes from the source' sections. The change is documentation: it removes Go-only tests and restates mixed tests for Rust. No code, hot path, loop, cache, queue, async call or time limit is touched, nothing is cut short, and no test that guards a time or memory bound (per-case time limit, largest answer, fresh buffers per timed call, background-thread timing) was weakened. Grepped AGENTS.md, docs/ and .claude/skills: the spec has no Go left, and the only Go lines elsewhere are the ones meant to stay (AGENTS.md section 4 ban and kept tool, rule 6, section 11 build cache, ADR-0001, ADR-0017, ADR-0019 and the ADR index). Nothing to measure."
+
+[[finding]]
+what = "No performance finding. The change is spec text only; the timing tests it rewrites (no shorter time from a background thread finishing the answer, no gain from markers in buffer spare capacity) keep their Rust meaning, so no timing guard was lost with the Go wording."
+fixed = true

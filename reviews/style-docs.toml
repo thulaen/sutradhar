@@ -1,17 +1,13 @@
 skill = "style-docs"
-change = "sha256:3fed0ffad3193d16e2bb370b28ce882d8f2ea44bd71892390660b77b1ab12f9d"
+change = "sha256:ee37b7d80796c4a7123251a9cbf93fb45c47aa46d8778bd0899ea52fd3dc3ce5"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged diff of docs/specs/0012-ganit-evolve.md (61 added, 84 removed, 145 lines) against AGENTS.md sections 4, 6 and 7.3, ADR-0019 and the ADR index; grepped the spec's design sections up to Build order and the tree for Go mentions the change leaves untrue. No Go remains above 'How it is tested'; Build order item 2 now names its commit, agrees with section 7.3, and says why the first adapters lack a receipt."
+summary = "Read the staged diff of docs/specs/0012-ganit-evolve.md ('How it is tested' and 'Changes from the source') against AGENTS.md section 6, the skill and the spec's own design sections (step 2 safety, A problem definition, build order item 2). Every changed test matches the Rust-only design; the three round 1 findings are fixed; no Go-as-our-language text is left in the spec, and a grep of AGENTS.md, docs/ and .claude/skills finds only the Go lines meant to stay (section 4 ban and kept tool, rule 6, section 11 cache line, ADR-0001, ADR-0017, ADR-0019 and the ADR index)."
 
 [[finding]]
-what = "docs/specs/0012-ganit-evolve.md line 967 ('How it is tested'): 'A problem with grants is refused before the commit that adds the Go safety parse' now disagrees with Build order item 2, which says problems with grants run from the commit that adds the fixture actions. Lines 730, 749, 824, 853, 872-914, 938-943, 964, 1001-1063 and 1157-1159 also still name Go. No change needed in this commit: these sections are commit 2d, planned straight after, and the gate still passes. Line 967 mirrors item 2 directly, so 2d should fix it first; it could move into this commit if line room allows."
+what = "Round 1 findings (//go:generate and //go:embed in the build-script and include test; 'build tag or feature set' in the optimised-build action test; missing 'or' in the cfg(not(debug_assertions)) test) are all fixed in this content."
 fixed = true
 
 [[finding]]
-what = "docs/specs/0012-ganit-evolve.md lines 127-128: 'statics, thread locals, globals that hold state' keeps 'globals' from the Go wording; in Rust statics already cover globals. Harmless and still true; no change needed."
-fixed = true
-
-[[finding]]
-what = "docs/specs/0012-ganit-evolve.md lines 9-11, 95-96, 103-104, 116-117, 135-136, 145-150: short ragged lines left by the edit. Kept on purpose to keep the diff under the 300-line rule; Markdown renders them the same. No change needed."
+what = "docs/specs/0012-ganit-evolve.md, 'In a whole-file problem, a base `static HITS: Hits(AtomicU64)`': shorthand, not real Rust syntax. The text is older than this change (only the word 'Rust' was dropped) and reads clearly as a sketch of a newtype wrapping an atomic, so no change is needed."
 fixed = true

@@ -1,17 +1,13 @@
 skill = "unsafe-patterns"
-change = "sha256:3fed0ffad3193d16e2bb370b28ce882d8f2ea44bd71892390660b77b1ab12f9d"
+change = "sha256:ee37b7d80796c4a7123251a9cbf93fb45c47aa46d8778bd0899ea52fd3dc3ce5"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the whole staged diff of docs/specs/0012-ganit-evolve.md (Go removed from the design sections up to Build order) against the full spec, AGENTS.md sections 4 and 7.3 and the context note, looking for any ban or check weakened by the Go removal, a check-then-use gap, input trusted without a limit, or a weakened proof. Docs-only change; no code to run commit checks on, gate not run as instructed."
+summary = "Read the staged diff (docs/specs/0012-ganit-evolve.md only, 53 added and 80 removed lines; matches change.diff) against the spec's design sections (state ban, argument reads, build-time reads, whole-file base exemption) and grepped AGENTS.md, docs/ and .claude/skills for Go-as-our-language text. Checked above all for a test weakened to make it pass: each removed test is Go-only, every mixed test keeps its full Rust half, and each new Rust example (std::panic::set_hook, include_str!, const fn static initialiser, std::env::current_exe, argument-parsing crates) matches a ban the design section already states. No code changes, so the other patterns do not apply. The gate was not run, as the prompt asks."
 
 [[finding]]
-what = "Step 2 safety bans (0012 lines 125-157): every removed item is Go-only (cgo, .syso, build tags, init functions, runtime settings, flag package, go:embed, go:generate, go:linkname, plugin, unsafe package). Each Rust analog stays banned: statics (so an added #[global_allocator] static is refused), unsafe, asm!/global_asm!/naked_asm!, link attributes, raw system calls, env!/option_env!, include*, process-wide APIs; argument reads are now also refused through a dependency unless a fixture.arguments grant serves them. No hole opened; no change needed."
+what = "Removed tests (cgo dependency, Go init functions, flag.Lookup(\"test.v\"), fmt.Errorf %w error values, Go slice or map base tables, address of an exempt base var) have no Go left to test; their Rust risks stay covered by kept tests: dependency build scripts emitting native libraries or link arguments, procedural macros hiding unsafe or link attributes, the argument-read ban direct or through a dependency, and the whole-file static exemption tests. Not a weakened test."
 fixed = true
 
 [[finding]]
-what = "Build order item 2 (0012 lines 686-700): the one-time admission of the first fixture adapters is bounded: pinned by hash, admitted by another product, lost at first change, and AGENTS.md section 7.3 confirms rule 9 blocks for Rust only from the commit that turns on ganit.every-change, so receiptless adapters landing earlier is consistent. Adapter line 295 still points at item 2. No change needed."
-fixed = true
-
-[[finding]]
-what = "The 'How it is tested' section (0012 lines 730-1063, e.g. line 967 'refused before the commit that adds the Go safety parse') still states the old Go ordering and Go bans, so it disagrees with the new build order item 2 until commit 2d lands. Planned for 2d straight after this commit, per the context note; not a blocker for this commit's scope."
+what = "Remaining Go mentions in AGENTS.md (section 4 ban and kept Go tool, rule 6 line 372, section 11 Go build cache line 812), ADR-0001, ADR-0017, ADR-0019 and docs/adr/README.md are all on the list meant to stay; no other Go-as-our-language text found in docs/ or .claude/skills, and none left in spec 0012."
 fixed = true

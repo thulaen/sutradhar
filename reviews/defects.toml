@@ -1,17 +1,21 @@
 skill = "defects"
-change = "sha256:3fed0ffad3193d16e2bb370b28ce882d8f2ea44bd71892390660b77b1ab12f9d"
+change = "sha256:ee37b7d80796c4a7123251a9cbf93fb45c47aa46d8778bd0899ea52fd3dc3ce5"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read every changed line of docs/specs/0012-ganit-evolve.md (61 added, 84 removed; staged diff matches change.diff), the surrounding design sections, AGENTS.md sections 4, 6 rule 9 and 7.3, ADR-0019 and the roadmap, and grepped the tree. The design sections up to 'Build order' hold no Go; the Rust rules are intact; build order item 2 now names its commit and states why the first adapters lack a receipt, consistent with AGENTS.md section 7.3. Docs only, so no test is needed."
+summary = "Read every changed line of docs/specs/0012-ganit-evolve.md ('How it is tested' and 'Changes from the source') against the design sections (steps 1 to 3, the whole-file exemption, build order item 2) and AGENTS.md section 4 and section 6 rule 6; checked the three round-1 fixes; grepped AGENTS.md, docs/ and .claude/skills for Go-as-our-language text. Docs only, 133 changed lines, so no test is needed."
 
 [[finding]]
-what = "docs/specs/0012-ganit-evolve.md 'How it is tested' (lines 730 to 1063, e.g. line 967 'refused before the commit that adds the Go safety parse') and 'Changes from the source' (lines 1157 to 1159) still name Go and now disagree with the design text and build order item 2. No change in this commit: it is the planned next commit 2d, outside this commit's scope as stated."
+what = "Round 1 findings are fixed: //go:generate and //go:embed are gone from the build-script and include test, the optimised-build action test says 'only under one feature set', and the cfg(not(debug_assertions)) test reads '... or under one feature'."
 fixed = true
 
 [[finding]]
-what = "Step 2 example `std::env::set_var` (around line 130) is itself `unsafe` in Rust edition 2024, so it is already caught by the `unsafe` ban; `std::panic::set_hook` is a safe example. The text stays true as an example of process-wide state, so no change is needed."
+what = "Each rewritten test matches the design: process-argument reads through a dependency or argument-parsing crate (design step 2), grants only from the commit that adds the fixture actions (build order item 2), std::panic::set_hook as a process-wide state API, std::env::current_exe as the executable path, the const fn static initialiser and base atomic or locked static map cases (whole-file exemption), and 'our own Rust program with its receipt'. No change needed."
 fixed = true
 
 [[finding]]
-what = "docs/adr/0017-go-for-tools.md line 34 still speaks of Go receipts; that ADR is replaced by ADR-0019 for its Go part and is a historical record, so the change makes nothing there untrue. No change needed."
+what = "Removed Go-only tests (cgo, Go init, fmt.Errorf %w, flag package, &mode write, Go runtime settings) have Rust coverage elsewhere or no Rust counterpart: native libraries and link arguments in the dependency build-script test, static and initialiser rules in the whole-file tests. No change needed."
+fixed = true
+
+[[finding]]
+what = "Tree grep for Go as our language finds only the lines meant to stay: AGENTS.md section 4 ban and kept Go tool (lines 132-138), rule 6 safety line (372-373), section 11 Go build cache line (812), ADR-0001's 'no Go' line, ADR-0017 and ADR-0019 and their index rows. Spec 0012 has no Go left. Short ragged lines (such as 'before any compile, naming' and 'only a `fixture.state` grant may') read correctly; kept for the 300-line limit."
 fixed = true

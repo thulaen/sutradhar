@@ -1,17 +1,17 @@
 skill = "backlog"
-change = "sha256:3fed0ffad3193d16e2bb370b28ce882d8f2ea44bd71892390660b77b1ab12f9d"
+change = "sha256:ee37b7d80796c4a7123251a9cbf93fb45c47aa46d8778bd0899ea52fd3dc3ce5"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read task #325 (job card and earlier text, no comments), context.md, AGENTS.md sections 4, 7.3 and 10, and the staged diff of docs/specs/0012-ganit-evolve.md (one file, 61 added + 84 removed = 145 lines). Checked scope against the task, phase, Later, roadmap fit, proof and the ready count (10 status/ready, at the limit, not over); grepped spec 0012 and docs/ for Go lines left untrue."
+summary = "Read task #325 (Phase 2.1, status/ready, parent #324), the context notes and the staged diff (one file, docs/specs/0012-ganit-evolve.md, 53 added and 80 removed, 133 changed lines). Checked that the change only moves spec 0012's 'How it is tested' and 'Changes from the source' off Go to match commit 2c, adds nothing outside that, that no Go-as-our-language text is left in spec 0012, AGENTS.md, docs/ or .claude/skills beyond the lines meant to stay, and that no new ideas or later-roadmap work slipped in. The round 1 points (go:generate, go:embed, build tag wording, the missing 'or') are fixed."
 
 [[finding]]
-what = "Task #325's job card (plan of 17 Nov, #357) lists only AGENTS.md and docs/adr/ under 'Files it may touch' and its Done-when names only commits e2b97b6 and 72c8692, while this commit (like 5dcdff9) edits docs/specs/0012. The kept earlier text's aim ('AGENTS.md, ADR-0017 and the specs say Go is banned') and its test (a search of docs/ finds no Go as our language) do ask for it, so the diff needs no change; when posting the proof, widen the card's file list and name 5dcdff9, this commit and 2d."
+what = "Task #325's file list names only AGENTS.md, docs/adr/ and specs 0003 and 0010, and plans one or two commits, while this is a further commit touching spec 0012. No change needed: the task's own test ('a search of AGENTS.md and docs/ for Go as our language finds none') and the owner's ban need spec 0012 cleaned, and the commit plan in the context notes lists this as part 2 of the Go ban. The proof posted on #325 at the end should list this commit with 5dcdff9 and 384492e so the task record matches what was done."
 fixed = true
 
 [[finding]]
-what = "docs/specs/0012 'How it is tested' (lines ~730-1065, such as line 967 'refused before the commit that adds the Go safety parse', which now contradicts Build order item 2) and 'Changes from the source' (lines ~1157-1159) still name Go. These sections are the planned next commit 2d, which must land straight after this one; the 300-line rule justifies the split, so this commit is complete for its own scope."
+what = "The Go examples were swapped for new Rust ones (std::panic::set_hook, include_str!, a const fn static initialiser, set_mode, std::env::current_exe, args read through a dependency). No change needed: replacing a Go example with a Rust one keeps each test's meaning and is what the commit says it does, not new scope; Go-only tests (cgo, flag.Lookup, Go init, fmt.Errorf %w, address of a base var) were removed rather than given new Rust rules."
 fixed = true
 
 [[finding]]
-what = "docs/specs/0012 step 2: the new 'directly or through a dependency (such as ... an argument-parsing crate)' clause and the new Rust examples (std::env::set_var, std::panic::set_hook) tighten or illustrate Rust rules rather than only deleting Go. They carry over what the removed Go flag-package and process-wide-setting bans covered, so they stay within the task and are not new ideas that belong in Later."
+what = "Remaining Go mentions in AGENTS.md (section 4 ban and its kept Go tool, rule 6 safety line, section 11 Go build cache line), ADR-0001's 'No Go' line, ADR-0017 history and ADR-0019 are the ones meant to stay; a grep of docs/specs and .claude/skills finds no other Go-as-our-language text. No change needed."
 fixed = true

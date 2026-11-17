@@ -1,21 +1,13 @@
 skill = "architecture"
-change = "sha256:3fed0ffad3193d16e2bb370b28ce882d8f2ea44bd71892390660b77b1ab12f9d"
+change = "sha256:ee37b7d80796c4a7123251a9cbf93fb45c47aa46d8778bd0899ea52fd3dc3ce5"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged diff of docs/specs/0012-ganit-evolve.md (61 added, 84 removed), the spec's design sections through Build order, AGENTS.md sections 4, 6 rule 9 and 7.3, ADR-0019, the roadmap's Phase 2 lines and context.md; checked the tool/engine wall, the build order against section 7.3, that each removed Go-only ban has a Rust counterpart, that no setting or hook is added, and grepped the tree for claims the change makes untrue."
+summary = "Read the staged diff (docs/specs/0012-ganit-evolve.md only, 53 added and 80 removed, under the 300-line limit), the spec's design sections and build order as left by 384492e, AGENTS.md section 5 and the context file. Checked that the test list now matches the Rust-only design (GanitEvolve crate, argument reads through a dependency refused, grants from the fixture-actions commit at build order item 2, Rust rules kept), and grepped AGENTS.md, docs/ and .claude/skills for Go-as-our-language text. Docs-only change: no module, composition root, event or settings wiring is added, and nothing is added for maybe one day."
 
 [[finding]]
-what = "docs/specs/0012-ganit-evolve.md 'How it is tested' (lines 730 to 1063, e.g. 824 and 892 'our own Go program', 907 'thread or goroutine', 967 'the commit that adds the Go safety parse') and 'Changes from the source' (1157 to 1159) still name Go, so for one commit they disagree with the design sections. No change here: context.md plans commit 2d to land straight after with exactly those sections, and this commit is complete for its stated scope (design sections up to Build order)."
+what = "No Go remains in spec 0012. Across AGENTS.md, docs/ and .claude/skills the only Go mentions left are the intended ones: AGENTS.md section 4's ban and its one kept Go tool (line 132-138), rule 6's defect-fix safety line (line 372), section 11's Go build cache line (line 812), ADR-0001's no-Go line, and ADR-0017/0019 with their index rows. No change needed."
 fixed = true
 
 [[finding]]
-what = "Spec 0012 line 10: 'runs ganit as a separate program through a shared schema, never shared code' was first a language split; with both in Rust it still holds as a wall between a developer tool (AGENTS.md section 4, held to sections 4, 5.2 and 6) and the product engine, so no Boot-convention or Modulith problem. No change needed."
-fixed = true
-
-[[finding]]
-what = "Build order item 2 (spec 0012 lines 686 to 700) now names the commit that adds the fixture actions and says the first adapters land before ganit.every-change is turned on. This matches AGENTS.md section 7.3 (rule 9 blocks for Rust only once GanitEvolve can make a receipt for any Rust file, which needs grants) and roadmap Phase 2's 'build steps 1 and 2 first'; the one-time admission is the only path to the first adapter receipt, so it is not a 'maybe one day' hook. No change needed."
-fixed = true
-
-[[finding]]
-what = "Effect contract step 2 (spec 0012 lines 127 to 157): each dropped Go-only ban has a Rust counterpart that stays: non-constant initialisers need LazyLock/OnceLock, caught by the state ban; flag-registry reads become 'through a dependency (an argument-parsing crate)'; the testing-import ban is covered by the cfg(test) bans; cgo and .syso by the link-argument and prebuilt-object refusal. No new setting, option or hook is added. No change needed."
+what = "Round 1 items are fixed: //go:generate and //go:embed are gone from the build-script and include test, the optimised-build action test says only 'feature set', and the cfg(not(debug_assertions)) test reads 'or under one feature'. The new Rust examples (const fn static initialiser, base static map behind a lock, std::panic::set_hook, std::env::current_exe) agree with the design section's lists. No change needed."
 fixed = true

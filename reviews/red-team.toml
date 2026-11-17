@@ -1,25 +1,21 @@
 skill = "red-team"
-change = "sha256:3fed0ffad3193d16e2bb370b28ce882d8f2ea44bd71892390660b77b1ab12f9d"
+change = "sha256:ee37b7d80796c4a7123251a9cbf93fb45c47aa46d8778bd0899ea52fd3dc3ce5"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Round 3 of commit 2c (#325), spec 0012 Go removal up to Build order. Three red agents (general-purpose subagents) ran at once with the diff and one goal each: break it, get round it, abuse it. I checked each report against the full spec, AGENTS.md sections 4 and 7.3 and the HEAD text. No Rust rule was weakened, cross-references hold, and build order item 2 now names its commit and gives its reason; no hole needs a change in this commit."
+summary = "Read the staged diff (matches change.diff) to spec 0012's 'How it is tested' and 'Changes from the source', the spec's design sections, and grepped AGENTS.md, docs/ and .claude/skills for Go-as-our-language text. Three red agents attacked it, each with one goal: break it (wrong, contradictory or broken tests), get round it (Rust cheats the narrowed tests miss), abuse it (adapter, grant and prebuilt-object wording an outsider could exploit). No real hole: every Rust rule the cut tests named is still in the design, adapter and pinned-tool lines match the definition, build order item 2 is the fixture actions, and the only Go left is the kept set (ADR-0017/0019 history, ADR-0001 and ADR index, AGENTS.md section 4, rule 6 and section 11)."
 
 [[finding]]
-what = "Build order item 2 (lines 691-700): two agents said 'land ... before ganit.every-change is turned on' is not enforced. No change needed: AGENTS.md 7.3 turns it on only once a receipt can be made for any Rust file, and rule 9 would block unreceipted adapters in the turn-on commit itself, so the turn-on must come after the adapters land; the spec states that order with its reference."
+what = "Several design rules have no test naming them by example: std::env::args_os in the main arguments test, std::thread::current().name(), std::env::set_var, and Rust forms of host name, user id and build information (lines 936-938, 1011-1013, 1030-1034). The lists were incomplete before this change, the general wording still covers each case, and the design (lines 128-153) names them, so no change is needed for this commit."
 fixed = true
 
 [[finding]]
-what = "Step 2 (lines 136-149): 'directly or through a dependency' is said only for process arguments, so the identity/call-stack ban could be read as direct-only. No change needed: a dependency's run-time actions are covered by its effect summary, where 'a summary describes, and only a grant authorises' (lines 283-291); the identity ban had no dependency clause before this change either."
+what = "Runtime environment-variable reads (std::env::var or vars, e.g. to detect a test build via RUST_TEST_THREADS) are banned only under the numerical profile (line 121), not by name under both profiles. This is a design question that predates this commit and is outside its scope (tests made to match the design); it belongs as a Later idea, not a fix here."
 fixed = true
 
 [[finding]]
-what = "Pinned tools (line 342), 'our own Rust program with its receipt': a kept Rust tool that starts a shell (AGENTS.md section 4, commit 7f5ccc9) could qualify. No change needed here: the same paragraph already says a pinned tool is never a shell or any program that runs code it is given, and the exposure existed with the Go wording."
+what = "Line 1008: 'static HITS: Hits(AtomicU64)' is shorthand, not valid Rust (it means struct Hits(AtomicU64); static HITS: Hits). The text predates this change, which only dropped the word 'Rust'; the meaning is clear, so no change is needed."
 fixed = true
 
 [[finding]]
-what = "Test section still names Go (lines 772, 824, 853, 892, 967 and others), and line 967 now disagrees with build order item 2 on when grants run. No change needed in this commit: it is the planned next commit 2d, which must fix line 967 to the fixture-actions commit."
-fixed = true
-
-[[finding]]
-what = "Pre-existing, not from this change: aliased macros (use std::include_str as inc), branches on cfg!(debug_assertions), and dependency thread pools outliving 'every thread the candidate started' (line 245). Worth a later look; outside this commit's scope."
+what = "Short ragged lines left by the cuts (lines 870-871, 880-881, 958-960) are kept on purpose to stay under the 300-line limit; cosmetic only."
 fixed = true

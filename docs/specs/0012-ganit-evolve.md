@@ -727,7 +727,7 @@ This part adds nothing to public pages.
 
 ## How it is tested
 
-Go tests in the GanitEvolve module and Rust tests in ganit:
+Rust tests in the GanitEvolve crate and in ganit:
 
 - A run started from Claude: `next` gives a packet with the parent, two
   to four examples, feedback, the rules and the answer format, and the
@@ -746,7 +746,6 @@ Go tests in the GanitEvolve module and Rust tests in ganit:
   submitted a candidate in the run, wrote or edited a hidden evaluation
   input is refused, including after a resume; a helper counts as its
   parent's product.
-- A dependency that uses cgo is refused before anything is built.
 - A dependency build script or procedural macro that reads a clock, random
   numbers or state kept between runs is refused before anything is built.
 - An operations candidate's declared fixture action works only inside
@@ -821,7 +820,7 @@ Go tests in the GanitEvolve module and Rust tests in ganit:
   acceptance.
 - A pinned tool record whose program is neither an entry in
   `gate/tools.toml` with a matching hash and `fixture_callable = true` nor
-  our own Go program with its receipt is refused before launch.
+  our own Rust program with its receipt is refused before launch.
 - A fixture file, fixture adapter or pinned tool written or edited by a
   product that wrote or edited a hidden evaluation input is refused at
   acceptance and again before launch, so a near-copy of a hidden input
@@ -849,9 +848,8 @@ Go tests in the GanitEvolve module and Rust tests in ganit:
 - A `problem.toml` with no largest answer per case or per-case time
   limit, with either set to zero, or with a largest answer that does not
   fit within the job's memory limit, is refused at acceptance.
-- `unsafe` or `#[no_mangle]` under `#[cfg(not(debug_assertions))]`, under
-  one feature, or under one Go build tag is refused for the build that
-  would compile it.
+- `unsafe` or `#[no_mangle]` under `#[cfg(not(debug_assertions))]` or
+  under one feature is refused for the build that would compile it.
 - An effects table, contract or record from `effects/` (other than a
   fixture file) with an unsupported schema version, a repeated, unknown,
   missing or null field (such as an extra `unlimited = true` in a bound
@@ -869,9 +867,8 @@ Go tests in the GanitEvolve module and Rust tests in ganit:
   summary declares a read of the hidden tests is refused.
 - Under both safety profiles, Rust `unsafe`, `#[no_mangle]`,
   `#[export_name]`, `#[link_section]`, `#[link]`, `extern` blocks, `asm!`,
-  `global_asm!` and `naked_asm!`, and Go's `unsafe` package,
-  `//go:linkname`, hand-written assembly, the `plugin` package, `import
-  "C"` and raw system calls are each refused before any compile, naming
+  `global_asm!` and `naked_asm!`, and raw system calls are each refused
+  before any compile, naming
   the construct.
 - A fixture adapter that opens a hidden evaluation input, or a resource
   outside its grant, is refused before launch or fails the candidate.
@@ -880,16 +877,15 @@ Go tests in the GanitEvolve module and Rust tests in ganit:
   folder, is refused before any compile; a process left running by a build
   is gone before step 3 and cannot read the hidden tests.
 - Under both safety profiles, a candidate that keeps a value in a
-  static, a thread local, a global or a Go runtime setting
-  (`debug.SetMemoryLimit`, `debug.SetGCPercent`, `runtime.GOMAXPROCS`)
-  between calls is refused, naming it; only a `fixture.state` grant may
+  static, a thread local or a global between calls is refused, naming it;
+  only a `fixture.state` grant may
   keep state, and it is reset.
-- Under both safety profiles, a build script, a procedural macro, `env!`,
-  `option_env!` or `//go:generate` in the candidate's own code is always
-  refused before any compile, naming it; `include!`, `include_str!`,
-  `include_bytes!`, `#[path]` and `//go:embed` are refused the same way
+- Under both safety profiles, a build script, a procedural macro, `env!`
+  or `option_env!` in the candidate's own code is always refused before
+  any compile, naming it; `include!`, `include_str!`, `include_bytes!`
+  and `#[path]` are refused the same way
   unless the read exception covers that read.
-- A fixture adapter whose program is not our own Go program with its
+- A fixture adapter whose program is not our own Rust program with its
   receipt, and was not admitted as build order item 2 says, is refused
   before launch.
 - A candidate whose answer is longer than the problem's largest answer per
@@ -904,14 +900,14 @@ Go tests in the GanitEvolve module and Rust tests in ganit:
   and a candidate that signals readiness early or writes a fake end mark
   gets no shorter measured time; a candidate that returns a lazy result
   whose work happens while it is encoded, or returns while a background
-  thread or goroutine finishes the answer, gets no shorter time, and fails
+  thread finishes the answer, gets no shorter time, and fails
   if the answer is incomplete when the harness reads it.
 - A candidate that is correct in the debug build but gives a wrong answer
   in the optimised timing build, for example through
   `cfg!(debug_assertions)`, fails.
 - A dependency build script that emits a link argument, a native library
   or a library search path, or a dependency package holding a prebuilt
-  object such as a Go `.syso` file, is refused before the candidate is
+  object, is refused before the candidate is
   compiled; so is a directive its summary's `build_directives` does not
   name.
 - A procedural macro that gives clean output to the check and `unsafe` or
@@ -934,24 +930,19 @@ Go tests in the GanitEvolve module and Rust tests in ganit:
   `assert_eq`, is refused, and only the base's public-interface tests and
   the hidden tests count.
 - Under both profiles, `cfg(test)`, `cfg!(test)` or `#[cfg(test)]` in the
-  candidate's Rust outside a base test module, and `testing.Testing()` or
-  an import of `testing` outside a test file in its Go, is refused before
-  any compile, naming the construct.
-- Under both profiles, a read of process arguments or flags, such as
-  `os.Args`, `flag.Args` or `std::env::args`, is refused before any
-  compile unless a `fixture.arguments` grant serves it; with that grant, a
-  command-line entry file such as `main.rs` or `main.go` reads only the
-  recorded, bounded argument list, fresh for each case. Listing or reading
-  a flag the candidate did not define, through `flag.Lookup("test.v")`,
-  `flag.VisitAll` or `flag.CommandLine`, is refused with or without the
-  grant.
+  candidate outside a base test module is refused before any compile,
+  naming the construct.
+- Under both profiles, a read of process arguments, such as
+  `std::env::args` or one through an argument-parsing crate, is refused
+  before any compile unless a `fixture.arguments` grant serves it; with
+  that grant, a command-line entry file such as `main.rs` reads only the
+  recorded, bounded argument list, fresh for each case.
 - With a `fixture.arguments` grant and a process the harness starts with
   the recorded list, a candidate learns neither the test build nor the
-  executable path from `flag.Lookup("test.v")`, `os.Args[0]` or
-  `std::env::args().next()`: the first is refused, and the others return
-  the recorded list's first value.
+  executable path from `std::env::args().next()`: it returns the
+  recorded list's first value.
 - When the list reaches a test binary through the grant's adapter, a
-  direct read such as `os.Args`, `flag.Visit` or `std::env::args` is
+  read such as `std::env::args`, direct or through a dependency, is
   refused before any compile.
 - A problem with a `fixture.arguments` grant whose process can be started
   neither with the recorded list nor through the adapter is refused at
@@ -961,11 +952,12 @@ Go tests in the GanitEvolve module and Rust tests in ganit:
   before any compile.
 - A doc-comment code block the candidate adds or edits, or `cfg(doctest)`
   outside a base test module, is refused before any compile, naming it.
-- A candidate that gives a wrong answer only under one feature set or Go
-  build tag fails the tests that build runs.
+- A candidate that gives a wrong answer only under one feature set fails
+  the tests that build runs.
 - A problem that lists more than one source file is refused at acceptance.
-- A problem with grants is refused before the commit that adds the Go
-  safety parse. After it, a fixture adapter without a receipt is refused
+- A problem with grants is refused before the commit that adds the
+  fixture actions (build order item 2). After it, a fixture adapter
+  without a receipt is refused
   unless it was admitted once by a product other than its writer and is
   pinned by hash in the acceptance.
 - Code inside an EVOLVE-BLOCK that calls or refers to the fixed part's
@@ -998,43 +990,32 @@ Go tests in the GanitEvolve module and Rust tests in ganit:
   pinned tool's `gate/tools.toml` entry is refused.
 - A candidate that embeds `problem.toml`, a hidden test file or any other
   file under a problem folder or the evaluator, for example with
-  `//go:embed problems/<p>/problem.toml`, is refused before any compile.
-- In a whole-file problem, a base file that keeps a Rust immutable
-  `static` lookup table, a Go `var ErrX = errors.New(..)` or its own
-  `Result` alias unchanged passes the state and name bans, while the same
-  construct added or changed by the candidate is refused, and an `unsafe`
-  block the base already has is still refused; a base Go slice, array or
-  map table is refused even when unchanged.
-- In a whole-file problem, a candidate that reassigns the base's `ErrX`,
-  stores into a base atomic, or caches into a base package-level map is
-  refused before any compile, and so is a base's unchanged mutable global;
-  so is changed code that calls an unchanged base function which writes a
-  plain base `var counter int`, or that calls an unchanged base setter
-  such as `SetMode` and then reads the value it set.
+  `include_str!("problems/<p>/problem.toml")`, is refused before any compile.
+- In a whole-file problem, a base file that keeps an immutable `static`
+  lookup table or its own `Result` alias unchanged passes the state and
+  name bans, while the same construct added or changed by the candidate
+  is refused, and an `unsafe` block the base already has is still
+  refused.
+- In a whole-file problem, a candidate that stores into a base atomic or
+  caches into a base `static` map behind a lock is refused before any
+  compile, and so is a base's unchanged mutable static; so is changed
+  code that calls an unchanged base function which writes a base static,
+  or that calls an unchanged base setter such as `set_mode` and then
+  reads the value it set.
 - In a whole-file problem, a candidate that changes a function a base's
-  unchanged package-level initialiser calls, such as `build` in `var t =
-  build()`, is refused before any compile.
-- In a whole-file Rust problem, a base `static HITS: Hits(AtomicU64)` that
+  unchanged `static` initialiser calls, such as the `const fn` `build` in
+  `static T: [u8; 4] = build();`, is refused before any compile.
+- In a whole-file problem, a base `static HITS: Hits(AtomicU64)` that
   wraps state in a type of its own is refused, like a bare atomic, and so
   is a base `static S: &AtomicU64`, and so is a base `static S: &dyn Any`.
-- In a whole-file Go problem, a base error value made with `fmt.Errorf`
-  using `%w` or a non-constant argument is refused.
 - Under both profiles, a candidate that keeps state through a process-wide
-  standard-library or dependency API, such as `mime.AddExtensionType` then
-  `mime.TypeByExtension`, or a flag it defines with `flag.String` and
-  later sets or reuses as a store, is refused before any compile; a
-  command-line entry file that defines its flags inside `main` and parses
-  them once from the recorded list under a `fixture.arguments` grant
-  passes, while one that defines them as package-level variables such as
-  `var n = flag.Int(..)` is refused.
+  standard-library or dependency API, such as a value kept in the hook
+  it sets with `std::panic::set_hook`, is refused before any compile.
 - A candidate that keeps a marker in its output buffer, or in an input or
   output slice's spare capacity, to return early on a later timed call
   gains nothing: each timed call gets newly allocated buffers whose
   capacity equals their length, inputs and in-out buffers holding a fresh
   copy of the case's input and output-only buffers zero-filled.
-- In a whole-file Go problem, a candidate that takes the address of an
-  exempt base variable and writes through it, such as base `var mode = 1`
-  with changed code `p := &mode; *p = 2`, is refused before any compile.
 - A hidden test set file, the evaluator's tests, the reference or the
   input generator whose bytes no longer match the hash `problem.toml`
   names is refused before launch.
@@ -1049,10 +1030,9 @@ Go tests in the GanitEvolve module and Rust tests in ganit:
 - Under both profiles, a read of caller identity, the call stack, a thread
   name, the executable path, the working directory, the process id, the
   host name, the user id or build information, such as
-  `Location::caller()`, `runtime.Caller`, `os.Getwd`, `os.Getpid`,
-  `os.Hostname`, `os.Getuid`, `std::env::current_dir`, `std::process::id`
-  or `debug.ReadBuildInfo`, is refused before any compile.
-- A problem whose builds leave out a feature set or Go build tag that a
+  `Location::caller()`, `std::env::current_dir`, `std::env::current_exe`
+  or `std::process::id`, is refused before any compile.
+- A problem whose builds leave out a feature set that a
   shipped build, hook or CI step uses is refused at acceptance and again
   before launch.
 - A fixture adapter, or a pinned tool it runs, that reads a fixture or
@@ -1060,11 +1040,6 @@ Go tests in the GanitEvolve module and Rust tests in ganit:
 - Editing a fixture file, a resource or bound record, an adapter program
   or a pinned tool after launch changes nothing an adapter serves or
   enforces.
-- Under both profiles, a Go `init` function, or a package-level variable
-  whose initialiser is not a constant, that the candidate adds or changes
-  is refused before any compile; in a whole-file problem a base's
-  unchanged `init` function is refused too, and its unchanged
-  package-level variables follow the rule in "A problem definition".
 - A candidate that defines its own `assert` or `debug_assert_ne` is
   refused, like one that defines `assert_eq`.
 - A fixture adapter that opens a network connection or reads any host
@@ -1086,7 +1061,7 @@ Go tests in the GanitEvolve module and Rust tests in ganit:
   path, even with the validator's check passed, finds nothing there and
   fails.
 - An action that appears only in the optimised timing build, or only
-  under one build tag or feature set, is found and refused unless
+  under one feature set, is found and refused unless
   declared.
 - A file written to scratch space, state kept in a `fixture.state`
   grant, or state kept by a fixture adapter or pinned tool in one test
@@ -1154,11 +1129,9 @@ Go tests in the GanitEvolve module and Rust tests in ganit:
 
 - The maths side is rewritten as Rust in ganit.
 - The first kernels are Rust, in ganit; whole-file problems may evolve any
-  Rust or Go file that meets the whole-file rules.
+  Rust file that meets the whole-file rules.
 - The safety step's forbidden list is restated for Rust, with `unsafe`
-  added, and for Go, with the `unsafe` package, `//go:linkname`,
-  hand-written assembly, the `plugin` package and `import "C"`, as
-  AGENTS.md section 4 and section 6 rule 6 ask.
+  added, as AGENTS.md section 6 rule 6 asks.
 - The compiler choice for the old kernels is dropped.
 - The run screen and briefing come from the Dioxus app.
 - Receipts live in `receipts/`, and source files are the kinds AGENTS.md
