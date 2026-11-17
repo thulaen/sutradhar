@@ -1,25 +1,21 @@
 skill = "red-team"
-change = "sha256:b3084ab95d2563351da13b421f9230bd82eb13491189fa3b0d0c557c45deae8f"
+change = "sha256:56796646b62b6189e99c4a79149d0b17d11002853022f4decb3960880b644cde"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged diff (AGENTS.md sections 4 and 5.1 and rule 8, README.md, ADR-0001, ADR-0017, new ADR-0019, ADR index) and checked it against #166 comments 5041 and 5043, #130 comment 4959, #339 comment 5240 and tasks #339, #340 and #348. Three red agents ran as fresh subagents with the goals break it, get round it and abuse it; I checked each report myself. None found a hole this commit must fix. Quotes, dates, links and anchors are right, the diff is 136 lines in 6 files, and the text leaks no paths or tokens."
+summary = "Ran three red agents as fresh subagents on the staged diff (AGENTS.md, docs/roadmap.md, architecture skill): break it (untrue or contradictory Go lines, broken references), get round it (wording that lets Go or unsafe code through, gate code vs text), abuse it (leaks, paths, secrets, weakened safety steps, odd characters). Checked each report against the staged files, section 4, ADR-0019 and task #348. No Go or ADR-0017 line is left untrue in this commit's scope; no leaks, pure ASCII, no trailing spaces; nothing needs a change before commit."
 
 [[finding]]
-what = "AGENTS.md:136-137 says the Go progress guard is not kept, but #166 comment 5043 names the guard as a Go tool that keeps running, and the bodies of tasks #339 and #340 still say the old program keeps running and that the Rust guard runs beside the Go guard. #339 comment 5240 records the removal and the owner's answer, so the AGENTS.md text is right. No change is needed in this commit, but the #339 and #340 task bodies should be updated so tasks and rules agree. 5240 relays the owner's words from session notes, not from a record the owner wrote."
+what = 'AGENTS.md rules 2, 9 and 12 (about lines 358, 425, 438) drop Go, so a defect fix to the kept Go bridge (section 4, task #348) no longer names Go style, a GanitEvolve receipt or the copied-code check; only rule 6 keeps a Go safety line. No change needed: no .go file is tracked and the gate refuses .go files (crates/aegis/src/file_kinds.rs), so those repo checks never reached the bridge, and section 4 already limits it to defect fixes with a failing test first. A later commit may say in section 4 which checks a bridge fix gets.'
 fixed = true
 
 [[finding]]
-what = "AGENTS.md still names Go at line 207 (a Go tool's migrations), rule 6 at lines 370-371 (safe Go), rule 9 at line 425 and rule 12 at lines 438-439. These lines conflict with the new ban in section 4. The planned Go ban part 2 commit under #325 covers them, so this commit does not need to. Rule 6's Go clause should stay while the kept Go MCP bridge runs."
+what = 'Architecture skill (lines 58-60) says the other operations and developer tools "are written in Rust under ADR-0019", while the kept shell files and the kept Go bridge are not yet. No change needed: it matches the section 4 table and ADR-0019, which state the rule and its kept exceptions.'
 fixed = true
 
 [[finding]]
-what = "Possible ways round the rules: Dockerfile RUN lines and compose commands run sh -c; a Rust tool may start python3 -c or perl -e; nothing in section 4 bans build.rs or the cc crate; aegis file_kinds.rs accepts any new *.sh file; 'a defect in what it already does' has no fixed starting commit for the out-of-repo MCP bridge. All of these were there before this change or concern code outside this docs commit. Each could be a later task."
+what = 'Section 4 says "The Go progress guard is not kept" although that guard is live on Dell. Out of scope: that line came with part 1 (e2b97b6, on main) and records the owner decision with tasks #339 and #340; this diff does not touch it.'
 fixed = true
 
 [[finding]]
-what = "AGENTS.md:139-144: the C compiler exception does not say whether the Alpine compiler packages are listed in gate/tools.toml, or that Alpine's signing keys come from the digest-pinned base image. #130 comment 4959 gives the exception as written. An exact version plus Alpine's signed APKINDEX checksums is about as strong as a digest, so this is acceptable as it stands."
-fixed = true
-
-[[finding]]
-what = "docs/adr/0001-languages-and-files.md:12 was not reflowed after the edit and is exactly 80 characters. That is within the docs.line-length limit, so this is cosmetic only."
+what = 'Specs 0002 (line 7), 0003 (line 10) and 0010 (lines 10, 510) still say tools move to Go under ADR-0017, now disagreeing with the roadmap and skill. Out of scope: planned for commit 2b.'
 fixed = true

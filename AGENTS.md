@@ -204,7 +204,7 @@ Boot.
   backups and audit logs are all kept per site.
 - Migrations are numbered plain SQL files in `migrations/`. sqlx applies
   the product's migrations in order, with checksums, so an applied file
-  can never change. A Go tool with its own store keeps its migrations in
+  can never change. A tool with its own store keeps its migrations in
   `migrations/<tool>/`, and the tool applies them the same way, with
   checksums. squawk checks that each migration is safe.
 
@@ -355,7 +355,7 @@ Boot.
 
 1. Test first. A change arrives with a test that failed before it.
 2. Google style everywhere. Use Google's own guide where one exists
-   (Go, TypeScript, Shell, HTML/CSS), and our Google-style guides in
+   (TypeScript, Shell, HTML/CSS), and our Google-style guides in
    [docs/standards/](docs/standards/) for Rust, PHP and SQL.
 3. One rule matrix turns MISRA, NASA's Power of 10, JPL's rules and
    DO-178C Level A objectives into checks for every allowed language.
@@ -367,10 +367,10 @@ Boot.
    default, more at the release tier through `PROPTEST_CASES`. Text the
    gate shows people is kept as a snapshot in `tests/snapshots`; a
    deliberate change is accepted with `AEGIS_UPDATE_SNAPSHOTS=1`.
-6. Write safe Rust and Go only. No `unsafe` in our Rust, and no `unsafe`
-   package, `//go:linkname`, hand-written assembly or `plugin` package
-   in our Go. The one exception is the Rust speed-counting crates of
-   rule 8, in benchmark programs only.
+6. Write safe Rust only. No `unsafe` in our Rust. The one exception is
+   the Rust speed-counting crates of rule 8, in benchmark programs only.
+   A defect fix to the one Go tool section 4 keeps adds no `unsafe`
+   package, `//go:linkname`, hand-written assembly or `plugin` package.
 7. No dead code, no commented-out code and no unused dependencies.
 8. Speed is checked against baselines (spec 0007): instruction counts
    kept in `gate/speed.toml`, and times kept by the door in its speed
@@ -422,7 +422,7 @@ Boot.
    the receipt of the code they test. Agents must run GanitEvolve: the
    gate check `ganit.every-change` refuses a source change with no
    receipt or no card at every commit, push and release (owner,
-   10 November 2026). Source files are Rust, Go, TypeScript, CSS, PHP,
+   10 November 2026). Source files are Rust, TypeScript, CSS, PHP,
    SQL, shell, Cedar and Rego files, whether they ship or not (owner,
    10 November 2026: "Every source file").
    The checks in rules 8 and 9 are wired in: a change may not remove
@@ -435,11 +435,11 @@ Boot.
     A function takes at most 5 arguments, nests at most 4 levels deep and
     stays under a complexity score of 15.
 12. No copied code. Two runs of 100 or more equal tokens, in one file or
-    two, in Rust, Go, shell, SQL, CSS, TypeScript, PHP or a policy file,
-    are refused: write the code once and share it. In Rust and Go a copy
-    with its names changed still counts, and `use` and `import` items
-    are left out. A table of like entries, written the same way, names
-    and all, is a list, not code, and counts once. No old copies are
+    two, in Rust, shell, SQL, CSS, TypeScript, PHP or a policy file,
+    are refused: write the code once and share it. In Rust a copy with
+    its names changed still counts, and `use` items are left out. A
+    table of like entries, written the same way, names and all, is a
+    list, not code, and counts once. No old copies are
     allowed; only a signed owner waiver (section 7.2) may allow one.
 13. Every rule holds for all code, not only new code, unless the rule
     itself names new or changed files (as item 9 does). The only old

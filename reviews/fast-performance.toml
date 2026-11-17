@@ -1,13 +1,9 @@
 skill = "fast-performance"
-change = "sha256:b3084ab95d2563351da13b421f9230bd82eb13491189fa3b0d0c557c45deae8f"
+change = "sha256:56796646b62b6189e99c4a79149d0b17d11002853022f4decb3960880b644cde"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the whole staged diff afresh (AGENTS.md sections 4, 5.1 and 6 rule 8; README.md; ADR-0001; ADR-0017 note; new ADR-0019; ADR index), AGENTS.md section 5.6 and section 7's build-cache rule, and grepped the tree for Go, race and C-compiler references. The change is docs only: no code, hot path, loop, cache, queue, per-request work or text cutting, so nothing to measure; the speed rules (instruction counts, 30-run medians, release p50/p95/p99, the race against a reference, sealed pankti benchmarks, memory limits) are unchanged and still hold."
+summary = "Read the whole staged diff (AGENTS.md rules 6, 9, 12 and section 5.2, docs/roadmap.md Phase 2 and 3, the architecture skill step 3). The change is text only: no code, gate check, config or build file changes, so no hot path, loop, allocation, cache, blocking call or time limit is touched, and nothing is measured. No rule that protects speed (section 5.6, rule 8 baselines, no cutting text short) is weakened."
 
 [[finding]]
-what = "AGENTS.md section 4: the C-compiler exception moved from sealed Go race-test jobs to the sealed Forgejo build job. Section 6 rule 8 'The race' now says 'no C compiler in our build beyond the one exception in section 4'; that stays true, and C reference libraries are still run only as outside programs never linked into our code, so speed measurement is not weakened. No change needed."
-fixed = true
-
-[[finding]]
-what = "AGENTS.md section 7 (line 812) still lets idle Go build caches be removed after seven days. With the progress guard no longer kept, it stays true for the one kept Go program (Codex's native MCP bridge, #348) and is harmless for disk once that is gone; it belongs to the planned Go ban part 2 commit if it is to be reworded. Other leftover Go wording (line 207, rules 6, 9, 10, specs, roadmap) is for style-docs and architecture under the planned part 2, not a performance matter. No change needed for this commit."
+what = "Docs only, no runtime effect. The rule text now names fewer languages for rules 9 and 12 (Go dropped) and the roadmap drops the Go toolchain pinning step; if anything this shrinks gate work later, and the gate code that enforces these rules is not changed in this commit, so there is nothing to time. No change needed."
 fixed = true

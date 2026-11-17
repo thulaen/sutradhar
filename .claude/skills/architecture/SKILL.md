@@ -56,9 +56,9 @@ the diff, never the agent that wrote the change (AGENTS.md section 7.1).
 3. tijori's signing core, made before Boot exists, is held to the same
    rules where they apply, and noted for its move onto Boot in Phase 3.
    The gate, forge-sync and the other operations and developer tools
-   move to Go under ADR-0017 (AGENTS.md section 4). They are held to
-   AGENTS.md sections 4, 5.2 (for a tool's own store) and 6, not to
-   Boot's conventions.
+   are written in Rust under ADR-0019 (AGENTS.md section 4). They are
+   held to AGENTS.md sections 4, 5.2 (for a tool's own store) and 6,
+   not to Boot's conventions.
 4. Nothing for "maybe one day" (AGENTS.md section 6 rule 7, section 8
    step 6 and section 10 rule 2). Every setting, option or hook the
    change adds to what we ship (the product and our tools, not their

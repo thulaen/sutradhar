@@ -1,21 +1,17 @@
 skill = "backlog"
-change = "sha256:b3084ab95d2563351da13b421f9230bd82eb13491189fa3b0d0c557c45deae8f"
+change = "sha256:56796646b62b6189e99c4a79149d0b17d11002853022f4decb3960880b644cde"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged diff (6 files, 91 added, 45 removed, 136 lines), task #325 and parent #324, owner comments #166/5043, #130/4959 and #339/5240, tasks #339, #340 and #348, and the live Codex and Claude settings on Dell. The change does part 1 of #325 within the 300-line and 10-file limits, its claims match Forgejo and Dell, #325 is in Phase 2, and no open task is marked next."
+summary = "Read task #325 and its parent #324 and #348 on Forgejo, the context notes, the staged diff (AGENTS.md, docs/roadmap.md, architecture skill; 20 added, 22 removed) and grepped AGENTS.md, docs/ and .claude/ for Go lines left untrue. Every Go line in the commit's scope is gone except the kept-bridge lines in section 4, rule 6 and section 11, which are deliberate; the rest sit in specs 0002, 0003, 0010, 0012, 0063 and 0065, planned for commits 2b and 2c. Nothing unasked is changed, and the task is in Phase 2."
 
 [[finding]]
-what = "README.md, docs/adr/0001-languages-and-files.md and docs/adr/README.md are not in #325's 'Files it may touch' list. They are needed so those files stay true once Go is banned, and the index must list the new ADR-0019, so they belong in this change. Add them to #325's file list on Forgejo before the gate starts checking that a commit only touches the files its task names (rule 16)."
+what = "Task #325 on Forgejo is behind the plan: its 'Files it may touch' does not name docs/roadmap.md or .claude/skills/architecture/SKILL.md, and its 'Commits' section says one or two commits where the plan now has 1, 2a, 2b and 2c. The edits are still in the task's aim and test (a search of AGENTS.md and docs/ for Go as our language must find nothing). No change to this diff is needed; the author should update the task body on Forgejo before the work ends."
 fixed = true
 
 [[finding]]
-what = "AGENTS.md section 4: the Forgejo-build C compiler exception replaces the Go race-test one. That goes beyond #325's wording, but #130 comment 4959 says the #166 switch would record it in section 4. The #166 switch has stopped, and without this line the Forgejo build job would break the no-C-compiler rule, so it belongs here."
+what = "docs/roadmap.md Phase 2 lead-in: dropping 'pin the Go toolchain ... planted Go fault' while keeping the owner's 11 November attribution on the GanitEvolve part is right under the 17 November ban. No change needed."
 fixed = true
 
 [[finding]]
-what = "Other Go lines are still in AGENTS.md (lines 207, 358, 370, 425, 438 and 812, for example rule 6 'Write safe Rust and Go only'), and specs 0003 and 0010 have not changed, so #325 is not yet done. The context's planned part 2 commit handles them, and the task allows two commits. Keep #325 open, and make the part 2 commit name #325 too."
-fixed = true
-
-[[finding]]
-what = "The bodies of tasks #339 and #340 still say the Go progress guard is live and that hooks will be switched over from it. That is now untrue: #339 comment 5240 records that the guard was removed. This is not part of this change. Update those task bodies on Forgejo separately."
+what = "AGENTS.md section 6 rules 9 and 12 drop Go from the source-file and copied-code lists. That is fine because the kept Go bridge (#348) is not tracked in this repository (no .go files or go.mod found). No change needed."
 fixed = true

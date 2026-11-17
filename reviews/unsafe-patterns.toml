@@ -1,25 +1,13 @@
 skill = "unsafe-patterns"
-change = "sha256:b3084ab95d2563351da13b421f9230bd82eb13491189fa3b0d0c557c45deae8f"
+change = "sha256:56796646b62b6189e99c4a79149d0b17d11002853022f4decb3960880b644cde"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the whole staged diff (AGENTS.md section 4 and 5.1/7 reference, README.md, ADR-0001, ADR-0017 note, new ADR-0019, ADR index) for rules weakened or loosened by the rewrite, and checked the stated owner decisions against Forgejo (#166 c5043, #130 c4959, #339 c5240, #348). Docs only; no code, check or test is weakened, and every removed safeguard either became moot under the Go ban or is still covered by another rule."
+summary = "Read the staged diff (AGENTS.md, docs/roadmap.md, the architecture skill; 20 added, 22 removed, docs only) against AGENTS.md section 4, ADR-0019 and the gate's file-kind code, looking for any rule or check weakened to make room for the Go ban. No code changed, so the code patterns of step 2 do not arise; the commit checks were not run because the prompt forbids running the gate. Nothing is left open."
 
 [[finding]]
-what = "AGENTS.md section 4: the removed cgo rule (CGO_ENABLED=0, no import \"C\") and 'No check is weaker for Go' no longer cover the kept Go MCP bridge (#348). Safe: 'No C compiler in our build' still forbids cgo (its only exception is the sealed Forgejo build job), and the bridge may only get defect fixes with a failing test first until it is removed."
+what = "AGENTS.md section 7 rule 6 (lines 370-373): the Go safety ban (no unsafe package, //go:linkname, assembly, plugin package) now names only defect fixes to the one Go tool section 4 keeps, instead of all our Go. Not a weakening: section 4 bans every other Go, and the gate already refuses .go files (crates/aegis/src/file_kinds.rs refuses_planted_files, tdd_tests.rs). No change needed."
 fixed = true
 
 [[finding]]
-what = "AGENTS.md section 4: the C compiler exception moved from Go race-test jobs to the sealed Forgejo build job. It keeps the bounds the owner approved (#130 comment 4959): Alpine package store only, exact version, checked against Alpine's signed list, sealed job only. No loosening beyond the owner's answer."
-fixed = true
-
-[[finding]]
-what = "AGENTS.md section 4 shell bullet: the keep clause now covers only Rust tools on main at 7f5ccc9 that start a shell, and fixes are limited to defects with a failing test first; new work is 'Rust without shell'. Narrower than before, not weaker."
-fixed = true
-
-[[finding]]
-what = "AGENTS.md section 4 says the Go progress guard is not kept, so there is no loop guard until #339/#340 land. This is a real safety gap but it is the owner's recorded answer (#339 comment 5240), stated plainly, not hidden. No change needed in this commit."
-fixed = true
-
-[[finding]]
-what = "Other files still say tools move to Go under ADR-0017 (.claude/skills/architecture/SKILL.md:59, docs/roadmap.md:124, specs 0002, 0003, 0010, 0012, 0063, AGENTS.md:372 'in our Go'). Planned for the Go ban part 2 commits of #325, per context.md; this commit is true for its own scope (ADR-0017 is marked replaced in part)."
+what = "AGENTS.md section 7 rules 9 and 12 (lines 425 and 438-442): Go is dropped from the GanitEvolve source-file list and the copied-code check. Not a weakening of a check in force: no .go file is in the tree, new Go is refused by the gate, and the kept Codex bridge (#348) lives on Dell outside the repo. No change needed."
 fixed = true

@@ -1,17 +1,17 @@
 skill = "security"
-change = "sha256:b3084ab95d2563351da13b421f9230bd82eb13491189fa3b0d0c557c45deae8f"
+change = "sha256:56796646b62b6189e99c4a79149d0b17d11002853022f4decb3960880b644cde"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the whole staged diff (AGENTS.md section 4 and 6, README.md, ADR-0001, ADR-0017, new ADR-0019, ADR index) and checked each changed rule against Forgejo #166 comment 5043, #130 comment 4959, #339 comment 5240 and task #348. Docs only: no code, input handling, secrets, crypto or new libraries. Checked that no security rule is loosened beyond what the owner decided."
+summary = "Read the staged docs-only diff (AGENTS.md sections 5.2 and 6 rules 2, 6, 9 and 12, the roadmap Phase 2 and 3 lines, and the architecture skill), AGENTS.md section 4's Go ban, ADR-0019 and Forgejo #166 comment 5043, and checked the gate code. The change adds no input handling, code, dependency, secret or crypto; it removes no safety rule that still has code to guard. Subagents were not started; the steps were run by this one reviewer."
 
 [[finding]]
-what = "AGENTS.md section 4: the C compiler exception changes from sealed Go race-test jobs to the sealed Forgejo build job with Alpine packages pinned by exact version and checked against Alpine's signed list. This matches the owner's answer on #130 comment 4959 word for word in scope (sealed Forgejo build job only), and the race-test exception goes away with Go, so the exception is narrower, not wider. No change needed."
+what = "AGENTS.md section 6 rule 6: the Go safety bans (unsafe package, //go:linkname, assembly, plugin) now apply only to defect fixes to the one kept Go tool (Codex's MCP bridge, #348). No safety rule is lost, since section 4 bans all other Go and the gate's files.allowed-kind check (crates/aegis/src/file_kinds.rs) already refuses any .go file in the repo. No change needed."
 fixed = true
 
 [[finding]]
-what = "AGENTS.md section 4: the Go landing guards (pinned toolchain and analysers, planted faults, cgo off, no import C) are removed. With Go banned for our code these guards have nothing left to guard; the only Go kept is Codex's MCP bridge on Dell (#348), limited to defect fixes with a failing test first until its Rust replacement passes. The progress guard is correctly stated as not kept (#339 comment 5240). No change needed."
+what = "AGENTS.md section 6 rules 9 and 12: Go is dropped from the GanitEvolve source-file list and the copied-code languages. This matches the gate, which refuses .go files outright, so no Go file can reach the repo and skip a receipt or copy check. The kept bridge lives outside the repo on Dell and is covered by section 4's fix-only rule. No change needed."
 fixed = true
 
 [[finding]]
-what = "AGENTS.md section 6 rule 6 and rule 9, the line near 207 and spec 0012 still name Go rules; ADR-0017 still names the race-test compiler. These are no weaker than before, ADR-0017 is marked as replaced history, and the rest are in the planned Go ban part 2 commits of #325. No change needed in this commit."
+what = "No secrets, tokens, Dell paths or outside addresses were added: the only key and token words in the diff are the existing waiver-key and copied-token lines. No change needed."
 fixed = true

@@ -63,11 +63,9 @@ GitHub matches Forgejo; and the required reviews of the phase pass.
 
 Forgejo milestone: `Phase 2: The gate`.
 
-First, before the numbered items: pin the Go toolchain and its analysers
-and prove each catches its planted Go fault (parts of items 2 and 3,
-AGENTS.md section 4), then build GanitEvolve's build steps 1 and 2 from
-spec 0012 (part of item 6), so later Go work can get receipts (owner, 11
-November 2026).
+First, before the numbered items: build GanitEvolve's build steps 1
+and 2 from spec 0012 (part of item 6), so later work can get receipts
+(owner, 11 November 2026).
 
 1. Bring the useful gate code over from the archive, one part at a time.
    Each part must pass every check already built and the required reviews.
@@ -90,7 +88,7 @@ November 2026).
    - the required review records;
    - waivers signed only with the owner's key;
    - the backlog limits.
-10. Git hooks in Go that run the commit tier on commit and fail when a
+10. Git hooks in Rust that run the commit tier on commit and fail when a
     tool is missing.
 11. GitHub CI that re-runs the full gate.
 12. Owner step: make the owner's signing key on the owner's PC, and commit
@@ -121,7 +119,7 @@ Forgejo milestone: `Phase 3: First slice`.
 7. Tests for start-up, wiring failures, bad settings, crashes, restarts,
    unfinished jobs and closing the window.
 8. Move the signing core of tijori onto Sutradhar Boot. The gate and
-   `forge-sync` are operations tools that move to Go under ADR-0017
+   `forge-sync` are operations tools written in Rust under ADR-0019
    (AGENTS.md section 4) and stay off Boot.
 
 Finished when: items 1 to 8 are met, the slice passes every gate, a

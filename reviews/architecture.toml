@@ -1,17 +1,17 @@
 skill = "architecture"
-change = "sha256:b3084ab95d2563351da13b421f9230bd82eb13491189fa3b0d0c557c45deae8f"
+change = "sha256:56796646b62b6189e99c4a79149d0b17d11002853022f4decb3960880b644cde"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged diff (AGENTS.md sections 4, 5 and 6 rule 8, README.md, ADR-0001, ADR-0017, new ADR-0019, ADR index) against AGENTS.md sections 4, 5 and 6, the owner's comments 5041, 5043, 4959 and 5240 and tasks #339, #340 and #348. Checked that the tool, shell, Go and C compiler rules agree across AGENTS.md and the ADRs, that the Boot paragraph still keeps the tools off Boot, and on Dell that the only Go program of ours still running is Codex's native MCP bridge (Go build id), that pankti, chaukidar, aegis-door, agent-mailbox and worklist-check are Rust, and that no hook starts the Go progress guard. No module code changes; nothing added for later."
+summary = "Read the staged diff (AGENTS.md sections 5.2 and 6 rules 2, 6, 9 and 12; docs/roadmap.md Phase 2 and Phase 3 item 8; .claude/skills/architecture/SKILL.md step 3), which matches change.diff, against AGENTS.md sections 4, 5 and 6 and the context's commit plan. Grepped the tree for Go and ADR-0017: outside specs 0002, 0003, 0010, 0012, 0063 and 0065 (commits 2b and 2c) only section 4's ban, rule 6's kept-bridge line, line 812 and the ADR files remain; no .go file is tracked. Docs only; no module, wiring, setting or hook is added, and the tools stay off Boot as section 5.1 says."
 
 [[finding]]
-what = "Go is still named as allowed or in use elsewhere: AGENTS.md section 5.2 (a Go tool with its own store, line 207), section 6 rules 6, 9 and 10 (lines 358, 370-372, 425, 438-439), line 812 (Go build caches); .claude/skills/architecture/SKILL.md step 3; docs/roadmap.md line 124; specs 0002 (line 7 also points at a section 4 forge-sync clause this change removes), 0003, 0010, 0012 and 0063. No change needed in this commit: context.md plans these for the Go ban part 2 commits under #325, and this commit is true and complete for section 4, the ADRs and README."
+what = "AGENTS.md line 812 still names Go build caches. No change needed: left on purpose while the kept Go bridge (#348) is built on Dell, as the commit scope says, and it stays true until then."
 fixed = true
 
 [[finding]]
-what = "AGENTS.md section 4 drops the sentence that Cargo and the Go toolchain run from one pipeline aegis controls, with no Rust-only restatement. No change needed: the sentence existed to bind two toolchains; with Rust only, ADR-0001 says Cargo builds the Rust and section 7 describes the gate's tiers, so no rule is lost."
+what = "AGENTS.md rules 9 and 12 drop Go from the source files GanitEvolve and the copy check cover, while rule 6 keeps a safety line for the one kept Go tool. No change needed: no .go file is tracked (the bridge lives on Dell outside the tree, and aegis file_kinds refuses .go files), so rules 9 and 12 lose no coverage, and rule 6 matches section 4's exception."
 fixed = true
 
 [[finding]]
-what = "ADR-0019 and AGENTS.md section 4 claim exactly one Go tool of ours is kept on Dell. Checked, true: Codex's config starts native-mcp (Go build id); every hook and service binary of ours is Rust, and the progress guard hooks are gone as #339 comment 5240 records. No change needed."
+what = "docs/roadmap.md Phase 2 'First, before the numbered items' drops the Go toolchain step and keeps only GanitEvolve steps 1 and 2 with the owner's 11 November date. No change needed: the Go part is moot under the ban, the GanitEvolve part is what that owner decision still asks, and item 10 (git hooks in Rust) now agrees with section 4's table."
 fixed = true
