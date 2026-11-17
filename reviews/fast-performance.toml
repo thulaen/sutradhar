@@ -1,9 +1,9 @@
 skill = "fast-performance"
-change = "sha256:60252563e5d26a550aecd2d79d7f6f1b324c9610cd5d1307cbf721ff6fc6d019"
+change = "sha256:62bd7d18ee47ce343a44dcbc43f0d581446410a9b9c4851a111ff40c3faa8fb0"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged diff (one file, AGENTS.md, 33 added lines: new section 8.5 Small changes) and confirmed it matches change.diff. It is rule text only: no code, no request path, loop, cache, queue or allocation is touched, so there is no slow path, needless work or memory growth to find. Checked the stopgap commands the rule tells agents to run for cost: both are bounded."
+summary = "Read the staged 0043 diff and the spec's limits. Docs only. Comparisons are one sum or weighted mean per period in ganit; period alerts run once per closed period; saved-filter alerts cannot nest; job 176 markers sit on the capped time axis. No unbounded work, no cut text."
 
 [[finding]]
-what = "AGENTS.md 8.5, stopgap bullet: the agent-run commands (git diff --cached --numstat --no-renames; git fetch then git log --numstat --no-renames --diff-merges=first-parent origin/main..HEAD) cost little: the log covers only unpushed commits, at most 5 by the same section, and --no-renames skips rename detection, which is the costly part of numstat. git fetch is a network call with no time limit, but it is a manual agent step, not a Sutradhar runtime path. No change needed."
+what = "Limits table row 'Indicator calls' (calls per run capped) still names indicators; the cap still bounds comparison calls, and part 2 renames it. No change needed here."
 fixed = true

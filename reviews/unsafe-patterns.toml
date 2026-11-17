@@ -1,17 +1,9 @@
 skill = "unsafe-patterns"
-change = "sha256:60252563e5d26a550aecd2d79d7f6f1b324c9610cd5d1307cbf721ff6fc6d019"
+change = "sha256:62bd7d18ee47ce343a44dcbc43f0d581446410a9b9c4851a111ff40c3faa8fb0"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged diff (AGENTS.md only, new section 8.5, 33 added lines) and the sections it points at (4, 7.2, 9). Checked the stopgap count commands for errors turned into defaults, missing limits, unchecked outside input and weakened checks; ran both git commands read-only on git 2.53 and they work as written. Docs-only change, run by one reviewer with no further subagents."
+summary = "Read the staged spec 0043 diff and the settings table for divisions by zero, defaults hiding missing data, unbounded input and weakened checks. Comparisons and alerts gate every divisor at min_compare_count (at least 10), missing days never become zero, and no result never alerts. Commit checks not run, as told."
 
 [[finding]]
-what = "AGENTS.md 8.5, stopgap: a failed git fetch is only implied by 'an error in any of these commands'. Safe as written: a stale origin/main widens origin/main..HEAD (over-counts, never under-counts), and a missing origin/main makes git log fail, which is a failure. No change needed."
-fixed = true
-
-[[finding]]
-what = "AGENTS.md 8.5, first bullet: the file limit is 'about 10' with no exact number until the owner sets it (task #374). This is the owner's own decision and the line limit (300) and the stopgap still bind, so it is not a limit taken from input. No change needed."
-fixed = true
-
-[[finding]]
-what = "AGENTS.md 8.5, stopgap: errors, an empty list after a commit, merge commits and '-' (binary or -diff) rows are all failures, not defaults; the waiver line keeps 'none can be allowed before the owner's key exists', matching section 7.2. No error-to-default or weakened check found."
+what = "Comparisons, sec. Periods: a period with no measured days, or a rate or position period with zero impressions or visits, divides by zero when shown alone. Safe here: compare and alert paths are gated; part 2 (Logic and maths) should say such a period shows no value."
 fixed = true

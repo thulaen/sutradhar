@@ -10,10 +10,12 @@ in [features.md](features.md) lists the features it designs in whole or
 in part. In code it is the `quarry` module.
 
 Example: an admin opens Search Console clicks for one forum section over
-180 days. A 14-day average runs through them. A band on 3 March says
-"search update noted". The last three days are shaded "still arriving".
-The admin sets an alert, "clicks fell more than usual for this section",
-which can fire only on days Search Console has finished.
+180 days. The same days of the period before run beside them as a
+dashed line. A band on 3 March says "search update noted". The last
+three days are shaded "still arriving". The admin sets an alert, "clicks
+for a calendar week fell by more than 30% against the week before",
+which is checked only once Search Console has finished every day of the
+week.
 
 ## What it does
 
@@ -62,12 +64,16 @@ alert list or number store.
 
 - A search box picks a series: a query, a page, a section (a forum or
   category) or the whole site. Then a number: clicks, impressions, click
-  rate or average position. Then a source, if more than one holds it.
-- One or two panes. Indicators and event bands sit on or under the main
-  line. A table of the same points sits beside it and loads first.
-- Compare with an earlier period is on by default: the same days of the
-  period before (`quarry.chart.compare_days`, about 28).
-- Saved views per admin keep series, dates, indicators and rules. A
+  rate, average position, sign-ups from search or the human sign-up
+  rate. Then a source, if more than one holds it.
+- One or two panes. The earlier period, event bands and any forecast
+  range sit on or under the main line. A table of the same points sits
+  beside it and loads first.
+- Compare with an earlier period is on by default: the chosen dates
+  against the same number of days just before them, or the last
+  `quarry.chart.compare_days` (about 28) closed days when no dates are
+  chosen.
+- Saved views per admin keep series, dates and rules. A
   view's link rebuilds it for a signed-in staff member of that site only,
   showing data "as of" the save date, with a switch to "as of now".
 - Daily, weekly and monthly views. The service rolls up, never the
@@ -111,8 +117,8 @@ the decision it serves, what it is compared with). No entry, no line.
   no position line. The floor is `quarry.chart.min_impressions`.
 - HC08: two sources are two labelled lines. A sum or ratio needs one
   source and one day grid. Unlike settings or dates: "do not compare".
-- HC09: fewer than 10 visits or clicks from darshak shows "fewer than
-  10".
+- HC09: fewer than 10 visits, clicks or sign-ups from darshak shows
+  "fewer than 10".
 - HC10: a forecast range shows only when a ganit result exists and
   history is long enough. Otherwise nothing is drawn.
 - HC11: zooming never changes a peak. Drawing thinner may only keep
@@ -132,74 +138,106 @@ batch, an undo); notes an admin types. Events close together merge into
 one band with a count; none is dropped. A band opens its record. Nothing
 is read from other people's sites for this.
 
-### Indicators
+### Comparisons
 
-An indicator helps one decision: is this move normal for this series,
-or worth a look?
+A comparison helps one decision: is this move normal for this series,
+or worth a look? There are only these:
 
-- One definition of each indicator lives in ganit. The chart, alerts,
-  the filtering tool and chart rules all call it. A second copy anywhere
-  is a defect.
-- Closed days only. A window with too many days not measured (share set
+- A period against the period before it (see "Periods and the period
+  before" below).
+- Two numbers of one series and one source side by side, such as
+  impressions against position, or clicks against position.
+- ganit's forecast range for organic clicks (HC10; jobs 204 and 212)
+  and its changepoints in organic clicks (job 161).
+- Request-rate anomalies flagged by ganit job 176 (Vichalan), which
+  watches darshak's request rate for the whole site, bots included.
+  They are shown only as markers labelled "request-rate anomaly" on the
+  time axis of whole-site charts, never as a count or a series.
+- One value for each whole fixed period: the chosen dates, a calendar
+  week (Monday to Sunday) or a calendar month, built from each source's
+  own daily dates (Search Console's, GA4's property time zone,
+  darshak's), never re-split.
+
+The ganit results cover only these series: the forecast range and
+changepoints cover organic clicks (Search Console clicks for the whole
+site or a section), and request-rate anomaly markers appear on
+whole-site charts only. Other series never offer them. On a covered series
+with no ganit result for a day, nothing is drawn and the chart says "no
+ganit result yet".
+
+Periods and the period before:
+
+- A period's value is a sum for summed series (clicks, impressions,
+  sign-ups from search) and a weighted mean for the rest:
+  position weighted by impressions, click rate as the period's clicks
+  over its impressions, and the human sign-up rate as its sign-ups over
+  its visits.
+- A summed series is compared by its average per measured day (the
+  period's sum divided by its number of measured days), so missing days
+  and months of different length do not skew the comparison.
+- Summed series compare as a change in number and in share. Position
+  and the two rates compare as a difference in the period values only,
+  never as a share; position follows HC06, so lower is better.
+- If the earlier period's sum is below `quarry.chart.min_compare_count`,
+  or for a rate or position the sum either period is weighted by
+  (impressions, or visits for the human sign-up rate) is below it,
+  whatever the source, the pair gives no result and says "not enough
+  evidence". This is the one evidence gate for comparisons, position
+  included. A summed series' later period has no floor, so a fall to
+  nothing still shows and can alert, except where HC09 withholds it.
+- HC09 covers comparisons and alerts too: when any darshak count behind
+  a period's value (a sum, or a rate's sign-ups or visits) is fewer
+  than 10, that period shows "fewer than 10" and no value, and the pair
+  shows no change, difference or share and has no result.
+- If either period has too many days not measured (see "Rules for all
+  of them"), the pair gives no result.
+- If the series' history is shorter than the two periods together, the
+  pair gives no result and says "not enough history".
+- A pair with no result, or a single period with no value, is shown as
+  such and never fires an alert.
+
+Rules for all of them:
+
+- One definition of each sum and comparison lives in ganit. The chart,
+  alerts, the filtering tool and chart rules all call it. A second copy
+  anywhere is a defect.
+- Closed days only. A period with too many days not measured (share set
   by `quarry.chart.min_measured_share`) gives no value and says "not
   enough measured days". Missing days are never zero or filled in.
-- Position follows HC06, impression-weighted. The falling test's support
-  gate and own-baseline rules apply: too few impressions gives "not
-  enough evidence", never a line.
-- Every indicator starts on, shown as "usefulness not yet measured"
-  until research scores it on real history. One that stops helping is
-  demoted from the default view, visibly and reversibly. Among rival
-  methods the winner is on and others can be picked.
-- Each indicator needs a catalogue entry. Windows are researched per
-  indicator and set as defaults.
+- Position follows HC06 and HC07; comparing it uses the one evidence
+  gate above.
 
-| Family (plain name) | Question it answers |
-| --- | --- |
-| Averages and crossings | Is the trend turning? |
-| Straight-line trend channel | How strong is the trend, and is a break real? |
-| Best and worst of recent days | Did this series just beat its last best? |
-| Unusual-move bands, squeeze | Moved more than usual for this series? |
-| Typical daily range | How big is a normal day for this series? |
-| Pace of change | How fast is it moving, and is the pace fading? |
-| Place in its recent range | Near its best or worst of the window? |
-| Impression flow | Is demand building or draining behind the clicks? |
-| Weighted average position | The honest headline position, by impressions |
-| Position against impressions | Demand shifting behind a steady position? |
-| Clicks against position | Fewer clicks at the same position? |
-| Climb with fading pace | An improvement that may not hold |
-| Spike with no clicks | Impressions jumped, clicks did not follow |
-| Share improving or worsening | Is growth narrowing across my series? |
-| New bests and worsts | Breadth of change across my series |
-| Section against site | Is one section moving apart from the rest? |
-| Sections moving together | Unrelated sections changing alike? |
-| Fall from peak, days below it | How deep and how long was a fall? |
-| Concentration | Does a few pages' share of clicks make me fragile? |
-| Trending or settling | Act or wait? (may be set aside by research) |
-
-"Typical daily range" uses day-to-day closes, as no intraday highs
-exist. The trend-fit family uses a robust method chosen by research.
-"Sections moving together" is association only.
-
-Set aside: link quality scores (link counts chart as the one labelled
-source); a rival index with no connected source; an index of other
-sites' turbulence (needs sharing between installs); effort sizing;
-value-at-risk and steady-growth ratios, unless research ties one to a
-decision. Market-style indicators are rebuilt against the owner's own
-sections, or not at all, and named for what they measure.
+Set aside: every trading-style signal, such as moving averages and
+their crossings, bands around a line and their squeezes, daily ranges,
+pace of change, place in a recent range, channels and breakouts (owner,
+17 November 2026); link quality scores (link counts chart as the one
+labelled source); a rival index with no connected source; an index of
+other sites' turbulence (needs sharing between installs); effort sizing;
+value-at-risk and steady-growth ratios.
 
 ### Alerts
 
-An alert watches one series, or a saved filter's result, and tells staff
+An alert watches one series, a saved filter's result, or the whole
+site's request-rate anomalies from ganit job 176, and tells staff
 when a condition becomes true. It is a notice and nothing else.
 
-- Conditions from a menu: crosses its average; leaves its usual band;
-  falls from its recent best by more than a size; indicator better or
-  worse than a level; new best or worst in N days; newly matching a
-  saved filter; data went missing. A chart rule can also return yes or
-  no.
-- "Usual" means the series' own spread by default; a fixed level is
-  allowed.
-- Checked after each pull, on closed days only. A move into or out of
+- Conditions from a menu: for a whole calendar week or month against
+  the one before, better or worse by more than a set share (summed
+  series only) or a set difference (position and the rates); for a
+  whole calendar week or month, its value (the average per measured
+  day for summed series) better or worse than a fixed level, where
+  position and the rates need that period's impressions or visits to
+  reach `quarry.chart.min_compare_count`; outside ganit's
+  forecast range or a changepoint marked by ganit (organic clicks
+  only); an anomaly flagged by ganit job 176 (request rate, whole site
+  only); newly matching a saved filter whose test is from this menu
+  and is not itself a saved filter; data went missing. A chart rule can
+  also return yes or no.
+- A period condition is checked once, when every day of the period is
+  closed or marked not measured. A ganit condition with no ganit
+  result stays silent, and the alert shows "no ganit result yet".
+- Checked after each pull, on closed days only; a ganit condition is
+  checked when ganit's result for that day lands. A move into or out of
   "not measured" never fires, except by "data went missing".
 - "Test on history" shows the days the rule would have fired. It sends
   nothing. A new rule starts only after that has been seen.
@@ -380,6 +418,7 @@ indicator also has its own window setting.
 | `quarry.chart.max_series` | set by research | above zero, safe top |
 | `quarry.chart.max_points` | set by research | above zero, safe top |
 | `quarry.chart.compare_days` | set by research | safe floor and top |
+| `quarry.chart.min_compare_count` | set by research | at least darshak's floor |
 | `quarry.run.keep_days` | set by research | follows the undo history rule |
 
 ### Research before the build

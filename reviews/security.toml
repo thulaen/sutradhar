@@ -1,17 +1,9 @@
 skill = "security"
-change = "sha256:60252563e5d26a550aecd2d79d7f6f1b324c9610cd5d1307cbf721ff6fc6d019"
+change = "sha256:62bd7d18ee47ce343a44dcbc43f0d581446410a9b9c4851a111ff40c3faa8fb0"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged diff (AGENTS.md only, new section 8.5, 33 added lines; matches change.diff) and section 7.2. Docs only: no code, input handling, secrets, crypto or libraries. Checked that the stopgap commands are read-only git queries with fixed arguments, that the waiver rule matches 7.2 (owner key only, none before it exists), and that the counting cannot be dodged by tool-made or -diff files."
+summary = "Read the staged spec 0043 diff and nearby sections. Docs only: no code, inputs, secrets or libraries. Checked HC09 small-count withholding across comparisons and alerts, the evidence gate floor, job 176 markers (no counts), staff-only views. Nothing open."
 
 [[finding]]
-what = "AGENTS.md 8.5, tool-made exemption: a file marked as generated could hide hand-written lines from the count. No change needed: the size check must prove each such file matches its sources, and until #333 blocks the stopgap counts every file, tool-made ones included."
-fixed = true
-
-[[finding]]
-what = "AGENTS.md 8.5, '-' rows: a file marked -diff in .gitattributes or a binary would show no line counts and could slip content past the limit. No change needed: such a row counts as over the limit, so it is refused."
-fixed = true
-
-[[finding]]
-what = "AGENTS.md 8.5, waivers: a bigger commit could be allowed by an agent. No change needed: only the owner may allow one in a signed waiver under section 7.2, and none can be allowed before the owner's key exists, which matches 7.2."
+what = "HC09 subtraction via overlapping chosen ranges differing by a day predates this change; author sends it to a Later task, so no change here."
 fixed = true

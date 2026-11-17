@@ -1,17 +1,9 @@
 skill = "style-docs"
-change = "sha256:60252563e5d26a550aecd2d79d7f6f1b324c9610cd5d1307cbf721ff6fc6d019"
+change = "sha256:62bd7d18ee47ce343a44dcbc43f0d581446410a9b9c4851a111ff40c3faa8fb0"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged AGENTS.md section 8.5 (33 added lines) against section 6, docs/standards and the rest of AGENTS.md, specs 0024 and ADR-0019, and the skills; grepped the tree for commit-size, merge and section 8.3/8.4 statements. The round 7 pointer problem is fixed; nothing left open."
+summary = "Read the staged spec 0043 diff and whole file against AGENTS.md 6: plain English, names, the new setting row and its explaining text, features 232 and 313 homes, no status words. Remaining indicator wording is part 2's planned scope."
 
 [[finding]]
-what = "AGENTS.md 8.5, last bullet: the round 7 finding ('(section 9)' pointed at a section that says nothing about merges) is fixed. The sentence now gives the rule's own consequence: a merge commit in the list is a failure, so newer commits from Forgejo are brought in without one. It agrees with section 8 step 9 ('bring in any newer commits from Forgejo') and prescribes no method."
-fixed = true
-
-[[finding]]
-what = "The skills' record steps (.claude/skills/*/SKILL.md, 'An amend or a merge keeps its review as long as the content is what was reviewed') still mention a merge. Not untrue: they speak of review records surviving, not of how commits are brought in, and the stopgap now refuses merge commits anyway. No change needed in this commit."
-fixed = true
-
-[[finding]]
-what = "AGENTS.md jumps from 8.2 to 8.5. No change needed: 8.3 and 8.4 are held for other agents' pending #318 work, settled in earlier rounds, and nothing in the tree refers to a section 8.3 or 8.4."
+what = "Comparisons: request-rate markers on whole-site charts only is said in the job 176 bullet and again in the paragraph after it; same section, adjacent, low drift risk."
 fixed = true

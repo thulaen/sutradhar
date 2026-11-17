@@ -1,17 +1,13 @@
 skill = "backlog"
-change = "sha256:60252563e5d26a550aecd2d79d7f6f1b324c9610cd5d1307cbf721ff6fc6d019"
+change = "sha256:62bd7d18ee47ce343a44dcbc43f0d581446410a9b9c4851a111ff40c3faa8fb0"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged diff (AGENTS.md only, 33 added lines, new section 8.5), tasks #326, #324 (rules 1-7), #333, #373, #374, #357 V14, #166 comment 5041 and #326/#330 comments 7469/7471, and the open milestones and ready labels. The change writes rules 1-7, V14 and rule 43 as asked, touches only the file #326 names, adds no unasked work, and leaves later work to #333, #373, #374 and #330."
+summary = "Read the staged spec 0043 diff, #218 and owner comments 4977 and 5038. Part 1 does only its stated scope (example, chart screen, HC09, Comparisons, Alerts, one settings row); features 232 and 313 keep homes; leftovers are part 2's scope; 185 diff lines."
 
 [[finding]]
-what = "AGENTS.md section 8.5, 'Each commit makes one kind of change': rule 43 belongs to #330, not #326. No change needed: the session's instructions asked for it here, and #326 comment 7469 and #330 comment 7471 record that #330 must not write it again."
+what = "No Later task for the HC09 subtraction weakness (chosen ranges differing by a day) was found in Forgejo; file it before the work ends. It is rightly not in this change."
 fixed = true
 
 [[finding]]
-what = "AGENTS.md section 8.5, the stopgap bullet (git diff/git log counts, merge commit and '-' rows as failures) goes beyond the bare text of rules 1-7. No change needed: it only makes the 300-line limit checkable until #333 blocks, which #326's done-when and job card need, and it prescribes no merge method (rule 46 and V17 stay with #328 and #330)."
-fixed = true
-
-[[finding]]
-what = "Phase: #326 is in milestone Phase 2.1 while Phase 1.1 (owner steps) is still open. No change needed: the owner's plan of 17 November 2026 (#357) placed it there, and Phase 1.1 holds owner-only steps."
+what = "#218 is closed, Phase 7, and asked for ideas; the removal is the owner's direct order of 17 November 2026 (comments 4977, 5038), so it counts as moved into current work. Proof goes on #218."
 fixed = true

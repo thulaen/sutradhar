@@ -1,17 +1,9 @@
 skill = "defects"
-change = "sha256:60252563e5d26a550aecd2d79d7f6f1b324c9610cd5d1307cbf721ff6fc6d019"
+change = "sha256:62bd7d18ee47ce343a44dcbc43f0d581446410a9b9c4851a111ff40c3faa8fb0"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read every line of the new AGENTS.md section 8.5 (33 added lines, docs only) against #324 rules 1-7 and 43, #357 V14, #326, #333, #373, #374, #166 comment 5041, #326 comment 7469, and AGENTS.md sections 4, 7.2, 8.2, 9 and 12 and spec 0024; checked the stopgap git commands and grepped the tree for clashes. No defect left open; docs only, so no test is needed (section 9)."
+summary = "Read every changed line of spec 0043 (example, chart screen, HC09, Comparisons, Alerts, settings row) against the whole file, spec 0066 job table, spec 0034 and features 232 and 313. Round 13 fixes are in; leftover indicator wording is part 2's planned scope."
 
 [[finding]]
-what = "AGENTS.md section 8.5, second bullet: 'Instead the size check proves each one matches its sources' is in the present tense although the check is not built yet. Not a defect: the last bullet says the check is built in #333 and that until it blocks every file, tool-made ones included, is counted, so no reader can skip a tool-made file today."
-fixed = true
-
-[[finding]]
-what = "AGENTS.md: section 8.5 follows 8.2 with no 8.3 or 8.4. Not a defect: those numbers are held for #318's pending work, and #373 already points at 'section 8.5'; nothing in the tree points at 8.3 or 8.4."
-fixed = true
-
-[[finding]]
-what = "AGENTS.md section 8.5, stopgap bullet: checked that 'git diff --cached --numstat --no-renames' and 'git log --numstat --no-renames --diff-merges=first-parent origin/main..HEAD' count moves as delete plus add, show merge commits (the 'Merge:' line) with their first-parent diff, and show '-' for binary or -diff files, so each stated failure case is detectable. Rules 1-7, 43 and V14 each appear once and match the owner's wording; models.lock is tool-written per spec 0024. Nothing to change."
+what = "What it reuses (line 49) still names the support gate and own baseline, now used only through the falling test; still true, so no change needed here."
 fixed = true

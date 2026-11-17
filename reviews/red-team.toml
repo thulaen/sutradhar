@@ -1,25 +1,13 @@
 skill = "red-team"
-change = "sha256:60252563e5d26a550aecd2d79d7f6f1b324c9610cd5d1307cbf721ff6fc6d019"
+change = "sha256:62bd7d18ee47ce343a44dcbc43f0d581446410a9b9c4851a111ff40c3faa8fb0"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Three red agents (break it, get round it, abuse it) attacked the new AGENTS.md section 8.5 and tried its stopgap git commands in throwaway repos; I checked each report against AGENTS.md, #324 and the settled points. No hole needs a change in this commit; the gaps found are measurement details for the size check (#333) or pre-existing."
+summary = "Three red agents (break it, get round it, abuse it) attacked the staged spec 0043 part 1. Both round 13 holes are fixed. Remaining reports were checked against the file: they are by design, predate the change or fall in part 2's scope."
 
 [[finding]]
-what = "8.5 stopgap: git --numstat counts lines by newline, so a file of very long lines or CR-only line endings (5,000 CR lines shown as 1) or a submodule/LFS pointer counts as a few lines. No change needed here: the rule itself says lines, and how the check measures them (byte cap, line endings, submodules) is the size check's job in #333; worth a note on #333."
+what = "Note for part 2: Logic and maths should define a lone period rate or position with zero impressions or visits (0/0), and how min_compare_count relates to min_impressions; chart rules must close the trading-signal route."
 fixed = true
 
 [[finding]]
-what = "8.5 stopgap: a tag named origin/main fetched from Forgejo outranks refs/remotes/origin/main in origin/main..HEAD (only a warning), listing extra commits. No change needed: it can only raise the count, so it fails closed, and needs write access to Forgejo; #333 may spell refs/remotes/origin/main."
-fixed = true
-
-[[finding]]
-what = "8.5 'one kind of change: a fix, a feature, a tidy-up or docs' does not map onto the Conventional Commits types section 9 requires (test, ci, build, perf). No change needed: the four kinds are the owner's rule 43 words (#324); the mapping is noted on #326 and #330."
-fixed = true
-
-[[finding]]
-what = "8.5 consequences: review records (about 190 lines per commit across 8 files), moves counted twice under --no-renames, and Cargo.lock/SBOM counted in the stopgap leave little room and block new dependencies until #333, with no waiver before the owner key (#169). No change needed: each is an owner decision settled in earlier rounds (#373, #374), and the text states it truthfully."
-fixed = true
-
-[[finding]]
-what = "Pre-existing, outside this change: core.hooksPath points at the tracked .githooks folder, so a hook landed from Forgejo (e.g. reference-transaction) runs on every later git fetch that 8.5 now asks agents to run. No change needed in this docs commit; it is for the security review of the hooks setup."
+what = "Note: a darshak sign-up collapse to under 10 cannot alert, since HC09 withholds it and no result never alerts; this is the owner's settled rule, shown on the chart as 'fewer than 10'."
 fixed = true
