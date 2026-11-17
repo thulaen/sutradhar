@@ -1,9 +1,25 @@
 skill = "red-team"
-change = "sha256:16794aad435904419aaed02fb2a933e281b21825565822caecbe8a238b0ffef3"
+change = "sha256:b3084ab95d2563351da13b421f9230bd82eb13491189fa3b0d0c557c45deae8f"
 verdict = "pass"
 agent = "claude subagent"
-summary = """Task #130 pin update: the Forgejo test image digest moves to sha256:e235b157… in compose.yaml, gate/tools.toml and the SBOM. I checked Codeberg's registry with read-only calls, and one red agent (get round it and abuse it) repeated the checks. The 15.0-test-rootless tag of codeberg.org/forgejo-experimental/forgejo resolves to this digest, the index's own sha256 matches it, and the old 7ce191cc… returns 404. The amd64 image runs as 1000:1000, was built 2026-11-14 and is labelled Forgejo 15.0-test from codeberg.org/forgejo/forgejo. The change has the same shape as 7ef3e00, and no other file holds the digest."""
+summary = "Read the staged diff (AGENTS.md sections 4 and 5.1 and rule 8, README.md, ADR-0001, ADR-0017, new ADR-0019, ADR index) and checked it against #166 comments 5041 and 5043, #130 comment 4959, #339 comment 5240 and tasks #339, #340 and #348. Three red agents ran as fresh subagents with the goals break it, get round it and abuse it; I checked each report myself. None found a hole this commit must fix. Quotes, dates, links and anchors are right, the diff is 136 lines in 6 files, and the text leaks no paths or tokens."
 
 [[finding]]
-what = """Later: the 15.0-test-rootless tag is a daily build, so the pinned digest will expire again, as it did after 7ef3e00. Consider pinning a tagged release, or a scheduled check that warns before the door refuses pushes."""
+what = "AGENTS.md:136-137 says the Go progress guard is not kept, but #166 comment 5043 names the guard as a Go tool that keeps running, and the bodies of tasks #339 and #340 still say the old program keeps running and that the Rust guard runs beside the Go guard. #339 comment 5240 records the removal and the owner's answer, so the AGENTS.md text is right. No change is needed in this commit, but the #339 and #340 task bodies should be updated so tasks and rules agree. 5240 relays the owner's words from session notes, not from a record the owner wrote."
+fixed = true
+
+[[finding]]
+what = "AGENTS.md still names Go at line 207 (a Go tool's migrations), rule 6 at lines 370-371 (safe Go), rule 9 at line 425 and rule 12 at lines 438-439. These lines conflict with the new ban in section 4. The planned Go ban part 2 commit under #325 covers them, so this commit does not need to. Rule 6's Go clause should stay while the kept Go MCP bridge runs."
+fixed = true
+
+[[finding]]
+what = "Possible ways round the rules: Dockerfile RUN lines and compose commands run sh -c; a Rust tool may start python3 -c or perl -e; nothing in section 4 bans build.rs or the cc crate; aegis file_kinds.rs accepts any new *.sh file; 'a defect in what it already does' has no fixed starting commit for the out-of-repo MCP bridge. All of these were there before this change or concern code outside this docs commit. Each could be a later task."
+fixed = true
+
+[[finding]]
+what = "AGENTS.md:139-144: the C compiler exception does not say whether the Alpine compiler packages are listed in gate/tools.toml, or that Alpine's signing keys come from the digest-pinned base image. #130 comment 4959 gives the exception as written. An exact version plus Alpine's signed APKINDEX checksums is about as strong as a digest, so this is acceptable as it stands."
+fixed = true
+
+[[finding]]
+what = "docs/adr/0001-languages-and-files.md:12 was not reflowed after the edit and is exactly 80 characters. That is within the docs.line-length limit, so this is cosmetic only."
 fixed = true

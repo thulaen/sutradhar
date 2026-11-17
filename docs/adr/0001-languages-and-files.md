@@ -4,21 +4,20 @@ Decided by the owner on 8 November 2026.
 
 ## Decision
 
-Rust is the language for the product. Operations and developer tools are
-written in Go, and no shell is written by hand
-([ADR-0017](0017-go-for-tools.md), owner, 10 November 2026). Beside
-them, CSS (with Tailwind), strict TypeScript for small interop modules
-and PHP for the two site add-ons are allowed, with a few other kinds of
-file. The full list of allowed languages, versions and file types is in
+Rust is the language for the product and for the operations and
+developer tools. No Go is used in our code, and no shell is written by
+hand ([ADR-0019](0019-rust-for-tools.md), owner, 17 November 2026).
+Beside Rust, CSS (with Tailwind), strict TypeScript for small interop
+modules and PHP for the two site add-ons are allowed, with a few other
+kinds of file. The full list of allowed languages, versions and file types is in
 [AGENTS.md section 4](../../AGENTS.md#4-languages-and-files). Cargo
-builds the Rust and the pinned Go toolchain builds the Go. Ready-made
-tool programs may run only when pinned and listed in `gate/tools.toml`.
+builds the Rust. Ready-made tool programs may run only when pinned and
+listed in `gate/tools.toml`.
 
 ## Why
 
 - With one main language for the product there is one set of checks,
   one style and one way to test, so every check can really reach 100%.
-  Go for tools (ADR-0017) gets the same checks, never fewer.
 - Rust is memory-safe and fast without a garbage collector, which helps
   keep within the memory limit.
 - PHP is needed only because XenForo and WordPress run PHP.

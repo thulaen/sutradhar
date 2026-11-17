@@ -1,13 +1,21 @@
 skill = "backlog"
-change = "sha256:16794aad435904419aaed02fb2a933e281b21825565822caecbe8a238b0ffef3"
+change = "sha256:b3084ab95d2563351da13b421f9230bd82eb13491189fa3b0d0c557c45deae8f"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read pin.diff, the staged stat in claude-65edf579-pushwt (3 files, 3 lines), task #130 (open, status/working and status/urgent, Phase 1 milestone, roadmap Phase 2 item 3) with its latest comments, and commit 7ef3e00 as the precedent. The change swaps only the dead Forgejo test image digest for the current 15.0-test-rootless one, in compose.yaml, gate/tools.toml and the SBOM, so the door can scan images again. That is what #130 asks for, and nothing else."
+summary = "Read the staged diff (6 files, 91 added, 45 removed, 136 lines), task #325 and parent #324, owner comments #166/5043, #130/4959 and #339/5240, tasks #339, #340 and #348, and the live Codex and Claude settings on Dell. The change does part 1 of #325 within the 300-line and 10-file limits, its claims match Forgejo and Dell, #325 is in Phase 2, and no open task is marked next."
 
 [[finding]]
-what = "Checked, no problem: only the digest bytes change, the same three places as 7ef3e00 under the same task, with no other edit. It is gate work the door needs before any push can go in (AGENTS.md section 6 rule 13), on a task in the current work."
+what = "README.md, docs/adr/0001-languages-and-files.md and docs/adr/README.md are not in #325's 'Files it may touch' list. They are needed so those files stay true once Go is banned, and the index must list the new ADR-0019, so they belong in this change. Add them to #325's file list on Forgejo before the gate starts checking that a commit only touches the files its task names (rule 16)."
 fixed = true
 
 [[finding]]
-what = "Later: #130's comment of 16 November says the live Forgejo now runs the patched image 127.0.0.1:3000/sutradhar-owner/forgejo@sha256:3f5833dd..., while docker/forgejo/compose.yaml still names the codeberg experimental test image. This change does not widen that gap, but it should stay an open item on #130: point compose.yaml and gate/tools.toml at the patched image, so the repository matches what runs, and drop this repeated test-tag repinning."
+what = "AGENTS.md section 4: the Forgejo-build C compiler exception replaces the Go race-test one. That goes beyond #325's wording, but #130 comment 4959 says the #166 switch would record it in section 4. The #166 switch has stopped, and without this line the Forgejo build job would break the no-C-compiler rule, so it belongs here."
+fixed = true
+
+[[finding]]
+what = "Other Go lines are still in AGENTS.md (lines 207, 358, 370, 425, 438 and 812, for example rule 6 'Write safe Rust and Go only'), and specs 0003 and 0010 have not changed, so #325 is not yet done. The context's planned part 2 commit handles them, and the task allows two commits. Keep #325 open, and make the part 2 commit name #325 too."
+fixed = true
+
+[[finding]]
+what = "The bodies of tasks #339 and #340 still say the Go progress guard is live and that hooks will be switched over from it. That is now untrue: #339 comment 5240 records that the guard was removed. This is not part of this change. Update those task bodies on Forgejo separately."
 fixed = true

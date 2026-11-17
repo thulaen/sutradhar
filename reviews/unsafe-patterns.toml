@@ -1,9 +1,25 @@
 skill = "unsafe-patterns"
-change = "sha256:16794aad435904419aaed02fb2a933e281b21825565822caecbe8a238b0ffef3"
+change = "sha256:b3084ab95d2563351da13b421f9230bd82eb13491189fa3b0d0c557c45deae8f"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Task #130. Read the whole staged change: three one-line digest swaps in docker/forgejo/compose.yaml, gate/tools.toml and gate/sbom.cdx.json, the same shape as commit 7ef3e00. Checked the registry with an anonymous pull token: 15.0-test-rootless now resolves to sha256:e235b157...8c49, that digest returns 200, and the old sha256:7ce191cc... returns 404. The image stays pinned by digest, and the old digest is left nowhere outside reviews/. No error-to-default, unbounded input or weakened test. Commit checks were not run: this brief does not allow staging or running the gate."
+summary = "Read the whole staged diff (AGENTS.md section 4 and 5.1/7 reference, README.md, ADR-0001, ADR-0017 note, new ADR-0019, ADR index) for rules weakened or loosened by the rewrite, and checked the stated owner decisions against Forgejo (#166 c5043, #130 c4959, #339 c5240, #348). Docs only; no code, check or test is weakened, and every removed safeguard either became moot under the Go ban or is still covered by another rule."
 
 [[finding]]
-what = "Later: the 15.0-test daily tag's old digests are deleted from the registry, so this pin breaks again each time and pushes stop. Consider pinning a released Forgejo 15 image, or mirroring the pinned image into a registry the project controls, so a pin can only change on purpose."
+what = "AGENTS.md section 4: the removed cgo rule (CGO_ENABLED=0, no import \"C\") and 'No check is weaker for Go' no longer cover the kept Go MCP bridge (#348). Safe: 'No C compiler in our build' still forbids cgo (its only exception is the sealed Forgejo build job), and the bridge may only get defect fixes with a failing test first until it is removed."
+fixed = true
+
+[[finding]]
+what = "AGENTS.md section 4: the C compiler exception moved from Go race-test jobs to the sealed Forgejo build job. It keeps the bounds the owner approved (#130 comment 4959): Alpine package store only, exact version, checked against Alpine's signed list, sealed job only. No loosening beyond the owner's answer."
+fixed = true
+
+[[finding]]
+what = "AGENTS.md section 4 shell bullet: the keep clause now covers only Rust tools on main at 7f5ccc9 that start a shell, and fixes are limited to defects with a failing test first; new work is 'Rust without shell'. Narrower than before, not weaker."
+fixed = true
+
+[[finding]]
+what = "AGENTS.md section 4 says the Go progress guard is not kept, so there is no loop guard until #339/#340 land. This is a real safety gap but it is the owner's recorded answer (#339 comment 5240), stated plainly, not hidden. No change needed in this commit."
+fixed = true
+
+[[finding]]
+what = "Other files still say tools move to Go under ADR-0017 (.claude/skills/architecture/SKILL.md:59, docs/roadmap.md:124, specs 0002, 0003, 0010, 0012, 0063, AGENTS.md:372 'in our Go'). Planned for the Go ban part 2 commits of #325, per context.md; this commit is true for its own scope (ADR-0017 is marked replaced in part)."
 fixed = true

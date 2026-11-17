@@ -1,5 +1,21 @@
 skill = "style-docs"
-change = "sha256:16794aad435904419aaed02fb2a933e281b21825565822caecbe8a238b0ffef3"
+change = "sha256:b3084ab95d2563351da13b421f9230bd82eb13491189fa3b0d0c557c45deae8f"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Task #130 pin update: read the three one-line changes (docker/forgejo/compose.yaml, gate/tools.toml, gate/sbom.cdx.json) and the lines around them. The old digest 7ce191cc... is gone from the tree, and the new digest appears identically in all three places. The compose comment ('v15 LTS branch daily (15.0-test), rootless, pinned by digest'), tools.toml's version and source, and the SBOM's bom-ref and description are still true. No doc under docs/ or AGENTS.md names the digest. Whether the registry serves this digest is a check for the defects and security reviews, not this one."
+summary = "Read the whole staged diff (AGENTS.md sections 4, 5.1 and 6 rule 8; README.md; ADR-0001, ADR-0017, new ADR-0019; ADR index) against AGENTS.md section 6, docs/standards and the gate's docs checks; checked the cited Forgejo records (#166 comments 5041 and 5043, #130 comment 4959, #339 comment 5240, tasks #339, #340, #348); grepped the tree for text the change makes untrue. Plain English, names, links and line lengths are fine; nothing that must change before commit."
+
+[[finding]]
+what = "docs/adr/0001-languages-and-files.md line 12 ('kinds of file. The full list ... is in') is 80 characters after the rewrap, longer than its neighbours. It is within the gate's 80-character limit (aegis docs.rs MAX_LINE), so it is cosmetic only; a rewrap is optional."
+fixed = true
+
+[[finding]]
+what = "Other docs still name Go for tools or point at section 4 text this change removes: docs/specs/0002-forge-sync.md lines 6-7 ('finishes in Rust as AGENTS.md section 4 allows'), .claude/skills/architecture/SKILL.md line 59, docs/roadmap.md lines 66, 93, 124, specs 0003, 0010, 0012, 0063, 0065, and AGENTS.md lines 207, 358, 370, 425, 438, 812. No change needed here: they are the planned Go ban part 2 commits of task #325, and this commit is true and complete for its own scope."
+fixed = true
+
+[[finding]]
+what = "docs/adr/0019-rust-for-tools.md has no 'How we check it' section, though docs/adr/README.md says each record has one. No change needed: it follows ADR-0017's shape (and ADR-0016 also has none), and the check already exists: aegis file_kinds refuses .go files (refuses_planted_files). An optional one-line section could say so."
+fixed = true
+
+[[finding]]
+what = "AGENTS.md section 4 names tasks #348, #339 and #340 in rule text. No change needed: the sentences state rules that stay true when the tasks close (the bridge is the one exception; the Go guard is not kept), and section 4 already cites tasks this way (#130)."
+fixed = true

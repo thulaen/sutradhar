@@ -10,8 +10,8 @@ thread with the full repair guide, on those exact words.
 ## How it is built
 
 - Rust for the app and the background service, on our own framework,
-  Sutradhar Boot; Go for operations and developer tools
-  ([ADR-0017](docs/adr/0017-go-for-tools.md)).
+  Sutradhar Boot; Rust also for operations and developer tools
+  ([ADR-0019](docs/adr/0019-rust-for-tools.md)).
 - A Dioxus desktop app with our own accessible design system.
 - Thin PHP add-ons for XenForo and WordPress that work on shared
   hosting.

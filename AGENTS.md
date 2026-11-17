@@ -98,13 +98,12 @@ language and every file type not listed here.
 
 | Kind | Allowed for |
 |---|---|
-| Rust (stable, edition 2024) | The product: framework, service, engines, desktop app, product rules, their build steps and their tests |
-| Go (pinned toolchain) | Operations and developer tools: the gate and its analysers, git hooks, the build-host queue, sync, the mailbox and stop check, research and speed tools, deployment, CI, caches, recovery, and their tests (ADR-0017) |
+| Rust (stable, edition 2024) | The product: framework, service, engines, desktop app, product rules, their build steps and their tests. Operations and developer tools: the gate and its analysers, git hooks, the build-host queue, sync, the mailbox and stop check, research and speed tools, deployment, CI, caches, recovery, and their tests (ADR-0019) |
 | CSS with Tailwind v4 | Styling and design tokens for the desktop app |
 | TypeScript, strict | Small, justified browser interop modules in `ui/ts/` |
 | PHP 8.5 | The XenForo add-on in `addons/xenforo/` and the WordPress plugin in `addons/wordpress/` |
 | SQL | PostgreSQL migrations in `migrations/` and database tests |
-| Shell | Existing files and steps only, kept and fixed until each Go replacement passes (ADR-0017) |
+| Shell | Existing files and steps only, kept and fixed until each Rust replacement passes (ADR-0019) |
 | Cedar | In-app permission rules |
 | Rego | Agent and build policy rules |
 | TOML, YAML, JSON | Configuration and data |
@@ -123,32 +122,26 @@ language and every file type not listed here.
   files, shell steps in hooks and CI, and programs of ours that start a
   shell (`sh -c`, `bash -c`). Agents may still run programs with their
   own command tool (owner, 11 November 2026). Shell files, shell steps
-  in hooks and CI, and Rust tools already on `main` at commit `7f5ccc9`
-  (10 November 2026) may be kept and fixed until each Go replacement
-  passes every check and review; then the old one is removed. A fix
-  mends a defect in what the kept file, step or tool already does, with
-  its failing test first; anything it does not yet do is written in Go.
-  No new shell file or shell step is added. The one exception to Go:
-  forge-sync with its GitHub sign-in (roadmap Phase 1 item 9) and the
-  Forgejo Actions runner on Dell (Phase 1 item 2) finish in Rust, adding
-  no shell, and move to Go later with the other tools (owner, 11
-  November 2026).
-- Cargo builds the Rust and the pinned Go toolchain builds the Go, both
-  run from one pipeline that aegis controls. No check is weaker for Go.
-  Go source lands only once the Go toolchain and its analysers are
-  pinned by version and hash and their checks catch planted faults;
-  each such check lands in one commit with its planted faults.
-  Go files need receipts from the commit that adds the Go safety parse
-  (rule 9, section 7.3); that commit also adds GanitEvolve's whole-file
-  problem for Go, so the receipts can be made. Before it, only these Go
-  files may land: GanitEvolve's own Go source, its gate check included;
-  the gate checks that run the pinned Go analysers, with their planted
-  Go faults; and pankti, the heavy-job queue manager (owner, 11 November
-  2026, task #69).
-- No C compiler in our build. The one exception: sealed Go race-test
-  jobs may use a pinned C compiler, because Go's race detector needs
-  one. Go builds outside those jobs keep cgo off (`CGO_ENABLED=0`), and
-  no Go file imports `"C"` (owner, 10 November 2026).
+  in hooks and CI, and Rust tools that start a shell, already on
+  `main` at commit `7f5ccc9` (10 November 2026), may be kept and fixed
+  until each is replaced by Rust without shell that passes every check
+  and review; then the old one is removed. A fix mends a defect in
+  what the kept file, step or tool already does, with its failing test
+  first; anything it does not yet do is written in Rust without shell.
+  No new shell file or shell step is added.
+- No Go in our code (owner, 17 November 2026: "go has got to go, ban
+  it."). The one exception is Codex's native MCP bridge on Dell (task
+  #348): it may keep running until its Rust replacement passes every
+  check and review; then it is removed. Until then a fix mends only a
+  defect in what it already does, with its failing test first. The Go
+  progress guard is not kept; tasks #339 and #340 write it in Rust.
+  Third-party programs written in Go that we only run, such as
+  Forgejo, grype and gitleaks, are not our code and are not affected.
+- No C compiler in our build. The one exception: the sealed job that
+  builds Forgejo on Dell may use a C compiler from Alpine's own package
+  store, pinned by exact version and checked against Alpine's signed
+  package list, because those packages cannot be pinned by digest
+  (owner, 16 November 2026, task #130 comment 4959).
 - Agents may download a tool or library only from its official source
   (its maker's release site or registry, or Ubuntu's official package
   archive),
@@ -171,8 +164,8 @@ language and every file type not listed here.
 Our own Rust framework, in the spirit of Spring Boot. Every part of the
 shipped product is built on it. The signing core of tijori, made before
 Boot exists, moves onto it in Phase 3. The gate and `forge-sync` are
-operations tools that move to Go under ADR-0017 (section 4 names what
-finishes in Rust first) and are not built on Boot.
+operations tools, written in Rust (ADR-0019), and are not built on
+Boot.
 
 - One composition root wires every part with typed, explicit dependency
   injection. No service locators, globals or singletons, and no hidden
@@ -404,8 +397,8 @@ finishes in Rust first) and are not built on Boot.
      every tier on Dell, and on the median and p95 time at release. The
      reference may be a Rust library, or a C library run as its own
      outside program for measuring only: never linked into our code,
-     with no `-sys` crate or `build.rs`, and no C compiler in our build
-     beyond section 4's one exception (owner, 10 November 2026).
+     with no `-sys` crate or `build.rs` (owner, 10 November 2026), and
+     no C compiler in our build beyond the one exception in section 4.
    - **The baseline only gets stricter:** a better count is recorded
      only when it equals the door's own count of that tree, and better
      times are recorded by the door itself. Recording anything worse

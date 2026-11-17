@@ -1,5 +1,13 @@
 skill = "fast-performance"
-change = "sha256:16794aad435904419aaed02fb2a933e281b21825565822caecbe8a238b0ffef3"
+change = "sha256:b3084ab95d2563351da13b421f9230bd82eb13491189fa3b0d0c557c45deae8f"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read pin.diff and the staged diff (task #130): one line in each of docker/forgejo/compose.yaml, gate/tools.toml and gate/sbom.cdx.json swaps the Forgejo test image digest from 7ce191cc... to e235b157... The three now agree and no old digest is left in the tree. No code, loop, hot path, cache, memory or time limit is touched, so nothing here can slow Sutradhar or grow its memory."
+summary = "Read the whole staged diff afresh (AGENTS.md sections 4, 5.1 and 6 rule 8; README.md; ADR-0001; ADR-0017 note; new ADR-0019; ADR index), AGENTS.md section 5.6 and section 7's build-cache rule, and grepped the tree for Go, race and C-compiler references. The change is docs only: no code, hot path, loop, cache, queue, per-request work or text cutting, so nothing to measure; the speed rules (instruction counts, 30-run medians, release p50/p95/p99, the race against a reference, sealed pankti benchmarks, memory limits) are unchanged and still hold."
+
+[[finding]]
+what = "AGENTS.md section 4: the C-compiler exception moved from sealed Go race-test jobs to the sealed Forgejo build job. Section 6 rule 8 'The race' now says 'no C compiler in our build beyond the one exception in section 4'; that stays true, and C reference libraries are still run only as outside programs never linked into our code, so speed measurement is not weakened. No change needed."
+fixed = true
+
+[[finding]]
+what = "AGENTS.md section 7 (line 812) still lets idle Go build caches be removed after seven days. With the progress guard no longer kept, it stays true for the one kept Go program (Codex's native MCP bridge, #348) and is harmless for disk once that is gone; it belongs to the planned Go ban part 2 commit if it is to be reworded. Other leftover Go wording (line 207, rules 6, 9, 10, specs, roadmap) is for style-docs and architecture under the planned part 2, not a performance matter. No change needed for this commit."
+fixed = true

@@ -1,9 +1,13 @@
 skill = "defects"
-change = "sha256:16794aad435904419aaed02fb2a933e281b21825565822caecbe8a238b0ffef3"
+change = "sha256:b3084ab95d2563351da13b421f9230bd82eb13491189fa3b0d0c557c45deae8f"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Task #130 pin fix: read the staged diff in the push worktree (identical to pin.diff), three one-line digest changes in docker/forgejo/compose.yaml, gate/tools.toml and gate/sbom.cdx.json, the same three files commit 7ef3e00 changed. The old digest is gone from the tree. Read-only registry calls to codeberg.org confirm that 15.0-test-rootless resolves to sha256:e235b157... (HTTP 200), that the new digest resolves (200), and that the old sha256:7ce191cc... returns 404. The SBOM entry keeps its name, version and bom-ref, and the CVE-2026-4738 hole for image forgejo (task 130) runs until 2026-12-09. The change is a pin with no code, so no test is needed."
+summary = "Read every changed line of AGENTS.md section 4 and 5.1 and rule 8, README.md, ADR-0001, ADR-0017, new ADR-0019 and the ADR index (staged diff matches change.diff), checked the cited Forgejo records (#166 comments 5041 and 5043, #130 comment 4959, #339 comment 5240, tasks #339, #340, #348), that main holds no .go files, that commit 7f5ccc9 exists, line lengths, and grepped the tree for text the change makes untrue. Docs only, so no test is needed (section 9)."
 
 [[finding]]
-what = "Later: this is the second time in a few days that the daily 15.0-test-rootless digest has vanished from the registry and blocked a push (7ef3e00, now this). Consider pinning a tag that the registry keeps, or mirroring the pinned image on Dell's Forgejo, so images.holes does not depend on a daily build staying online. Belongs with task #130."
+what = "docs/specs/0002-forge-sync.md line 7 still says forge-sync moves to Go (ADR-0017) 'after it finishes in Rust as AGENTS.md section 4 allows'; section 4 no longer has that clause. Other Go mentions remain in AGENTS.md (lines 207, 358, 370-372, 425, 438-439, 812) and docs/specs/0012-ganit-evolve.md. No change needed in this commit: the commit plan puts every other Go mention in the Go ban part 2 commits of task #325, and this commit is true and complete for its own scope."
+fixed = true
+
+[[finding]]
+what = "AGENTS.md section 4 drops the old sealed Go race-test C compiler exception and replaces it with the Forgejo-build exception; checked against #130 comment 4959 (owner, 16 November 2026), which matches word for word in substance, and the Go ban makes the race-test exception moot. ADR-0017 keeps the old text, marked as history by its new header. No change needed."
 fixed = true
