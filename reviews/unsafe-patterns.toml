@@ -1,13 +1,17 @@
 skill = "unsafe-patterns"
-change = "sha256:ee37b7d80796c4a7123251a9cbf93fb45c47aa46d8778bd0899ea52fd3dc3ce5"
+change = "sha256:60252563e5d26a550aecd2d79d7f6f1b324c9610cd5d1307cbf721ff6fc6d019"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged diff (docs/specs/0012-ganit-evolve.md only, 53 added and 80 removed lines; matches change.diff) against the spec's design sections (state ban, argument reads, build-time reads, whole-file base exemption) and grepped AGENTS.md, docs/ and .claude/skills for Go-as-our-language text. Checked above all for a test weakened to make it pass: each removed test is Go-only, every mixed test keeps its full Rust half, and each new Rust example (std::panic::set_hook, include_str!, const fn static initialiser, std::env::current_exe, argument-parsing crates) matches a ban the design section already states. No code changes, so the other patterns do not apply. The gate was not run, as the prompt asks."
+summary = "Read the staged diff (AGENTS.md only, new section 8.5, 33 added lines) and the sections it points at (4, 7.2, 9). Checked the stopgap count commands for errors turned into defaults, missing limits, unchecked outside input and weakened checks; ran both git commands read-only on git 2.53 and they work as written. Docs-only change, run by one reviewer with no further subagents."
 
 [[finding]]
-what = "Removed tests (cgo dependency, Go init functions, flag.Lookup(\"test.v\"), fmt.Errorf %w error values, Go slice or map base tables, address of an exempt base var) have no Go left to test; their Rust risks stay covered by kept tests: dependency build scripts emitting native libraries or link arguments, procedural macros hiding unsafe or link attributes, the argument-read ban direct or through a dependency, and the whole-file static exemption tests. Not a weakened test."
+what = "AGENTS.md 8.5, stopgap: a failed git fetch is only implied by 'an error in any of these commands'. Safe as written: a stale origin/main widens origin/main..HEAD (over-counts, never under-counts), and a missing origin/main makes git log fail, which is a failure. No change needed."
 fixed = true
 
 [[finding]]
-what = "Remaining Go mentions in AGENTS.md (section 4 ban and kept Go tool, rule 6 line 372, section 11 Go build cache line 812), ADR-0001, ADR-0017, ADR-0019 and docs/adr/README.md are all on the list meant to stay; no other Go-as-our-language text found in docs/ or .claude/skills, and none left in spec 0012."
+what = "AGENTS.md 8.5, first bullet: the file limit is 'about 10' with no exact number until the owner sets it (task #374). This is the owner's own decision and the line limit (300) and the stopgap still bind, so it is not a limit taken from input. No change needed."
+fixed = true
+
+[[finding]]
+what = "AGENTS.md 8.5, stopgap: errors, an empty list after a commit, merge commits and '-' (binary or -diff) rows are all failures, not defaults; the waiver line keeps 'none can be allowed before the owner's key exists', matching section 7.2. No error-to-default or weakened check found."
 fixed = true

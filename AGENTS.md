@@ -681,6 +681,39 @@ for A2A, the open agent-to-agent protocol, on Dell).
    and every helper of Codex, Claude and Gemini together (owner, 12
    November 2026, task #166).
 
+### 8.5 Small changes
+
+Every change is small enough for anyone to follow (owner, 17 November
+2026: "strict 300 lines, always"). Task #324 holds the owner's 61
+rules for small changes and the tasks that write them in.
+
+- A commit changes at most 300 lines, counting added and removed lines
+  both, and touches about 10 files; the owner sets the exact file limit
+  the size check uses (task #333). New, deleted and moved files count,
+  and so do the review records in `reviews/`.
+- Files made by tools do not count: `Cargo.lock`, the add-ons'
+  Composer locks, spec 0024's `models.lock`, the SBOM
+  `gate/sbom.cdx.json`, and files a section 4 build tool makes and
+  marks as generated. Instead the size check proves each one matches
+  its sources.
+- A push holds at most 5 commits.
+- Each commit makes one kind of change: a fix, a feature, a tidy-up or
+  docs.
+- A commit or push over these limits is refused. Only the owner may
+  allow a bigger one, in a signed waiver (section 7.2), so none can be
+  allowed before the owner's key exists.
+- The gate's size check is built in task #333. Until it blocks, the
+  agent counts every file, tool-made ones included: with `git diff
+  --cached --numstat --no-renames` before committing, and, after
+  `git fetch`, with `git log --numstat --no-renames
+  --diff-merges=first-parent origin/main..HEAD` after committing,
+  after any amend or rebase, and before each push, which also shows
+  how many commits the push holds. An error in any of these commands,
+  no commits listed after a commit, or a merge commit in the list is a
+  failure, so newer commits from Forgejo are brought in without a
+  merge commit. A file shown as `-` (a binary file, or one marked
+  `-diff`) counts as over the limit.
+
 ## 9. Git and GitHub
 
 - `main` is the only branch. Branches other than `main` are refused by

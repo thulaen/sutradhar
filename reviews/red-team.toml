@@ -1,21 +1,25 @@
 skill = "red-team"
-change = "sha256:ee37b7d80796c4a7123251a9cbf93fb45c47aa46d8778bd0899ea52fd3dc3ce5"
+change = "sha256:60252563e5d26a550aecd2d79d7f6f1b324c9610cd5d1307cbf721ff6fc6d019"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged diff (matches change.diff) to spec 0012's 'How it is tested' and 'Changes from the source', the spec's design sections, and grepped AGENTS.md, docs/ and .claude/skills for Go-as-our-language text. Three red agents attacked it, each with one goal: break it (wrong, contradictory or broken tests), get round it (Rust cheats the narrowed tests miss), abuse it (adapter, grant and prebuilt-object wording an outsider could exploit). No real hole: every Rust rule the cut tests named is still in the design, adapter and pinned-tool lines match the definition, build order item 2 is the fixture actions, and the only Go left is the kept set (ADR-0017/0019 history, ADR-0001 and ADR index, AGENTS.md section 4, rule 6 and section 11)."
+summary = "Three red agents (break it, get round it, abuse it) attacked the new AGENTS.md section 8.5 and tried its stopgap git commands in throwaway repos; I checked each report against AGENTS.md, #324 and the settled points. No hole needs a change in this commit; the gaps found are measurement details for the size check (#333) or pre-existing."
 
 [[finding]]
-what = "Several design rules have no test naming them by example: std::env::args_os in the main arguments test, std::thread::current().name(), std::env::set_var, and Rust forms of host name, user id and build information (lines 936-938, 1011-1013, 1030-1034). The lists were incomplete before this change, the general wording still covers each case, and the design (lines 128-153) names them, so no change is needed for this commit."
+what = "8.5 stopgap: git --numstat counts lines by newline, so a file of very long lines or CR-only line endings (5,000 CR lines shown as 1) or a submodule/LFS pointer counts as a few lines. No change needed here: the rule itself says lines, and how the check measures them (byte cap, line endings, submodules) is the size check's job in #333; worth a note on #333."
 fixed = true
 
 [[finding]]
-what = "Runtime environment-variable reads (std::env::var or vars, e.g. to detect a test build via RUST_TEST_THREADS) are banned only under the numerical profile (line 121), not by name under both profiles. This is a design question that predates this commit and is outside its scope (tests made to match the design); it belongs as a Later idea, not a fix here."
+what = "8.5 stopgap: a tag named origin/main fetched from Forgejo outranks refs/remotes/origin/main in origin/main..HEAD (only a warning), listing extra commits. No change needed: it can only raise the count, so it fails closed, and needs write access to Forgejo; #333 may spell refs/remotes/origin/main."
 fixed = true
 
 [[finding]]
-what = "Line 1008: 'static HITS: Hits(AtomicU64)' is shorthand, not valid Rust (it means struct Hits(AtomicU64); static HITS: Hits). The text predates this change, which only dropped the word 'Rust'; the meaning is clear, so no change is needed."
+what = "8.5 'one kind of change: a fix, a feature, a tidy-up or docs' does not map onto the Conventional Commits types section 9 requires (test, ci, build, perf). No change needed: the four kinds are the owner's rule 43 words (#324); the mapping is noted on #326 and #330."
 fixed = true
 
 [[finding]]
-what = "Short ragged lines left by the cuts (lines 870-871, 880-881, 958-960) are kept on purpose to stay under the 300-line limit; cosmetic only."
+what = "8.5 consequences: review records (about 190 lines per commit across 8 files), moves counted twice under --no-renames, and Cargo.lock/SBOM counted in the stopgap leave little room and block new dependencies until #333, with no waiver before the owner key (#169). No change needed: each is an owner decision settled in earlier rounds (#373, #374), and the text states it truthfully."
+fixed = true
+
+[[finding]]
+what = "Pre-existing, outside this change: core.hooksPath points at the tracked .githooks folder, so a hook landed from Forgejo (e.g. reference-transaction) runs on every later git fetch that 8.5 now asks agents to run. No change needed in this docs commit; it is for the security review of the hooks setup."
 fixed = true

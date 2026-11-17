@@ -1,17 +1,17 @@
 skill = "security"
-change = "sha256:ee37b7d80796c4a7123251a9cbf93fb45c47aa46d8778bd0899ea52fd3dc3ce5"
+change = "sha256:60252563e5d26a550aecd2d79d7f6f1b324c9610cd5d1307cbf721ff6fc6d019"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged diff of docs/specs/0012-ganit-evolve.md (round 2 of commit 2d, task #325) and the whole staged spec, checked each removed Go test for a Rust concern that lost its test, checked the kept tests against the design's safety step and build order, and grepped AGENTS.md, docs/ and .claude/ for Go-as-our-language text. Docs only: no code, inputs, secrets, crypto or new libraries. Subagents were not started; the steps were run by this reviewer in turn."
+summary = "Read the staged diff (AGENTS.md only, new section 8.5, 33 added lines; matches change.diff) and section 7.2. Docs only: no code, input handling, secrets, crypto or libraries. Checked that the stopgap commands are read-only git queries with fixed arguments, that the waiver rule matches 7.2 (owner key only, none before it exists), and that the counting cannot be dodged by tool-made or -diff files."
 
 [[finding]]
-what = "Removed Go-only tests (cgo, Go flags and test.v, init and package-level vars, fmt.Errorf, address-of exempt var, Go runtime settings, .syso, go:embed and go:generate) leave no Rust gap: dependency link arguments, native libraries and prebuilt objects; std::env::args direct or through a dependency; static initialisers; statics behind a lock or atomic; process-wide APIs; env! and include_str! each still have a test, and the safety step (lines 89 to 160) bans them. No change needed."
+what = "AGENTS.md 8.5, tool-made exemption: a file marked as generated could hide hand-written lines from the count. No change needed: the size check must prove each such file matches its sources, and until #333 blocks the stopgap counts every file, tool-made ones included."
 fixed = true
 
 [[finding]]
-what = "The grants test now says grants run from the commit that adds the fixture actions (build order item 2), matching the Build order section; the old 'Go safety parse' gate is gone, so no window where grants run unchecked is described. No change needed."
+what = "AGENTS.md 8.5, '-' rows: a file marked -diff in .gitattributes or a binary would show no line counts and could slip content past the limit. No change needed: such a row counts as over the limit, so it is refused."
 fixed = true
 
 [[finding]]
-what = "No Go-as-our-language text left in the staged spec 0012. Across AGENTS.md, docs/ and .claude/, the only Go lines are the intended ones: AGENTS.md section 4 ban and kept Go tool (lines 132 to 138), rule 6 line 372, section 11 line 812, ADR-0001 'no Go', ADR index rows for 0017 and 0019, and ADR-0017/0019 themselves. No change needed."
+what = "AGENTS.md 8.5, waivers: a bigger commit could be allowed by an agent. No change needed: only the owner may allow one in a signed waiver under section 7.2, and none can be allowed before the owner's key exists, which matches 7.2."
 fixed = true

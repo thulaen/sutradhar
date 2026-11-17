@@ -1,13 +1,13 @@
 skill = "architecture"
-change = "sha256:ee37b7d80796c4a7123251a9cbf93fb45c47aa46d8778bd0899ea52fd3dc3ce5"
+change = "sha256:60252563e5d26a550aecd2d79d7f6f1b324c9610cd5d1307cbf721ff6fc6d019"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged diff (docs/specs/0012-ganit-evolve.md only, 53 added and 80 removed, under the 300-line limit), the spec's design sections and build order as left by 384492e, AGENTS.md section 5 and the context file. Checked that the test list now matches the Rust-only design (GanitEvolve crate, argument reads through a dependency refused, grants from the fixture-actions commit at build order item 2, Rust rules kept), and grepped AGENTS.md, docs/ and .claude/skills for Go-as-our-language text. Docs-only change: no module, composition root, event or settings wiring is added, and nothing is added for maybe one day."
+summary = "Read the staged diff (AGENTS.md new section 8.5, 33 added lines), AGENTS.md sections 4, 7.2, 8 and 9, spec 0024 and Forgejo #166 comment 5041 and #326/#330 comments 7469 and 7471. Docs-only: no module, wiring, setting, hook or store is added, so Boot's conventions do not apply; checked that its pointers (section 4 build tools marking files as generated, section 7.2 signed waivers and the missing owner key, spec 0024 models.lock, tasks #324 and #333) are true and that nothing in section 9 or elsewhere contradicts the stopgap."
 
 [[finding]]
-what = "No Go remains in spec 0012. Across AGENTS.md, docs/ and .claude/skills the only Go mentions left are the intended ones: AGENTS.md section 4's ban and its one kept Go tool (line 132-138), rule 6's defect-fix safety line (line 372), section 11's Go build cache line (line 812), ADR-0001's no-Go line, and ADR-0017/0019 with their index rows. No change needed."
+what = "AGENTS.md section 8.5: numbered after 8.2 with 8.3 and 8.4 absent from the tree. Not a defect: those numbers are held by other agents' pending #318 work, as the task notes; no change needed."
 fixed = true
 
 [[finding]]
-what = "Round 1 items are fixed: //go:generate and //go:embed are gone from the build-script and include test, the optimised-build action test says only 'feature set', and the cfg(not(debug_assertions)) test reads 'or under one feature'. The new Rust examples (const fn static initialiser, base static map behind a lock, std::panic::set_hook, std::env::current_exe) agree with the design section's lists. No change needed."
+what = "AGENTS.md section 8.5, stopgap bullet: the 'brought in without a merge commit' consequence now follows from the stopgap's own failure rule rather than a pointer to section 9, and prescribes no method, leaving rule 46 and V17 to #328 and #330. Round 7's finding is resolved; no change needed."
 fixed = true

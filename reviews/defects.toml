@@ -1,21 +1,17 @@
 skill = "defects"
-change = "sha256:ee37b7d80796c4a7123251a9cbf93fb45c47aa46d8778bd0899ea52fd3dc3ce5"
+change = "sha256:60252563e5d26a550aecd2d79d7f6f1b324c9610cd5d1307cbf721ff6fc6d019"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read every changed line of docs/specs/0012-ganit-evolve.md ('How it is tested' and 'Changes from the source') against the design sections (steps 1 to 3, the whole-file exemption, build order item 2) and AGENTS.md section 4 and section 6 rule 6; checked the three round-1 fixes; grepped AGENTS.md, docs/ and .claude/skills for Go-as-our-language text. Docs only, 133 changed lines, so no test is needed."
+summary = "Read every line of the new AGENTS.md section 8.5 (33 added lines, docs only) against #324 rules 1-7 and 43, #357 V14, #326, #333, #373, #374, #166 comment 5041, #326 comment 7469, and AGENTS.md sections 4, 7.2, 8.2, 9 and 12 and spec 0024; checked the stopgap git commands and grepped the tree for clashes. No defect left open; docs only, so no test is needed (section 9)."
 
 [[finding]]
-what = "Round 1 findings are fixed: //go:generate and //go:embed are gone from the build-script and include test, the optimised-build action test says 'only under one feature set', and the cfg(not(debug_assertions)) test reads '... or under one feature'."
+what = "AGENTS.md section 8.5, second bullet: 'Instead the size check proves each one matches its sources' is in the present tense although the check is not built yet. Not a defect: the last bullet says the check is built in #333 and that until it blocks every file, tool-made ones included, is counted, so no reader can skip a tool-made file today."
 fixed = true
 
 [[finding]]
-what = "Each rewritten test matches the design: process-argument reads through a dependency or argument-parsing crate (design step 2), grants only from the commit that adds the fixture actions (build order item 2), std::panic::set_hook as a process-wide state API, std::env::current_exe as the executable path, the const fn static initialiser and base atomic or locked static map cases (whole-file exemption), and 'our own Rust program with its receipt'. No change needed."
+what = "AGENTS.md: section 8.5 follows 8.2 with no 8.3 or 8.4. Not a defect: those numbers are held for #318's pending work, and #373 already points at 'section 8.5'; nothing in the tree points at 8.3 or 8.4."
 fixed = true
 
 [[finding]]
-what = "Removed Go-only tests (cgo, Go init, fmt.Errorf %w, flag package, &mode write, Go runtime settings) have Rust coverage elsewhere or no Rust counterpart: native libraries and link arguments in the dependency build-script test, static and initialiser rules in the whole-file tests. No change needed."
-fixed = true
-
-[[finding]]
-what = "Tree grep for Go as our language finds only the lines meant to stay: AGENTS.md section 4 ban and kept Go tool (lines 132-138), rule 6 safety line (372-373), section 11 Go build cache line (812), ADR-0001's 'no Go' line, ADR-0017 and ADR-0019 and their index rows. Spec 0012 has no Go left. Short ragged lines (such as 'before any compile, naming' and 'only a `fixture.state` grant may') read correctly; kept for the 300-line limit."
+what = "AGENTS.md section 8.5, stopgap bullet: checked that 'git diff --cached --numstat --no-renames' and 'git log --numstat --no-renames --diff-merges=first-parent origin/main..HEAD' count moves as delete plus add, show merge commits (the 'Merge:' line) with their first-parent diff, and show '-' for binary or -diff files, so each stated failure case is detectable. Rules 1-7, 43 and V14 each appear once and match the owner's wording; models.lock is tool-written per spec 0024. Nothing to change."
 fixed = true

@@ -1,13 +1,17 @@
 skill = "style-docs"
-change = "sha256:ee37b7d80796c4a7123251a9cbf93fb45c47aa46d8778bd0899ea52fd3dc3ce5"
+change = "sha256:60252563e5d26a550aecd2d79d7f6f1b324c9610cd5d1307cbf721ff6fc6d019"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged diff of docs/specs/0012-ganit-evolve.md ('How it is tested' and 'Changes from the source') against AGENTS.md section 6, the skill and the spec's own design sections (step 2 safety, A problem definition, build order item 2). Every changed test matches the Rust-only design; the three round 1 findings are fixed; no Go-as-our-language text is left in the spec, and a grep of AGENTS.md, docs/ and .claude/skills finds only the Go lines meant to stay (section 4 ban and kept tool, rule 6, section 11 cache line, ADR-0001, ADR-0017, ADR-0019 and the ADR index)."
+summary = "Read the staged AGENTS.md section 8.5 (33 added lines) against section 6, docs/standards and the rest of AGENTS.md, specs 0024 and ADR-0019, and the skills; grepped the tree for commit-size, merge and section 8.3/8.4 statements. The round 7 pointer problem is fixed; nothing left open."
 
 [[finding]]
-what = "Round 1 findings (//go:generate and //go:embed in the build-script and include test; 'build tag or feature set' in the optimised-build action test; missing 'or' in the cfg(not(debug_assertions)) test) are all fixed in this content."
+what = "AGENTS.md 8.5, last bullet: the round 7 finding ('(section 9)' pointed at a section that says nothing about merges) is fixed. The sentence now gives the rule's own consequence: a merge commit in the list is a failure, so newer commits from Forgejo are brought in without one. It agrees with section 8 step 9 ('bring in any newer commits from Forgejo') and prescribes no method."
 fixed = true
 
 [[finding]]
-what = "docs/specs/0012-ganit-evolve.md, 'In a whole-file problem, a base `static HITS: Hits(AtomicU64)`': shorthand, not real Rust syntax. The text is older than this change (only the word 'Rust' was dropped) and reads clearly as a sketch of a newtype wrapping an atomic, so no change is needed."
+what = "The skills' record steps (.claude/skills/*/SKILL.md, 'An amend or a merge keeps its review as long as the content is what was reviewed') still mention a merge. Not untrue: they speak of review records surviving, not of how commits are brought in, and the stopgap now refuses merge commits anyway. No change needed in this commit."
+fixed = true
+
+[[finding]]
+what = "AGENTS.md jumps from 8.2 to 8.5. No change needed: 8.3 and 8.4 are held for other agents' pending #318 work, settled in earlier rounds, and nothing in the tree refers to a section 8.3 or 8.4."
 fixed = true

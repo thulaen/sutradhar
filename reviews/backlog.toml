@@ -1,17 +1,17 @@
 skill = "backlog"
-change = "sha256:ee37b7d80796c4a7123251a9cbf93fb45c47aa46d8778bd0899ea52fd3dc3ce5"
+change = "sha256:60252563e5d26a550aecd2d79d7f6f1b324c9610cd5d1307cbf721ff6fc6d019"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read task #325 (Phase 2.1, status/ready, parent #324), the context notes and the staged diff (one file, docs/specs/0012-ganit-evolve.md, 53 added and 80 removed, 133 changed lines). Checked that the change only moves spec 0012's 'How it is tested' and 'Changes from the source' off Go to match commit 2c, adds nothing outside that, that no Go-as-our-language text is left in spec 0012, AGENTS.md, docs/ or .claude/skills beyond the lines meant to stay, and that no new ideas or later-roadmap work slipped in. The round 1 points (go:generate, go:embed, build tag wording, the missing 'or') are fixed."
+summary = "Read the staged diff (AGENTS.md only, 33 added lines, new section 8.5), tasks #326, #324 (rules 1-7), #333, #373, #374, #357 V14, #166 comment 5041 and #326/#330 comments 7469/7471, and the open milestones and ready labels. The change writes rules 1-7, V14 and rule 43 as asked, touches only the file #326 names, adds no unasked work, and leaves later work to #333, #373, #374 and #330."
 
 [[finding]]
-what = "Task #325's file list names only AGENTS.md, docs/adr/ and specs 0003 and 0010, and plans one or two commits, while this is a further commit touching spec 0012. No change needed: the task's own test ('a search of AGENTS.md and docs/ for Go as our language finds none') and the owner's ban need spec 0012 cleaned, and the commit plan in the context notes lists this as part 2 of the Go ban. The proof posted on #325 at the end should list this commit with 5dcdff9 and 384492e so the task record matches what was done."
+what = "AGENTS.md section 8.5, 'Each commit makes one kind of change': rule 43 belongs to #330, not #326. No change needed: the session's instructions asked for it here, and #326 comment 7469 and #330 comment 7471 record that #330 must not write it again."
 fixed = true
 
 [[finding]]
-what = "The Go examples were swapped for new Rust ones (std::panic::set_hook, include_str!, a const fn static initialiser, set_mode, std::env::current_exe, args read through a dependency). No change needed: replacing a Go example with a Rust one keeps each test's meaning and is what the commit says it does, not new scope; Go-only tests (cgo, flag.Lookup, Go init, fmt.Errorf %w, address of a base var) were removed rather than given new Rust rules."
+what = "AGENTS.md section 8.5, the stopgap bullet (git diff/git log counts, merge commit and '-' rows as failures) goes beyond the bare text of rules 1-7. No change needed: it only makes the 300-line limit checkable until #333 blocks, which #326's done-when and job card need, and it prescribes no merge method (rule 46 and V17 stay with #328 and #330)."
 fixed = true
 
 [[finding]]
-what = "Remaining Go mentions in AGENTS.md (section 4 ban and its kept Go tool, rule 6 safety line, section 11 Go build cache line), ADR-0001's 'No Go' line, ADR-0017 history and ADR-0019 are the ones meant to stay; a grep of docs/specs and .claude/skills finds no other Go-as-our-language text. No change needed."
+what = "Phase: #326 is in milestone Phase 2.1 while Phase 1.1 (owner steps) is still open. No change needed: the owner's plan of 17 November 2026 (#357) placed it there, and Phase 1.1 holds owner-only steps."
 fixed = true
