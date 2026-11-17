@@ -1,17 +1,13 @@
 skill = "backlog"
-change = "sha256:56796646b62b6189e99c4a79149d0b17d11002853022f4decb3960880b644cde"
+change = "sha256:7e15979e88b430fe6a26815dc513306077567ba057b1d501db622b77a2c46baf"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read task #325 and its parent #324 and #348 on Forgejo, the context notes, the staged diff (AGENTS.md, docs/roadmap.md, architecture skill; 20 added, 22 removed) and grepped AGENTS.md, docs/ and .claude/ for Go lines left untrue. Every Go line in the commit's scope is gone except the kept-bridge lines in section 4, rule 6 and section 11, which are deliberate; the rest sit in specs 0002, 0003, 0010, 0012, 0063 and 0065, planned for commits 2b and 2c. Nothing unasked is changed, and the task is in Phase 2."
+summary = "Read task #325 (Phase 2 milestone, parent #324), context.md, ADR-0019, AGENTS.md section 4 and the staged diff to specs 0002, 0003, 0010, 0063 and 0065 (83 changed lines, docs only). Checked each Go line now says Rust under ADR-0019, that 0065 'Checking signatures' items 1, 2 and 6 and service interface item 5 agree with 'The signer registry' items 4 and 5, that no other change rides along, that the only Go-as-our-language spec left is 0012 (a later planned commit), and that no task carries a next label."
 
 [[finding]]
-what = "Task #325 on Forgejo is behind the plan: its 'Files it may touch' does not name docs/roadmap.md or .claude/skills/architecture/SKILL.md, and its 'Commits' section says one or two commits where the plan now has 1, 2a, 2b and 2c. The edits are still in the task's aim and test (a search of AGENTS.md and docs/ for Go as our language must find nothing). No change to this diff is needed; the author should update the task body on Forgejo before the work ends."
+what = "Task #325 'Files it may touch' lists only specs 0003 and 0010, but this commit also edits specs 0002, 0063 and 0065. No change needed: the task's Aim ('the specs say Go is banned') and its test ('a search of AGENTS.md and docs/ for Go as our language finds none') require these edits; the author may wish to widen the file list on the task when posting the proof."
 fixed = true
 
 [[finding]]
-what = "docs/roadmap.md Phase 2 lead-in: dropping 'pin the Go toolchain ... planted Go fault' while keeping the owner's 11 November attribution on the GanitEvolve part is right under the 17 November ban. No change needed."
-fixed = true
-
-[[finding]]
-what = "AGENTS.md section 6 rules 9 and 12 drop Go from the source-file and copied-code lists. That is fine because the kept Go bridge (#348) is not tracked in this repository (no .go files or go.mod found). No change needed."
+what = "Task #325 'Commits' says one or two commits, while the work now lands as a series of small commits under the owner's 300-line rule (#166 comment 5041). No change needed in this diff; the proof comment on #325 should name every commit of the series."
 fixed = true

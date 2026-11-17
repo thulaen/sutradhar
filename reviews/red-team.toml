@@ -1,21 +1,17 @@
 skill = "red-team"
-change = "sha256:56796646b62b6189e99c4a79149d0b17d11002853022f4decb3960880b644cde"
+change = "sha256:7e15979e88b430fe6a26815dc513306077567ba057b1d501db622b77a2c46baf"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Ran three red agents as fresh subagents on the staged diff (AGENTS.md, docs/roadmap.md, architecture skill): break it (untrue or contradictory Go lines, broken references), get round it (wording that lets Go or unsafe code through, gate code vs text), abuse it (leaks, paths, secrets, weakened safety steps, odd characters). Checked each report against the staged files, section 4, ADR-0019 and task #348. No Go or ADR-0017 line is left untrue in this commit's scope; no leaks, pure ASCII, no trailing spaces; nothing needs a change before commit."
+summary = "Three red agents attacked the staged diff (specs 0002, 0003, 0010, 0063, 0065; 83 lines), with goals break it (false or contradictory text, dangling Go/ADR-0017 references, cross-references), get round it (loopholes in the 0065 checking rules) and abuse it (forged, revoked or retired-key signatures, policy rollback, the 0063 store wording). I checked each report against the tree: no Go or ADR-0017 mention is left in the five specs, every ADR-0019 link resolves, item 1's '(item 6)' and item 6's 'The signer registry, items 4 and 5' resolve to the retired-key and revocation answers, interfaces item 5 matches checking item 2, and AGENTS.md section 5.2 supports 'a tool's own store'. No real hole is opened by this change."
 
 [[finding]]
-what = 'AGENTS.md rules 2, 9 and 12 (about lines 358, 425, 438) drop Go, so a defect fix to the kept Go bridge (section 4, task #348) no longer names Go style, a GanitEvolve receipt or the copied-code check; only rule 6 keeps a Go safety line. No change needed: no .go file is tracked and the gate refuses .go files (crates/aegis/src/file_kinds.rs), so those repo checks never reached the bridge, and section 4 already limits it to defect fixes with a failing test first. A later commit may say in section 4 which checks a bridge fix gets.'
+what = "0065 'Checking signatures' item 1: 'the four run tijori-verify' where there is no socket, though the relay and the fetcher always have one (owner's PC). The condition is simply never met for them, so the sentence stays true; no change needed."
 fixed = true
 
 [[finding]]
-what = 'Architecture skill (lines 58-60) says the other operations and developer tools "are written in Rust under ADR-0019", while the kept shell files and the kept Go bridge are not yet. No change needed: it matches the section 4 table and ADR-0019, which state the rule and its kept exceptions.'
+what = "0065 item 1 now closes the socket-caller list to four, where the old 'Go tools, such as ...' list was open. A red agent said other tools (nirikshak, the bootstrap supervisor) lose the retired-key answer, but no spec has them checking tijori signatures; the gate, which checks cache signatures (spec 0010 item 5), is among the four. Settled in earlier rounds; no change needed."
 fixed = true
 
 [[finding]]
-what = 'Section 4 says "The Go progress guard is not kept" although that guard is live on Dell. Out of scope: that line came with part 1 (e2b97b6, on main) and records the owner decision with tasks #339 and #340; this diff does not touch it.'
-fixed = true
-
-[[finding]]
-what = 'Specs 0002 (line 7), 0003 (line 10) and 0010 (lines 10, 510) still say tools move to Go under ADR-0017, now disagreeing with the roadmap and skill. Out of scope: planned for commit 2b.'
+what = "Already there before this change, not opened by it: tijori-verify's refusal of 'anything only the log could answer' covers the retired-key question, but the CI test (0065 Tests, 'In a run with no socket ...') names only 'made before revocation'; checking item 3's 'every caller's trait' means callers that have a trait. Both read the same as before; outside this commit's scope."
 fixed = true

@@ -3,12 +3,8 @@
 forge-sync keeps GitHub a copy of Forgejo. It is roadmap Phase 1
 item 9, and follows [AGENTS.md section 9.1](../../AGENTS.md#91-the-sync).
 
-Language. forge-sync is an operations tool, so it moves to Go
-(ADR-0017), after it finishes in Rust as AGENTS.md section 4 allows. The
-Rust crate and install steps this page names are the reference for what
-the Go port must do: the port keeps every behaviour, contract and test
-here, and the Rust tool keeps running until the port passes every check
-and review.
+Language. forge-sync is an operations tool, written in Rust
+(ADR-0019).
 
 ## What it does
 

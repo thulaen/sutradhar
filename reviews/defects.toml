@@ -1,13 +1,17 @@
 skill = "defects"
-change = "sha256:56796646b62b6189e99c4a79149d0b17d11002853022f4decb3960880b644cde"
+change = "sha256:7e15979e88b430fe6a26815dc513306077567ba057b1d501db622b77a2c46baf"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read every staged line (AGENTS.md section 5.2 and rules 2, 6, 9, 12; roadmap Phase 2 preamble, item 10 and Phase 3 item 8; architecture skill step 3) against AGENTS.md section 4, ADR-0019 and ADR-0001. Grepped the tree: no Go mention left in AGENTS.md, the roadmap or the skills except the section 4 ban, the rule 6 safety line for the kept bridge and the section 11 build-cache line, all intended. The gate already refuses .go files (file_kinds.rs refuses_planted_files), forge-sync and the gate are Rust crates, and ADR-0019 exists, so the new text is true. Docs only, so no test is needed (section 9); 42 lines in 3 files."
+summary = "Read every changed line of specs 0002, 0003, 0010, 0063 and 0065 (commit 2b, task #325), the surrounding sections of 0065 (The signer registry items 4 and 5, Checking signatures items 1 to 6, Interfaces, Tests), AGENTS.md sections 4 and 5.2 and ADR-0019 in the worktree, and grepped the five specs and docs/specs for remaining Go claims. Docs only, so no test is needed (AGENTS.md section 9)."
 
 [[finding]]
-what = "AGENTS.md rule 2 drops Go from the Google style guide list while rule 6 still allows defect fixes to the one kept Go tool. Not a defect: the bridge is not in this repository, the gate refuses .go files here, and a fix may only mend existing behaviour, so no style rule for new Go is needed."
+what = "docs/specs/0065-tijori.md, Checking signatures item 1 and item 6: checked again after round 4. Item 1 now cites item 6, and item 6 names both log-only answers with the right cross-reference ('The signer registry', items 4 and 5: made while a retired key was active, made before revocation), which matches registry items 4 and 5 and the Tests list. No change needed."
 fixed = true
 
 [[finding]]
-what = "Remaining Go lines in specs 0002, 0003, 0010, 0012, 0063 and 0065 are still untrue after this commit. Not a defect of this commit: the plan puts them in commits 2b and 2c, and this commit is true and complete for its stated scope."
+what = "docs/specs/0012-ganit-evolve.md lines 10 and 22 still say GanitEvolve is written in Go (ADR-0017). This is out of scope: the context file plans spec 0012 for a later commit, and nothing in this commit says otherwise. No change needed here."
+fixed = true
+
+[[finding]]
+what = "docs/specs/0065-tijori.md item 1 has a short line ('its own process with the check library. Where'), left over from rewrapping. It is only cosmetic, renders the same in Markdown and is not a defect. No change needed."
 fixed = true

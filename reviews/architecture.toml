@@ -1,17 +1,13 @@
 skill = "architecture"
-change = "sha256:56796646b62b6189e99c4a79149d0b17d11002853022f4decb3960880b644cde"
+change = "sha256:7e15979e88b430fe6a26815dc513306077567ba057b1d501db622b77a2c46baf"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged diff (AGENTS.md sections 5.2 and 6 rules 2, 6, 9 and 12; docs/roadmap.md Phase 2 and Phase 3 item 8; .claude/skills/architecture/SKILL.md step 3), which matches change.diff, against AGENTS.md sections 4, 5 and 6 and the context's commit plan. Grepped the tree for Go and ADR-0017: outside specs 0002, 0003, 0010, 0012, 0063 and 0065 (commits 2b and 2c) only section 4's ban, rule 6's kept-bridge line, line 812 and the ADR files remain; no .go file is tracked. Docs only; no module, wiring, setting or hook is added, and the tools stay off Boot as section 5.1 says."
+summary = "Read the staged diff (specs 0002, 0003, 0010, 0063, 0065) in full, the changed sections of each file, AGENTS.md sections 4 and 5.2, ADR-0019 and spec 0065's signer registry, and grepped the tree for remaining Go and ADR-0017 claims. Each Language line now says Rust under ADR-0019, matching AGENTS.md section 4; spec 0063's store wording matches section 5.2's 'a tool with its own store'; spec 0065's checking design is consistent across 'Checking signatures' items 1, 2 and 6, the service interface item 5 and the tests, and item 6 now agrees with 'The signer registry' items 4 and 5. No new setting, option or hook is added. Only spec 0012 still names Go, which is the planned later commit."
 
 [[finding]]
-what = "AGENTS.md line 812 still names Go build caches. No change needed: left on purpose while the kept Go bridge (#348) is built on Dell, as the commit scope says, and it stays true until then."
+what = "docs/specs/0065-tijori.md 'Checking signatures' item 1: the four tools, now Rust, could link the check library, so routing them through the socket's verify could look like extra design. Not a problem: item 1 now gives the reason (verify adds the log-only answers of item 6, which match 'The signer registry' items 4 and 5), and earlier rounds settled this split. No change needed."
 fixed = true
 
 [[finding]]
-what = "AGENTS.md rules 9 and 12 drop Go from the source files GanitEvolve and the copy check cover, while rule 6 keeps a safety line for the one kept Go tool. No change needed: no .go file is tracked (the bridge lives on Dell outside the tree, and aegis file_kinds refuses .go files), so rules 9 and 12 lose no coverage, and rule 6 matches section 4's exception."
-fixed = true
-
-[[finding]]
-what = "docs/roadmap.md Phase 2 'First, before the numbered items' drops the Go toolchain step and keeps only GanitEvolve steps 1 and 2 with the owner's 11 November date. No change needed: the Go part is moot under the ban, the GanitEvolve part is what that owner decision still asks, and item 10 (git hooks in Rust) now agrees with section 4's table."
+what = "docs/specs/0065-tijori.md item 1, tijori-verify 'refuses anything only the log could answer, such as \"made before revocation\"': still true now that item 6 names two log-only answers, because it reads as an example. No change needed."
 fixed = true

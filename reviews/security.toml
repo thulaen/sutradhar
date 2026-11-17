@@ -1,17 +1,13 @@
 skill = "security"
-change = "sha256:56796646b62b6189e99c4a79149d0b17d11002853022f4decb3960880b644cde"
+change = "sha256:7e15979e88b430fe6a26815dc513306077567ba057b1d501db622b77a2c46baf"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged docs-only diff (AGENTS.md sections 5.2 and 6 rules 2, 6, 9 and 12, the roadmap Phase 2 and 3 lines, and the architecture skill), AGENTS.md section 4's Go ban, ADR-0019 and Forgejo #166 comment 5043, and checked the gate code. The change adds no input handling, code, dependency, secret or crypto; it removes no safety rule that still has code to guard. Subagents were not started; the steps were run by this one reviewer."
+summary = "Read the whole staged diff (specs 0002, 0003, 0010, 0063, 0065; matches change.diff) and the surrounding sections of spec 0065 (signer registry, checking signatures, interfaces, tests) and AGENTS.md section 5.2. Docs only: no code, inputs, secrets, crypto or libraries added; the trust rules for signature checks, tijori-verify, policy rollback and revocation are unchanged in substance, and no stale Go or ADR-0017 text is left in the five files."
 
 [[finding]]
-what = "AGENTS.md section 6 rule 6: the Go safety bans (unsafe package, //go:linkname, assembly, plugin) now apply only to defect fixes to the one kept Go tool (Codex's MCP bridge, #348). No safety rule is lost, since section 4 bans all other Go and the gate's files.allowed-kind check (crates/aegis/src/file_kinds.rs) already refuses any .go file in the repo. No change needed."
+what = "docs/specs/0065-tijori.md 'Checking signatures' items 1 and 6: the gate, GanitEvolve, the relay and the fetcher now check through the socket's verify by choice, not because they cannot link the library. Item 6 now names both log-only answers, matching 'The signer registry' items 4 and 5, and item 1's '(item 6)' is right. Other callers still check in process and get no log-only answers, which was already so for Rust callers before this change, so no trust is weakened. No change needed."
 fixed = true
 
 [[finding]]
-what = "AGENTS.md section 6 rules 9 and 12: Go is dropped from the GanitEvolve source-file list and the copied-code languages. This matches the gate, which refuses .go files outright, so no Go file can reach the repo and skip a receipt or copy check. The kept bridge lives outside the repo on Dell and is covered by section 4's fix-only rule. No change needed."
-fixed = true
-
-[[finding]]
-what = "No secrets, tokens, Dell paths or outside addresses were added: the only key and token words in the diff are the existing waiver-key and copied-token lines. No change needed."
+what = "docs/specs/0063-autoissues.md: 'for a Go tool's own store' becomes 'for a tool's own store'; AGENTS.md section 5.2 does cover a tool with its own store (migrations/<tool>/, checksums), and RLS-forced and one-writer rules stay in the spec. No change needed."
 fixed = true

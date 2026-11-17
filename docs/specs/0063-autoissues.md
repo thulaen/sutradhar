@@ -9,8 +9,8 @@ Forgejo task #23.
 It is development tooling on Dell. It never reads private forum data
 directly and is never part of a product package.
 
-Language. autoissues is a developer tool, so it is written in Go
-(ADR-0017).
+Language. autoissues is a developer tool, written in Rust
+(ADR-0019).
 
 ## Where faults go
 
@@ -92,7 +92,7 @@ taken".
   pruned without the owner's word.
 - Migrations are numbered, forward-only SQL files in
   `migrations/autoissues/`, applied as AGENTS.md section 5.2 sets out
-  for a Go tool's own store. On start the service refuses a store newer
+  for a tool's own store. On start the service refuses a store newer
   than its code, takes a checked backup before the first pending
   migration, applies each in its own transaction and checks the result.
   A failed migration rolls back and the service stays stopped.
@@ -302,7 +302,7 @@ The owner set the quota amount on 30 October 2026: "10
 ## Tests
 
 Every case in the archive's acceptance pages is kept, rewritten for
-Go: packaging (no autoissues path or dependency in any product
+Rust: packaging (no autoissues path or dependency in any product
 package), store (RLS forced on every table, one writer, append-only
 history), lifecycle (every transition in the table and no other),
 interfaces (one JSON document, exit codes, signed webhooks), adapters
@@ -323,7 +323,7 @@ Each runs on Dell with made-up data, never on the owner's PC.
 
 ## Changes from the source
 
-- Python, FastAPI, marimo and the Python test tools become Go and the
+- Python, FastAPI, marimo and the Python test tools become Rust and the
   tools pinned in `gate/tools.toml`.
 - The store was already PostgreSQL with forced RLS (the owner's
   rewrite of 7 November 2026); it becomes PostgreSQL 18 on Dell under

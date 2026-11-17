@@ -1,9 +1,13 @@
 skill = "fast-performance"
-change = "sha256:56796646b62b6189e99c4a79149d0b17d11002853022f4decb3960880b644cde"
+change = "sha256:7e15979e88b430fe6a26815dc513306077567ba057b1d501db622b77a2c46baf"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the whole staged diff (AGENTS.md rules 6, 9, 12 and section 5.2, docs/roadmap.md Phase 2 and 3, the architecture skill step 3). The change is text only: no code, gate check, config or build file changes, so no hot path, loop, allocation, cache, blocking call or time limit is touched, and nothing is measured. No rule that protects speed (section 5.6, rule 8 baselines, no cutting text short) is weakened."
+summary = "Read the whole staged diff (docs only: specs 0002, 0003, 0010, 0063, 0065) and the surrounding sections of spec 0065 (signer registry, checking signatures, relay, interfaces, tests). Checked each changed line for added per-request work, extra round trips, unbounded growth and calls with no time limit; grepped the five specs for leftover Go or ADR-0017 mentions (none). No code or hot path changes."
 
 [[finding]]
-what = "Docs only, no runtime effect. The rule text now names fewer languages for rules 9 and 12 (Go dropped) and the roadmap drops the Go toolchain pinning step; if anything this shrinks gate work later, and the gate code that enforces these rules is not changed in this commit, so there is nothing to time. No change needed."
+what = "Spec 0065 'Checking signatures' item 1: the gate, GanitEvolve, the relay and the fetcher keep checking through the socket's verify (one local socket round trip per check) although as Rust tools they could now link the check library in process. This is not new cost: the same four callers used the socket before the change, and the socket is needed for the log-only answers named in item 6 (retired-key-active and before-revocation, 'The signer registry' items 4 and 5, both index lookups already specced). The socket's waits stay bounded by the policy's longest wait and waiting count ('The relay' item 7). No change needed."
+fixed = true
+
+[[finding]]
+what = "Spec 0065 item 6 now names two log answers instead of one. The extra answer (made while a retired key was active) was already required by 'The signer registry' item 4 through the log index, so the wording adds no new work to verify. Specs 0002, 0003, 0010 and 0063 only change the stated language; no performance effect. No change needed."
 fixed = true

@@ -1,17 +1,13 @@
 skill = "style-docs"
-change = "sha256:56796646b62b6189e99c4a79149d0b17d11002853022f4decb3960880b644cde"
+change = "sha256:7e15979e88b430fe6a26815dc513306077567ba057b1d501db622b77a2c46baf"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged diff (AGENTS.md section 5.2 line 207, section 6 rules 2, 6, 9 and 12; docs/roadmap.md Phase 2 lead-in, item 10 and Phase 3 item 8; architecture skill step 3) against AGENTS.md sections 4 and 6, the style-docs skill and docs/standards, and grepped AGENTS.md, the roadmap, all skills, docs/standards and gate/*.toml for Go text the change leaves untrue. Plain English, no status words, no new settings, no line over the width; the remaining Go lines are section 4 itself, rule 6's kept safety line and section 11's build caches, all deliberate."
+summary = "Read the staged diff (Language lines of specs 0002, 0003, 0010 and 0063, spec 0010 'Changes from the source', spec 0063 store, tests and source lines, spec 0065 'Checking signatures' items 1, 2 and 6, the relay, service interface item 5 and a test line), which matches change.diff, against AGENTS.md sections 4 and 6, ADR-0019, the style-docs skill and docs/standards, and grepped the tree for Go and ADR-0017 text this commit leaves untrue. Plain English, no status words, no new setting, no added line over 72 characters; item 1's '(item 6)' and item 6's 'The signer registry, items 4 and 5' now agree with registry items 4 and 5 and with the tests at lines 688 and 821; spec 0063's 'a tool's own store' matches AGENTS.md line 207."
 
 [[finding]]
-what = "AGENTS.md:372 rule 6 reads 'A defect fix to the one Go tool section 4 keeps adds no ...'; the dropped 'that' makes it read slowly ('the one Go tool that section 4 keeps'). Plain enough to stand; optional wording fix, not required."
+what = "docs/specs/0065-tijori.md 'Checking signatures' item 1 (lines 284 and 296): two lines are wrapped short ('its own process with the check library. Where' and 'back, and it refuses when it cannot'). Renders the same in Markdown; an optional reflow, not required."
 fixed = true
 
 [[finding]]
-what = "AGENTS.md rules 2 and 12 no longer name a Go style guide or Go copy check, while rule 6 still allows defect fixes to the kept Go bridge (#348). Not a contradiction: the bridge does not live in the repo (git ls-files has no .go file and the gate's file-kind check refuses .go), so rules 2, 9 and 12 have nothing in Go to apply to. No change needed."
-fixed = true
-
-[[finding]]
-what = "docs/roadmap.md Phase 2 lead-in keeps the owner date 11 November 2026 after the Go toolchain step is removed. Still true: the owner's 11 November order to build GanitEvolve steps 1 and 2 first stands; only the Go part was replaced by the 17 November ban. Remaining Go text in specs 0002, 0003, 0010, 0012 and 0063 is in commits 2b and 2c by plan. No change needed."
+what = "Remaining Go and ADR-0017 text sits only in spec 0012 (planned for a later commit), AGENTS.md section 4's ban, rule 6's kept-bridge line, line 812's build caches and the ADR files. Nothing in this commit's five specs still says Go. No change needed."
 fixed = true

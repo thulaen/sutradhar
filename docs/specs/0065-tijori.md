@@ -279,20 +279,21 @@ counted.
 
 ### Checking signatures
 
-1. Checking needs no private key. Every Rust caller checks in its own
-   process with the check library. Go tools (AGENTS.md section 4), such
-   as the gate, GanitEvolve, the relay and the fetcher, cannot link it,
-   so they check through the socket's `verify` call. Where there is no
-   socket, as in GitHub CI (roadmap Phase 2 item 11), they run
-   `tijori-verify`, a small keyless command built from the same check
-   library. It checks only with Dell's instance's owner-signed policy on
-   the protected main branch (spec 0008, "Protected policy and installed
-   tools", item 1), never a copy in the change being checked. It refuses
-   a policy for another instance or one that fails the check with
-   `gate/owner-key.pub`, which it also reads from protected main, never
-   from the change. It also refuses when that policy's version is lower
-   than the highest version in main's history, so pushing an older
-   signed policy does not roll it back, and it refuses when it cannot
+1. Checking needs no private key. The gate, GanitEvolve, the relay and
+   the fetcher check through the socket's `verify` call, which adds the
+   answers only the log can give (item 6); every other caller checks in
+   its own process with the check library. Where
+   there is no socket, as in GitHub CI (roadmap Phase 2 item 11), the
+   four run `tijori-verify`, a small keyless command built from the
+   same check library. It checks only with Dell's instance's
+   owner-signed policy on the protected main branch (spec 0008,
+   "Protected policy and installed tools", item 1), never a copy in the
+   change being checked. It refuses a policy for another instance or
+   one that fails the check with `gate/owner-key.pub`, which it also
+   reads from protected main, never from the change. It also refuses
+   when that policy's version is lower than the highest version in
+   main's history, so pushing an older signed policy does not roll it
+   back, and it refuses when it cannot
    read that full history, main's policy or main's `gate/owner-key.pub`.
    `tijori-verify` is a protected path (spec 0008), and CI runs only a
    copy built from protected main. It also answers `principal(name,
@@ -304,8 +305,8 @@ counted.
    in-memory fake for tests. The real one is the policy trust source in
    `sutradhar-tijori`: it reads the protected policy file and the
    record of the highest version accepted, and never writes either.
-   Every Rust caller uses it; `qualify` gets it through `QualifyTrust`
-   (spec 0055).
+   Every caller that checks in its own process uses it; `qualify` gets
+   it through `QualifyTrust` (spec 0055).
 3. The trait reads the policy file once per load and checks those exact
    bytes, then keeps that copy in memory for every check. It loads again
    only when the file's version or digest changes. The record of the
@@ -337,8 +338,9 @@ counted.
    a check never reads fields inside the bytes.
 5. Checks are strict: a non-canonical signature or a small-order public
    key is refused.
-6. The socket's `verify` call uses the same library and adds the one
-   answer only the log can give: made before revocation.
+6. The socket's `verify` call uses the same library and adds the two
+   answers only the log can give ("The signer registry", items 4 and
+   5): made while a retired key was active, and made before revocation.
 
 ### Signing
 
@@ -532,7 +534,7 @@ the owner's approval screen. Everywhere else it signs bytes.
 
 ### The relay
 
-1. The relay is an operations tool, written in Go ([AGENTS.md section
+1. The relay is an operations tool, written in Rust ([AGENTS.md section
    4](../../AGENTS.md#4-languages-and-files)), with no keys and no
    rights beyond its own account. It runs on the owner's PC and reaches
    Dell's instance's socket over the existing connection to Dell; the
@@ -616,9 +618,9 @@ the owner's approval screen. Everywhere else it signs bytes.
    `receive_policy_record(reset)` and `receive_recovery(step)`, each
    checked as above. Every other
    account is refused.
-5. The check library and its trust trait, for every caller's own
-   process. `tijori-verify`, the keyless command for checking where
-   there is no socket.
+5. The check library and its trust trait, for every caller that
+   checks in its own process. `tijori-verify`, the keyless command for
+   checking where there is no socket.
 6. A Rust trait, `KeySource`, the client for the socket: it asks for
    signatures and never holds a private key. Its test fake uses fixed
    test keys and never touches real ones (spec 0021).
@@ -804,7 +806,7 @@ Rust tests in the tijori crates, with test keys only:
 - `principal` returns a named principal's purposes under the policy in
   force and refuses an unknown name; the runner supervisor, `qualify`,
   the gate and the release step are not agent products.
-- A Go tool's check through the socket's `verify` refuses a small-order
+- A check through the socket's `verify` refuses a small-order
   key and a non-canonical signature, as the check library does. A
   caller's trait cannot write the policy-version record.
 - Two identical requests in one durable write give one entry and one
