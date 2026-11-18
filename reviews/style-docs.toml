@@ -1,9 +1,5 @@
 skill = "style-docs"
-change = "sha256:62bd7d18ee47ce343a44dcbc43f0d581446410a9b9c4851a111ff40c3faa8fb0"
+change = "sha256:a390528ad6f6f97eaca5e09583a82ead225c116ced48ff625b9f37540bbf2716"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged spec 0043 diff and whole file against AGENTS.md 6: plain English, names, the new setting row and its explaining text, features 232 and 313 homes, no status words. Remaining indicator wording is part 2's planned scope."
-
-[[finding]]
-what = "Comparisons: request-rate markers on whole-site charts only is said in the job 176 bullet and again in the paragraph after it; same section, adjacent, low drift risk."
-fixed = true
+summary = "Rebase re-check: spec 0016 loop guard section unchanged from the passed third round; new base 2205d74 touches only spec 0043 and review records, no clash. Plain English, no status, settings explained."

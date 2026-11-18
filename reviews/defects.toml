@@ -1,9 +1,25 @@
 skill = "defects"
-change = "sha256:62bd7d18ee47ce343a44dcbc43f0d581446410a9b9c4851a111ff40c3faa8fb0"
+change = "sha256:a390528ad6f6f97eaca5e09583a82ead225c116ced48ff625b9f37540bbf2716"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read every changed line of spec 0043 (example, chart screen, HC09, Comparisons, Alerts, settings row) against the whole file, spec 0066 job table, spec 0034 and features 232 and 313. Round 13 fixes are in; leftover indicator wording is part 2's planned scope."
+summary = "Re-read the loop guard section of spec 0016 against tasks #361, #339, #362 and #363 over three rounds, and again after the rebase onto 2205d74 (spec 0043 only, no clash). All five findings fixed; nothing left open."
 
 [[finding]]
-what = "What it reuses (line 49) still names the support gate and own baseline, now used only through the falling test; still true, so no change needed here."
+what = "0016 Records: two writers could lose an attempt; now a per-task lock file and own part-file."
+fixed = true
+
+[[finding]]
+what = "0016 Records: limits could pass 4 MB and attempt 1,001 was unstated; now byte limits, no control characters, 1,001st refused."
+fixed = true
+
+[[finding]]
+what = "0016 Records: 'live handle' was undefined; now the process, job or tool waited on."
+fixed = true
+
+[[finding]]
+what = "0016 tests: refusal, part-file and two-writer tests were missing; now listed."
+fixed = true
+
+[[finding]]
+what = "0016 tests: two writers were tested as threads, which an in-process lock would pass; now child processes."
 fixed = true

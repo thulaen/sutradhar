@@ -1,9 +1,9 @@
 skill = "unsafe-patterns"
-change = "sha256:62bd7d18ee47ce343a44dcbc43f0d581446410a9b9c4851a111ff40c3faa8fb0"
+change = "sha256:a390528ad6f6f97eaca5e09583a82ead225c116ced48ff625b9f37540bbf2716"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged spec 0043 diff and the settings table for divisions by zero, defaults hiding missing data, unbounded input and weakened checks. Comparisons and alerts gate every divisor at min_compare_count (at least 10), missing days never become zero, and no result never alerts. Commit checks not run, as told."
+summary = "Re-read the loop guard section of spec 0016: per-task lock over read-add-save, own part-file per save, bounded fields and file size, links and pipes refused, two-writers test now uses child processes, tamper limits stated. Earlier finding fixed; nothing open."
 
 [[finding]]
-what = "Comparisons, sec. Periods: a period with no measured days, or a rate or position period with zero impressions or visits, divides by zero when shown alone. Safe here: compare and alert paths are gated; part 2 (Logic and maths) should say such a period shows no value."
+what = "spec 0016 'Records': shared record had no lock or own part-file, so two writers could lose an attempt or rename a half-written file."
 fixed = true

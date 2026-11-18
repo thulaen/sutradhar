@@ -1,9 +1,9 @@
 skill = "security"
-change = "sha256:62bd7d18ee47ce343a44dcbc43f0d581446410a9b9c4851a111ff40c3faa8fb0"
+change = "sha256:a390528ad6f6f97eaca5e09583a82ead225c116ced48ff625b9f37540bbf2716"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged spec 0043 diff and nearby sections. Docs only: no code, inputs, secrets or libraries. Checked HC09 small-count withholding across comparisons and alerts, the evidence gate floor, job 176 markers (no counts), staff-only views. Nothing open."
+summary = "Re-read the loop guard section of spec 0016: per-task lock and own part-file close the two-writer finding, now tested across processes; path from task number only, typed settings, byte caps fit 4 MB, plain-file-only reads, wall condition stated."
 
 [[finding]]
-what = "HC09 subtraction via overlapping chosen ranges differing by a day predates this change; author sends it to a Later task, so no change here."
+what = "docs/specs/0016-progress-system.md, Records: two saves at once could lose an attempt or expose a mixed record; now a per-task lock file and an own part-file per save."
 fixed = true

@@ -1,9 +1,5 @@
 skill = "fast-performance"
-change = "sha256:62bd7d18ee47ce343a44dcbc43f0d581446410a9b9c4851a111ff40c3faa8fb0"
+change = "sha256:a390528ad6f6f97eaca5e09583a82ead225c116ced48ff625b9f37540bbf2716"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged 0043 diff and the spec's limits. Docs only. Comparisons are one sum or weighted mean per period in ganit; period alerts run once per closed period; saved-filter alerts cannot nest; job 176 markers sit on the capped time axis. No unbounded work, no cut text."
-
-[[finding]]
-what = "Limits table row 'Indicator calls' (calls per run capped) still names indicators; the cap still bounds comparison calls, and part 2 renames it. No change needed here."
-fixed = true
+summary = "Re-read the loop guard section of spec 0016: byte limits with no control characters keep an attempt under 3 KB, so 1,000 fit under 4 MB; a full record refuses new attempts; size checked before reading; locked whole-file rewrite with two flushes is fine at hook rate."

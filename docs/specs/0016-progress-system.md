@@ -520,6 +520,88 @@ and a recording listener; PHP tests cover the add-on's side.
 - Performance: benchmarks for `advance()`, the update limit and the
   shared reader, under the 5% median rule.
 
+## The agents' loop guard
+
+The loop guard (the crate `progressguard`) is a developer tool, not
+part of the product, and has nothing to do with `karya::progress`
+above. It keeps agents from repeating the same failed attempt without
+new evidence, as the owner asked on 17 November 2026 (task #357,
+answer V1). It has three parts: its settings and records, set out
+here; judging attempts (task #362); and matching the cases recorded
+for the earlier guard (task #363). The agents' hooks reach it only
+through the judging part.
+
+### Settings file
+
+A TOML file the owner keeps on Dell, outside the repository, whose
+path the guard is given when it starts. Every key is required, and an
+unknown key, a wrong type or a value out of range refuses the whole
+file with a plain message that names the key, such as
+`progressguard settings: failure_limit must be from 1 to 10`.
+
+- `records`: the absolute path of an existing folder that holds the
+  records.
+- `failure_limit`: how many attempts in a row at the same failure,
+  without new evidence, are allowed before the approach must stop
+  (1 to 10).
+
+### Records
+
+There is one record per owning Forgejo task, shared by every provider
+and helper, in the file `task-<number>.json` in the records folder.
+The name comes from the task number alone, so no outside text becomes
+part of a path. A record holds the task number and its attempts in
+order. Each attempt names:
+
+- the provider (`claude`, `codex`, `gemini` or another name of 1 to 20
+  small letters);
+- the failure it worked on, as a short key of 1 to 200 bytes;
+- its outcome: progress; waiting, with the process, job or tool it
+  waits on, in 1 to 200 bytes; or no progress;
+- its evidence, in 1 to 1,000 bytes.
+
+Text holds no control characters, so even with JSON's escapes an
+attempt takes under 3 KB and a full record of 1,000 attempts stays
+under the 4 MB file limit. A new attempt for a full record is refused,
+never made room for by dropping an old one, so history is never lost.
+
+Adding an attempt holds a lock on the task's own lock file,
+`task-<number>.lock`, while it reads the record, adds the attempt and
+saves it, so two agents adding at once both keep their attempt. A save
+writes the whole record to a part-file of its own beside it, flushes
+it to disk, renames it over the old one and then flushes the folder. A
+crash at any point leaves either the old record or the new one, never
+a mix. Leftover part-files are ignored.
+
+A record is read only from a plain file, never through a link or from
+a pipe, and its size is checked before it is read. A file that cannot
+be read as a whole record is refused with a plain message naming the
+task, and is never treated as good or as empty: one cut short, one
+past the limits above, or one whose task number differs from its file
+name. A task with no record file has no attempts yet.
+
+The guard is a wall only when the settings file, the path the guard
+is given and the records folder are all held by the locked agent
+accounts and the harness of task #166. Under the shared account an
+agent could change the settings, point the guard at another folder,
+or delete or replace a record, and the guard cannot catch that.
+
+### How the loop guard is tested
+
+- Settings: a good file reads as typed values; a missing key, an
+  unknown key, a wrong type, a value out of range and a relative or
+  missing folder are each refused with their plain message.
+- Records: a saved record reads back the same; a cut-short file, a
+  file for another task, an oversized file, a link and a pipe are
+  refused; text too long, empty or with control characters is refused;
+  an attempt beyond 1,000 is refused; leftover part-files are ignored;
+  a task with no file has no attempts.
+- Two writers: several child processes add attempts to one task at
+  once, and every attempt is kept.
+- Crash: a child process adding attempts over and over is killed part
+  way through a write; reading afterwards gives a whole record every
+  time.
+
 ## Changes from the source
 
 - Rewritten as Rust: the handle is a Rust type with a drop guard.

@@ -1,13 +1,9 @@
 skill = "red-team"
-change = "sha256:62bd7d18ee47ce343a44dcbc43f0d581446410a9b9c4851a111ff40c3faa8fb0"
+change = "sha256:a390528ad6f6f97eaca5e09583a82ead225c116ced48ff625b9f37540bbf2716"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Three red agents (break it, get round it, abuse it) attacked the staged spec 0043 part 1. Both round 13 holes are fixed. Remaining reports were checked against the file: they are by design, predate the change or fall in part 2's scope."
+summary = "Red agents (break it, get round it, abuse it) attacked the spec 0016 loop guard section over two rounds; all five holes are fixed, the last checked on the diff. Refused or full records blocking the agent, and free-text keys, belong to #362."
 
 [[finding]]
-what = "Note for part 2: Logic and maths should define a lone period rate or position with zero impressions or visits (0/0), and how min_compare_count relates to min_impressions; chart rules must close the trading-signal route."
-fixed = true
-
-[[finding]]
-what = "Note: a darshak sign-up collapse to under 10 cannot alert, since HC09 withholds it and no result never alerts; this is the owner's settled rule, shown on the chart as 'fewer than 10'."
+what = "Records, tamper paragraph: named only the records folder, not the settings file or the path the guard is given."
 fixed = true

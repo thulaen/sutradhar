@@ -1,13 +1,5 @@
 skill = "backlog"
-change = "sha256:62bd7d18ee47ce343a44dcbc43f0d581446410a9b9c4851a111ff40c3faa8fb0"
+change = "sha256:a390528ad6f6f97eaca5e09583a82ead225c116ced48ff625b9f37540bbf2716"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged spec 0043 diff, #218 and owner comments 4977 and 5038. Part 1 does only its stated scope (example, chart screen, HC09, Comparisons, Alerts, one settings row); features 232 and 313 keep homes; leftovers are part 2's scope; 185 diff lines."
-
-[[finding]]
-what = "No Later task for the HC09 subtraction weakness (chosen ranges differing by a day) was found in Forgejo; file it before the work ends. It is rightly not in this change."
-fixed = true
-
-[[finding]]
-what = "#218 is closed, Phase 7, and asked for ideas; the removal is the owner's direct order of 17 November 2026 (comments 4977, 5038), so it counts as moved into current work. Proof goes on #218."
-fixed = true
+summary = "Re-read #361, #339, #357, #362, #363 and the revised spec 0016 section. Docs-only plan page before code, in #361's file list, Phase 2.1; covers settings, records, lock and crash safety only; judging left to #362, old cases to #363, tamper wall to #166."

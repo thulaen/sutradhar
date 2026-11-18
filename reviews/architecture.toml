@@ -1,9 +1,5 @@
 skill = "architecture"
-change = "sha256:62bd7d18ee47ce343a44dcbc43f0d581446410a9b9c4851a111ff40c3faa8fb0"
+change = "sha256:a390528ad6f6f97eaca5e09583a82ead225c116ced48ff625b9f37540bbf2716"
 verdict = "pass"
 agent = "claude subagent"
-summary = "Read the staged spec 0043 diff, the spec around it, spec 0066's job table and the glossary. quarry uses ganit and darshak only through their results, keeps one definition of each sum in ganit, adds one setting that comparisons and alerts read, and leaves no loop between modules. Leftover indicator text is part 2's scope."
-
-[[finding]]
-what = "Alerts, line 239: a ganit condition 'checked when ganit's result lands' must be built as quarry handling ganit's typed result event from the outbox (AGENTS.md 5.1), not by polling. The wording allows this, so no change is needed now."
-fixed = true
+summary = "Re-read the revised loop guard section of spec 0016 against #361, #339, #357 and AGENTS.md 4, 5.2, 6: separate dev-tool crate, hooks reach it only via judging, two typed settings, per-task record with lock, atomic save, byte limits; nothing unused, no loops."
