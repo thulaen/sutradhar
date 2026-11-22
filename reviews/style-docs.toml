@@ -1,9 +1,9 @@
 skill = "style-docs"
-change = "sha256:e649c8caeeb6ee5c76d89d4faf42fd5fe82537114cc0baffb3de03d2ecda8522"
+change = "sha256:d298244ef75ce6f289875fd2e1a3c2644b162e2f9b5064af7c96f6f3074b62e2"
 verdict = "pass"
-agent = "claude subagent harness design"
-summary = "The change adds spec 0155, a design for the agent harness (the program that holds tokens and acts for locked agent accounts), with its README row, glossary term, QR-255 to QR-257, a catalogue gap row, a watch line in spec 0058 and the alarm label in spec 0002. Plain English, lines of 80 characters or fewer, numbers marked proposed, no status wording, and the glossary and README rows are in place. Three review rounds ran on the design. Rounds one and two found real holes (an agent-chosen push address, checking a clone the agent could still change, open mailbox and task calls, replay, log tampering, status wording), all answered in the spec. Round three found five points (the watchman cannot fingerprint a changing log, the alarm label had no producer, the release approval source, a fencing token with no receiver, one garbled sentence); all were fixed after that read, with text only."
+agent = "claude subagent release key"
+summary = "The change records the release signing key the owner told agents to make on 22 November 2026: docs/release-key.md (public fingerprint, public key, custody, rules), DR-166 and a catalogue gap row; the key's fingerprint is also watched by chaukidar's private list. The rules are written as required of the release step, not as in force; lines are 80 characters or fewer; no status statements. One review round found literal newlines in two register edits, an unbacked revocation claim, rules written as in force although the release step is not built, and an unmarked conflict with spec 0065's release-key authority; all were fixed after that read, with text only."
 
 [[finding]]
-what = "Three review rounds found holes in the first drafts of the harness design. Each was answered in the spec text, and round three's five points were fixed after that read."
+what = "Literal newlines in two register edits, an unbacked revocation claim, rules stated as in force and an unmarked conflict with spec 0065. All fixed in the text."
 fixed = true
