@@ -120,43 +120,27 @@ pub enum Mailbox {
     },
 }
 
-/// Why a request was refused. It names the rule, never the input.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Refusal {
-    /// Over the size limit.
-    TooBig,
-    /// Not JSON.
-    NotJson,
-    /// Not one JSON object.
-    NotAnObject,
-    /// A field the request does not allow, or one given twice.
-    UnknownField,
-    /// A field the request needs is missing.
-    MissingField,
-    /// The id does not match its pattern.
-    BadId,
-    /// The kind or call is unknown.
-    BadKind,
-    /// A value does not match its pattern or limit.
-    BadValue,
-    /// A task title an agent may not use.
-    AlarmTitle,
-}
-
-impl fmt::Display for Refusal {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let text = match self {
-            Self::TooBig => "the request is over the size limit",
-            Self::NotJson => "the request is not JSON",
-            Self::NotAnObject => "the request is not one JSON object",
-            Self::UnknownField => "the request has a field it may not have",
-            Self::MissingField => "the request lacks a field it needs",
-            Self::BadId => "the request id does not match its pattern",
-            Self::BadKind => "the request kind or call is unknown",
-            Self::BadValue => "a value does not match its pattern or limit",
-            Self::AlarmTitle => "an agent may not use that task title",
-        };
-        f.write_str(text)
+refusals! {
+    /// Why a request was refused. It names the rule, never the input.
+    Refusal {
+        /// Over the size limit.
+        TooBig => "the request is over the size limit",
+        /// Not JSON.
+        NotJson => "the request is not JSON",
+        /// Not one JSON object.
+        NotAnObject => "the request is not one JSON object",
+        /// A field the request does not allow, or one given twice.
+        UnknownField => "the request has a field it may not have",
+        /// A field the request needs is missing.
+        MissingField => "the request lacks a field it needs",
+        /// The id does not match its pattern.
+        BadId => "the request id does not match its pattern",
+        /// The kind or call is unknown.
+        BadKind => "the request kind or call is unknown",
+        /// A value does not match its pattern or limit.
+        BadValue => "a value does not match its pattern or limit",
+        /// A task title an agent may not use.
+        AlarmTitle => "an agent may not use that task title",
     }
 }
 

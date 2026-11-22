@@ -1,9 +1,9 @@
 skill = "backlog"
-change = "sha256:bfc7d24c0b3a156594e2219dd040d59c4df1bd62b1eee4214ad9fac5207fc8d3"
+change = "sha256:0c73a2ff8bee35e640908114a28e6b936db4031d1091ee200c08fb7ffdda5fa0"
 verdict = "pass"
-agent = "claude subagent harness parser"
-summary = "The change adds the first slice of the agent harness: the crate agent-harness with a strict request parser (push, task, mailbox and status requests), the patterns for ids, commits, release tags, paths, labels, names and text, tests written first, and the lock file, SBOM and catalogue updates. The slice stays within the Requests section; the push, task, mailbox, log and limit steps and the service are recorded as remaining in the catalogue row, including the status/urgent and status/ready rule. One review round found medium points: an incomplete mailbox list, untested limits, tag names git would refuse, blank or multi-line titles, invisible and direction-changing characters, alarm titles that could be imitated and bodies that could forge the agent mark; all were fixed after that read, each with a test, and the boundary test was made able to fail. Afterwards the gate asked for named constants, files of at most 300 lines and lines of at most 80 characters, so the parser and its tests were split into smaller files with shared test helpers, the secret-like test text was built from parts and the crate was named in the glossary; behaviour is unchanged and all 25 tests pass."
+agent = "claude subagent harness push checks"
+summary = "The change adds slice two of the agent harness: the push checks of spec 0155 on plain data (main not moved, one parent, the agent's author and committer names, exactly one Task: #N line naming a task the agent took, every changed path under a live lock that outlasts the push) and a macro that defines the refusal enums once for both modules, replacing code the gate's copy check refused. Tests were written first and seen failing. The slice stays within the push checks; the git fetch, the push itself, the task, mailbox and log steps remain in the catalogue row. One review round found medium points (a zero limit let an expired lock count, blank names, paths and lock paths that were not plain relative paths); all were fixed after that read, each with a test, and all 28 tests pass with clippy clean."
 
 [[finding]]
-what = "Medium findings on the first parser: incomplete mailbox list, untested limits, bad tag suffixes, blank titles, invisible characters, imitable alarm titles and forgeable agent marks. All fixed with tests."
+what = "Medium findings: an expired lock with a zero limit, blank names and paths that were not plain relative paths. All fixed with tests."
 fixed = true
