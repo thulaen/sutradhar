@@ -25,8 +25,11 @@ installed before any token is issued to the harness (QR-254).
   LXD group and no token. The owner makes the accounts. The harness
   reads one owner-written file, outside every agent's reach, that maps
   each account to one mailbox name, one author name, one committer name
-  and one clone path (up to ten at once, AGENTS.md section 8.2). The
-  harness can read that clone path and nothing else of the agent's.
+  and one clone path (up to ten at once, AGENTS.md section 8.2). The map
+  is `/etc/sutradhar/harness/accounts.toml`, written by root and read
+  only by root and the harness account, and DR-167 names the first
+  accounts. The harness can read that clone path and nothing else of the
+  agent's.
   Helpers at any depth share their parent's account, so they share its
   names and its locks.
 - The socket lives in a folder that only those accounts and the harness

@@ -1,9 +1,9 @@
 skill = "red-team"
-change = "sha256:dc88a85f094d330a71d70f4370169112990691447dc03aa6afe0a461ab330e5a"
+change = "sha256:17c5e989330815d5fd18cd594f6fc139dfb4ee7a0ea594a525e95a90d3bb1d99"
 verdict = "pass"
-agent = "claude subagent harness task rules"
-summary = "The change adds slice three of the agent harness: the task rules (alarm tasks only read and commented on, close and the working and blocked labels only on an open task the agent took, first to take wins, current-phase tasks only and one open task at a time, ready only for a free open current-phase task while fewer than 10 are ready, urgent only on a new task with one of the four reasons of AGENTS.md section 8 and while fewer than 3 are open, new tasks to Later) and the mailbox rules (release, renew and acknowledge only the agent's own ids), with the spec 0155 Tasks table brought into line and the urgent reason added to the request parser. Tests were written first. Reaching a task through an alarm, closed or Later task, taking a second task, flipping a taken task to ready, urgent after the fact, a stray reason and another agent's ids are each refused. Two review rounds ran: the first found medium gaps (no phase, closed or one-task check on a take, ready flipped on taken tasks, any status word accepted, urgent with no reason or cap); the second found no further high or medium findings. All 55 tests pass and clippy is clean."
+agent = "claude subagent locked accounts"
+summary = "The change records DR-167, the locked agent accounts the owner told agents to make (agent-claude and agent-codex, plus the harness account sutradhar-harness, homes under /var/lib/sutradhar-agents, a root-written map readable only by root and the harness), with a spec 0155 sentence and a catalogue row edit. Every claim was checked on Dell: the accounts are locked with no sudo, Docker or LXD, an agent writes its own clone and cannot read the map, the other agent's home or the token file, and the harness reads but cannot write a clone. The map is no longer world-readable, so an agent cannot learn the other account's paths from it, and chaukidar's private list watches the accounts, the map and the clone folders. One review round found that the first homes sat under a folder the agents could not reach and that the map file was world-readable; both were fixed on Dell and in the text after that read, and re-tested from each account."
 
 [[finding]]
-what = "Medium gaps in the first task rules: no phase, closed or one-task check on a take, ready flipped on taken tasks, any status word accepted, and urgent with no reason or cap. All fixed with tests."
+what = "Homes under a folder the agents could not reach, and a world-readable account map. Both fixed on Dell, re-tested and recorded."
 fixed = true
