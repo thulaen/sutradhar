@@ -1,0 +1,15 @@
+[package]
+name = "agent-harness"
+version = "0.1.0"
+description = "The agent harness: holds the tokens and acts for locked agent accounts."
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+serde = "1.0.229"
+serde_json = "1"
+
+[lints]
+workspace = true

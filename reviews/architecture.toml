@@ -1,9 +1,9 @@
 skill = "architecture"
-change = "sha256:d298244ef75ce6f289875fd2e1a3c2644b162e2f9b5064af7c96f6f3074b62e2"
+change = "sha256:bfc7d24c0b3a156594e2219dd040d59c4df1bd62b1eee4214ad9fac5207fc8d3"
 verdict = "pass"
-agent = "claude subagent release key"
-summary = "The change records the release signing key the owner told agents to make on 22 November 2026: docs/release-key.md (public fingerprint, public key, custody, rules), DR-166 and a catalogue gap row; the key's fingerprint is also watched by chaukidar's private list. The page matches AGENTS.md 8.1 step 4 and section 11 and points to the agent harness store; the unreconciled spec 0065 authority is stated on the page, in DR-166 and in the gap row. One review round found literal newlines in two register edits, an unbacked revocation claim, rules written as in force although the release step is not built, and an unmarked conflict with spec 0065's release-key authority; all were fixed after that read, with text only."
+agent = "claude subagent harness parser"
+summary = "The change adds the first slice of the agent harness: the crate agent-harness with a strict request parser (push, task, mailbox and status requests), the patterns for ids, commits, release tags, paths, labels, names and text, tests written first, and the lock file, SBOM and catalogue updates. The crate is pure parsing with no network, token or process handling and depends only on serde and serde_json; it follows the Requests section of spec 0155. One review round found medium points: an incomplete mailbox list, untested limits, tag names git would refuse, blank or multi-line titles, invisible and direction-changing characters, alarm titles that could be imitated and bodies that could forge the agent mark; all were fixed after that read, each with a test, and the boundary test was made able to fail. Afterwards the gate asked for named constants, files of at most 300 lines and lines of at most 80 characters, so the parser and its tests were split into smaller files with shared test helpers, the secret-like test text was built from parts and the crate was named in the glossary; behaviour is unchanged and all 25 tests pass."
 
 [[finding]]
-what = "Literal newlines in two register edits, an unbacked revocation claim, rules stated as in force and an unmarked conflict with spec 0065. All fixed in the text."
+what = "Medium findings on the first parser: incomplete mailbox list, untested limits, bad tag suffixes, blank titles, invisible characters, imitable alarm titles and forgeable agent marks. All fixed with tests."
 fixed = true

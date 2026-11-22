@@ -25,6 +25,17 @@
       "version": "0.1.0"
     },
     {
+      "bom-ref": "cargo:agent-harness@0.1.0",
+      "licenses": [
+        {
+          "expression": "AGPL-3.0-or-later"
+        }
+      ],
+      "name": "agent-harness",
+      "type": "library",
+      "version": "0.1.0"
+    },
+    {
       "bom-ref": "cargo:anyhow@1.0.104",
       "hashes": [
         {
@@ -956,6 +967,13 @@
       "ref": "cargo:aegis@0.1.0"
     },
     {
+      "dependsOn": [
+        "cargo:serde@1.0.229",
+        "cargo:serde_json@1.0.154"
+      ],
+      "ref": "cargo:agent-harness@0.1.0"
+    },
+    {
       "dependsOn": [],
       "ref": "cargo:anyhow@1.0.104"
     },
@@ -1318,6 +1336,7 @@
       "dependsOn": [
         "cargo:aegis-door@0.1.0",
         "cargo:aegis@0.1.0",
+        "cargo:agent-harness@0.1.0",
         "cargo:chaukidar@0.1.0",
         "cargo:forge-sync@0.1.0",
         "cargo:nirikshak@0.1.0",

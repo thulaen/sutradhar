@@ -26,6 +26,7 @@ Plain meanings of the names and terms used in Sutradhar.
 | sampark | Hindi: "contact" | The signed site client and guest-visible readers |
 | pariksha | Hindi: "test" | The production evaluation library in spec 0056; not the shared fake toolkit |
 | test-support | English name | Shared test fakes in a development-only crate, separate from pariksha |
+| agent-harness | English name | The program that holds the tokens and acts for locked agent accounts (spec 0155) |
 | agvani | Hindi: "reception, welcome" | The example module and extension used by the developer guides; replaces the earlier name namaste, which older specs still use |
 | sujhav | Hindi: "suggestion" | Moderator review, approved link insertion and undo |
 | kavach | Hindi: "armour" | The module that supplies spam evidence through `SpamSignal` |
