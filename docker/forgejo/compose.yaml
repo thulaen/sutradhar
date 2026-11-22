@@ -4,9 +4,9 @@ name: sutradhar-forgejo
 
 services:
   forgejo:
-    # Forgejo v15 LTS branch daily (15.0-test), rootless, pinned by digest.
-    image: "codeberg.org/forgejo-experimental/forgejo@\
-      sha256:e235b157fc7174141edd9eb241cb41bf3447e77681c5e1252a088d305a9e8c49"
+    # Forgejo v15 LTS release 15.0.12, rootless, pinned by digest.
+    image: "codeberg.org/forgejo/forgejo@\
+      sha256:b670d7724274e1d5c7801b76017b7267e6e5432aa4fe8bed49f781d09476b9dd"
     container_name: sutradhar-forgejo
     restart: unless-stopped
     ports:

@@ -1,9 +1,13 @@
 skill = "backlog"
-change = "sha256:17e25711f8c644ffc39461f64b1617fc57ea737da742491b3afd5f10c3b0d496"
+change = "sha256:2d893c0906e0374176641254739dce171f913e79dd25c9270055919c20642c5a"
 verdict = "pass"
-agent = "claude subagent shared agent account"
-summary = "The change stays inside recording one decision, one question and one catalogue task, with the details held as proposals under QR-254. The catalogue row now says the shared account, and spec 0060 gains one cross-reference line. The last round found three points (who pushes before the harness exists, a wrong citation of section 8.2, the keyring user unnamed); all three were fixed in the text after that read, and only those lines changed."
+agent = "claude subagent forgejo pin"
+summary = "The change re-pins Forgejo in gate/tools.toml and docker/forgejo/compose.yaml from a pruned forgejo-experimental daily image to the official v15 LTS release 15.0.12-rootless, digest b670d772, regenerates the SBOM and adds a test that fails on the old pin. The change does only what is needed to make the image scan resolve again, plus a regression test. The unscanned local Dell image went to task 645 rather than this change."
 
 [[finding]]
-what = "Findings from two review rounds on the shared account text (stale own-account wording, name clash with the runner user, self-asserted attribution, a wrong citation, an unnamed keyring user, interim pushing before the harness) were fixed in the text."
+what = "The test matched whole files, so a comment could satisfy it or trip it. Fixed: it now reads only the image lines."
+fixed = true
+
+[[finding]]
+what = "Dell runs a locally built Forgejo image the gate never scans. This predates the change and is filed as Forgejo task 645."
 fixed = true
