@@ -12,7 +12,10 @@ label. Each line is `file LABEL PATH` or `command LABEL SHELL-COMMAND`.
 It watches Forgejo's door hook, Forgejo's settings, the branch
 rules on `main`, the list of tags and the list of releases (so a tag or
 release made through the Forgejo API is flagged), and the programs and
-service settings of the door, the copier and the watchman itself. A
+service settings of the door, the copier and the watchman itself, and
+the agent harness program, service settings and token-store owner and
+mode (spec 0155). Its alarms carry the label `alarm`, which the agent
+harness uses to keep them out of agents' hands. A
 release made by `git push` also changes those lists and raises the
 alarm once; whoever makes the release checks it is theirs and records
 fresh fingerprints with `chaukidar record`. A command's output is

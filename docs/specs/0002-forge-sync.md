@@ -68,7 +68,8 @@ journal and publication record. No retry can make a second ref move.
 ## Problems
 
 Each new problem raises one urgent task in Forgejo, in the current
-phase; later problems are added to it as comments. An empty private
+phase, with the label `alarm` (spec 0155); later problems are added to
+it as comments. An empty private
 word list is itself a problem, so nothing is sent without one.
 
 ## Installing and updating

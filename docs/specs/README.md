@@ -182,3 +182,4 @@ provenance, not current authority.
 | [0152](0152-live-backlink-crawler-profile.md) | Live backlink crawl profiles and crawler names | Phase 6 | 0045 and 0082 profile |
 | [0153](0153-public-web-backlink-index.md) | Full public-web backlink index | Separate scope decision | DR-154, QR-238 |
 | [0154](0154-backlink-index-site-slices.md) | Backlink index site slices and local lookup | Separate scope decision | 0153 contract, QR-239 |
+| [0155](0155-agent-harness.md) | The agent harness | Phase 2, task #166 | DR-161, QR-255 to QR-257 |

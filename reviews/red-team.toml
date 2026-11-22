@@ -1,9 +1,9 @@
 skill = "red-team"
-change = "sha256:13ce9f4d21253277a3ed4db0488eaebe0eee496381e4c285389f4f26e9afe788"
+change = "sha256:e649c8caeeb6ee5c76d89d4faf42fd5fe82537114cc0baffb3de03d2ecda8522"
 verdict = "pass"
-agent = "claude subagent owner answers"
-summary = "The change records the owner's three answers of 22 November 2026 (DR-163 waiver rules confirmed without a hard cap, DR-164 keep spec 0048's ranking rule, DR-165 the Notion-equivalent workspace is inside version 1 with a catalogue gap row for its missing scope), removes the three answered questions, states that Forgejo has no token expiry so the owner rotates every 90 days (Forgejo task 646), and records that chaukidar now watches the tag and release lists. A release made by git push raises the watchman's alarm once and the spec says who records fresh fingerprints; the API-made tag gap is named, not hidden. One review round found stale references, an overclaiming DR-141 line, an unbacked claim about a release step and an uncited Forgejo claim; all were fixed after that read, with text only."
+agent = "claude subagent harness design"
+summary = "The change adds spec 0155, a design for the agent harness (the program that holds tokens and acts for locked agent accounts), with its README row, glossary term, QR-255 to QR-257, a catalogue gap row, a watch line in spec 0058 and the alarm label in spec 0002. Alarm tasks are protected by a label and title rule that chaukidar and the sync must set; a flood of refused requests is summarised, not logged line by line; one agent cannot hold the push queue. Three review rounds ran on the design. Rounds one and two found real holes (an agent-chosen push address, checking a clone the agent could still change, open mailbox and task calls, replay, log tampering, status wording), all answered in the spec. Round three found five points (the watchman cannot fingerprint a changing log, the alarm label had no producer, the release approval source, a fencing token with no receiver, one garbled sentence); all were fixed after that read, with text only."
 
 [[finding]]
-what = "Stale references to removed questions, an overclaiming DR-141 line, a release-step claim with no owner and an uncited Forgejo claim. All fixed in the text."
+what = "Three review rounds found holes in the first drafts of the harness design. Each was answered in the spec text, and round three's five points were fixed after that read."
 fixed = true

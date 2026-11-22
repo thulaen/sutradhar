@@ -93,6 +93,7 @@ Plain meanings of the names and terms used in Sutradhar.
 |---|---|
 | `.deb` | An install package for Ubuntu or Debian |
 | `unsafe` | Rust code that turns off its safety checks |
+| Agent harness | The program that holds the tokens and acts for a locked agent account, so an agent never holds a token (AGENTS.md section 11, spec 0155) |
 | Alert fatigue | So many alerts that people stop noticing them |
 | Angular | The web framework used to build the desktop app's screens, inside Tauri |
 | API | The set routes one program offers for others to call |
