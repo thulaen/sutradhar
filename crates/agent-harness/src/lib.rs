@@ -9,6 +9,8 @@
 mod refusal;
 
 pub mod agent;
+pub mod git_read;
+mod git_run;
 pub mod limits;
 pub mod log_chain;
 mod log_entry;

@@ -2,6 +2,8 @@
 #![allow(dead_code, reason = "each test file uses some of these")]
 #![allow(clippy::unwrap_used, reason = "tests stop at the first failure")]
 
+pub mod repo;
+
 use agent_harness::request::{Refusal, Request, parse};
 use serde_json::{Value, json};
 
