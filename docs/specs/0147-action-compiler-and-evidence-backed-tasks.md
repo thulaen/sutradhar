@@ -68,10 +68,10 @@ Non-goals, all fixed:
 - No promise of results. An outcome says "observed", never "caused".
 - No new connector and no model call. Syncs belong to spec 0040 and need
   owner approval; this spec only reads stored copies.
-- No combined money score and no summing of sources (see QR-228).
+- No combined money score and no summing of sources (DR-164).
 - No outside Notion connector. DR-076 builds only Slack, Teams, email,
-  Jira, Linear and Asana. A clean-room workspace is a separate request
-  (DR-141, QR-229) and is not designed here.
+  Jira, Linear and Asana. A clean-room workspace is inside version 1
+  (DR-165) but is a separate series and is not designed here.
 - No visitor profile, raw address, member name or private forum identity.
 
 ## Additions to 0048
@@ -503,7 +503,7 @@ escaped with control and bidi characters stripped. An export holds at most
 scan. Three copyable templates (Jira, Linear and Asana) are plain text the
 person pastes or uploads. There is no Notion template or connection:
 DR-076 and F-0495 of spec 0100 refuse it, and any Notion-equivalent
-workspace is a separate request (QR-229). A card's deep link never
+workspace is a separate series (DR-165). A card's deep link never
 carries a page address to an outside provider. Jira, Linear and Asana
 connections stay as 0048 "Templates and outside task tools" defines them: one-
 way first, owner-keyed, and the outside "finished" mark never closes a card.
@@ -728,8 +728,6 @@ turns on or a rule changes.
 
 | Item | Question | Default until answered |
 |---|---|---|
-| QR-228 | Spec 0048 ranks only inside one kind, shows reasons, never adds sources and invents no money value. Do you want one combined payoff score (click gain, conversions, reader friction, effort) instead? | 0048's rule stands; sources stay side by side |
-| QR-229 | A clean-room Notion-equivalent workspace (pages, databases, views, templates, sharing) is a large separate product. What scope, which phase, and how does it fit ADR-0021's version 1? | Not designed. Exports are text and files only |
 | QR-225 | May Python scripts read read-only snapshots (specs 0146 and 0147)? | Off |
 
 Once admitted, these are the owner's own settings: the cooldown, the
@@ -741,5 +739,5 @@ Focus 3 count and the impact thresholds; the settle wait belongs to spec
 This spec uses the repo's names: Alekh, `docs/registers/decisions.md`,
 numbered specs and the `work.*` settings of spec 0048. The request asked
 for a score that combines sources and for Notion exports; both are held
-back as stated above (QR-228, DR-141, QR-229). Its board column names are
+back as stated above (DR-164, DR-141, DR-165). Its board column names are
 views over spec 0048's states, so the Fix list keeps one lifecycle.

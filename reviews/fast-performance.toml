@@ -1,13 +1,9 @@
 skill = "fast-performance"
-change = "sha256:6fcc25f3065befa67f43de4c01354b57fa9754c41a0b8064b4d6406c006f460f"
+change = "sha256:13ce9f4d21253277a3ed4db0488eaebe0eee496381e4c285389f4f26e9afe788"
 verdict = "pass"
-agent = "claude subagent sync watch"
-summary = "The change adds a sync watch to chaukidar: each check reads both main heads, keeps a clock in STATE.sync, and raises its own alarm (SYNC_ALARM_TITLE, never copied) once when GitHub's head differs from Forgejo's or cannot be read and has not moved for 10 minutes. Two reads every five minutes, each capped at 20 seconds, and one small file write; nothing grows over time. Three review rounds ran. Round three found only low points (alarm wording when GitHub is unreadable, a second alarm when GitHub came back, a test name, one stale comment and one spec line); all were fixed after that read, with a new test for the GitHub-returns case. After that, the gate asked for a named constant for the 12-digit short id; added."
+agent = "claude subagent owner answers"
+summary = "The change records the owner's three answers of 22 November 2026 (DR-163 waiver rules confirmed without a hard cap, DR-164 keep spec 0048's ranking rule, DR-165 the Notion-equivalent workspace is inside version 1 with a catalogue gap row for its missing scope), removes the three answered questions, states that Forgejo has no token expiry so the owner rotates every 90 days (Forgejo task 646), and records that chaukidar now watches the tag and release lists. Two extra list reads every five minutes cost nothing worth measuring. One review round found stale references, an overclaiming DR-141 line, an unbacked claim about a release step and an uncited Forgejo claim; all were fixed after that read, with text only."
 
 [[finding]]
-what = "Rounds one and two found the tamper title and wording reused, false alarms under steady pushing and when Forgejo was unreadable, clock flaws, missing read limits, errors that could drop the tamper alarm and weak tests. All fixed and tested."
-fixed = true
-
-[[finding]]
-what = "Round three's low findings: alarm wording when GitHub cannot be read, a second alarm when GitHub came back, a test name, a stale module comment and one spec sentence. All fixed."
+what = "Stale references to removed questions, an overclaiming DR-141 line, a release-step claim with no owner and an uncited Forgejo claim. All fixed in the text."
 fixed = true

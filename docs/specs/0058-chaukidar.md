@@ -10,9 +10,14 @@ and raises the alarm. It is roadmap Phase 1 item 5.
 A private watch list on Dell names each thing, with a short public
 label. Each line is `file LABEL PATH` or `command LABEL SHELL-COMMAND`.
 It watches Forgejo's door hook, Forgejo's settings, the branch
-rules on `main`, and the programs and service settings of the door, the
-copier and the watchman itself. A command's output is sorted where its
-order can vary, so the same state always gives the same fingerprint.
+rules on `main`, the list of tags and the list of releases (so a tag or
+release made through the Forgejo API is flagged), and the programs and
+service settings of the door, the copier and the watchman itself. A
+release made by `git push` also changes those lists and raises the
+alarm once; whoever makes the release checks it is theirs and records
+fresh fingerprints with `chaukidar record`. A command's output is
+sorted where its order can vary, so the same state always gives the
+same fingerprint.
 
 Two other guards are covered in other ways:
 

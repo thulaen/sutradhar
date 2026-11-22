@@ -37,7 +37,9 @@ release. Forgejo tag protection on `v*` allows only the owner and
 `sutradhar-agent` to create a release tag. An agent makes a release
 tag only by `git push`, so the door checks it under spec 0001. A tag
 or release made or changed through the Forgejo API is not checked by
-the door, and the agent token can do it; the guard for it is a
+the door, and the agent token can do it. The watchman (spec 0058)
+flags any change to the tag or release list within five minutes; it
+cannot stop the sync copying it first, which is a
 [known gap row][gaps]. Signing a release still needs the release key,
 which this account does not hold.
 
@@ -61,9 +63,11 @@ The details below are agent proposals until the owner answers QR-254:
 - Token scopes are `write:repository` and `write:issue` (tasks, labels
   and proof comments, AGENTS.md section 8) and no other. It has no
   access to the release key and cannot sign a release.
-- The token expires within 90 days (proposed). Rotating it is an owner
-  task in Forgejo; an expired token stops every push until it is
-  rotated.
+- This Forgejo stores no expiry date for a token (its token table has
+  none, checked on 22 November 2026), so nothing expires it by
+  machine. The owner rotates it every 90 days (proposed) as a
+  recurring task in Forgejo, by making a new token and deleting the
+  old one.
 - A managed agent still holds no token itself (AGENTS.md section 11). A
   session under the shared operating-system account that has sudo can
   read any token on Dell, so it is never described as contained.
@@ -105,8 +109,9 @@ The details below are agent proposals until the owner answers QR-254:
   GitHub CI can spot a breach, but cannot prevent one.
 - With DR-162, the agent token can make, delete or change a release
   tag or release through the Forgejo API without the door, and the sync
-  would copy it to GitHub. That rests on agents keeping the
-  `git push`-only rule until the guard in the known gap row exists.
+  may copy it to GitHub before the watchman flags it. Preventing that
+  rests on agents keeping the `git push`-only rule, until the gap row
+  is closed.
 
 ## How we check it
 
@@ -114,8 +119,8 @@ The details below are agent proposals until the owner answers QR-254:
 - A push to any branch other than `main` is refused.
 - A release tag that is not new, names a commit not on `main`, or comes
   in the same push as that commit is refused when pushed. A tag or
-  release made or changed through the Forgejo API is refused or flagged,
-  and the sync does not copy it to GitHub.
+  release made or changed through the Forgejo API is flagged by the
+  watchman within five minutes.
 - A test task, milestone and release appear on GitHub with private text
   removed.
 - A changed Forgejo hook raises an urgent task in Forgejo and an alert
