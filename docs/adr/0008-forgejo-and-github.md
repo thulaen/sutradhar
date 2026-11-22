@@ -32,6 +32,18 @@ to that repository, kept in a git credential helper outside the
 repository. The door gate still checks every push, and AGENTS.md
 section 9 is unchanged.
 
+Also decided by the owner on 22 November 2026 (DR-162): agents may
+release. Forgejo tag protection on `v*` allows only the owner and
+`sutradhar-agent` to create a release tag. An agent makes a release
+tag only by `git push`, so the door checks it under spec 0001. A tag
+or release made or changed through the Forgejo API is not checked by
+the door, and the agent token can do it; the guard for it is a
+[known gap row][gaps]. Signing a release still needs the release key,
+which this account does not hold.
+
+[gaps]:
+  ../planning/implementation-catalogue.md#known-gaps-before-phase-6-admission
+
 The details below are agent proposals until the owner answers QR-254:
 
 - Once the harness of task #166 exists, it is the one holder of the
@@ -48,8 +60,7 @@ The details below are agent proposals until the owner answers QR-254:
   later option.
 - Token scopes are `write:repository` and `write:issue` (tasks, labels
   and proof comments, AGENTS.md section 8) and no other. It has no
-  access to the release key and cannot sign a release. The owner also
-  protects `v*` tags in Forgejo so the account cannot create one.
+  access to the release key and cannot sign a release.
 - The token expires within 90 days (proposed). Rotating it is an owner
   task in Forgejo; an expired token stops every push until it is
   rotated.
@@ -92,11 +103,19 @@ The details below are agent proposals until the owner answers QR-254:
 - Agents have sudo, so the Forgejo lock and the release key rely on
   agents keeping the rules. The checksum guard, the release log and
   GitHub CI can spot a breach, but cannot prevent one.
+- With DR-162, the agent token can make, delete or change a release
+  tag or release through the Forgejo API without the door, and the sync
+  would copy it to GitHub. That rests on agents keeping the
+  `git push`-only rule until the guard in the known gap row exists.
 
 ## How we check it
 
 - A failing push is refused, even when pushed with hooks skipped.
 - A push to any branch other than `main` is refused.
+- A release tag that is not new, names a commit not on `main`, or comes
+  in the same push as that commit is refused when pushed. A tag or
+  release made or changed through the Forgejo API is refused or flagged,
+  and the sync does not copy it to GitHub.
 - A test task, milestone and release appear on GitHub with private text
   removed.
 - A changed Forgejo hook raises an urgent task in Forgejo and an alert

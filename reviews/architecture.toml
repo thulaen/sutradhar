@@ -1,13 +1,9 @@
 skill = "architecture"
-change = "sha256:2d893c0906e0374176641254739dce171f913e79dd25c9270055919c20642c5a"
+change = "sha256:a9907a10127ae09c713a30ce6125f70006389f3a32691e77452f2db2ef66b383"
 verdict = "pass"
-agent = "claude subagent forgejo pin"
-summary = "The change re-pins Forgejo in gate/tools.toml and docker/forgejo/compose.yaml from a pruned forgejo-experimental daily image to the official v15 LTS release 15.0.12-rootless, digest b670d772, regenerates the SBOM and adds a test that fails on the old pin. No module walls or data flow change; tools.toml and compose stay in step. The running Dell image differs from the pinned one; that older gap is task 645."
+agent = "claude subagent release decision"
+summary = "The change records DR-162 (agents may release; v-star tag protection allows the owner and sutradhar-agent) in ADR-0008, the decision and question registers and the catalogue. DR-162 sits in the decided text and agrees with AGENTS.md section 9, the ADR decision bullet and spec 0001 tag rules. Two review rounds ran; the last round's findings (status wording, an unlinked gap reference, the same-push and sync conditions, release edits through the API, and the unrecorded trade-off) were fixed in the text after that read."
 
 [[finding]]
-what = "The test matched whole files, so a comment could satisfy it or trip it. Fixed: it now reads only the image lines."
-fixed = true
-
-[[finding]]
-what = "Dell runs a locally built Forgejo image the gate never scans. This predates the change and is filed as Forgejo task 645."
+what = "Round one found the decision in the proposals list, an overstated door claim, dropped API proof cases and an applied decision still asked in QR-254; round two found status wording, an unlinked gap, missing same-push and sync conditions, release edits and an unrecorded trade-off. All fixed in the text."
 fixed = true
