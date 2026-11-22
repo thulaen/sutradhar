@@ -67,6 +67,7 @@ fn every_task_call_parses() {
                 title: "A task".to_owned(),
                 body: "Why".to_owned(),
                 label: "status/ready".to_owned(),
+                reason: None,
             },
         ),
     ];
@@ -153,4 +154,28 @@ fn the_rest_of_the_mailbox_calls_parse() {
 #[test]
 fn status_needs_nothing_else() {
     assert_eq!(raw(&json!({"kind":"status"})).unwrap(), Request::Status);
+}
+
+#[test]
+fn an_urgent_task_carries_one_of_the_four_reasons() {
+    let urgent = |reason: Option<&str>| {
+        let mut body = json!({
+            "kind": "task", "call": "make", "title": "A task",
+            "body": "Why", "label": "status/urgent",
+        });
+        if let Some(r) = reason {
+            body["reason"] = json!(r);
+        }
+        raw(&body)
+    };
+    for reason in ["broken-rule", "failed-sync", "failed-release", "security"] {
+        assert!(urgent(Some(reason)).is_ok(), "{reason}");
+    }
+    assert!(urgent(None).is_err());
+    assert!(urgent(Some("new scope")).is_err());
+    let calm = json!({
+        "kind": "task", "call": "make", "title": "A task", "body": "Why",
+        "label": "status/blocked", "reason": "security",
+    });
+    assert!(raw(&calm).is_err());
 }

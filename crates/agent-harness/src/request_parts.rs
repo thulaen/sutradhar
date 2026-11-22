@@ -79,6 +79,28 @@ fn label(fields: &mut Fields) -> Result<String, Refusal> {
     }
 }
 
+/// The reason an urgent task gives: one of the four of AGENTS.md section
+/// 8, and required with `status/urgent` and with nothing else.
+fn urgent_reason(
+    fields: &mut Fields,
+    label: &str,
+) -> Result<Option<String>, Refusal> {
+    let urgent = label == check::URGENT_LABEL;
+    if !fields.contains_key("reason") {
+        return if urgent {
+            Err(Refusal::MissingField)
+        } else {
+            Ok(None)
+        };
+    }
+    let reason = text(fields, "reason")?;
+    if urgent && check::URGENT_REASONS.contains(&reason.as_str()) {
+        Ok(Some(reason))
+    } else {
+        Err(Refusal::BadValue)
+    }
+}
+
 pub(crate) fn task(fields: &mut Fields) -> Result<Task, Refusal> {
     let call = text(fields, "call")?;
     Ok(match call.as_str() {
@@ -101,10 +123,14 @@ pub(crate) fn task(fields: &mut Fields) -> Result<Task, Refusal> {
             if !check::is_line(&title, check::TITLE_MAX) {
                 return Err(Refusal::BadValue);
             }
+            let body = body(fields)?;
+            let label = label(fields)?;
+            let reason = urgent_reason(fields, &label)?;
             Task::Make {
                 title,
-                body: body(fields)?,
-                label: label(fields)?,
+                body,
+                label,
+                reason,
             }
         }
         _ => return Err(Refusal::BadKind),

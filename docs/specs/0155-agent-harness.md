@@ -126,10 +126,14 @@ tokens or repository administration.
 | Call | Allowed |
 |---|---|
 | Read a task, its comments and labels | Yes |
-| Make a task, with a title, body and one `status/` label | Yes |
-| Comment on a task, or change the `status/` labels of one it took | Yes |
-| Take a task | Yes; the harness writes the agent's mailbox name in a comment |
-| Close a task | Only one the agent took, and never an alarm task |
+| Make a task, with a title, body and `status/blocked` | Yes; it goes to "Later", and is never ready |
+| Make an urgent task | Only with one of four reasons (broken rule, failed sync, failed release, security) and while fewer than 3 are open (proposed); it goes to the current phase (AGENTS.md section 8) |
+| Comment on a task | Yes, on any task, a closed or alarm task included |
+| Set `status/working` or `status/blocked` | Only on an open task the agent took |
+| Set any other label, or `status/urgent`, on an existing task | No |
+| Mark a task `status/ready` | Only an open current-phase task nobody took, and only while fewer than 10 are ready (AGENTS.md section 10) |
+| Take a task | Only an open current-phase task, not taken by another agent, and only while the agent holds no other open task; the harness writes the agent's mailbox name in a comment |
+| Close a task | Only an open one the agent took, and never an alarm task |
 | Assign any task | No |
 | Edit or delete a comment, delete anything | No |
 
@@ -145,7 +149,9 @@ where those sections allow.
 
 ## Mailbox
 
-The harness passes only these calls, each as the agent's own name:
+An agent touches only its own reservations and messages: a release,
+renew or acknowledge that names another agent's id is refused. The
+harness passes only these calls, each as the agent's own name:
 reserve, renew and release the agent's own locks; check its write
 rights, list reservations and list participants; check and acknowledge
 its own messages; send a message; and read a mailbox task. It refuses

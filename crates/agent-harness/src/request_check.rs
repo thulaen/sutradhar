@@ -27,6 +27,12 @@ const TAG_SUFFIX_MAX: usize = 32;
 const LABEL_WORD_MAX: usize = 32;
 /// The longest mailbox name.
 const NAME_MAX: usize = 32;
+/// The label of an urgent task.
+pub const URGENT_LABEL: &str = "status/urgent";
+/// The only reasons an agent may give for an urgent task (AGENTS.md
+/// section 8).
+pub const URGENT_REASONS: [&str; 4] =
+    ["broken-rule", "failed-sync", "failed-release", "security"];
 /// The titles of the alarms the harness keeps out of agents' hands.
 const ALARM_TITLES: [&str; 3] = [
     "chaukidar: something that guards the project changed",

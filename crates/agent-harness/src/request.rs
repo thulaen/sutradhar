@@ -77,6 +77,9 @@ pub enum Task {
         body: String,
         /// The one `status/` label.
         label: String,
+        /// Why the task is urgent, one of the four reasons of AGENTS.md
+        /// section 8; present only with `status/urgent`.
+        reason: Option<String>,
     },
 }
 
