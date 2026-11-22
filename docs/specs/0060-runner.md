@@ -31,7 +31,9 @@ the release key, the GitHub tokens or the private notes on Dell.
 - The container service belongs to the `sutradhar-agent` account, as do
   the runner's private folder and its sign-up file (mode 0600). The loop
   runs as a user with sudo, which pankti needs, and starts the runner as
-  `sutradhar-agent`.
+  `sutradhar-agent`. That is an operating-system account; the Forgejo
+  user of the same name that agents push through is a different account
+  (DR-161, [ADR-0008](../adr/0008-forgejo-and-github.md)).
 
 ## Workflows
 

@@ -23,17 +23,29 @@ How Forgejo refuses a failing push is in the
 
 ## Agent accounts and credentials
 
-Decided by the owner on 22 November 2026 (DR-161): each agent pushes as
-its own Forgejo user, never as the owner, and the first account is
-`agent-claude`, which is not the runner account of spec 0060. It is an
-ordinary user, not an administrator, with write access to
-`sutradhar-owner/sutradhar` and a token limited to that repository,
-kept in a git credential helper outside the repository. The
-door gate still checks every push, and AGENTS.md section 9 is unchanged.
+Decided by the owner on 22 November 2026 (DR-161): agents push to
+Forgejo through one non-administrator user, never as the owner,
+named `sutradhar-agent`. In Forgejo it is a separate account from the
+operating-system user of the same name that runs the runner (spec 0060).
+It has write access to `sutradhar-owner/sutradhar` and a token limited
+to that repository, kept in a git credential helper outside the
+repository. The door gate still checks every push, and AGENTS.md
+section 9 is unchanged.
 
 The details below are agent proposals until the owner answers QR-254:
 
-- Two agents never share an account or a token.
+- Once the harness of task #166 exists, it is the one holder of the
+  token and does the pushing for every agent. Until then, sessions the
+  owner starts under the shared operating-system account push as
+  AGENTS.md section 8 describes, and use the token from the helper.
+  They are not contained.
+- Which agent made a commit is shown by the commit author and by the
+  mailbox name that holds the file locks (`SUTRADHAR_AGENT`, AGENTS.md
+  section 8.2). These are the pusher's own record, not Forgejo's:
+  Forgejo's audit, the push allowlist and revocation cannot tell agents
+  apart, and one agent could forge another's name. One token means
+  revoking it stops every agent. A separate account for each agent is a
+  later option.
 - Token scopes are `write:repository` and `write:issue` (tasks, labels
   and proof comments, AGENTS.md section 8) and no other. It has no
   access to the release key and cannot sign a release. The owner also
@@ -41,12 +53,12 @@ The details below are agent proposals until the owner answers QR-254:
 - The token expires within 90 days (proposed). Rotating it is an owner
   task in Forgejo; an expired token stops every push until it is
   rotated.
-- The agent harness of task #166 holds the token for a managed agent,
-  which still holds no token itself (AGENTS.md section 11). A session
-  under the shared account that has sudo can read any token on Dell, so
-  it is never described as contained.
+- A managed agent still holds no token itself (AGENTS.md section 11). A
+  session under the shared operating-system account that has sudo can
+  read any token on Dell, so it is never described as contained.
 - The helper is an encrypted keyring readable by one operating-system
-  user. The plain-text `store` helper is not allowed.
+  user. The owner and task #166 name that user; it is never the runner's
+  `sutradhar-agent` user. The plain-text `store` helper is not allowed.
 - The token is never written to a file in the repository, a remote
   address, a commit message, a review record, a log or the product
   vault, and an agent never prints it. The gitleaks check on commits and

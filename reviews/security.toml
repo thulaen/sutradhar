@@ -1,9 +1,9 @@
 skill = "security"
-change = "sha256:13f1f17ad3ff7c587e2c8a10853663bd3688d410519649a9cc0e3c51a8cd180b"
+change = "sha256:17e25711f8c644ffc39461f64b1617fc57ea737da742491b3afd5f10c3b0d496"
 verdict = "pass"
-agent = "claude subagent agent account"
-summary = "Round three passed. Earlier rounds found the sudo exposure, plain-text helper, token scopes, release claim, API write routes and token timing; the text now states scopes, tag protection, the keyring requirement, the owner-trusted door record and that shared sudo sessions are never contained. The proof task covers API writes."
+agent = "claude subagent shared agent account"
+summary = "One shared token, stated scopes, tag protection, an encrypted keyring helper owned by one operating-system user named later by the owner and task 166, never the runner user, a leak procedure, and a statement that shared sudo sessions are not contained and that Forgejo cannot tell agents apart. The last round found three points (who pushes before the harness exists, a wrong citation of section 8.2, the keyring user unnamed); all three were fixed in the text after that read, and only those lines changed."
 
 [[finding]]
-what = "Findings from rounds one to three on the agent account text (conflicts with AGENTS.md sections 9 and 11, name clash with spec 0060, release and API claims, status wording, unowned proposals) were all fixed in the text."
+what = "Findings from two review rounds on the shared account text (stale own-account wording, name clash with the runner user, self-asserted attribution, a wrong citation, an unnamed keyring user, interim pushing before the harness) were fixed in the text."
 fixed = true

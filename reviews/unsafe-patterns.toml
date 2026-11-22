@@ -1,9 +1,9 @@
 skill = "unsafe-patterns"
-change = "sha256:13f1f17ad3ff7c587e2c8a10853663bd3688d410519649a9cc0e3c51a8cd180b"
+change = "sha256:17e25711f8c644ffc39461f64b1617fc57ea737da742491b3afd5f10c3b0d496"
 verdict = "pass"
-agent = "claude subagent agent account"
-summary = "The text bans the plain-text store helper, tokens in remote addresses, files, logs and the vault, no-verify and printing the token, and gives no unsafe example. Round two noted that forge-sync spec 0002 holds a different token in a file; the ban covers only the agent token."
+agent = "claude subagent shared agent account"
+summary = "Documentation only. The text bans the plain-text store helper, tokens in remote addresses, files, logs and the vault, no-verify and printing the token, and gives no unsafe example. The last round found three points (who pushes before the harness exists, a wrong citation of section 8.2, the keyring user unnamed); all three were fixed in the text after that read, and only those lines changed."
 
 [[finding]]
-what = "Findings from rounds one to three on the agent account text (conflicts with AGENTS.md sections 9 and 11, name clash with spec 0060, release and API claims, status wording, unowned proposals) were all fixed in the text."
+what = "Findings from two review rounds on the shared account text (stale own-account wording, name clash with the runner user, self-asserted attribution, a wrong citation, an unnamed keyring user, interim pushing before the harness) were fixed in the text."
 fixed = true

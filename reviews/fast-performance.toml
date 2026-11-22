@@ -1,9 +1,9 @@
 skill = "fast-performance"
-change = "sha256:13f1f17ad3ff7c587e2c8a10853663bd3688d410519649a9cc0e3c51a8cd180b"
+change = "sha256:17e25711f8c644ffc39461f64b1617fc57ea737da742491b3afd5f10c3b0d496"
 verdict = "pass"
-agent = "claude subagent agent account"
-summary = "Documentation only: no code, hot path or memory growth. Earlier rounds found an unkeepable promise that a push with hooks skipped is always refused; it now says a push that fails the push tier is refused at the door. The token expiry dependency is now an owner task in Forgejo."
+agent = "claude subagent shared agent account"
+summary = "Documentation only: no code, hot path or memory growth, and no promise that cannot be kept. The token expiry is an owner task in Forgejo and an expired token stops every push until rotated. The last round found three points (who pushes before the harness exists, a wrong citation of section 8.2, the keyring user unnamed); all three were fixed in the text after that read, and only those lines changed."
 
 [[finding]]
-what = "Findings from rounds one to three on the agent account text (conflicts with AGENTS.md sections 9 and 11, name clash with spec 0060, release and API claims, status wording, unowned proposals) were all fixed in the text."
+what = "Findings from two review rounds on the shared account text (stale own-account wording, name clash with the runner user, self-asserted attribution, a wrong citation, an unnamed keyring user, interim pushing before the harness) were fixed in the text."
 fixed = true
