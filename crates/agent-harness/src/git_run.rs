@@ -62,11 +62,25 @@ pub fn git(
     args: &[&str],
     stdin: Option<&str>,
 ) -> Result<Ran, String> {
+    git_with(repo, args, stdin, &[])
+}
+
+/// As [`git`], with these settings added to the environment. A later
+/// setting beats an earlier one, so a caller can allow one protocol.
+///
+/// # Errors
+/// A text saying git could not be run, or gave too much output.
+pub fn git_with(
+    repo: &Path,
+    args: &[&str],
+    stdin: Option<&str>,
+    extra: &[(&str, &str)],
+) -> Result<Ran, String> {
     let mut command = Command::new("timeout");
     let _timeout = command.args(["--kill-after=5", GIT_SECONDS, "git"]);
     let _settings = command.args(SAFE_SETTINGS).arg("-C").arg(repo);
     let _args = command.arg("--no-pager").args(args).env_clear();
-    for (key, value) in SAFE_ENVIRONMENT {
+    for (key, value) in SAFE_ENVIRONMENT.iter().chain(extra) {
         let _set = command.env(key, value);
     }
     let _stdin = command.stdin(if stdin.is_some() {

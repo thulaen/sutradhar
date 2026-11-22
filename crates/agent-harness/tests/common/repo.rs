@@ -89,3 +89,15 @@ impl Drop for Repo {
         let _ = std::fs::remove_dir_all(&self.dir);
     }
 }
+
+/// A program that touches a marker file when it runs, and that marker.
+pub fn tripwire(name: &str) -> (std::path::PathBuf, std::path::PathBuf) {
+    let pid = std::process::id();
+    let marker = std::env::temp_dir().join(format!("harness-{name}-{pid}"));
+    let script = std::env::temp_dir().join(format!("{name}-{pid}.sh"));
+    let body = format!("#!/bin/sh\ntouch {}\n", marker.display());
+    std::fs::write(&script, body).unwrap();
+    let mode = std::os::unix::fs::PermissionsExt::from_mode(0o755);
+    std::fs::set_permissions(&script, mode).unwrap();
+    (script, marker)
+}

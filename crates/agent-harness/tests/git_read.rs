@@ -8,7 +8,7 @@
 mod common;
 
 use agent_harness::git_read::{GitLimits, GitRefusal, read_new_commits};
-use common::repo::Repo;
+use common::repo::{Repo, tripwire};
 
 const LIMITS: GitLimits = GitLimits {
     max_commits: 20,
@@ -17,18 +17,6 @@ const LIMITS: GitLimits = GitLimits {
 
 fn read(repo: &Repo, main: &str, tip: &str) -> Result<usize, GitRefusal> {
     read_new_commits(repo.path(), main, tip, &LIMITS).map(|c| c.len())
-}
-
-/// A program that touches a marker file when it runs, and that marker.
-fn tripwire(name: &str) -> (std::path::PathBuf, std::path::PathBuf) {
-    let pid = std::process::id();
-    let marker = std::env::temp_dir().join(format!("harness-{name}-{pid}"));
-    let script = std::env::temp_dir().join(format!("{name}-{pid}.sh"));
-    let body = format!("#!/bin/sh\ntouch {}\n", marker.display());
-    std::fs::write(&script, body).unwrap();
-    let mode = std::os::unix::fs::PermissionsExt::from_mode(0o755);
-    std::fs::set_permissions(&script, mode).unwrap();
-    (script, marker)
 }
 
 #[test]
