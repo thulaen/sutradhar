@@ -2,18 +2,21 @@
 //! - `chaukidar record LIST SUMS` writes the fingerprints, after an
 //!   install;
 //! - `chaukidar check LIST SUMS STATE` compares, and raises the alarm
-//!   when what it finds differs from the last check, kept in `STATE`;
+//!   when what it finds differs from the last check, kept in `STATE`.
+//!   It then runs the sync watch, which keeps its own clock in
+//!   `STATE.sync` and raises its own alarm (see `sync_watch`);
 //! - `chaukidar raise TEXT` raises the alarm for one line of text from
 //!   another guard.
 //!
 //! The alarm needs `CHAUKIDAR_FORGEJO` (Forgejo's API address for the
 //! repository), `CHAUKIDAR_HEADER` (a private file with Forgejo's
-//! sign-in header) and `CHAUKIDAR_GITHUB` (`OWNER/NAME`).
+//! sign-in header) and `CHAUKIDAR_GITHUB` (`OWNER/NAME`). The sync watch
+//! reads both heads with the same settings.
 
 use std::io::{self, Write};
 use std::process::ExitCode;
 
-use chaukidar::{alarm, changes, parse, record};
+use chaukidar::{alarm, changes, parse, record, sync_watch};
 use forge_sync::fetch::Config;
 use forge_sync::run::System;
 
@@ -60,6 +63,16 @@ fn record_sums(list: &str, sums: &str) -> Result<bool, String> {
 }
 
 fn check(list: &str, sums: &str, state: &str) -> Result<bool, String> {
+    let tampered = tamper_check(list, sums, state);
+    // The sync watch runs after the tamper check has raised what it found,
+    // so a failing sync watch cannot drop or change that alarm.
+    if let Err(problem) = sync_check(state) {
+        say(&format!("chaukidar: the sync watch failed: {problem}\n"));
+    }
+    tampered
+}
+
+fn tamper_check(list: &str, sums: &str, state: &str) -> Result<bool, String> {
     let run = System::default();
     let watched = parse(&read(list)?)?;
     let found = changes(&run, &watched, &read(sums)?);
@@ -80,6 +93,49 @@ fn check(list: &str, sums: &str, state: &str) -> Result<bool, String> {
         raised?;
     }
     Ok(false)
+}
+
+/// The sync watch. Its clock is kept beside `STATE`, in `STATE.sync`.
+/// It needs the alarm's own settings; without them there is nowhere to
+/// raise anything, so it names the missing setting and stops.
+fn sync_check(state: &str) -> Result<(), String> {
+    let config = match config() {
+        Ok(config) => config,
+        Err(problem) => {
+            say(&format!("chaukidar: the sync watch is off: {problem}\n"));
+            return Ok(());
+        }
+    };
+    let path = format!("{state}.sync");
+    let clock = match std::fs::read_to_string(&path) {
+        Ok(text) => sync_watch::Clock::parse(&text),
+        Err(e) if e.kind() == io::ErrorKind::NotFound => None,
+        Err(e) => return Err(format!("cannot read {path}: {e}")),
+    };
+    let now = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map_err(|e| format!("the clock is before 1970: {e}"))?
+        .as_secs();
+    let run = System::default();
+    let (forgejo, github) = sync_watch::heads(&run, &config);
+    for (side, head) in [("Forgejo", &forgejo), ("GitHub", &github)] {
+        if let Err(problem) = head {
+            say(&format!(
+                "chaukidar: cannot read {side}'s main: {problem}\n"
+            ));
+        }
+    }
+    let (clock, body) = sync_watch::judge(&forgejo, &github, clock, now);
+    // Keep the clock, marked raised, before raising, so an alarm that
+    // fails in one place is not tried again every five minutes; the
+    // tamper alarm does the same with its state file.
+    write(&path, &clock.map(|c| c.render()).unwrap_or_default())?;
+    if let Some(body) = body {
+        say("chaukidar: GitHub's main has stopped following Forgejo's\n");
+        let title = forge_sync::plan::SYNC_ALARM_TITLE;
+        alarm::raise_titled(&run, &config, title, &body)?;
+    }
+    Ok(())
 }
 
 /// Raises the alarm for one line of text from another guard, such as the

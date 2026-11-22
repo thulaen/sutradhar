@@ -11,6 +11,7 @@
 use forge_sync::run::Run;
 
 pub mod alarm;
+pub mod sync_watch;
 
 /// One thing the watchman looks at.
 #[derive(Debug, Clone, PartialEq, Eq)]

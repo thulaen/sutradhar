@@ -38,13 +38,31 @@ pub fn raise_text(
     config: &Config,
     text: &str,
 ) -> Result<(), String> {
+    raise_titled(run, config, TITLE, text)
+}
+
+/// Raises an alarm with this title and text, in both places. The title
+/// must be one the sync never copies (`forge_sync::plan::is_local_only`).
+///
+/// # Errors
+/// Lists every place the alarm could not be raised, or a title the sync
+/// would copy.
+pub fn raise_titled(
+    run: &dyn Run,
+    config: &Config,
+    title: &str,
+    text: &str,
+) -> Result<(), String> {
+    if !forge_sync::plan::is_local_only(title) {
+        return Err(format!("the sync would copy the alarm title {title:?}"));
+    }
     let forgejo = urgent_home(run, config).and_then(|(label, milestone)| {
-        let body = json!({"title": TITLE, "body": text,
+        let body = json!({"title": title, "body": text,
             "labels": [label], "milestone": milestone});
         forgejo_post(run, config, "issues", &body)
     });
     let url = format!("repos/{}/issues", config.github);
-    let body = json!({"title": TITLE, "body": text}).to_string();
+    let body = json!({"title": title, "body": text}).to_string();
     let github = run
         .run(
             "gh",

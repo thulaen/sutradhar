@@ -158,6 +158,8 @@ fn a_half_raised_alarm_is_not_repeated() {
         .env("CHAUKIDAR_FORGEJO", "http://127.0.0.1:1/x")
         .env("CHAUKIDAR_HEADER", "/no/header")
         .env("CHAUKIDAR_GITHUB", "nobody/nothing")
+        .env("GH_HOST", "127.0.0.1:1")
+        .env("GH_TOKEN", "none")
         .env("PATH", "/nonexistent:/usr/bin:/bin")
         .output()
         .unwrap();

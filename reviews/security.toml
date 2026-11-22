@@ -1,9 +1,13 @@
 skill = "security"
-change = "sha256:a9907a10127ae09c713a30ce6125f70006389f3a32691e77452f2db2ef66b383"
+change = "sha256:6fcc25f3065befa67f43de4c01354b57fa9754c41a0b8064b4d6406c006f460f"
 verdict = "pass"
-agent = "claude subagent release decision"
-summary = "The change records DR-162 (agents may release; v-star tag protection allows the owner and sutradhar-agent) in ADR-0008, the decision and question registers and the catalogue. Tags and releases made or changed through the Forgejo API skip the door. The ADR states this as a trade-off, and a known gap row with proof cases covers an API tag off main, a delete and re-create, and a changed release. Two review rounds ran; the last round's findings (status wording, an unlinked gap reference, the same-push and sync conditions, release edits through the API, and the unrecorded trade-off) were fixed in the text after that read."
+agent = "claude subagent sync watch"
+summary = "The change adds a sync watch to chaukidar: each check reads both main heads, keeps a clock in STATE.sync, and raises its own alarm (SYNC_ALARM_TITLE, never copied) once when GitHub's head differs from Forgejo's or cannot be read and has not moved for 10 minutes. Commit ids must be 40 or 64 hex digits before reaching public alarm text; the header goes to curl as a file reference; error reasons go only to the log. Three review rounds ran. Round three found only low points (alarm wording when GitHub is unreadable, a second alarm when GitHub came back, a test name, one stale comment and one spec line); all were fixed after that read, with a new test for the GitHub-returns case. After that, the gate asked for a named constant for the 12-digit short id; added."
 
 [[finding]]
-what = "Round one found the decision in the proposals list, an overstated door claim, dropped API proof cases and an applied decision still asked in QR-254; round two found status wording, an unlinked gap, missing same-push and sync conditions, release edits and an unrecorded trade-off. All fixed in the text."
+what = "Rounds one and two found the tamper title and wording reused, false alarms under steady pushing and when Forgejo was unreadable, clock flaws, missing read limits, errors that could drop the tamper alarm and weak tests. All fixed and tested."
+fixed = true
+
+[[finding]]
+what = "Round three's low findings: alarm wording when GitHub cannot be read, a second alarm when GitHub came back, a test name, a stale module comment and one spec sentence. All fixed."
 fixed = true

@@ -16,11 +16,15 @@ pub const URGENT_TITLE: &str = "forge-sync: the copy to GitHub had problems";
 /// once, so they are never copied either way.
 pub const ALARM_TITLE: &str =
     "chaukidar: something that guards the project changed";
+/// The title of the watchman's sync alarm, raised when GitHub's `main`
+/// stops following Forgejo's. Like the other alarms, it is never copied.
+pub const SYNC_ALARM_TITLE: &str =
+    "chaukidar: GitHub's main has stopped following Forgejo's";
 
 /// True for the titles of tasks that belong to one side only.
 #[must_use]
 pub fn is_local_only(title: &str) -> bool {
-    title == URGENT_TITLE || title == ALARM_TITLE
+    title == URGENT_TITLE || title == ALARM_TITLE || title == SYNC_ALARM_TITLE
 }
 
 /// One change to make.
