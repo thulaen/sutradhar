@@ -1,9 +1,9 @@
 skill = "security"
-change = "sha256:e5903784ac2150fce301af6be53342d6b1336d5d8fcc5ecda4b68f12119d34a4"
+change = "sha256:13f1f17ad3ff7c587e2c8a10853663bd3688d410519649a9cc0e3c51a8cd180b"
 verdict = "pass"
-agent = "claude subagent round six"
-summary = "Round six scanned the staged diff for secrets and private data and found none: no keys, tokens, passwords, personal addresses or private hosts, and no waiver, key or reviews files staged except the records. The simplified waiver rule keeps owner-only signing, the pinned owner key and the protected-file list intact. A rename, split or merge removes a check id and already needs the owner's signature under AGENTS.md 7.2, which is accurate. The 0135 spool rules, directory owned by the web server user mode 0700, file 0600, descriptor checks, inode re-check and atomic rotation, and the 24 hour Retry-After clamp in 0137 are sound. No blocking finding. Minor notes left open: define signed history; the 5 minute skew bound is proposed. Round six was read at fingerprint 144bb425. The only changes after that read are two link definitions re-wrapped for the line-length check, one catalogue row reworded, and fixed names and identifiers added to the spelling allow-list in _typos.toml. Later addition, reviewed in two further rounds: a planted test the_version_one_names_are_not_spelling_checked_as_english, the Organization and Dueling patterns narrowed to exact phrases and one dead pattern removed; the test fails without the allow-list and passes with it."
+agent = "claude subagent agent account"
+summary = "Round three passed. Earlier rounds found the sudo exposure, plain-text helper, token scopes, release claim, API write routes and token timing; the text now states scopes, tag protection, the keyring requirement, the owner-trusted door record and that shared sudo sessions are never contained. The proof task covers API writes."
 
 [[finding]]
-what = "Round five found the alias entry had no stated signer. The alias design was removed; a rename, split or merge is already owner-signed under the protected-file rule."
+what = "Findings from rounds one to three on the agent account text (conflicts with AGENTS.md sections 9 and 11, name clash with spec 0060, release and API claims, status wording, unowned proposals) were all fixed in the text."
 fixed = true

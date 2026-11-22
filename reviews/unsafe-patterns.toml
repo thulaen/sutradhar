@@ -1,9 +1,9 @@
 skill = "unsafe-patterns"
-change = "sha256:e5903784ac2150fce301af6be53342d6b1336d5d8fcc5ecda4b68f12119d34a4"
+change = "sha256:13f1f17ad3ff7c587e2c8a10853663bd3688d410519649a9cc0e3c51a8cd180b"
 verdict = "pass"
-agent = "claude subagent round six"
-summary = "Round six tried to defeat the simplified waiver rule: duplicate check ids, chains of further waivers, narrow-then-widen scope, base revision and candidate games, and clock skew. Counting per check id regardless of scope closes the scope games. A rename, split or merge needs the owner's signature, which carries the count. The later time is used for expiry and the earlier for the future-signing check, refused when over 5 minutes apart. The revised 0135 spool arithmetic and the 0137 clamp are sound. No blocking hole. Minor notes left open: define signed history; name the stored baseline for the backwards-time check; state the worker bound as a precondition of the spool overshoot figure; a hard cap on further waivers is the open question in QR-253. Round six was read at fingerprint 144bb425. The only changes after that read are two link definitions re-wrapped for the line-length check, one catalogue row reworded, and fixed names and identifiers added to the spelling allow-list in _typos.toml. Later addition, reviewed in two further rounds: a planted test the_version_one_names_are_not_spelling_checked_as_english, the Organization and Dueling patterns narrowed to exact phrases and one dead pattern removed; the test fails without the allow-list and passes with it."
+agent = "claude subagent agent account"
+summary = "The text bans the plain-text store helper, tokens in remote addresses, files, logs and the vault, no-verify and printing the token, and gives no unsafe example. Round two noted that forge-sync spec 0002 holds a different token in a file; the ban covers only the agent token."
 
 [[finding]]
-what = "Round five found the lineage scope and alias design could be reset by scope changes, splits or merges, and a lenient clock. Replaced by counting per check id with an owner-signed catalogue change and a stricter time rule."
+what = "Findings from rounds one to three on the agent account text (conflicts with AGENTS.md sections 9 and 11, name clash with spec 0060, release and API claims, status wording, unowned proposals) were all fixed in the text."
 fixed = true

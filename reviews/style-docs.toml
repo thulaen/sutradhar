@@ -1,13 +1,9 @@
 skill = "style-docs"
-change = "sha256:e5903784ac2150fce301af6be53342d6b1336d5d8fcc5ecda4b68f12119d34a4"
+change = "sha256:13f1f17ad3ff7c587e2c8a10853663bd3688d410519649a9cc0e3c51a8cd180b"
 verdict = "pass"
-agent = "claude subagent round six"
-summary = "Round six ran the style checks over 214 files: no trailing whitespace, no missing final newline, no heading skips, no table cell-count mismatches including the escaped pipes in spec 0005, no real American spellings and no real doubled words. The only long prose lines are unwrappable link and URL lines. AGENTS.md 7.2, the BJ-29 row, DR-159, QR-253, the glossary Waiver count row and the 0135 spool paragraph read in plain English. No blocking finding. Minor notes left open: ten source-list lines in spec 0149 could wrap their link text; two terse phrases in 0135. Round six was read at fingerprint 144bb425. The only changes after that read are two link definitions re-wrapped for the line-length check, one catalogue row reworded, and fixed names and identifiers added to the spelling allow-list in _typos.toml. Later addition, reviewed in two further rounds: a planted test the_version_one_names_are_not_spelling_checked_as_english, the Organization and Dueling patterns narrowed to exact phrases and one dead pattern removed; the test fails without the allow-list and passes with it."
+agent = "claude subagent agent account"
+summary = "Round three passed: British English, no status statements, links and anchors resolve, proposals are marked, and the account name no longer clashes with spec 0060. The wording that the details are proposals until QR-254 follows the DR-159 pattern. Minor edits after the final read: the account name, the tag and API wording, and a re-wrapped line."
 
 [[finding]]
-what = "Round four found a 114 character line in spec 0114 and a garbled Retry-After sentence in spec 0137. Both fixed."
-fixed = true
-
-[[finding]]
-what = "Round five found unescaped double pipes in table cells of spec 0005. Fixed."
+what = "Findings from rounds one to three on the agent account text (conflicts with AGENTS.md sections 9 and 11, name clash with spec 0060, release and API claims, status wording, unowned proposals) were all fixed in the text."
 fixed = true

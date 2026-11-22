@@ -1,13 +1,9 @@
 skill = "architecture"
-change = "sha256:e5903784ac2150fce301af6be53342d6b1336d5d8fcc5ecda4b68f12119d34a4"
+change = "sha256:13f1f17ad3ff7c587e2c8a10853663bd3688d410519649a9cc0e3c51a8cd180b"
 verdict = "pass"
-agent = "claude subagent round six"
-summary = "Round six read of the staged documentation change (203 files) for module walls, events and data flow: ownership of settings, events and failure-code blocks across specs 0134 to 0154, and the simplified waiver rule against the protected-file rule and the door and gate roles in specs 0001, 0003 and 0005. No blocking finding. Minor notes left open, not blocking: define what signed history means in BJ-29; the signed-record format for the carried waiver count is not yet specified and is covered by QR-253; spec 0134 should point to BJ-29 instead of paraphrasing it. Round six was read at fingerprint 144bb425. The only changes after that read are two link definitions re-wrapped for the line-length check, one catalogue row reworded, and fixed names and identifiers added to the spelling allow-list in _typos.toml. Later addition, reviewed in two further rounds: a planted test the_version_one_names_are_not_spelling_checked_as_english, the Organization and Dueling patterns narrowed to exact phrases and one dead pattern removed; the test fails without the allow-list and passes with it."
+agent = "claude subagent agent account"
+summary = "Round three passed: DR-161 holds only what the owner decided, the proposals sit under QR-254, AGENTS.md section 9 is unchanged and section 11 is kept, because the agent harness holds the token for a managed agent. Earlier rounds found a section 11 and section 9 conflict and a name clash with the runner account of spec 0060; both are fixed by naming the account agent-claude and rewording."
 
 [[finding]]
-what = "Round three found event naming, unregistered 0148 and 0151 events, an unaccepted Alekh projection, an undeclared darshak referrer change and missing module names. Fixed in the text or recorded with owner and closing condition in the known-gaps table."
-fixed = true
-
-[[finding]]
-what = "Round one found that spec 0147 depends on edits to specs 0048 and 0044 that were not made. The four additions are now listed in the spec, DR-140 and a catalogue task."
+what = "Findings from rounds one to three on the agent account text (conflicts with AGENTS.md sections 9 and 11, name clash with spec 0060, release and API claims, status wording, unowned proposals) were all fixed in the text."
 fixed = true
