@@ -10,6 +10,10 @@ roadmap Phase 6; "Which spec designs each feature" in
 part. In code it is the `connectors` module of sanket ("signal", the SEO
 signals crate).
 
+[Spec 0136](0136-matomo-timeline-connector.md) owns the separate
+Matomo timeline read under DR-120. It shares no source metric
+with these connectors.
+
 ## What it does
 
 ### In short
@@ -41,11 +45,31 @@ signals crate).
   site; the OAuth client setup guide; storing, refreshing and revoking
   keys; nightly pulls, backfill and the URL inspection budget; quotas
   and backoff; erasure; health, alerts, and tests with fakes.
+- The 0040 scope admits no Yandex Webmaster or Naver Search Advisor
+  connection, credential, job, write or provider-specific file intake.
+  Features 668 and 669 need the owner decision recorded in QR-162 before
+  technical admission for either route. Existing admitted local intake
+  continues under spec 0100.
 - Every scope asked for is read-only. Nothing is ever written to these
   services (no URL or sitemap submission). Notices of new pages are a
   plain list owned by the crawler ([0044](0044-seo-signals-crawler.md)).
 - Owned elsewhere: SEO reports, merging GA4 with darshak, ranking and
   tuning, cloud storage of exports, the settings store and audit.
+
+#### Named search provider scope refusals (668 and 669)
+
+`REQ-0040-W2-PROVIDER-HOLD` and
+`DES-0040-W2-SEARCH-PROVIDER-REFUSAL` bind refusal only.
+QR-162 still requires the owner's explicit scope decision.
+Any affirmative decision needs a separately qualified contract
+before technical admission. No positive variant, credentials,
+traffic data, job, importer or provider effect exists here.
+The named AT cases retain their existing independent scope.
+
+| Feature | Requirement | Design and variant | Fixture and existing test boundary | Named fixture assertion |
+|---|---|---|---|---|
+| F-0668 | REQ-0040-W2-PROVIDER-HOLD | DES-0040-W2-SEARCH-PROVIDER-REFUSAL | FX-0040-W2-YANDEX-REFUSAL, AT-CN09, AT-CN13, AT-CN32 | Try authorisation, pull, submission and provider-specific import with an unrelated synthetic grant. Refuse before credential, job, quota, file intake, traffic or effect. No capability follows from other OAuth. |
+| F-0669 | REQ-0040-W2-PROVIDER-HOLD | DES-0040-W2-SEARCH-PROVIDER-REFUSAL | FX-0040-W2-NAVER-REFUSAL, AT-CN09, AT-CN13, AT-CN32 | Try setup, credential check, provider-specific import and market alteration in a restored plan. Refuse before credentials, network or job. No imported traffic, market or technical route changes. |
 
 ### Terms
 
@@ -284,16 +308,25 @@ Times are in the site's time zone (chrono-tz). The nightly window is the
 quiet hours. Backfill runs at the lowest priority and yields to live
 work.
 
+Country dimensions describe past activity on an approved own-site
+property. Feature 563, comparing search results by country, is after
+version 1 (DR-081, spec 0102). Country fields cannot start a search
+request, market report or local-language clustering job.
+
 Search Console, per property:
 
 - On connect and daily: `GET .../webmasters/v3/sites` to confirm the
   property and its permission level.
-- Daily: `POST https://www.googleapis.com/webmasters/v3/sites/{siteUrl}/searchAnalytics/query`
+- Daily: `POST`
+  `https://www.googleapis.com/webmasters/v3/sites/{siteUrl}/searchAnalytics/query`
   for the newest final date (`dataState` final), with `type` web, image,
   video, news and discover, grouped by date, page and query; by date,
-  page, country and device; and by search appearance. `rowLimit` 25,000,
-  paged with `startRow` until a short page.
-- Backfill on connect: every earlier date the API returns, newest first.
+  page, country and device; and by search appearance. Use the
+  bounded paging rule below.
+- Backfill on connect: use the published 16-month history as the
+  upper bound. Discover the property and surface's available
+  dates through the existing read route and fetch newest first.
+  Leave unavailable dates and dimensions unknown.
 - Daily: the sitemaps list.
 - Daily URL inspection,
   `POST https://searchconsole.googleapis.com/v1/urlInspection/index:inspect`,
@@ -302,12 +335,46 @@ Search Console, per property:
   sign-ups, ordered by ganit's indexing probability, lowest first), then
   a rotating sample so every indexable page is checked in turn.
 
+Google's published history and row limits are recorded in
+[SR-063 and SR-064](../registers/sources.md). The 16-month
+history bounds a request. Actual earliest eligible date and
+missing days come from the property and admitted report.
+For a daily report, use `rowLimit=25000` and `startRow=0`.
+If the first page is full, request `startRow=25000` under
+the same property, provider day, search type and report shape.
+Stop at a short page or 50,000 returned rows. Record reaching
+the ceiling and keep the existing partial-evidence gate.
+Page termination or a smaller return count alone cannot prove
+complete page or query coverage. Preserve missing values as
+unknown, including for spec 0150.
+
+The page and query projection and the separate page, country and
+device projection do not prove the joint page, query and device
+population needed by 0043 F-0073. Keep their existing report uses.
+For that comparison, QR-106 needs a separately qualified producer
+profile for a stored final joint projection. It must bind the owned
+property, current source scope generation, native dates, surface,
+filters, page and query identity, device, position measure and
+impressions and proved coverage of the selected population. Final
+metadata and a current verified connection supply no completeness
+proof for that joint report. The [API contract][joint-panel-api]
+allows grouping by several dimensions and can omit rows. Require
+all exact cells of the approved panel. Treat a needed hidden,
+truncated or unproved cell as unknown. State the covered panel
+without estimating the rest of the site. Keep screened or incomplete evidence
+under the existing release rules. This report grants no inferred
+cross-tab, request or connector scope.
+
+[joint-panel-api]:
+  https://developers.google.com/webmaster-tools/v1/searchanalytics/query
+
 GA4, per property:
 
 - On connect:
   `GET https://analyticsadmin.googleapis.com/v1beta/accountSummaries`;
   the owner picks one property.
-- Daily: `POST https://analyticsdata.googleapis.com/v1beta/properties/{id}:runReport`
+- Daily: `POST`
+  `https://analyticsdata.googleapis.com/v1beta/properties/{id}:runReport`
   for the previous day in the property's time zone: landing page,
   session default channel group, device and country, with sessions,
   engaged sessions, engagement duration, page views, new users and key
@@ -340,8 +407,9 @@ and traffic, query, page and crawl statistics. JSON interfaces only.
 ### ganit jobs used
 
 ganit receives only ids, dates, counts and quota figures, never search
-terms or addresses. Each result is applied after its shadow test; the
-last good one is kept if a job is late.
+terms or addresses. Each result is inert candidate evidence; spec 0077 alone
+evaluates, promotes, activates and rolls it back. A late or failed candidate
+leaves the verified champion unchanged.
 
 - Job 214: estimates for the last 2 to 3 days of Search Console data,
   which arrive late, shown as a shaded "estimate" band, never mixed with
@@ -356,8 +424,9 @@ last good one is kept if a job is late.
 
 - Every row carries `site_id`. Stores take a `SiteScope`, made only by
   the action layer after the Cedar permission check.
-- Row-level security is the second wall: each transaction sets its site
-  with `SET LOCAL`, and every forced policy matches on it.
+- Row-level security is the second wall. Each transaction binds its
+  site through spec 0108's transaction-local setter, and every forced
+  policy matches on it.
 - Secrets have a third wall: `connector_client`, `connector_flow`,
   `connector_secret` and `site_data_key` are granted only to the role
   `sutradhar_connector`. The reports, review and API roles have no grant.
@@ -370,20 +439,30 @@ last good one is kept if a job is late.
   key_id, updated_at.
 - `connector_flow`: state_hash, site_id, app_user_id, service, sealed
   verifier, expires_at, used_at.
-- `connector_connection`: id, site_id, service, property, state,
-  connected_by, connected_at, last_success_at, version.
+- `connector_connection`: id, site_id, service, verified property
+  binding, source scope generation, state, connected_by, connected_at,
+  last_success_at, version. The binding identifies the exact verified
+  provider-native property within this site and connection. Keep it
+  separate from the positive bigint scope generation. Advance the
+  generation with each authorised rebind, permission change or
+  disconnect, including reselection of the same property. Hold if
+  the current generation cannot be proved or advanced without reuse.
 - `connector_secret`: connection_id, sealed refresh token, key_id,
   nonce, version.
 - `site_data_key`: site_id, sealed key, master_key_id.
-- `connector_pull`: id, connection_id, kind, window, rows, quota used,
-  outcome, error code, started_at, ended_at.
-- `connector_coverage`: connection_id, date, status (complete, partial,
+- `connector_pull`: id, connection_id, verified property binding,
+  source scope generation, kind, window, rows, quota used, outcome,
+  error code, started_at, ended_at. Carry the binding and generation in
+  the durable checkpoint.
+- `connector_coverage`: key by site, connection, verified property
+  binding, source scope generation, provider day and exact report
+  scope. Keep the originating pull ID and status (complete, partial,
   missing).
 - Copied numbers: `gsc_query_day`, `gsc_page_dim_day`,
   `gsc_inspection`, `gsc_sitemap`, `ga4_landing_day`, `bing_query_day`,
-  `bing_page_day`, `bing_crawl_day`, keyed by connection, date and
-  dimensions, with page addresses stored as thread or post ids where
-  they resolve.
+  `bing_page_day`, `bing_crawl_day`. Use that same scope key plus the
+  native result dimensions that identify each row. Keep its originating
+  pull ID. Store page addresses as thread or post IDs where they resolve.
 
 ### API, events and commands
 
@@ -402,11 +481,15 @@ action layer with a capability id:
 - `PUT /api/connectors/clients/{provider}`: sets client id and secret;
   the secret is write-only.
 
-Outbox events (ids and counts only): `connector.connected`,
-`connector.property_chosen`, `connector.pull_completed`,
-`connector.pull_failed`, `connector.quota_exhausted`,
-`connector.needs_reconnect`, `connector.disconnected`. SEO reports and
-darshak refresh on `pull_completed`.
+Spec 0019 transactional outbox events (ids and counts only):
+`connector.connected`, `connector.property_chosen`,
+`connector.pull_completed`, `connector.pull_failed`,
+`connector.quota_exhausted`, `connector.needs_reconnect` and
+`connector.disconnected`. Commit each event with the connector
+transition or committed coverage change under RLS. Order by site
+and connection. SEO reports and darshak consume `pull_completed`
+idempotently and refresh local evidence. A stale generation or
+disconnect fences the consumer. It cannot start a new provider pull.
 
 Commands: `sutra sanket connectors list`, `status <id>`, `pull <id>`,
 `disconnect <id> --data keep|delete`, `rotate-key`. A connection is
@@ -437,9 +520,35 @@ Every failure has a plain message, a SUT code and a manual link.
 | SUT-636 | Revocation failed at provider | Key deleted anyway; told |
 | SUT-637 | Bing returned no `state` | Session guard used |
 
-- Rows are committed per page with the pull's id. A crashed pull resumes
-  from its checkpoint. A re-run replaces that date's rows in one
-  transaction, so nothing counts twice.
+- Pin the site, connection, verified property binding and source scope
+  generation when admitting the pull. Recheck them and the 0019 job
+  fence before each data request. Compare any property identifier the
+  provider returns. Check the same current scope and job fence in the
+  transaction that writes page rows, advances coverage or a checkpoint,
+  or records success. A rebind, scope loss or disconnect fences an
+  earlier attempt even if its response arrives successfully.
+- Rows commit per page with the pull ID. A crashed pull resumes from
+  a matching current checkpoint. A rerun replaces rows and updates
+  coverage in one transaction for the exact site, connection, property,
+  source scope generation, provider day and report scope. Writes for
+  one generation leave any retained older generation untouched.
+  Bind each committed coverage update to the pull that establishes it.
+  Read a row or its coverage as current only if that pull's site,
+  connection, verified property, source scope generation, day and
+  report scope match the current requested scope. On any binding or
+  scope mismatch, the refused page adds no rows, coverage or checkpoint
+  advance. The attempt emits no successful completion.
+  Record a superseded attempt under its original pull identity.
+  The current connection status stays with its owning transition.
+  Show “Pull held because the property or access changed.” Verified
+  loss of current property access follows SUT-631. A current reply
+  that names another property rejects the whole page under SUT-634.
+  A legacy page, coverage row or checkpoint without proved original
+  binding and generation cannot supply current evidence or resume a
+  pull. Earlier eligible copies keep their original property and
+  generation, including after reselection of the same property.
+  Retained older copies follow current archive permission, retention
+  and erasure.
 - A new field in an answer is ignored; a missing required field is
   SUT-634 and the page's rows are rejected whole.
 
@@ -494,14 +603,265 @@ removed from Bing Webmaster Tools.
 
 ### Link data and imports
 
-- The owner may also connect DataForSEO, Semrush and Common Crawl, each
-  with their own key. Their figures are labelled by source and never
-  added to another's. They are designed in
-  [0045](0045-backlink-crawl.md) and [0046](0046-web-link-study.md).
+- Live backlink and search-result provider feeds, including
+  DataForSEO and Semrush, are not built (DR-076 and DR-085). Link study
+  uses separately labelled, permitted owner-supplied evidence
+  under spec 0046. Spec 0045 may use a public Common Crawl link map
+  as a lead list, without a provider account or recurring feed.
+  This does not change this spec's own-site search data routes.
 - Version 1 imports Search Console, GA4, Matomo, Plausible and Fathom
   files. No raw server logs, since they hold visitor addresses.
 - The Coach's related-questions check reads Search Console questions
   ([0042](0042-coach-additions.md)); this scope covers it.
+
+### Wave 2 GA4 read and file evidence (483)
+
+F-0483 · REQ-0040-W2-OWN-GA4-READOUT ·
+DES-0040-W2-BOUND-GA4-SOURCES.
+
+FX-0040-W2-BOUND-GA4-SOURCES uses the existing AT-CN19/22/29/30/35
+and the separate 0029 visitor-file and 0100 staging checks. Compare
+a stand-in daily copy for the exact admitted read-only GA4 property
+and a separately approved GA4 totals file from spec 0029. Bind site,
+property or approved file mapping, source, native day, coverage and
+current scope. Keep the two inputs as separate report sources.
+Partial or missing days stay labelled and cannot give a complete
+daily result. Refuse mismatched site or property and deny further
+reads on a revoked connection. Prior copies follow the owner's
+existing keep-or-delete choice and current read scope. An approved
+file or report destination grants no connector credential or reuse.
+QR-143 still governs the exact input and projection profiles.
+
+### Search history, query coverage and sitemap evidence (686–690)
+
+These views use only the current authorised own-site data scope.
+Bind site, actor, connection or source file, provider and verified
+property, exact dates and provider clock, surface, aggregation,
+filters, source and policy generations, watermark and coverage.
+Display separate sources and units. Apply 0020, 0032, 0108 and
+0118 before preview, export, replay or restore. These reports open
+no provider session, raise no quota and never affect ranking.
+
+- **686 and 687, Search Console and Bing history.** Save eligible
+  final copied numbers from the existing connector in its one
+  archive. The two views retain distinct properties, date bases,
+  search surfaces and data sources. Key a partition by site,
+  provider, property binding or verified Bing site, report
+  profile version, search surface, dimensions, aggregation, filters,
+  clock or calendar epoch and provider day. Keep source generation
+  and canonical digest. A changed report grain cannot overwrite
+  another series. A verified newer correction replaces the exact partition
+  atomically after rights and erasure checks. Exact replay is inert.
+  The [Search Console guide][gsc-history-view] and [Bing Webmaster
+  announcement][bing-history] describe up to 16 months in the
+  Performance dashboards. For Search Analytics use the separate
+  published source bound above and the exact observed coverage.
+  Use the existing two-year local retention
+  on provider dates, subject to earlier rights or erasure.
+  Show first and last observed days, source start, gaps, partial
+  data, retention removals and disconnected evidence separately.
+  Separate transport access from archive authorisation. Preserve
+  keep-or-delete on disconnect. A kept old property needs an
+  explicit current archive grant and original identity and cannot
+  join the new property's charts. Revoke writes and exports before
+  purging and apply erasure before restore. These views cause no
+  new provider calls. The admitted connector backfill keeps its
+  existing scope. No reconstruction or refill of erased data.
+- **688, anonymised query share.** Use a qualified owner-supplied
+  Search Console aggregate file under 0100 with explicit provider
+  anonymised-query flag or an equivalent explicit metric. The
+  first profile follows the [Search Console export
+  fields][gsc-export-schema] for `searchdata_site_impression`
+  and Web Search. It admits a locally supplied aggregate file
+  with one unique reduced row per site, provider day, exact
+  admitted country/device scopes and explicit
+  `is_anonymized_query` boolean. Keep native additive clicks
+  and impressions and no query text in the retained partition.
+  Require property, source dataset and table, `ExportLog` epoch,
+  date, digest, reduction proof and complete coverage in the
+  manifest. The supplied reduction must sum all legitimate
+  repeated native contributions once before unique-key import.
+  Whole-partition replay is inert. A verified higher epoch
+  replaces the earlier partition. A flagged input may only
+  carry null or empty query. A missing flag, nonempty flagged
+  term or ambiguous unflagged input with missing source term is
+  refused at the boundary. Unflagged aggregate counts require
+  evidence that all input query labels were valid before
+  reduction and removal of text. Compute clicks share and impressions
+  share separately from same-scope numerator and positive
+  denominator. Keep explicit zero distinct from absent input.
+  No ratio from partial or conflicting partitions. Do not use
+  ordinary [report downloads][gsc-export-limits] as completeness
+  proof. The ordinary Search Analytics API can omit rows. Its total minus
+  visible
+  named rows is an unexplained remainder, with no anonymisation
+  share. Keep Discover-only anonymity, Google News, page and
+  property groupings separate. No external warehouse connector.
+- **689, landing page and query matrix.** The first profile
+  uses final Search Analytics Web Search page aggregation.
+  Match the full provider contract key, including site property,
+  date, search type, provider page, exact named query and
+  native dimensions and filter revision. Never merge device,
+  country or other slices that overlap the same report grain.
+  Keep Google canonical, declared canonical and observed own
+  landing route separate. Merge aliases only with proved
+  disjoint populations. Show native clicks, impressions,
+  clickthrough rate and position. Sum only compatible disjoint
+  counts. Recompute the rate from clicks divided by positive
+  impressions. For admitted same-basis one-based native position
+  use an impression-weighted aggregate. A supplied URL-bulk
+  profile, if separately admitted, uses sum of zero-based
+  positions divided by impressions plus one. Never average
+  rates or fill missing cells. Show row caps, ties, missing
+  dates and privacy restrictions as limits.
+  A qualified display label must be an exact normalised term
+  approved by the search-term screening and above the shared
+  0034 floors. Use one cumulative release rule for labels,
+  search, filters, autocomplete, tooltips, tables, CSV and AI.
+  If disclosure fails, show only an eligible safe aggregate
+  or a held result. No raw term, inferred anonymised label
+  or identifier may leak through dependent outputs.
+- **690, indexing evidence per sitemap.** Use 0044's admitted
+  sitemap inventory for observed page entries and timestamp.
+  Keep exact sitemap file and index lineage. Count a distinct
+  eligible URL once within one sitemap snapshot. Keep membership
+  in multiple files and prohibit summing overlapping subtotals.
+  Join retained 0040 URL inspection by the exact selected
+  property and inspected URL under a current comparison profile.
+  No new inspection or crawl. Retain `result_observed_at` and
+  provider `lastCrawlTime` independently. The dated mapping uses
+  PASS as Valid, FAIL as Error, and NEUTRAL as Excluded. PARTIAL,
+  unspecified, stale or unknown verdicts have no known outcome.
+  Keep `indexingState` as separate noindex evidence. A PASS
+  with Google canonical matching this exact URL may count as
+  reported indexed at inspection. An alternate Google canonical
+  takes its own category. Missing canonical proof gives unknown
+  for exact indexing count. Never borrow another URL's record.
+  A provider sitemap reference can be incomplete. Show
+  observed membership, out-of-scope counts where safe,
+  current inspected categories, uninspected and unknown separately.
+  Whole-file counts require every in-scope member from the same
+  sitemap version to have a current compatible known outcome. Sitemap
+  declaration, submitted
+  count, Sitemaps API's deprecated indexed field, warnings,
+  noindex and robots outcomes are not substitutes for indexed
+  URLs or evidence that a result currently appears in search.
+  See the [Sitemaps API][gsc-sitemaps] and [URL Inspection
+  result][gsc-inspection-result]. No sitemap submission or change.
+
+QR-166 admits exact versioned provider parameters, file projection,
+storage and permission tests. First-party provider evidence may
+stay offline as the approved local copy. Purge withdrawn source
+and dependent history under the existing two-year outer limit,
+site/key separation, report invalidation and restore protections.
+The dated provider references were checked on 20 November 2026.
+
+[gsc-history-view]: https://developers.google.com/search/docs/monitor-debug/debugging-search-traffic-drops
+[bing-history]: https://blogs.bing.com/webmaster/2025/6/Start-Using-Bing-Webmaster-Tools-to-Improve-Your-Site-Visibility/
+[gsc-export-schema]: https://support.google.com/webmasters/answer/12917991
+[gsc-export-limits]: https://support.google.com/webmasters/answer/12919797
+[gsc-sitemaps]: https://developers.google.com/webmaster-tools/v1/sitemaps
+[gsc-inspection-result]: https://developers.google.com/webmaster-tools/v1/urlInspection.index/UrlInspectionResult
+
+### Wave 2 retained evidence bindings
+
+Use the exact source and permission profiles under QR-166.
+Each variant uses the existing protected read or supplied
+file contract. Test fixtures cannot admit a new source.
+
+| Feature, requirement and included design | Existing scope and exact planned fixture |
+|---|---|
+| F-0686 · REQ-0040-W2-ARCHIVE-PARTITION · DES-0040-W2-OBSERVED-HISTORY | FX-0040-W2-GSC-HISTORY and IT-0040-W2-GSC-HISTORY extend AT-CN30/31/37. Preserve distinct final provider days, report grain and property binding. Replay the exact partition, replace it by a verified higher source generation and refuse the wrong property. Keep the original gaps and retention label. Erasure and restored old rights cannot trigger border extension or replenish removed dates. |
+| F-0688 · REQ-0040-W2-EXPLICIT-ANONYMITY · DES-0040-W2-SUPPLIED-ANONYMITY | FX-0040-W2-ANONYMOUS-SHARE and IT-0040-W2-ANONYMOUS-SHARE use the complete approved synthetic aggregate. Show separate clicks and impressions shares. A missing flag, populated flagged term, partial source or zero denominator withholds the affected result. Prove legitimate repeated contributions were reduced exactly once. An API remainder stays unexplained. |
+| F-0689 · REQ-0040-W2-PAGE-QUERY · DES-0040-W2-BOUND-MATRIX | FX-0040-W2-PAGE-QUERY and IT-0040-W2-PAGE-QUERY extend AT-CN31/35. Use distinct observed landing, declared and provider canonical identities. Compare disjoint compatible counts with overlapping slices and row-cap ties. Hold the same screened label in autocomplete, table, CSV and AI under one rule. Missing cells stay unknown. A named query matrix cannot prove complete unfiltered page-day coverage for 0138. |
+| F-0690 · REQ-0040-W2-SITEMAP-OBSERVED · DES-0040-W2-RETAINED-INSPECTION | FX-0040-W2-SITEMAP-INDEX and IT-0040-W2-SITEMAP-INDEX use retained exact URLs and property evidence. Deduplicate inside one sitemap snapshot. Hold whole-file totals on partial, stale, uninspected or foreign facts. Keep alternate canonical and noindex separate. Two overlapping files have separate coverage. No extra inspection, fetch or submission follows. |
+
+### F-0011 and F-0012 Search Console advisory bindings
+
+The owner design is 0040 for both features. The shared input under
+`DES-0040-ADVISORY-SOURCE` is a current site grant and one compatible
+final Search Console projection. Bind the owned property, native
+calendar, search surface, projection grain, applicable dimensions,
+page identity, exact time window, coverage and input generation.
+Require the source profile's comparable, proved rows. Do not assemble
+page totals by adding overlapping slices or infer missing rows.
+Use only numbers already admitted through the owning connector.
+A partial or missing interval cannot establish zero, position, an
+absence of eligible pages or an anomaly. The existing dimensional
+rows give no admitted unfiltered page-day profile. Hold either
+feature's finding until its exact page-grain population and
+coverage receipt are admitted. A connection status is distinct
+from projection authority. A current archive grant may permit
+comparable pre-gap data with proved exact coverage.
+
+| Feature | Requirement and design binding | Advisory outcome and technical hold |
+|---|---|---|
+| F-0011 · Striking-distance finder | `REQ-0040-STRIKING`, `DES-0040-STRIKING-ADVICE` | Compare the same-scale source position against the inclusive 8–20 band before display rounding. The applicable impression floor, time window and exact page projection need an admitted feature profile. Until then withhold the advisory finding. A supported finding may explain a reviewable title or link proposal under the existing 0041 and 0044 boundaries. Spec 0044 job 324 is a separate existing input to the need score. This finding adds no ranking input or edit authority. |
+| F-0012 · Click-rate anomalies | `REQ-0040-CTR-GAP`, `DES-0040-CTR-GAP-ADVICE` | Observed click rate is clicks divided by a positive impression count on the same basis under 0043. A negative gap needs an independently admitted 0066 ganit position-conditioned expected-rate profile with its compatible population, windows, support, below-expectation threshold and validation. Missing or sparse proof withholds the finding. A supported finding may offer title or snippet advice for review. It never changes metadata or claims a cause. |
+
+Reuse AT-CN30 and AT-CN35 for connector site isolation, AT-CN33 for an
+invalid source row and IT-0043-OWN for compatible periods, grain,
+weights and coverage. These cases retain their owners and do not
+qualify either advisory rule by themselves. Do not use job 324 or a
+general analytics anomaly test as proof of feature 12.
+
+| Feature-specific case | Synthetic fixture and required result |
+|---|---|
+| `UT-0040-STRIKING` · REQ-0040-STRIKING | Use positions 7, 8, 20 and 21 at an explicitly supplied synthetic demand floor. Compare floor equality with one impression below. With a complete matching synthetic profile, only the two boundary positions that meet the floor enter advice. Without an admitted production profile, or with a missing final date, show unavailable with the coverage reason and emit no finding. |
+| `UT-0040-CTR-GAP` · REQ-0040-CTR-GAP | Use equal positions with different observed rates, and the frozen support and threshold of a synthetic expected-rate profile. Check above, at and below its declared decision boundary. Change the compatible population, remove or zero the impression denominator, or give sparse inputs. Each incompatible case holds. No qualified expectation means no alert even with a low raw rate. |
+
+VAR-0040-STRIKING-PAGE applies to the admitted page-grain demand
+and position profile. VAR-0040-CTR-COMPARABLE applies to matching
+current observed and expected rate profiles. Both use the exact
+cases and source gates above.
+
+A held or accepted advisory result grants no new connector pull,
+rank-weight change or native write. Neither synthetic profile supplies
+production thresholds, profile identity or proof.
+
+### F-0013 to F-0019 Search Console evidence bindings
+
+This section covers F-0013, F-0014, F-0015 and F-0017 through
+F-0019. F-0016 keeps its 0044 owner. Use only current authorised
+0040 evidence under DES-0040-ADVISORY-SOURCE. Bind site, verified
+property, exact source and surface, current source profile, native
+calendar, page or section identity, scope and window, coverage and
+generation. Hold mismatched or unsupported dimension and surface
+combinations. An omitted row, stale or partial result, gap or
+unsupported metric stays unknown. Final dates and completed pulls
+do not prove full population coverage. Keep supported source panes,
+estimates and observations distinct. No mixed-provider total or
+inferred zero.
+
+| Feature and ownership | Requirement and design |
+|---|---|
+| F-0013 · Ranking-drop forensics | REQ-0040-DROP-FORENSICS and DES-0040-DATED-FORENSICS bind a drop to comparable final same-surface windows and its exact page identity. Present separately supported dated content changes, verified lost links from the existing evidence owners, inspection observations and official 0137 dates. Read only their admitted projections. Study a source gap separately. A coincident event or missing cause supplies no causal verdict. No new crawl, inspection pull, provider or Lab route. |
+| F-0014 · Google update timeline | REQ-0040-UPDATE-SOURCE and DES-0040-TIMELINE-EVIDENCE bind distinct authorised source panes and proved historical section or category scope. 0137 owns the sole official Google incident identity and revision, public-feed admission, freshness and phase gates. 0043 owns event-band presentation. Other 0045 notice sources supply no alternate Google incident. A scope or series gap holds the affected comparison. Preserve admitted bands and series; do not substitute a whole-site or other-source result. |
+| F-0015 · Indexing watcher | REQ-0040-INSPECTION-WATCH and DES-0040-QUOTA-INSPECTION use only the existing ordered budget, property and authorised public URL in 0040. Validate the exact inspected URL, observed time and compatible status profile. Keep a matching not-indexed result, alternate canonical, an uninspected URL and an unknown or refused result distinct. Show supported readback and an explanation. F-0175 and F-0179 read this dated URL-level result. Retain result and provider crawl times separately as for F-0690. The connector supplies no indexed body or content-revision binding. Joined revision evidence belongs to 0044 and QR-110. Neither a scheduled inspection nor advice requests indexing, submits a sitemap or applies a repair. QR-103 retains the separate effect design. |
+| F-0017 · Vocabulary gap | REQ-0040-SCREENED-WORDING and DES-0040-WORDING-EVIDENCE bind only a permitted screened search term under the existing 0040/0034 release rules to an independently admitted comparison with eligible public member wording for the same site. Recheck rights and source versions. Suppressed, personal, unproved or unavailable terms cannot appear in advice, exports or prompts or establish absence. Spec 0041 owns local proposal presentation and approval. Its separate term report does not admit Search Console terms as its vocabulary. Hold wording advice without a qualified feature-specific projection. |
+| F-0018 · Image search harvesting | REQ-0040-IMAGE-EVIDENCE and DES-0040-IMAGE-THREAD-JOIN use only the compatible Search Console image surface. A page-level impression alone identifies no image. Require an admitted receipt binding the exact eligible image and current guest-visible thread or page revision and their rights. Preserve dated page evidence where allowed and hold image-level claims and placement suggestions on a stale, ambiguous or partial join. QR-103 retains exact placement, approval and footprint. This binding creates no link or media effect. |
+| F-0019 · Google Discover readiness | REQ-0040-DISCOVER-EVIDENCE and DES-0040-DISCOVER-READINESS keep eligible own-site Discover metrics separate from versioned, actually observed readiness facts under the applicable page evidence owner. A missing metric, missing expected field or unsupported source profile stays unavailable. Neither traffic nor a readiness check certifies Discover eligibility. QR-103 retains the exact public preview-markup effect, approved footprint and native grant. This binding grants no markup edit or extra public work. |
+
+The optional 0136 Matomo pane has its own grant and native dates.
+It cannot replace Search Console coverage or qualify an 0138 study.
+Spec 0138 requires its separate DR-124 approval and admitted,
+complete page-day producer. The 0133 paid Coach route, 0134
+synthetic gate workloads and 0135 verified-fetch ranking fact supply
+no authority or proxy data here. No binding adds a connector,
+provider write, crawl, native effect or rank input.
+
+| Fixture and governing planned obligation | Exact boundary |
+|---|---|
+| FX-0040-W1-DROP · IT-0040-DROP-FORENSICS | Compare a final matching drop, missing pull, revised page, verified link loss and separately dated update. Hold the unsupported drop and any causal inference. Keep evidence and its dates distinct. |
+| FX-0040-W1-UPDATE · IT-0137-FEED, IT-0137-TIME, IT-0043-OWN and QV33 | Accept one dated official notice and replay it. Let its 0137 confirmation lapse during a feed outage. The chart and table keep the permitted saved band, its dates, the last confirmation time and the existing hold. No new phase notice or comparison follows. Confirm corrected dates for the same incident and replay the older revision. One current band keeps the corrected dates. Give two sections different coverage, with required Search Console days still arriving in one. Keep that pane’s own freshness state and hold its comparison. The other section still needs complete current evidence to qualify. |
+| FX-0040-W1-INSPECTION · IT-0040-INSPECTION-WATCH and shared AT-CN26/28 | Fill the last eligible slot, queue another URL, and separately vary property and inspected URL. Only the compatible observation can support an explanation. Full quota waits; no repair, submission or live fetch follows from replay or view. |
+| FX-0040-W1-WORDING · IT-0040-SCREENED-WORDING and shared AT-CN31/35 | Use two screened fixture search terms, a withheld term, a missing eligible member sample and a superseded revision. Hold unsupported advice and keep the protected terms out of outputs. No title or post write. |
+| FX-0040-W1-IMAGE · IT-0040-IMAGE-EVIDENCE | Compare eligible image observations, an exact synthetic image-to-thread receipt, page-only impression, stale and ambiguous join. Preserve the supported observation and hold unsupported placement. No link write or fetch. |
+| FX-0040-W1-DISCOVER · IT-0040-DISCOVER-EVIDENCE | Supply eligible synthetic readiness observations and Discover traffic separately, a missing metric and an incompatible surface. Reject preview-markup write and unsupported coverage. Neither missing traffic nor ordinary Web figures establish eligibility. |
+
+Existing shared tests retain their owners. These fixture identities
+bind planned source and refusal cases under 0076; each affected
+operational profile still requires its own exact evidence.
 
 ### Facts to check before building
 
@@ -511,7 +871,6 @@ refresh `grant_type` (its table says `authorization_code`, its example
 JSON method names and day ranges; whether either Google scope counts as
 "sensitive" and needs verification for an External app (unverified apps
 show a warning and have a 100-user cap); GA4 dimension and metric names;
-Search Console's history depth (believed 16 months) and daily row cap;
 when Google's daily quotas reset; that no Entra ID route to Bing data
 exists. Google's and Bing's published facts were read on 31 October
 2026 from:
@@ -531,15 +890,37 @@ exists. Google's and Bing's published facts were read on 31 October
 - <https://support.google.com/cloud/answer/7454865>
 - <https://docs.rs/oauth2/latest/oauth2/>
 
+### Experiment source profiles
+
+[0150](0150-experiment-source-and-sensor-gates.md) defines
+separately qualified projections from these read-only Search
+Console and GA4 API connectors for 0148. Reuse the current
+property, exact scope and credential boundary. Provider finality
+and complete pagination alone supply no exact unit-day coverage
+proof. In particular, a missing row remains unknown unless the
+qualified profile proves a zero. This route adds no connector,
+outside write, bulk export or evidence import.
+
+For the Search Console source, TASK-0040-SCIENCE-GSC binds
+AT-CN24 and AT-CN25 with 0150 IT-0150-GSC-COVERAGE. Keep exact
+page, surface and native day scope with the producer's receipt.
+For the distinct GA4 source, TASK-0040-SCIENCE-GA4 uses the
+connector's AT-CN29, AT-CN33 and AT-CN35 boundary cases with
+IT-0150-GA4-KEY-EVENT. Exact mature event population and coverage
+remain 0150 admission obligations. A read-only provider response
+or connector test cannot substitute for the required source proof.
+
 ## Limits
 
 - Within AGENTS.md 5.6: pulls run in the service, one connection at a
   time, streaming one page of rows at a time, at most 48 MiB above the
   service's idle use, measured nightly. Access-key cache and waiting
   flows: under 1 MiB.
-- Copied numbers for 1 million pages and 2 years: estimated 2 to 6 GB on
-  disk, to be measured, shown on the disk panel and counted by the disk
-  watchdog.
+- Copied numbers for 1 million pages and 2 years carry a planning estimate
+  of 2 to 6 GB, not a verified bound. The measured disk cap, fixtures and
+  enforcement behaviour are readiness blockers owned by the connector storage
+  record. Connector imports cannot qualify until admitted; the admitted cap
+  is shown on the disk panel and counted by the disk watchdog.
 - Every request has a 30-second timeout; every pull a 2-hour limit, with
   a checkpoint after each page of rows.
 - Waiting flows expire after 10 minutes. Retention is two years.
@@ -549,6 +930,19 @@ exists. Google's and Bing's published facts were read on 31 October
 
 This part adds nothing to public pages. It calls only Google and Bing,
 from the owner's PC.
+
+### Portfolio summary read
+
+Return click totals for the two latest expected final Search Console
+dates for the selected property, date zone and search type. Also
+return whether an enabled connection needs renewal. Use only a
+property-level total without page or query breakdowns. Until the
+existing connector pull admits that source and budget in QR-090, the
+trend is unavailable. A property switch clears prior figures. A gap
+in the expected dates gives missing coverage even with an older pair.
+
+Expose one bounded, site-scoped summary read under spec 0102. Its
+source and failure cases run in IT-SS-06 with the owning module.
 
 ## How it is tested
 
@@ -595,10 +989,41 @@ Bing, a test PostgreSQL, a fixed clock and seeded randomness.
   no secret.
 - AT-CN23: revoke failing `503` six times still deletes the secret and
   shows SUT-636.
-- AT-CN24: 60,001 rows read as three pages, stored once; a re-run leaves
-  the same rows.
-- AT-CN25 (failure injection): a pull killed after page 2 of 5 resumes
-  at page 3 within 60 seconds, with no lost or doubled rows.
+- AT-CN24: the synthetic shared pagination core reads 60,001 rows
+  as three pages and stores them once. Replay leaves the same rows.
+  The Search Analytics adapter fixture checks 24,999, 25,000,
+  25,001 and 50,000 rows, and refuses a third data page. Only the
+  exact property, day and type can resume. Keep omitted data
+  unknown and mark the ceiling separately from coverage.
+- AT-CN25 (failure injection): the synthetic uncapped pagination
+  fixture resumes a pull killed after page 2 of 5 at page 3
+  within 60 seconds, with no lost or doubled rows. A Search
+  Analytics restart after page 1 can request page 2 only for the
+  same admitted cursor and cannot dispatch beyond the ceiling.
+  In separate cases, keep the site and connection ID the same and
+  hold a fully formed response before committing its page. Rebind
+  to another verified property with the same report day and grain,
+  or withdraw the connection's source scope. Release the old reply.
+  It adds no rows, coverage, checkpoint advance or completed event.
+  Retry and replay the old pull identity. Neither dispatches another
+  data request under the stale binding. A kept prior result appears
+  only under its original property and generation with current archive
+  permission. A later authorised pull for the new property succeeds
+  separately. In a separate branch seed complete coverage and stored
+  rows, hold the old page response and reselect the exact same property
+  with a new source scope generation. Keep the day, report scope and
+  synthetic values the same. Neither the delayed reply nor replay of
+  the old pull supplies current rows or coverage, advances a checkpoint
+  or emits completion. The retained old complete coverage only belongs
+  to its original generation. A later authorised pull in the new
+  generation establishes current rows and coverage at a separate key.
+  Rerun it in that generation for the exact provider day and report scope.
+  Replace that scope's rows and coverage once. The retained old generation,
+  neighbouring provider day and different report scope stay unchanged.
+  Keep binding and grant current and return a reply that identifies
+  another property. Expect SUT-634 with no rows, coverage, cursor
+  advance or completed event. Try a legacy checkpoint without
+  binding proof. It cannot resume against the active property.
 - AT-CN26 (property): any mix of pages and budget never exceeds the
   budget, keeps the group order and, over enough days, covers every
   indexable page.
@@ -622,18 +1047,21 @@ Bing, a test PostgreSQL, a fixed clock and seeded randomness.
 - AT-CN35 (SQL, under each role): a query with no site filter as site 1
   sees none of site 2's rows; the reports role is denied on
   `connector_secret`.
-- AT-CN36: a job 214 result holding NaN is refused and the last good one
-  kept; with no result the late days show "not yet available".
+- AT-CN36: a job 214 result holding NaN is refused and the verified champion
+  remains unchanged; with no result the late days show "not yet available".
 - AT-CN37: the retention job removes only rows over two years old, and
   coverage marks those dates as removed by retention, not missing.
 
-Test depth: 100% line, branch and MC/DC coverage. The flow checks, the
-vault binding, the host allow-list, the scope check, the inspection
-budget and the row-level security policies need zero surviving mutants
-and property tests. Kani proves that the state machine never reaches
-`connected` without an unused, unexpired, matching flow; that the
-inspection plan never exceeds its budget; and that the allow-list
-refuses every unlisted host. The app screens are tested with a fake API.
+Test depth follows ADR-0020. Only admitted strict-core components require
+100% line, branch and MC/DC coverage and zero surviving killable mutants;
+equivalent mutants require proof and independent review, and other code
+follows the owning risk matrix. The flow checks, vault binding, host
+allow-list, scope check, inspection budget and row-level security policies
+retain their assigned mutation gates and property tests. Kani proves that
+the state machine never reaches `connected` without an unused, unexpired,
+matching flow; that the inspection plan never exceeds its budget; and that
+the allow-list refuses every unlisted host. The app screens are tested with
+a fake API.
 
 Speed, at the push tier on Dell against fakes (provider time excluded):
 
@@ -654,9 +1082,10 @@ Speed, at the push tier on Dell against fakes (provider time excluded):
   to a loopback address on the owner's PC, not to the site's host.
 - The master key is held by tijori in a service-only file, not a
   container secret.
-- Admin pages become Dioxus app screens built from SDS, tested with a
+- Admin pages become desktop app screens built from SDS, tested with a
   fake API.
-- Events travel through the outbox in place of the old event bus.
+- Events and registered pulls use spec 0019. Test a crash after the
+  pull commit and a disconnect before its event is consumed.
 - "Forum" becomes "site", so WordPress sites are covered too.
 - Speed follows the 5% median rule; the 20x goal is kept (spec 0007).
 - Speed targets run at the push tier on Dell.

@@ -33,6 +33,7 @@ in this file.
 | Route to version 1 | [docs/roadmap.md](docs/roadmap.md) |
 | Decisions and their reasons | [docs/adr/](docs/adr/) |
 | Designs | [docs/specs/](docs/specs/) |
+| Constraints, decisions, risks, questions, sources | [docs/registers/](docs/registers/) |
 | Check catalogue | `gate/catalogue.toml` |
 | Pinned tools | `gate/tools.toml` |
 | Owner waivers | `gate/waivers/` |
@@ -52,44 +53,65 @@ in this file.
 
 Sutradhar suggests safe internal links for XenForo forums and WordPress
 sites, with the related tools in the specifications. The heavy work runs
-on the owner's own Ubuntu PC. A thin add-on on the site hands over posts
+on the owner's own PC. A thin add-on on the site hands over posts
 and applies only what a moderator accepts.
 
-Every feature is a clean-room design. Where the feature list says a
-feature works "as" another product does, that names the idea only. We
-learn what a product does from its public pages, and copy no code,
-wording, screens, data, formulas or trademarked names.
+Every consequential design has provenance under spec 0076: original
+design, a public standard or published algorithm, a licensed dependency,
+permitted interoperability observation, or strict clean-room
+reimplementation. Strict researcher/implementer separation applies only
+to the last class. Patent and qualified legal review are separate gates;
+no agent claims them without evidence.
 
-Every feature that learns something about a page passes it to the link
-ranking as a signal, as spec 0027 sets out. A signal can only reorder
-links that are already on the same subject; popularity or traffic can
-never make an off-topic link rank higher.
+A feature supplies a ranking signal only when its specification states a
+relevance hypothesis, provenance, freshness, confidence, evaluation and
+opt-out where needed. A signal can reorder only links that already passed
+the relevance gate; popularity or traffic can never make an off-topic
+link rank higher.
 
 Version 1 holds all feature ranges and the expanded scope in spec 0064.
-The feature register has one owner for each behaviour and no conflicts,
-duplicates or overlaps. Version 1 ships only when the release gate
-passes:
+Every approved feature and declared supported variant must be specified,
+implemented and accepted. The feature register has one owner for each
+behaviour and no known unresolved conflicts, duplicates or overlaps in
+the complete audited inventory at the release revision. Version 1 ships
+only when all of these independent gates pass:
 
-1. At least 32,000 distinct, independently qualified methods. A
-   chain of separately qualified methods counts as one method when it
-   behaves differently from every other counted method (spec 0067); a
-   changed setting never makes a new method.
-2. At least 32,000 shipped capabilities. A capability is a
-   shipped action, or a workflow of separately shipped actions, which
-   counts as one capability when it behaves differently from every
-   other counted capability and passes its own end-to-end tests (spec
-   0070); a changed setting never makes a new capability.
-3. At least 80% of each of those two totals in the scope areas in
-   spec 0064.
-4. At least 3,200 distinct qualified methods for link ranking
-   and recommendation, including weighting schemes, algorithms,
-   meta-algorithms, statistical models, learning, autotuning and
-   reranking.
-5. At least 32,000 checked variants, each counted only with its
-   evidence.
-6. Every check passes at 100% and all the required reviews pass.
+1. Every non-alias feature has its complete readiness record, one owning
+   specification, one derived build task and feature-specific unit, BDD,
+   integration, end-to-end, edge-case and operational evidence under spec
+   0076.
+2. Every declared supported platform, language and input variant passes
+   its acceptance contract. Unsupported or inapplicable cases follow
+   their explicit contract rather than silent degradation.
+3. Ranking achieves nDCG@10 of at least 0.95 under spec 0057. This is a
+   mandatory release floor, not a measured claim or an aspirational
+   target. `KEEP_CHAMPION` cannot waive it.
+4. On every eligible test forum, Precision@6 is at least 1.20 times the
+   locked BM25 Precision@6 under spec 0057. This gate does not waive and
+   cannot be waived by the nDCG floor. Link suitability and severe
+   relevance failures also pass their separate gates.
+5. Protected quality, safety, calibration, privacy, source-integrity,
+   moderation, diversity, recovery and performance checks pass. The
+   verified champion has no protected regression and rollback works.
+   Local and push results cannot establish promotion evidence.
+   Every push and release checks the approved synthetic set: six sites,
+   three XenForo and three WordPress, with no real member data. Three
+   independent AI makers must be available to judge under spec 0057.
+   Missing required evidence blocks.
+6. Every required check passes at 100% and all risk-appropriate required
+   reviews pass. Strict-core coverage and review rules are defined in
+   sections 6 and 7.1.
 7. The release artefacts are signed.
-8. The owner approves the release.
+8. The release has exact signed approval under section 8.1.
+9. At least 360 distinct qualified ranking methods ship, with at least
+   12 in each of the 30 families in spec 0079. A changed setting, alias
+   or wrapper adds no method. The method evidence and quality checks
+   both pass. There is no other method, capability or variant quota.
+
+ADR-0021 (Ranking and release quality) and DR-022, DR-039 and DR-056
+record the release floor and the end of the count quotas. The per-feature
+evidence and relevance-gate wording follows spec 0076 (owner approval:
+DR-129).
 
 ## 4. Languages and files
 
@@ -98,68 +120,83 @@ language and every file type not listed here.
 
 | Kind | Allowed for |
 |---|---|
-| Rust (stable, edition 2024) | The product: framework, service, engines, desktop app, product rules, their build steps and their tests. Operations and developer tools: the gate and its analysers, git hooks, the build-host queue, sync, the mailbox and stop check, research and speed tools, deployment, CI, caches, recovery, and their tests (ADR-0019) |
-| CSS with Tailwind v4 | Styling and design tokens for the desktop app |
-| TypeScript, strict | Small, justified browser interop modules in `ui/ts/` |
+| Rust (stable, edition 2024) | Product services, framework, engines, desktop app, product rules and substantive operations/developer tools, with their build steps and tests (ADR-0019) |
+| Python 3.12 | Tests and development checks where the spec permits them, and the admitted fenced sidecar host and helpers of spec 0104 (DR-018) |
+| CSS | Sutradhar Design System tokens and the Angular Material theme |
+| TypeScript, strict, and Angular templates | The desktop app front end (ADR-0021, DR-011) |
 | PHP 8.5 | The XenForo add-on in `addons/xenforo/` and the WordPress plugin in `addons/wordpress/` |
 | SQL | PostgreSQL migrations in `migrations/` and database tests |
-| Shell | Existing files and steps only, kept and fixed until each Rust replacement passes (ADR-0019) |
+| POSIX shell | Bounded operational composition only, under the rules below (ADR-0021, DR-014) |
 | Cedar | In-app permission rules |
 | Rego | Agent and build policy rules |
 | TOML, YAML, JSON | Configuration and data |
+| Starlark | Bazel build and verification rules (ADR-0021, DR-013) |
+| Quint, Lean 4 and Alloy | Development-only models and proof checks under ADR-0021 (DR-012, DR-034) |
 | Dockerfile, compose | Containers on Dell |
 | Markdown | Docs and the manual |
 | Plain text | Licence texts in `LICENSE` and `LICENSES/` |
 | Git files | `.gitignore` and `.gitattributes` |
 
-- No hand-written JavaScript or HTML. Files made by an approved build
-  tool (JavaScript, HTML, CSS, WebAssembly) are allowed, must be marked
-  as generated, and are never edited by hand.
-- TypeScript is written only once the native `tsgo` compiler is pinned in
-  `gate/tools.toml`, because nothing may need an extra runtime to build
-  it.
-- No hand-written shell (owner, 10 November 2026). That covers shell
-  files, shell steps in hooks and CI, and programs of ours that start a
-  shell (`sh -c`, `bash -c`). Agents may still run programs with their
-  own command tool (owner, 11 November 2026). Shell files, shell steps
-  in hooks and CI, and Rust tools that start a shell, already on
-  `main` at commit `7f5ccc9` (10 November 2026), may be kept and fixed
-  until each is replaced by Rust without shell that passes every check
-  and review; then the old one is removed. A fix mends a defect in
-  what the kept file, step or tool already does, with its failing test
-  first; anything it does not yet do is written in Rust without shell.
-  No new shell file or shell step is added.
-- No Go in our code (owner, 17 November 2026: "go has got to go, ban
-  it."). The one exception is Codex's native MCP bridge on Dell (task
-  #348): it may keep running until its Rust replacement passes every
-  check and review; then it is removed. Until then a fix mends only a
-  defect in what it already does, with its failing test first. The Go
-  progress guard is not kept; tasks #339 and #340 write it in Rust.
-  Third-party programs written in Go that we only run, such as
-  Forgejo, grype and gitleaks, are not our code and are not affected.
-- No C compiler in our build. The one exception: the sealed job that
+- No hand-written JavaScript. Hand-written HTML is limited to Angular
+  templates in the desktop app. Approved generated JavaScript, HTML,
+  CSS and WebAssembly are marked as generated and never edited by hand
+  (ADR-0021, DR-011).
+- The desktop front end uses the pinned, development-only Angular and
+  Bazel toolchain under ADR-0021. The user does not install a build
+  runtime to use the app.
+- Operational shell uses `set -euo pipefail` where the shell supports it,
+  fixed argument arrays, quoted expansions, explicit working directories
+  and environments, and bounded input and output. It has no `eval`, no
+  command text built from untrusted data, no business logic and no
+  structured-data parsing. ShellCheck, shfmt and success and failure-path
+  tests are required. Ordinary administration and site operations expose
+  typed actions, never shell entry points. Agents may run commands through
+  their own command tool without putting business logic into shell
+  (ADR-0021, DR-014).
+- First-party Go is banned. No Go-to-Rust task is created unless an
+  inventory proves the component exists. Third-party programs written in
+  Go that we only run, such as Forgejo, grype and gitleaks, are permitted
+  when pinned and approved like every other tool (DR-014). The rule
+  against creating a Go-to-Rust task without an inventory: ADR-0019.
+- Approved specialist packages use exact pins and run only through
+  admitted typed Rust-owned routes. Python is outside live ranking and
+  signed replies to sites. Spec 0104 owns the approved sidecar work,
+  including the bounds on first-party sidecar helpers and user scripts.
+- Rust owns production integration, platform orchestration, product
+  policy and release authority. Jobs and events follow spec 0019.
+- Python packages and their Rust interfaces need exact compatible
+  dependency and artefact locks, provenance, unit/integration/failure
+  tests and resource admission. Packages may propose typed values but
+  cannot change permissions, source-integrity rules, evaluation labels or
+  thresholds, protected configuration or release control. Rust retains
+  product policy and release authority.
+- Product builds compile no C or C++. Native libraries use
+  official prebuilt bytes, pinned, verified, scanned and listed in
+  the SBOM for each admitted target (ADR-0021).
+  No C compiler in our build. The one exception: the sealed job that
   builds Forgejo on Dell may use a C compiler from Alpine's own package
   store, pinned by exact version and checked against Alpine's signed
   package list, because those packages cannot be pinned by digest
   (owner, 16 November 2026, task #130 comment 4959).
 - Agents may download a tool or library only from its official source
   (its maker's release site or registry, or Ubuntu's official package
-  archive),
-  pinned by version and checked by hash, and recorded in
+  archive), pinned by version and checked by hash, and recorded in
   `gate/tools.toml` or a lock file. Anything else needs the owner's
   approval.
 - Ready-made tool programs may run only when pinned by version and hash,
   run in a container where possible, and listed in `gate/tools.toml`.
-  Examples: ShellCheck, shfmt, gitleaks, tsgo, the Tailwind standalone
-  CLI, mdBook, squawk, PHPStan, Composer (for the add-ons' locked
-  libraries only), cargo-deny, cargo-audit, cargo-vet, Kani, Verus,
-  Creusot, `gh` and Forgejo.
+  Examples: ShellCheck, shfmt, gitleaks, mdBook, squawk, PHPStan,
+  Composer (for the add-ons' locked libraries only), Bazel,
+  Kani, Verus, Creusot, `gh` and Forgejo. Pin Node.js and Java
+  for approved development checks. Neither ships to the owner.
+  Keep existing dependency tools under the protected gate until the
+  replacement gate in spec 0003 is admitted.
 - Code modules may carry Indian names, each listed in the glossary.
   Everything a person sees on screen is plain English.
 
 ## 5. How Sutradhar is built
 
-### 5.1 Sutradhar Boot
+### 5.1 Behemoth Boot
 
 Our own Rust framework, in the spirit of Spring Boot. Every part of the
 shipped product is built on it. The signing core of tijori, made before
@@ -179,19 +216,25 @@ Boot.
 - One error shape is used everywhere. No error is swallowed.
 - Logs, metrics and audit records are structured and never hold
   sensitive data.
-- Background jobs are durable, with bounded retries, timeouts and a
-  dead-letter list.
+- Background jobs are durable and resource-admitted, with bounded
+  retries, timeouts, dead letters, checkpoints and replay. Sutradhar's
+  Rust scheduler uses Axum, Tokio and one PostgreSQL queue (spec 0019).
+  Each job class has one registered execution path.
 - It is a modular monolith. Each module has one purpose, a declared
   public API and no cycles, and never reaches into another module's
   insides.
 - One module asks another for data through that module's public API.
-  Changes that other modules must respond to travel as typed in-app
+  Changes that other modules must respond to travel as typed, versioned
   events.
-- Each event is first saved in an outbox table in the same transaction
-  as the change. Delivery is at least once, so every consumer must
-  handle a repeat safely. Events about the same record arrive in order.
+- The business write and its product-outbox event share one
+  PostgreSQL transaction. Delivery is at least once. Each consumer
+  handles repeats safely, and external effects carry idempotency keys.
+  Ordering is per site and declared key. Strict keys follow specs
+  0019 and 0110.
 - Maintained libraries are used where they exist: Axum, Tokio, Tower,
-  Tracing, Serde and sqlx.
+  Tracing, Serde and sqlx. Rust-owned typed boundaries invoke approved
+  admitted sidecar packages. First-party sidecar code stays within
+  spec 0104. Rust owns integration, policy, ranking and site replies.
 
 ### 5.2 Data
 
@@ -199,9 +242,19 @@ Boot.
   row-level security (RLS) turned on and forced.
 - The app connects as a role that does not own the tables, is not a
   superuser and cannot bypass RLS.
-- Each transaction sets its site with `SET LOCAL`. When no site is set,
-  every policy returns no rows. Credentials, permissions, jobs, storage,
-  backups and audit logs are all kept per site.
+- Each site transaction binds its authorised site first with
+  `SELECT set_config('app.site', $1, true)`. Site policies require that
+  site. Credentials, permissions, jobs, storage, backups and audit logs
+  for site work are kept per site.
+- First setup, approved pre-site migrations and owner-approved app
+  updates bind the verified installation ID first for the admitted
+  migration history and lifecycle checkpoints. Use
+  `SELECT set_config('app.installation', $1, true)`. Use only the
+  setup and migration records defined in specs 0030 and 0108 under
+  their own roles. An installation context grants no site access.
+- Bind exactly one scope as a parameter. It lasts for that transaction.
+  With neither valid scope, or both present, policies return no rows
+  and allow no writes.
 - Migrations are numbered plain SQL files in `migrations/`. sqlx applies
   the product's migrations in order, with checksums, so an applied file
   can never change. A tool with its own store keeps its migrations in
@@ -210,23 +263,30 @@ Boot.
 
 ### 5.3 Screens and the service
 
-- The background service runs under systemd and does all the work,
-  including every call to the sites. It keeps running when the window is
-  closed.
-- The Dioxus 0.7 desktop app on the owner's Ubuntu 26.04 PC is the only
-  owner screen. It drives the service over a local Unix socket that only
-  the owner's account can open, and every request is checked against the
-  Cedar permission rules.
-- The management API is served by Axum on that socket, and never on a
-  network port.
-- Screens are built from the Sutradhar Design System (SDS): our own
-  Dioxus components in the spirit of GOV.UK Design System and BBC GEL,
-  with no copied branding, marks or typefaces. Design tokens live in
-  Tailwind v4 `@theme` and CSS custom properties. WCAG 2.2 AA is the
-  floor.
+- The desktop app starts its engine through its own supervisor, in
+  one home folder on Linux and Windows (spec 0030). The engine makes
+  every site call. A normal install keeps running when the window
+  closes. Portable mode follows spec 0030. No product systemd service
+  is installed.
+- Tauri hosts the Angular 22 desktop screen with Angular Material on
+  Ubuntu 26.04, Debian 13 and Windows 11 (ADR-0021). The local Axum
+  management API uses an owner-only Unix socket on Linux and a
+  user-locked named pipe on Windows. Cedar checks every request.
+  There is no management network listener.
+- The Sutradhar Design System uses our theme and tokens on Angular
+  Material, with accessible patterns in the spirit of GOV.UK and
+  BBC GEL. We copy no code or marks. WCAG 2.2 AA is the floor.
 - All screen text lives in translation files. Version 1 ships in British
   English.
-- Ordinary administration never needs a terminal.
+- Sutradhar is for non-technical people, so every task is point and
+  click, with zero use of a terminal (owner, 19 November 2026). Install,
+  first set-up, update, repair, backup, restore, removal, settings,
+  recovery and troubleshooting all happen in the app or its installer.
+  No screen, error message or manual step may tell a person to open a
+  terminal, type a command or edit a file. The `sutra` command, scripts
+  and agent tools are for developers and agents; the product never
+  needs them for ordinary use. A feature that needs a terminal step is
+  not finished.
 
 ### 5.4 The site link
 
@@ -254,23 +314,54 @@ Boot.
 
 ### 5.5 Models and outside data
 
-- Models run in pure Rust (candle or tract).
-- When working through a large backlog, a tiny model,
-  potion-retrieval-32M, makes a fast first pick of likely matches.
-  Qwen3-Embedding-0.6B makes every final match.
-- The entity model, which spots names of things, places and products,
-  is our own, built in pure Rust.
+- `BAAI/bge-m3` supplies the default dense representation and the mandatory
+  sparse and multi-vector retrieval representations. Every production
+  champion includes BGE-M3 sparse and multi-vector channels and exactly one
+  admitted dense channel. The sole production exception to BGE-M3 dense is
+  an exact paid Bedrock model admitted under spec 0025 and promoted through
+  spec 0077. `BAAI/bge-reranker-v2-m3` is the production cross-encoder.
+  Exact immutable revisions, file hashes, dependency locks, conversion and
+  admission evidence are mandatory under spec 0024.
+- spaCy supplies the broad NLP pipeline: tokenisation, sentence
+  segmentation, lemmas, parts of speech, dependencies, entities, entity
+  linking, classification, rule-based matching and approved packaged
+  components. Custom-trained pipelines use spaCy's declarative training
+  configuration; no custom Python component is permitted. Spec 0026 owns
+  each typed output and its declared language and trained-pipeline
+  support. spaCy is not another retriever, reranker or release controller.
+- Approved Python packages execute model, spaCy, training and optimisation
+  functions behind typed Rust-owned interfaces. Spec 0104 limits any
+  first-party sidecar host and helpers. Rust retains product policy,
+  permissions, source integrity and release authority. Production
+  loads only admitted data-only artefacts, never publisher code.
+- Optuna optimisation and champion/challenger control follow spec 0077.
+  The autotuner is that specification's bounded candidate-generation and
+  evaluation route, not another controller. Production-eligible candidates
+  use a 2% production-eligible trust region around the current champion for
+  eligible continuous parameters and one adjacent ordered choice for
+  discrete parameters. Wider exploration is diagnostic only. Optimisation
+  never turns off a feature, required channel or positive weight. Paid
+  provider and model identities are not Optuna parameters or nudges.
+  Safety, permission, source-integrity, moderation, legal and rollback
+  controls can still disable or quarantine immediately. A model or
+  configuration score is not factual evidence and cannot waive a protected
+  metric or release gate.
 - Lists of data-centre network addresses, used to spot bots, come from
   free public lists. They are fetched weekly and checked by hash.
 - Paid embeddings through AWS Bedrock are optional, off by default, and
-  use the owner's own key. Local models always work without them.
+  use the owner's own key. The admitted local retrieval stack remains the
+  production default and the first production champion. A paid champion
+  retains local BGE-M3 sparse and multi-vector retrieval and a complete
+  verified local rollback set. Its privacy, admission, quality, spending,
+  failure and restoration contracts are in spec 0025; spec 0077 alone
+  authorises activation and return.
 - Writing tips (the Editorial Coach) come, in order, from the owner's
   own AI agent through MCP when the owner has turned that on, then the
-  pure-Rust models, then the paid route (spec 0042).
+  admitted local model route, then the paid route (spec 0042).
 - Sutradhar offers an MCP server for AI tools the owner connects. It is
-  reached only on the owner's PC, through the owner-only socket or a
-  program the owner starts, never a network port. Every request is
-  checked against the Cedar permission rules. Each session sees one
+  reached only on the owner's PC through its permitted local door
+  (socket or named pipe), or a program the owner starts. There is no
+  network port. Cedar checks every request. Each session sees one
   site only, and never credentials, keys or audit logs. A tool may read
   and may draft wording, such as writing tips; every draft is only a
   suggestion that a moderator must accept. A tool may also change a
@@ -296,41 +387,67 @@ Boot.
 
 ### 5.6 Limits on the owner's PC
 
-- The owner's PC needs at least 8 GB of memory; 16 GB or more is
-  recommended. Sutradhar must run fast on an 8 GB PC.
-- On a PC with less than 16 GB, Sutradhar uses at most 5 GB in total:
-  4.5 GB for the service, engine, models, the MCP server and
-  PostgreSQL, and 0.5 GB for the desktop window.
-- On a PC with 16 GB or more, it uses at most 8 GB in total: 7 GB and
-  1 GB.
-- The service, engine, models, the MCP server and PostgreSQL run in one
-  systemd slice for the whole computer, capped at the first figure. The
-  desktop window runs in the owner's own session, capped at the second.
-  Release-tier tests measure the combined peak under the load set in
-  the specifications, on both sizes of PC.
-- Extensions run sealed off inside Sutradhar, using Linux's own
-  controls. The owner's PC never needs Docker.
+- Sutradhar's memory budget is automatic (owner, 19 November 2026; spec
+  0078). It is set from the PC's real memory, 6 GB by default on
+  standard machines and larger on bigger ones, with room always left for
+  the operating system, and a Safe, Balanced and Custom slider for the
+  user. The budget covers the service, engines, models, the Python
+  sidecar, optimisation jobs, the MCP server, PostgreSQL and the desktop
+  window. These are limits, not claims that a model combination fits.
+- Every supported machine and workload profile needs measured resource
+  admission before activation and again at release. The measurement names
+  hardware, exact artefacts, concurrent jobs, batch sizes, index
+  generations, peak memory, p95 latency and headroom. Missing or failed
+  measurement blocks that profile.
+- Model loading, conversion, training, indexing, optimisation and live
+  inference use explicit non-overlapping profiles when their combined
+  peak would exceed the allocation. Turn-taking must preserve an admitted
+  rollback set; no component may load a private copy to evade accounting.
+- The service and its admitted local workers run as app-managed processes
+  in one home folder. Release-tier tests measure the combined peak on
+  every declared supported machine profile.
+- Extensions and sidecar workers run inside the admitted operating
+  system fence for their platform. The fence must prove file,
+  process, network, memory and cleanup bounds under specs 0037 and
+  0104. An unproved platform route remains unavailable (QR-029).
+  The owner's PC never needs Docker.
 - Expensive work is bounded, recoverable and schedulable, within the
   limits each specification sets (gate items GI-36 and GI-43).
 
 ### 5.7 Packaging, licences and dependencies
 
-- A signed `.deb` for Ubuntu 26.04 LTS. Install, update, repair, backup,
-  restore and removal all work from the app.
+- Ship a signed `.deb` for Ubuntu 26.04 and Debian 13. Windows 11 uses the
+  unsigned installer and plain-English warning of spec 0030. Its first trust
+  check uses an independent release key before running the installer. Verify
+  the signed manifest and payloads on all platforms. Install, update,
+  repair, backup, restore and removal use the app or its installer. Portable
+  mode follows spec 0030.
 - The app hands the owner the signed add-on zips. Each release also
   attaches them.
-- The app is AGPL-3.0-or-later. The add-ons are GPL-2.0-or-later.
-- Outside libraries must use MIT, Apache-2.0, BSD-2-Clause,
-  BSD-3-Clause, ISC, Zlib, Unicode, MPL-2.0 or a GPL/AGPL-compatible
-  licence. Any other needs the owner's written decision.
-- `Cargo.lock` and the add-ons' Composer locks are committed. Dependency
-  checks run `cargo-deny`, `cargo-audit` and `cargo-vet`. Container
-  images are pinned by digest.
-- `gate/sbom.cdx.json` lists every part we build with and ship: each
-  Rust library from `Cargo.lock` and each tool and image from
-  `gate/tools.toml`, with its hash. Run `aegis sbom` after changing
-  either file or the licence in `Cargo.toml`; the gate refuses a list
-  that is out of date.
+- The app and shared libraries are Apache-2.0 (owner, 19 November 2026).
+  The add-ons are GPL-2.0-or-later. Contributors sign off each commit
+  (DCO); there is no contributor licence agreement. The name Sutradhar
+  and its logo are protected by a trademark policy, not by the licence.
+- Outside libraries shipped in the app must use MIT, Apache-2.0,
+  BSD-2-Clause, BSD-3-Clause, ISC, Zlib, Unicode, MPL-2.0, the
+  PostgreSQL licence or PSF-2.0 (for the bundled Python). No GPL, LGPL
+  or AGPL code goes into the Apache-2.0 app. Any other licence needs the
+  owner's written decision.
+- Bazel is the target build and test system under ADR-0021. Commit
+  its resolved dependency locks and the add-ons' Composer locks.
+  Cut over only through the protected gate change and evidence in
+  spec 0003. Keep the required licence, vulnerability and dependency
+  vetting checks (cargo-deny, cargo-audit and cargo-vet) and current
+  graph and locks until equivalent replacements pass the protected
+  gate. Their absence never counts as a pass. After cutover, Cargo
+  manifests and locks have no build authority. Container images
+  remain pinned by digest.
+- `gate/sbom.cdx.json` covers everything built with or shipped.
+  It binds the admitted dependency graph and lock inputs, runtime
+  packages, tools, prebuilt binaries and pinned container images
+  to their hashes and licences. Record platform and development
+  scope. Regenerate it with `aegis sbom` after any covered input
+  changes. The gate refuses stale or incomplete evidence.
 - Every image pinned in `gate/tools.toml` is scanned at the push tier
   with the pinned Grype. A high or critical hole that has a fix blocks
   the push, by the owner's decision of 9 November 2026, until a fixed
@@ -353,24 +470,30 @@ Boot.
 
 ## 6. Code standards
 
-1. Test first. A change arrives with a test that failed before it.
+1. Test first. A code change arrives with a test that failed before it.
+   A documentation change arrives with the structural or traceability
+   check that rejected the contradiction, omission or broken link.
 2. Google style everywhere. Use Google's own guide where one exists
-   (TypeScript, Shell, HTML/CSS), and our Google-style guides in
+   (TypeScript, Shell, HTML/CSS, Python), and our Google-style guides in
    [docs/standards/](docs/standards/) for Rust, PHP and SQL.
-3. One rule matrix turns MISRA, NASA's Power of 10, JPL's rules and
-   DO-178C Level A objectives into checks for every allowed language.
-4. Coverage is 100% for lines, branches and MC/DC. Our own tool measures
-   MC/DC. 100% of mutants are killed.
+3. One rule matrix records which MISRA, NASA Power of 10, JPL and
+   DO-178C Level A objectives apply to each language and risk class. It
+   must not claim certification or impose an inapplicable rule by label.
+4. The strict core listed in ADR-0020 requires 100% line, branch and
+   MC/DC coverage and 100% of killable mutants. An equivalent mutant
+   needs a written proof and independent review before exclusion.
+   Elsewhere, the owning specification sets risk-appropriate coverage,
+   mutation analysis and boundary evidence; every required check passes.
 5. Use property tests, fuzzing, failure injection and model checks
-   (stateright) where they fit. Prove critical code with Kani, Verus and
-   Creusot. Property and fuzz tests use `proptest`: 256 random cases by
+   (stateright) where they fit. Prove selected properties with Kani,
+   Verus and Creusot, recording assumptions and the trusted computing
+   base. Property and fuzz tests use `proptest`: 256 random cases by
    default, more at the release tier through `PROPTEST_CASES`. Text the
    gate shows people is kept as a snapshot in `tests/snapshots`; a
    deliberate change is accepted with `AEGIS_UPDATE_SNAPSHOTS=1`.
 6. Write safe Rust only. No `unsafe` in our Rust. The one exception is
    the Rust speed-counting crates of rule 8, in benchmark programs only.
-   A defect fix to the one Go tool section 4 keeps adds no `unsafe`
-   package, `//go:linkname`, hand-written assembly or `plugin` package.
+   No first-party Go component or Go-specific exception is implied.
 7. No dead code, no commented-out code and no unused dependencies.
 8. Speed is checked against baselines (spec 0007): instruction counts
    kept in `gate/speed.toml`, and times kept by the door in its speed
@@ -414,30 +537,27 @@ Boot.
    rather than run unsealed), with no `perf`, root or kernel settings. GitHub CI
    counts our hot paths but runs no race and no timings, which need
    Dell.
-9. Every new or changed source file carries a GanitEvolve speed
-   receipt in `receipts/`, made by the GanitEvolve tool (spec 0012), and
-   the receipt names, by hash, the accepted King Solomon research card
-   (spec 0013, "Research first") whose scope lists the file. Tests,
-   benchmarks and fixtures need no receipt of their own; they go with
-   the receipt of the code they test. Agents must run GanitEvolve: the
-   gate check `ganit.every-change` refuses a source change with no
-   receipt or no card at every commit, push and release (owner,
-   10 November 2026). Source files are Rust, TypeScript, CSS, PHP,
-   SQL, shell, Cedar and Rego files, whether they ship or not (owner,
-   10 November 2026: "Every source file").
-   The checks in rules 8 and 9 are wired in: a change may not remove
-   them, take them off a tier or set them below "block" without a
-   signed owner waiver (section 7.2; spec 0012, "Hard to skip").
+9. Every new or changed source file carries a Ganit Vikas speed
+   receipt in `receipts/`, made by the Ganit Vikas tool (spec 0012), and
+   the receipt names, by hash, the accepted research card (spec 0013)
+   whose scope lists the file. Tests, benchmarks and fixtures need no
+   receipt of their own; they go with the receipt of the code they test.
+   Source files are Rust, Python, TypeScript, CSS, PHP, SQL, shell,
+   Cedar and Rego files, whether they ship or not. The checks in rules 8
+   and 9 are wired in: a change may not remove them, take them off a
+   tier or set them below "block" without a signed owner waiver
+   (section 7.2; spec 0012, "Hard to skip").
 10. No globals, singletons, monkey patching or shared mutable state.
     The one exception is the counting allocator's static in a benchmark
     program (rule 8).
 11. A source file has at most 300 lines and a function at most 60 lines.
     A function takes at most 5 arguments, nests at most 4 levels deep and
-    stays under a complexity score of 15.
+    stays under a complexity score of 15. This source-file limit is not a
+    commit-size limit.
 12. No copied code. Two runs of 100 or more equal tokens, in one file or
-    two, in Rust, shell, SQL, CSS, TypeScript, PHP or a policy file,
-    are refused: write the code once and share it. In Rust a copy with
-    its names changed still counts, and `use` items are left out. A
+    two, in Rust, Python, shell, SQL, CSS, TypeScript, PHP or a policy
+    file, are refused: write the code once and share it. In Rust a copy
+    with its names changed still counts, and `use` items are left out. A
     table of like entries, written the same way, names and all, is a
     list, not code, and counts once. No old copies are
     allowed; only a signed owner waiver (section 7.2) may allow one.
@@ -447,6 +567,14 @@ Boot.
     and the owner's signed waivers (section 7.2). Every function in code
     must be reached by a test; rule M08 of the analyser checks this by
     name, with the limits its specification gives.
+14. Do not reinvent the wheel (owner, 19 November 2026). Before writing
+    a component, record a build-or-reuse decision. Use a mature,
+    maintained library with an allowed licence when it meets the
+    requirement and the security and size limits. Write custom code only
+    for behaviour that is the product's own, for what no such library
+    gives, or under a written exception. Clean-room means not copying
+    another product's code; it does not mean avoiding mature
+    dependencies.
 
 ## 7. The gate
 
@@ -459,6 +587,10 @@ Boot.
 - A check counts only once it is proven to refuse a planted fault in
   every allowed language that is switched on.
 - If a tool a check needs is missing, the check fails. It never skips.
+- Official WordPress Plugin Check blocks commit, push and release on
+  the exact candidate once the WordPress plugin is introduced. This
+  includes documentation-only changes. A required plugin or check that
+  is missing blocks. Spec 0003 defines the evidence for this rule.
 - After every `aegis commit` and `aegis push` the gate shows one
   quality score: the share of eight parts (security, tests, copies,
   smells, complexity, reviews, set-up, style and docs) with no problem,
@@ -472,15 +604,16 @@ Boot.
 | Push | Every push, at Forgejo's door gate | Every check, on the whole project |
 | Release | Every release task, before tagging | Everything above, plus long fuzzing, load, soak, memory and recovery tests |
 
-"Everything that depends on them" is worked out from the Cargo
-dependency graph: a change to a shared crate covers every crate that
-uses it. Other files are covered by the checks for their own kind, and a
-change to a shared file (a migration, a policy, a rule file) covers
-everything that reads it.
+The admitted build graph determines everything that depends on
+a changed file. Spec 0003 defines the cutover proof for the Bazel
+graph. Cover all reverse dependencies across languages, tools and
+generated inputs. File-kind checks still apply. A shared migration,
+policy or rule file reaches every check and target that reads it.
 
 The gate records how long each tier takes. If a tier takes more than 30
 minutes, the gate adds a task to speed it up to the "Later" milestone. A
-slow tier is never cut short.
+slow tier is never cut short. The full release long lane in spec 0114
+is exempt from that time rule and runs for every candidate (DR-069).
 
 The languages that are switched on are listed in `gate/catalogue.toml`.
 A language is switched on when its first file is added, and that commit
@@ -488,9 +621,10 @@ must bring its checks and planted faults with it.
 
 ### 7.1 The required reviews
 
-Eight reviews must pass on every commit and every release. Each has a
-skill in `.claude/skills/` that every agent follows (Codex and Gemini
-read the same files):
+Every change receives the independent reviews its risk matrix requires.
+A reviewer never wrote the change being reviewed. The strict core listed
+in ADR-0020 requires all eight disciplines on every commit and release
+(ADR-0020, strict core; DR-034):
 
 1. Architecture (`architecture`).
 2. Performance (`fast-performance`).
@@ -498,24 +632,28 @@ read the same files):
 4. Security (`security`).
 5. Backlog: fit with the task and the roadmap (`backlog`).
 6. Code style and docs (`style-docs`).
-7. Red team: subagents that attack the change (`red-team`).
+7. Red team: attacks on the change (`red-team`).
 8. Unsafe code patterns the tools miss (`unsafe-patterns`).
 
-- Each agent runs these as its own subagents, each with a fresh context.
-  A reviewer never wrote the change it reviews.
-- Each review is saved as a record in `reviews/`, one file per skill,
-  naming the fingerprint of the content it reviewed
-  (`aegis fingerprint`). The check `reviews.required` refuses a commit,
-  and the door a push, when any record is missing, does not pass, has a
-  finding not fixed, or names other content. It applies to every
-  commit after the one that brought the check in, so no review can be
-  skipped and deleting a file does not switch it off.
+- A change is strict-core when it modifies a listed component, its typed
+  boundary, its policy, its tests or evidence that can alter its verdict.
+  The owning specification records that classification before work starts;
+  uncertainty is resolved towards strict-core handling, not silently away
+  from it.
+- Outside the strict core, the risk matrix names the required independent
+  reviewers and disciplines. Ranking, optimisation and data-platform
+  changes always require correctness, evaluation-integrity and security
+  review; documentation-only changes require accuracy, consistency and
+  traceability review. A self-review is not an independent review.
+- Each required review is saved in `reviews/`, naming the reviewer,
+  discipline and fingerprint of the exact content reviewed. The gate
+  refuses missing, failed, unresolved or stale records.
 - Until tijori signs the records (Phase 2 item 8), an agent with full
-  sudo could write a false one. Nothing yet catches that; a false record
-  is a broken rule.
-- A finding that belongs to the work of a later roadmap item, and that
-  the change does not make worse, becomes a task on that item. It does
-  not block the change. Every other finding blocks until it is fixed.
+  sudo could write a false one. A false record is a broken rule.
+- A regression introduced by the change blocks until fixed or reverted.
+  An unrelated pre-existing finding receives a visible owner, priority
+  and task under sections 8 and 10; it is not hidden and does not
+  automatically expand an unrelated change.
 
 ### 7.2 Waivers
 
@@ -524,6 +662,12 @@ written record in `gate/waivers/`. No agent may do it, ever. The one
 exception is the short list of image holes in section 5.7, which the
 owner asked for in chat on 9 November 2026, and which the gate keeps to
 the holes known that day.
+
+A signed waiver names the check it waives and expires within 30 days of
+signing (spec 0114, BJ-29, SUT-1416). The gate refuses an expired waiver. A
+waiver may be renewed at most once for the same check. A further waiver for
+that check needs a new owner signature that names the reason. Spec 0114 BJ-29
+sets how the gate counts waivers. Decision records: DR-158, DR-159.
 
 The owner's signing key never lives on Dell. Its public key is pinned in
 `gate/owner-key.pub`, and the gate accepts a waiver only when it is
@@ -565,7 +709,7 @@ Until Phase 2 is finished:
 - Each check in rule 8 of section 6 blocks from the commit that pins
   its tool in `gate/tools.toml` and passes its planted test (task #157).
 - Rule 9 of section 6 blocks from the commit that turns on
-  `ganit.every-change`, which lands only once GanitEvolve can make a
+  `ganit.every-change`, which lands only once Ganit Vikas can make a
   receipt for any Rust file and cards can be written (task #157). For
   each other language it blocks from the commit that adds that
   language's safety parse (spec 0012). Files nobody changes need no
@@ -641,6 +785,11 @@ sync, a failed release or a security problem, never for new scope.
 2. The release tier and the required reviews run on the change since the last
    release.
 3. The version, notes and changelog come from the commit messages.
+   A scoped release agent or the owner may approve the exact candidate
+   only after every required check, review, bar and the long lane
+   passes. Spec 0005 owns the approval record. Waivers, policy and
+   trust changes keep their separate owner-signature requirements
+   (ADR-0021, Ranking and release quality; DR-025, DR-069).
 4. The release step signs the artefacts with the release key. The key is
    kept encrypted on Dell, used only by the release step, and every use
    is logged and copied to GitHub.
@@ -655,64 +804,57 @@ report gets a first reply within 7 days.
 
 ### 8.2 Agents working at once
 
-Several agents work at once in the one checkout of `main` on Dell, and
-talk through the agent mailbox (the `agent-mailbox` tools, or its door
-for A2A, the open agent-to-agent protocol, on Dell).
+Each agent works in its own isolated disposable clone on local `main`.
+Agents coordinate through the agent mailbox and integrate through one
+serial queue. No agent edits, stages, commits, resets or cleans another
+agent's clone or the shared human checkout.
 
-1. Each agent has a name in the mailbox (`claude`, `codex`, `gemini`),
-   and its tool sets `SUTRADHAR_AGENT` to that name for the git hooks.
-2. Lock every file before changing it. The lock's note names the
-   session (`session:` and the first eight characters of its id), or
-   `agent:` and the helper's own id for a helper. A change to a file
-   under another agent's lock is refused, and a shell change with no
-   lock is reported.
-3. Stage only your own files, by name. Never stage everything while
-   others are working.
-4. Release your locks, then commit. The commit check refuses a commit
-   or push that takes a file under a live lock.
-5. One agent commits and pushes at a time. The push check runs on a
-   clean copy of the commit being pushed, so other agents' unfinished
-   work neither blocks it nor joins it. The copy is the folder
-   `<checkout>.push-work` beside the checkout, with its lock file
-   `<checkout>.push-work.lock`. Never work in the copy: each push
-   resets it. Both are safe to delete when no push is running; the next
-   push makes them again.
-6. At most 56 agents run at once in all, counting every parent session
-   and every helper of Codex, Claude and Gemini together (owner, 12
-   November 2026, task #166).
+1. Each agent has a mailbox name and sets `SUTRADHAR_AGENT` to that name
+   for the git hooks. The integration record names the exact clone and
+   base commit.
+2. Reserve every file before changing it. The reservation names the
+   session or helper, has a fencing token and lasts at most one hour.
+   Renew it before expiry. A stale or conflicting reservation blocks the
+   remote edit rather than being overwritten (owner approval: DR-129).
+3. Stage only the intended files by name. Review the complete diff and
+   prove that no unrelated code, configuration or generated file joined
+   the change.
+4. Fetch `origin/main` and rebase the isolated local `main` before
+   integration. Resolve conflicts in the isolated clone, rerun every
+   affected check and required review, and verify the final tree.
+5. One agent integrates and pushes at a time. The push check runs on a
+   clean copy of the exact rebased commit. Force push is forbidden.
+6. Release reservations after integration or when abandoning the work.
+   A reservation may be left to expire; it is never transferred silently
+   (owner approval: DR-129).
+7. At most ten agents run at once, counting every parent session and
+   helper across all agent products.
 
 ### 8.5 Small changes
 
 Every change is small enough for anyone to follow (owner, 17 November
-2026: "strict 300 lines, always"). Task #324 holds the owner's 61
-rules for small changes and the tasks that write them in.
+2026: "strict 300 lines, always"; confirmed 19 November 2026; ADR-0021,
+Delivery; DR-033).
 
 - A commit changes at most 300 lines, counting added and removed lines
   both, and touches about 10 files; the owner sets the exact file limit
-  the size check uses (task #333). New, deleted and moved files count,
-  and so do the review records in `reviews/`.
-- Files made by tools do not count: `Cargo.lock`, the add-ons'
-  Composer locks, spec 0024's `models.lock`, the SBOM
-  `gate/sbom.cdx.json`, and files a section 4 build tool makes and
-  marks as generated. Instead the size check proves each one matches
-  its sources.
-- A push holds at most 5 commits.
+  the size check uses. New, deleted and moved files count, and so do
+  the review records in `reviews/`.
+- Files made by tools do not count: lock files, spec 0024's
+  `models.lock`, the SBOM `gate/sbom.cdx.json`, and files a section 4
+  build tool makes and marks as generated. Instead the size check proves
+  each one matches its sources and they stay with their sources.
+- A push holds at most 5 commits (ADR-0021, Delivery).
 - Each commit makes one kind of change: a fix, a feature, a tidy-up or
-  docs.
+  documentation. Keep unrelated refactors and formatting out of a
+  behavioural change. Documentation-only work changes no application
+  code, executable tests, build files, deployment configuration or
+  infrastructure.
+- Do not split one atomic contract change into commits that are
+  individually false or fail their tests; cut the change smaller
+  instead.
 - A commit or push over these limits is refused. Only the owner may
-  allow a bigger one, in a signed waiver (section 7.2), so none can be
-  allowed before the owner's key exists.
-- The gate's size check is built in task #333. Until it blocks, the
-  agent counts every file, tool-made ones included: with `git diff
-  --cached --numstat --no-renames` before committing, and, after
-  `git fetch`, with `git log --numstat --no-renames
-  --diff-merges=first-parent origin/main..HEAD` after committing,
-  after any amend or rebase, and before each push, which also shows
-  how many commits the push holds. An error in any of these commands,
-  no commits listed after a commit, or a merge commit in the list is a
-  failure, so newer commits from Forgejo are brought in without a
-  merge commit. A file shown as `-` (a binary file, or one marked
-  `-diff`) counts as over the limit.
+  allow a bigger one, in a signed waiver (section 7.2).
 
 ## 9. Git and GitHub
 
@@ -807,18 +949,25 @@ rules for small changes and the tasks that write them in.
 
 ## 11. The shared computer (Dell)
 
-- Dell has 20 CPU threads and 15 GB of memory. The budget is: Forgejo
-  1 GB and 1 CPU thread; the two heavy-job places 4 GB each; PostgreSQL
-  and the test sites 3 GB together; the agents the remaining 3 GB.
+- Dell has 20 CPU threads and 15 GB of memory. Its development-service
+  budget is: Forgejo 1 GB and 1 CPU thread; the two heavy-job places
+  4 GB each; PostgreSQL and the test sites 3 GB together; the agents the
+  remaining 3 GB. This budget does not assert that the full Sutradhar
+  model and data-platform stack can run concurrently on Dell.
 - Heavy jobs (builds, full test runs, runner jobs) wait in one queue.
   At most 2 run at once, each held by a systemd limit to 4 GB of memory
   and 8 CPU threads. A timed benchmark takes both places, so it runs
   alone; a counted one takes one place.
-- The release tier's memory, load and soak tests run on two test
-  machines that match both sizes of the owner's PC (under 16 GB, and
-  16 GB or more), outside the Dell job limits.
-- One writer per file. Take a lock in the mailbox before editing, and
-  release it after.
+- Apply spec 0078's measured product resource profiles to applicable
+  Dell evaluation. Scheduler, model serving, spaCy, training, indexing
+  and live inference need admitted combined profiles or turn-taking.
+  Work that cannot fit waits or refuses. It cannot evict unrelated
+  services or proceed on estimated capacity alone.
+- Release-tier memory, load and soak tests run on every declared
+  supported owner-PC profile, outside Dell's development-job limits.
+- Each agent uses an isolated clone under section 8.2. Mailbox
+  reservations coordinate integration; they do not make a shared dirty
+  checkout safe to edit.
 - Agents never change the door's speed store (`speed` in the door's
   folder). Only the door writes it (spec 0001).
 - Forgejo's runner jobs run in containers that cannot reach the release
@@ -842,8 +991,9 @@ rules for small changes and the tasks that write them in.
   which the sync never brings back.
 - Never delete, move or weaken protected folders on Dell without the
   owner's explicit instruction naming the material.
-- Cargo build folders and Go build caches that no build has written for
-  seven days may be removed automatically, but never while a build, a
+- The existing automatic cleanup permission covers legacy Cargo
+  build folders and Go build caches that no build has written for
+  seven days, but never while a build, a
   push or a running program uses them (owner, 12 November 2026, task
   #66). Work copies, evidence, journals and protected folders are not
   build caches.
@@ -870,8 +1020,19 @@ rules for small changes and the tasks that write them in.
 - Specifications are named `NNNN-short-name.md` in `docs/specs/`. The
   feature list for features 1 to 1357 is
   `docs/specs/features.md`.
+- Spec 0076 owns implementation readiness. Before any feature build task
+  becomes ready, its complete requirement, design, variant, API, error,
+  operational and test records must exist and pass bidirectional
+  traceability. A title, range task or plausible inference is not a design.
+- Spec 0077 owns autonomous ranking optimisation. Spec 0057 owns quality
+  metrics and labels. No other document may create a second optimisation,
+  promotion, rollback or metric-definition path.
+- Every consequential design records provenance under section 3. Strict
+  clean-room controls apply only to strict clean-room reimplementation;
+  patent and qualified legal review require their own actual evidence.
 - A design rewritten without changing its approved behaviour is
-  approved. Any change in behaviour needs the owner's approval.
+  approved. Any change in behaviour needs the owner's approval through
+  an ADR and propagation to every affected specification and task.
 - The private archive of earlier work on Dell is deleted only once every
   earlier item is carried over without clashes, repeats or overlaps,
   and the carry-over task is closed.

@@ -1,408 +1,527 @@
-# 0053: Feedback learning and bounded autotuning
+# 0053: Feedback learning and label governance
 
-This part learns from what moderators approve, reject and remove, and uses
-it to tune Sutradhar's settings in small, checked steps. It belongs to the
-feature waves of roadmap Phase 6. The Rust module is `sutradhar-tuning`
-(an English placeholder name); the maths lives in ganit.
+This specification owns moderator-feedback semantics, label integrity,
+training-data export, feedback-derived module-stage evidence and feedback
+observability. It is
+roadmap Phase 6. It does not own a second settings tuner, model-promotion
+path or rollback controller.
 
-Each time a moderator approves, rejects or removes a link, Sutradhar learns
-a little about what this site's staff find useful. It may nudge one weight
-by at most 5% at a time, only inside limits the owner approved, only after
-checking in the background that the change would have helped, and it
-writes down why, what it gains and what it costs. If the change later turns
-out worse, Sutradhar puts back that one change only, explains why, and
-leaves everything else alone. It never switches a method off and never
-turns on automatic linking.
+Spec 0077 owns Optuna studies, neural and retrieval training, challenger
+evaluation, champion activation and rollback. Spec 0057 owns evaluation
+labels, metrics and protected release gates. Spec 0019 owns jobs and
+the transactional outbox. Spec 0014 owns settings storage. Spec 0020 owns
+human-requested setting changes and confirmation.
 
-Example: moderators keep choosing newer threads. The nightly run tries
-raising the freshness weight from 1.00 to 1.05. On held-back recent
-decisions, the moderators' chosen thread now comes first 1.4 points more
-often (range 0.6 to 2.2), and nothing else gets worse beyond tolerance. A
-new settings version is written with the note "freshness weight 1.00 to
-1.05: gains 1.4 points of agreement with moderators' choices; costs 0.3%
-fewer suggestions in old-hardware sections". Two weeks later accept rates
-are steady, so it stays.
+## Outcomes and boundaries
 
-## What it does
+1. Moderator decisions become versioned, permission-checked learning
+   records without exposing post text or moderator identity to training
+   workers.
+2. Feedback can improve ranking only through the single typed optimisation
+   and champion/challenger route in spec 0077.
+3. No weight moves through an independent autotuner or outside spec 0077's
+   2% production-eligible trust region, no setting is activated merely
+   because a training metric improved, and no feedback process enables
+   automatic public linking.
+4. Rust retains product policy, permissions, source integrity, moderator
+   approval, data preparation and release authority. Approved Python
+   packages perform model training and Optuna functions only through the
+   admitted Rust-owned interfaces. No first-party Python production code
+   or adapter is permitted.
+5. A rejected, withdrawn, stale or invisible source cannot remain as
+   positive evidence. Erasure and permission changes propagate to labels,
+   datasets, candidate evaluations and derived artefacts.
 
-### Words used here
+The old independent bounded-autotuning algorithm, its one-setting-at-a-time
+watch and its direct settings writer are superseded by ADR-0020 and spec
+0077. The module-stage evidence below informs that single route; it does
+not create a separate visibility, promotion or demotion controller.
 
-- Decision: approve, reject or remove (undo), with any reason buttons
-  (spec 0028).
-- Label: what a decision teaches: a positive or negative pair, a
-  preference of one destination over another, or nothing.
-- Tunable setting: a setting the settings store marks `tunable`, with its
-  bound and step rule. Only these may move automatically.
-- Step: one change to one tunable setting, or to one declared linked
-  group.
-- Background comparison: replaying recent decisions and link
-  reconstruction under the current and proposed settings, without changing
-  what moderators see.
-- Watch: the period after a step during which live figures are checked.
-- Module mode: shadow (suggestions made, never shown) or review (shown to
-  staff). There is no automatic mode in version 1.
-- Segment: a part of a site judged on its own, such as one section.
+## Terms
 
-### Reason buttons and labels
+- **Decision**: approve, reject or remove (undo), with an optional reason
+  code from spec 0028.
+- **Feedback label**: the typed learning interpretation of a decision.
+- **Evaluation label**: a governed relevance or usefulness grade under
+  spec 0057. A production decision is not silently promoted to an
+  evaluation label.
+- **Training example**: a feedback label joined to immutable source and
+  destination content versions, model keys and permitted features.
+- **Module mode**: `shadow` or `review`. There is no automatic public-write
+  mode in Version 1.
+- **Segment**: a declared site partition, such as a forum section, used for
+  fairness and regression analysis.
 
-Reasons are optional buttons, never free text.
+## Decision and reason contract
 
-| Reason | Shown as | Label |
-| --- | --- | --- |
-| `not_relevant` | Not relevant | negative pair |
-| `wrong_anchor` | Wrong words linked | negative anchor only |
-| `better_target` | A better thread exists | preference: chosen wins |
-| `weak_target` | Target not good enough | negative pair |
-| `too_many_links` | Enough links here | none |
-| `already_covered` | Already covered | none |
-| `other` | Other | none |
+Reasons are optional bounded codes, never free text.
 
-- Approve: a positive pair; the chosen destination is also preferred over
-  the alternatives shown above it.
-- Reject with no reason: a weak negative, at half weight.
-- Remove (undo) by a moderator: a negative pair, stronger than a
-  rejection, because the link was seen in place.
-- Recalculated, parked, retired or stale suggestions make no label. A
-  rejection restored from the trash bin is withdrawn, and so is its label.
-  The 90-day purge leaves only id-only labels of decisions that stand.
-- How long a placed link survives later edits (ganit job 310) is also a
-  label: a link removed soon is weak evidence against it.
-- One label table serves this tuner and ganit's training of the small
-  networks.
-- There is no author opt-out. Analytics consent is a separate matter.
-- Decisions by an account without the review permission never reach
-  labels, because spec 0028 refuses them.
+| Reason | Display | Feedback interpretation |
+|---|---|---|
+| `not_relevant` | Not relevant | Negative source/destination pair |
+| `wrong_anchor` | Wrong words linked | Negative anchor only; no destination negative |
+| `better_target` | A better thread exists | Preference for the selected destination over the rejected one |
+| `weak_target` | Target not good enough | Negative source/destination pair |
+| `too_many_links` | Enough links here | Link-set feedback only; no destination label |
+| `already_covered` | Already covered | Redundancy feedback only; no relevance negative |
+| `other` | Other | No training label |
 
-### Who does what
+Decision mapping is:
 
-- ganit proposes setting changes, trains the scoring model, estimates
-  accept rates and rollback risk, judges comparisons, cleans labels and
-  watches for sudden shifts.
-- The Rust tuning module keeps the labels, enforces every bound and step
-  through the settings store, replays rankings, shadow-tests and activates
-  each ganit output, writes the history and reverts.
-- ganit never writes Sutradhar's tables and never sees post text. A
-  durable job starts every ganit run.
+| Decision | Feedback label | Constraints |
+|---|---|---|
+| Approve | Positive pair; preference over shown alternatives | Only when the exact destination and content versions are recorded |
+| Reject without a reason | Weak negative with weight `0.5` | Never interpret as an anchor defect |
+| Remove after insertion | Negative pair | Stronger than rejection only in the declared training weighting scheme |
+| Withdraw rejection | Tombstone the earlier label | Later training exports exclude the withdrawn label |
+| Recalculate, park, retire or stale | No new label | Preserve audit history only |
 
-### The tuner, one careful step at a time
+A placed link removed during a later edit supplies link-survival feedback,
+not factual evidence about the destination. The weighting function and its
+bounds are versioned in the training-data specification and cannot be
+changed by Optuna.
 
-Spec 0075's groups 5 to 7 add checks to steps 2, 5 and 6 below, and
-to how a job 45 weight moves toward its target (owner, 16 November
-2026). They are built with spec 0075, not as part of this spec's own
-build. They skip a night, drop proposals, break ties between
-proposals whose gains overlap, make steps smaller, hold promotions, or
-lengthen a watch by at most 28 days; the pass rule, bounds, 5% step
-limit and one-change watch stay as written here.
+## Identity, permission and freshness
 
-A nightly durable job sequence at the lowest priority, yielding to live
-work:
+Each `FeedbackLabel` contains:
 
-1. Freeze. Note the active settings version, the labels up to a cut-off
-   and the latest reconstruction run. Split them by thread and by time;
-   the newest 20% of decisions are the check set. Export them with ids and
-   numbers only. Label weights come from ganit jobs 154 (moderators who
-   accept everything), 153 (noise in the reconstruction set) and 146
-   (moderator position bias).
-2. Propose. ganit searches each tunable setting only within one step of
-   its current value (job 115 for retrieval settings, 120 for scoring-model
-   hyperparameters, 116 for thread-vector weights): at most 5% either way
-   for a continuous weight, the next approved value for a discrete one,
-   inside its bound, never zero or below. The tuner passes the bounds and
-   step rules from the settings store and checks the answer against them
-   again. The single change, or declared linked group, with the largest
-   expected gain is taken. One change, one reason.
-3. Compare in the background. Replay ranking from the stored feature
-   scores, so no model runs, giving current and proposed scores for every
-   pair in the check set. The frozen rule:
-   - agreement with moderators' choices must improve, with the lower end
-     of its paired 95% range above zero (jobs 128 and 129, with job 300's
-     variance reduction);
-   - link reconstruction and anchor agreement may not fall beyond the
-     matching tolerance (job 132, "no worse than");
-   - when many settings were tried, job 130 controls false discoveries;
-   - job 147 scores the new policy offline from logged decisions;
-   - hard rules are untouched, since they are not tunable.
-4. Record. A proposal record holds the reason, the benefits and drawbacks
-   (measured, with ranges, by segment), the before-and-after figures, the
-   exact values, and the versions of every ganit output used.
-5. Promote. If it passes and autotuning is on, write a new settings
-   version through the settings store as actor `tuner`. Parts take it
-   between jobs; each job keeps the version it started with. A setting
-   that needs a restart is only proposed to an administrator.
-6. Watch. For 14 days or 200 decisions, whichever is later, job 99
-   estimates the chance the change made things worse, and job 157 watches
-   the accept rate for a sudden shift. When job 99's chance passes the
-   rollback level, revert that step only, through the linked-group revert,
-   record why, and pause that setting for 30 days.
+```text
+label_id, tenant_id, decision_id, suggestion_id, reason_code,
+label_kind, source_content_id, source_version, source_digest,
+destination_content_id, destination_version, destination_digest,
+anchor_span?, preferred_destination_id?, weight, model_keys,
+moderator_pseudonym, occurred_at, permission_epoch, state, schema_version
+```
 
-- While a step is under watch, no other step is promoted anywhere: one
-  change under watch at a time across all pipelines.
-- With under 200 decisions in the check set, nothing is proposed. Job 229
-  can raise that minimum for a site.
-- Autotuning is on at install and starts once 200 decisions exist.
-- An administrator's own change to a tunable setting pauses autotuning of
-  that setting until they turn it back on, so the tuner never fights a
-  person.
-- Agents may read tuning state. They change settings only when a person
-  has asked, through the settings store's instruction reference.
-- Each site tunes on its own data only.
+The following rules are mandatory:
 
-### The scoring model and calibration
+1. The decision service derives the tenant and moderator pseudonym from the
+   authenticated context. Supplied tenant or identity fields are ignored.
+2. Spec 0028 must have accepted the decision under the moderator's review
+   permission. Training cannot repair or reauthorise a rejected decision.
+3. Source and destination versions must have been guest-visible and fully
+   read. Partial content is not complete evidence.
+4. A content edit, visibility withdrawal, permission-epoch change or source
+   deletion marks affected labels ineligible for future exports.
+5. Duplicate delivery of one `decision_id` produces one label. Conflicting
+   payloads for that id raise `ERR-0053-DUPLICATE-CONFLICT` and block the
+   affected dataset.
+6. Label correction appends a tombstone or superseding record; it does not
+   rewrite signed history.
+7. Labels from different tenants never share a training partition or
+   evaluation aggregate.
 
-- ganit trains the scoring model nightly (job 45): logistic fusion now;
-  LambdaMART once at least 2,000 decisions exist and its lab experiment
-  has passed. Feature importance (job 46) feeds the explanation.
-- A newly trained set of weights is a ganit output, shadow-tested like any
-  other. It is a target: the tuner moves one weight towards it by at most
-  5% per step, each step shadow-tested.
-- Calibration (job 33) is refreshed nightly, and redone when job 192 sees
-  final scores shift after a change. It changes what confidence means, not
-  the order, so it is not a tunable setting.
-- The transformer models themselves are not retrained on this hardware.
-  Only the small networks (the embedding adapter of job 273 and the
-  classifier heads) are trained, from these labels.
+## Dataset preparation and splitting
 
-### Module modes: shadow and review
+The Rust job `feedback.dataset.prepare` (schema 1, spec 0019 maintenance
+lane) prepares the export and split for its one site. It reads through the
+authorised feedback export interface under RLS, without arbitrary table
+access. That export feeds spec 0077's dataset freeze, which owns admission
+to ranking studies. The worker's key names the site, input digest, export
+policy, permission revision and erasure generation. At the 0019
+publication fence, recheck the current lease and authority. For each
+selected label, check current 0053 state and the exact committed 0028
+decision and correction through the owning typed interfaces. An
+earlier eligibility read, outbox acknowledgement, inbox receipt or
+staged copy cannot order withdrawal against publication. Require
+proof that the eligibility check and publication are ordered with
+the source correction. Use the existing owner interfaces and fence.
+If a correction committed first, or the fence cannot prove the
+order, keep the staged export held under SUT-609. A correction can
+commit without changing the permission or erasure version. A held
+export publishes no ready event. A new authorised preparation uses its
+own exact eligible input. Packaged Python libraries receive only
+bounded typed inputs through spec 0104.
 
-- Every module that makes suggestions has promotion settings: minimum
-  decisions, minimum accept rate and observation period.
-- Job 96 estimates accept rates per module and site and makes the
-  promotion decision; job 139 sets the error levels for automatic
-  demotion; job 228 replays the policy on history to choose settings that
-  stop flapping. The owner's thresholds bound them: ganit's numbers apply
-  only inside them.
-- Shadow to review: a shadow module has no decisions, so it is judged by
-  link reconstruction against the module in review.
-- Review to shadow: when the lower end of the 95% range of the accept rate
-  over the latest 200 decisions falls below 40%. It returns only above
-  50%, after a full observation period.
-- No mode exists beyond review.
-- Every promotion and demotion is audited and shown on the health page.
+Each `TrainingDatasetManifest` records:
 
-### Accept rates, drift and the history page
+- schema and specification versions;
+- tenant and declared segment coverage;
+- immutable label and content-digest commitments;
+- inclusion, exclusion, withdrawal and erasure counts;
+- model, tokenizer, feature and spaCy pipeline compatibility keys;
+- thread-disjoint training, validation and test partitions;
+- time cut-offs and prevention of future-information leakage;
+- weighting scheme, reason-code mapping and pseudonymisation salt version;
+- source permission epochs and reconciliation evidence;
+- dependency, code and configuration digests; and
+- SHA-256 of the canonical manifest.
 
-- Live counts of decisions and accepts are shown; their ranges come from
-  the latest job 96 output.
-- Drift: job 157's changepoints on accept rate per module and job 196's
-  drift in scoring features raise an alert and an automatic issue; job 196
-  also says when the scoring model should be retrained. Job 306 separates
-  the effect of review-page changes, so a page change is not taken for a
-  tuning gain.
-- The tuning history page shows every step as a line: what changed, why,
-  gains, costs, the figures and what happened under watch, with no post
-  text. Nothing is a black box.
+The Rust owner resolves the manifest's exact model, tokenizer,
+feature and spaCy pipeline keys against the input profile of the
+selected 0077 freeze or training plan. Resolve worker dependency,
+code and configuration pins to the plan's admitted lock, bridge
+and platform profile. Check this binding before freeze admission,
+before handing bounded inputs to the 0104 sidecar, and when resuming
+a checkpoint. Compare the expected input keys. The model being
+trained can have a separate approved output identity. Identical
+schemas, dimensions or reported package versions give no proof of
+compatibility without the matching keys and artefact hashes.
 
-### Edge cases
+Hold an input with a missing or mismatched binding before freeze
+publication or sidecar consumption. Use BLOCK_FOR_DATA_QUALITY
+under 0077. Show “This dataset needs its original worker profile.”
+Retain the original immutable input and effect identity. A retry
+may resume with the original
+matching profile while it remains admitted, after current authority
+and effect reconciliation. A different profile requires a new
+authorised preparation and plan. Do not rewrite an old manifest,
+translate its features in place or retry an unresolved effect with
+a substituted profile.
 
-- A model change: labels record their model keys; replay uses only pairs
-  scored by the current reranker, and tuning pauses until 200 such
-  decisions exist.
-- A playbook switch restarts the watch, because the baseline moved.
-- A weight that keeps hitting its bound stays there, and the history says
-  "at its upper bound". Widening a bound is the owner's decision.
-- A method whose best weight seems to be its minimum is reported as a
-  question for the lab, never switched off.
-- Seasonal swings: the watch compares like with like by segment, with job
-  157's changepoints beside it.
-- Overfitting from many tries is held by one small step, a held-out check
-  set and the watch.
+The default temporal hold-out is the newest 20% of eligible decisions, with
+all decisions from one thread confined to one partition. If temporal and
+thread-disjoint constraints conflict, thread disjointness wins and the
+manifest reports the actual time coverage. A partition with no eligible
+examples is reported, not filled by duplication.
 
-### Data
+Feedback datasets do not replace the independent human-adjudicated
+relevance datasets in spec 0057. A candidate needs the protected weekly
+promotion evidence and every mandatory gate, even when feedback validation
+improves.
 
-In Sutradhar's PostgreSQL with RLS forced. The tuning role writes these
-tables, the API role reads them, and moderator ids are visible only to the
-tuning role as pseudonymous refs. Labels come only from decisions on
-guest-visible content and are purged with that content.
+## Single optimisation and activation route
 
-- `feedback_label`: `decision_id`, `suggestion_id`, `destination_id`;
-  `kind` (positive, negative, weak negative, anchor negative, or
-  preference with the preferred destination); `reason`; `weight`;
-  `made_at`; `split` (tuning or check, fixed when made); `content_version`
-  of both sides, so a later edit can retire it; `model_keys`.
-- `tuning_proposal`: `id`, `pipeline`, `keys` (one setting or a linked
-  group), `from` and `to`; `reason`, `benefits`, `drawbacks` (plain
-  English from the figures); `figures` (JSON: each measure before and after
-  with its interval and sample size, by segment); `evidence_digest`
-  (SHA-256 of the frozen inputs and the rule); `ganit_outputs`; `state`
-  (proposed, failed_check, promoted, watching, kept, reverted, withdrawn);
-  `settings_before`, `settings_after`; `made_at`, `decided_at`,
-  `watch_until`.
-- `module_mode` (module, segment, mode, since, evidence digest) and
-  `module_mode_event` for every change.
-- `accept_rate`: per segment and day, decisions, accepts and interval. The
-  latest-200 window is computed, not stored twice.
-- Before-and-after results also go to the settings store's results table
-  for their settings version.
-- On uninstall, labels, proposals and modes are owned data under the
-  export offer and keep-or-delete choice.
+1. Stage and verify the immutable export. Commit its durable reference,
+   receipt and `feedback.dataset_ready` outbox row in one transaction.
+   Carry an opaque reference, source digest, canonical export manifest
+   digest and schema. There is no caller-set
+   network location or training data in the event.
+2. The spec 0077 consumer checks the site, policy, source digests and
+   current permission and erasure evidence. Verify canonical manifest
+   bytes against the named digest and schema. Commit the freeze job
+   and inbox receipt together. Use the source and policy digests
+   of spec 0077's freeze key. Check current eligibility through the
+   0053 source on claim and at the 0019 freeze publication fence.
+   Apply the same commit order rule to freeze. An eligible export
+   or freeze that committed before withdrawal keeps its original
+   receipt in history, within current read scope and retention.
+   Recheck current source eligibility before serving the artefact,
+   freezing an export or using a frozen input for a study. A later
+   correction holds affected input even when its receipt survives.
+   This event never starts a study.
+3. Optuna may tune only the typed, bounded registry in spec 0077. Feedback
+   cannot alter source integrity, permissions, evaluation labels,
+   thresholds, moderator gates, protected resource limits or release
+   policy.
+4. The pinned packaged training application may update the eight-head
+   neural ranker, calibration candidate and declared retrieval/fusion
+   parameters under its declarative configuration. Rust owns the input
+   and output contracts. BGE-M3 and the BGE cross-encoder base weights
+   are not fine-tuned by this route.
+5. A candidate receives an immutable manifest and passes identical,
+   versioned evaluation inputs against the champion.
+6. Only the Rust release-control component can request activation after
+   the signed protected evidence authorises it. The scheduler,
+   notification and sidecar have no activation authority.
+7. `PROMOTE`, `KEEP_CHAMPION`, `ROLL_BACK` and
+   `BLOCK_FOR_DATA_QUALITY` have exactly the meanings in spec 0077. None
+   can waive nDCG@10, the per-forum BM25 improvement gate or protected
+   safety and suitability checks.
+8. A verified critical regression restores the complete previous artefact
+   set. It does not revert one weight while retaining incompatible
+   tokenizers, indexes or calibration artefacts.
 
-### Actions, events and export
+## Scoring and calibration ownership
 
-| Action | What it does | Capability |
-| --- | --- | --- |
-| `setu.tuning.status` | autotuning state, watch, last steps | CAP-077 |
-| `setu.tuning.enable` | turn autotuning on or off | CAP-077 |
-| `setu.tuning.history` | every proposal with its evidence | CAP-077 |
-| `setu.tuning.revert` | an administrator reverts one step | CAP-077 |
-| `setu.module.mode` | show or set a module's mode | CAP-045 |
-| `setu.accept_rate` | accept rates and drift by segment | CAP-047 |
+The eight prediction heads and their five-logit ordinal outputs are owned
+by spec 0077. Feedback examples can train those heads only where a valid
+mapping to the head's label semantics exists. A moderator approval is not
+automatically a grade for all eight heads.
 
-- The same actions are `sutra tuning status|history|enable|disable|revert`
-  and `sutra setu module mode`.
-- Events carry ids and figures only: `tuning.proposed`, `tuning.promoted`,
-  `tuning.reverted`, `tuning.paused`, `module.mode_changed`,
-  `accept_rate.drift`.
-- The training export to ganit holds labels with ids, content hashes and
-  reason codes only: no text, no moderator identities, nothing from content
-  no longer visible.
+Calibration changes the meaning of confidence, not relevance labels or
+source evidence. It is versioned and evaluated with the candidate.
+Confidence intervals and abstention thresholds use spec 0057's locked
+evaluation contract. A confidence score is never displayed as the
+probability that statements in a destination are true.
 
-### Failure codes
+Feature importance or an attention value is not a causal explanation.
+Moderator explanations cite the actual source/destination features and
+model manifest under spec 0027.
 
-The tuner's failures never affect suggestions.
+## Module-stage evidence
 
-- SUT-600: too few decisions for a step; nothing proposed tonight.
-- SUT-601: the proposal failed its background check; recorded with its
-  figures, nothing changed.
-- SUT-602: settings changed during the comparison; withdrawn and retried
-  tomorrow.
-- SUT-603: live figures worsened under watch; that step was reverted and
-  its setting paused for 30 days.
-- SUT-604: a ganit output is overdue (job 96, 99, 157 or 196); the last
-  good output is used and an automatic issue is filed.
-- SUT-605: the settings store refused the tuner's version (bound or step);
-  a tuner defect, filed as an automatic issue.
-- SUT-606: a module was demoted to shadow; the page says why, with the
-  figures.
-- SUT-607: the nightly run passed its window; it stops at the next safe
-  point and resumes from its checkpoint.
-- SUT-608: ganit proposed a value outside its bound or step, or returned a
-  guarded value (not a number, infinity); refused before the settings
-  store sees it, and an automatic issue is filed.
+Spec 0053 supplies feedback-derived module-stage evidence. Spec 0015 applies
+the stage admitted by the current spec 0077 champion; this specification
+cannot transition a module itself.
 
-### Security and privacy
+- Every suggestion-producing module declares its required observation
+  window and evidence fields in its feature specification. These describe
+  evidence completeness, not an independent promotion threshold.
+- Accept rates, decision counts, intervals, protected relevance results and
+  severe-failure results are diagnostic inputs to spec 0077. A score never
+  authorises review or shadow directly.
+- `shadow` produces internal suggestions for evaluation but shows none to
+  staff. `review` shows suggestions for moderator decision. Neither stage
+  publishes automatically.
+- Spec 0077 evaluates module-stage evidence with the complete candidate and
+  every protected gate. Spec 0015 applies only the resulting champion's
+  module-stage map, subject to the module's ceiling.
+- Missing, stale or contradictory evidence leaves new and unadmitted modules
+  in shadow. It cannot trigger a local demotion or re-promotion.
+- Spec 0015 owns the audited stage receipts shown on the health page.
 
-- Labels hold ids, codes and hashes, never post text. Exports to ganit
-  hold ids, numbers and word counts only, checked by a contract test.
-- Moderators appear only as pseudonymous ids, for fairness weighting.
-  Names stay in the separate private part, which can be erased. No page
-  ranks individual moderators.
-- Erasure deletes labels touching erased content; proposals that used them
-  are marked "evidence reduced" and their settings stay.
-- Logs, metrics and events carry ids, counts and figures only.
+## Local review evidence for release
 
-### Observability
+Supply spec 0057 with a fixed, read-only projection over one admitted
+site, cohort and native review profile. Read through the owning 0028
+and 0032 read contracts with current permissions. The projection
+leaves operational labels, diagnostic accept rates and module stages
+under their existing rules. It grants no native action or broad audit
+access and creates no external data path.
 
-- Metrics: proposals by state; steps promoted and reverted; time under
-  watch; accept rate by segment with its interval; decisions available;
-  tuner run time; module modes by segment.
-- Alerts: a revert (information); two reverts of one setting in 90 days
-  (an automatic issue: the bound may be wrong); a module demoted; drift.
+Each eligible row carries the local decision ID and version, approved
+decision kind, qualified audit sequence, source proof reference and
+scope. Get approval and rejection order from their same-commit
+`review_audit_ref`. Get successful human review Undo order from the
+worker-owned terminal effect and its exact audited commit, joined to
+the original 0028 proof of human review and the signed native receipt.
+The intent sequence only proves origin. Select one row per committed
+choice even after delivery replay, a repeated native effect result or
+a batch. Count approvals as approvals. Keep completed eligible undo
+and reject outcomes separate. Leave historical approval intact after
+undo. Learning labels and aggregate dashboard figures cannot supply
+release rows.
 
-## Limits
+Pin the exact cohort, policy, source profile and verified audit cut
+before selecting either window. Under 0057, the first window selects
+the first 200 eligible rows using the admitted ascending commit order.
+The current window selects the newest 200 using the same order in
+reverse, then verifies every row follows the locked reference end.
+A window returns at most 200 eligible rows. Page the local proof by
+the last inspected audit sequence and pin direction, cut, site,
+policy, profile, permission revision and erasure generation. Inspect
+at most 200 audit entries per page and process one page per site on
+each scheduler turn. The qualified profile also fixes the total
+inspected rows, proof bytes and elapsed work before starting.
+Prove coverage of the
+enclosing range and the eligibility or exclusion of its contributors
+under the same consistent cut. The output limit alone cannot prove
+coverage or bound the work. A window read cannot hold the audit
+append lock. Do not skip a possibly eligible row whose origin, exact
+join or commit order is unknown.
 
-- A continuous weight moves at most 5% of its current value per step; a
-  discrete setting moves one approved step; values stay inside their bound
-  and above zero.
-- One step under watch at a time; watch of 14 days or 200 decisions,
-  whichever is later, and up to 28 days longer under spec 0075's brake;
-  a reverted setting pauses for 30 days.
-- At least 200 decisions in the check set; LambdaMART needs at least 2,000.
-- Memory, inside the service slice, within the memory limits in
-  AGENTS.md section 5.6: the tuner runs in spec 0024's heavy job slot
-  and uses at most 256 MB, streaming labels and stored scores in
-  chunks; labels are about 200 bytes each (100,000 labels about 20 MB
-  on disk); nothing is held between nights; ganit's nightly jobs run
-  one at a time in the same slot, at most 0.8 GB on a PC under 16 GB
-  and 1.2 GB otherwise, never beside a backfill peak. Estimates to be
-  measured.
-- Speed, on Dell under fixed conditions, held by the 5% median rule:
-  - the nightly run on a site of 1,000,000 posts with 100,000 labels ends
-    within 10 minutes of job time, not counting pauses for live work and
-    the ganit runs; the ganit proposal and verdict each end within 5
-    minutes;
-  - replaying 100,000 pairs from stored scores takes at most 2 s;
-  - a revert decided by the watch takes effect, between jobs, within 1
-    minute;
-  - the tuning history answers within 300 ms at the 95th percentile for
-    10,000 proposals; accept-rate figures within 100 ms.
+Recheck the pinned permission revision and erasure generation before
+each continuation and before sealing the local proof. If they change
+or cannot be proved, invalidate the partial selection and hold. No
+continuation, stale proof or older substitute may fill that window.
+Below 200, overlap, conflicting identities, an unproved cut or
+exceeding the admitted read bounds also holds the evidence for 0057.
+Keep both window memberships and their evidence on the owner's PC.
+Only the separately admitted 0057 aggregate hand-off may leave that
+boundary.
+
+## Storage and interfaces
+
+PostgreSQL stores authoritative feedback and accept-rate evidence with RLS
+forced. Queue, outbox and inbox records use spec 0019 and carry
+only the refs needed for the authorised work. The original signed
+moderation decisions retain their own source record.
+
+Tables:
+
+- `feedback_label`: the fields in `FeedbackLabel`, plus tombstone and
+  supersession references;
+- `feedback_dataset`: manifest digest, state, schema, storage reference,
+  permission reconciliation and creation metadata;
+- `accept_rate`: segment, observation window, decisions, accepts and
+  interval, with no raw moderator identity.
+
+Product actions:
+
+| Action | Behaviour | Capability |
+|---|---|---|
+| `setu.tuning.status` | Read optimisation eligibility and recent controller outcomes | CAP-077 |
+| `setu.tuning.enable` | Enable or pause new studies; never force promotion | CAP-077 |
+| `setu.tuning.history` | Read proposals, manifests, evidence and outcomes | CAP-077 |
+| `setu.tuning.revert` | Request the verified rollback route in spec 0077 | CAP-077 |
+| `setu.module.stage_evidence` | Read feedback-derived module-stage evidence; never request a transition | CAP-045 |
+| `setu.accept_rate` | Read accept rates and drift by segment | CAP-047 |
+
+The CLI and MCP expose the same typed actions under spec 0020. Enabling
+studies does not confirm a public write or protected setting change.
+
+Events use the envelopes in spec 0019: `feedback.label_changed`,
+`feedback.dataset_ready`, `feedback.dataset_blocked` and
+`accept_rate.drift`. Module-stage receipts belong to spec 0015;
+optimisation and controller events are owned only by spec 0077.
+
+## Failure contract
+
+| Code | Condition | Required result |
+|---|---|---|
+| `SUT-600` | Too few eligible decisions for the declared study | No study starts; record the shortfall |
+| `SUT-601` | Candidate fails protected evaluation | `KEEP_CHAMPION`; retain evidence |
+| `SUT-602` | Inputs or settings changed during comparison | Withdraw candidate and rebuild manifest |
+| `SUT-603` | Verified critical regression | `ROLL_BACK` the complete admitted set |
+| `SUT-604` | Required model or evaluation output is overdue | Keep champion; block new candidate admission |
+| `SUT-605` | Product policy refuses a requested transition | No activation; record policy defect |
+| `SUT-606` | Module-stage evidence is incomplete, stale or contradictory | Make no stage transition; keep new and unadmitted modules in shadow and report the evidence defect to spec 0077 |
+| `SUT-607` | Job exceeds its admitted window | Checkpoint or stop safely; resume by idempotent key |
+| `SUT-608` | Parameter is outside its typed registry or non-finite | Reject before training or activation |
+| `SUT-609` | Permission, erasure or freshness reconciliation fails | `BLOCK_FOR_DATA_QUALITY` |
+| `ERR-0053-DUPLICATE-CONFLICT` | Duplicate id has conflicting content | Quarantine id and block affected dataset |
+
+Failures never weaken moderator review or silently emit a public link.
+
+## Security, privacy and erasure
+
+1. Training exports contain ids, content hashes, bounded features and reason
+   codes. They contain no raw post text unless a separately approved custom
+   training contract explicitly requires it and enforces the same tenant,
+   permission and erasure controls.
+2. Moderator identities are pseudonymous and cannot be ranked or shown to
+   other users. Re-identification material stays in the private product
+   boundary.
+3. Workers receive only their authorised tenant and dataset manifest.
+4. Erasure removes or tombstones affected labels and prevents new use of
+   derived datasets. Existing candidates using them are blocked until
+   re-evaluated under spec 0077.
+   For an isolated backup restore, reconcile the affected labels and
+   their derived manifests, checkpoints and candidate references
+   against the current 0032 erasure history outside the backup.
+   Apply the 0030 restore fence before use and retain the current
+   erasure receipts. An affected pre-erasure manifest, job receipt
+   or signed promotion record keeps only its permitted history.
+   Hold the affected trial or candidate from fresh use with SUT-609.
+5. Logs, metrics and events carry ids, digests, counts and bounded figures,
+   never credentials, post text or moderator names.
+
+## Resource and operational contract
+
+Every workflow and worker has a measured resource-admission record under
+AGENTS.md sections 5.6 and 11. The record states exact artefacts, label and
+pair counts, batch sizes, CPU, memory, temporary storage, concurrency,
+p95 duration and checkpoint overhead. No unmeasured fixed memory or nightly
+runtime claim is accepted.
+
+Dataset preparation streams bounded chunks. Training and evaluation cannot
+run beside an incompatible model conversion, index backfill or second
+challenger when their combined profile exceeds admission. Live review and
+rollback have priority over studies. Handle an interrupted or
+unacknowledged training result through the 0077 recovery fence.
+A prior result receipt preserves only the original effect. Before
+using the result again, recheck the current dataset eligibility
+under this specification. Any separately verified fault in the
+active set or its retained rollback set follows 0077 protective
+control.
+
+## Requirement, design and task traceability
+
+These identities group the normative contracts above. They do not show
+execution state or admit an implementation task. Derived tasks still
+follow spec 0076's readiness gate.
+
+| Requirement | Normative obligation | Design and derived task | Unit evidence | BDD evidence |
+|---|---|---|---|---|
+| `REQ-0053-LABEL-INTEGRITY` | Versioned decision and reason mappings, authenticated tenant and permission context, complete visible evidence, idempotent tombstones and freshness reconciliation preserve eligible feedback without crossing tenants | `DES-0053-FEEDBACK-PLATFORM`; `TASK-0053-FEEDBACK-PLATFORM` | `UT-0053-REASONS`, `UT-0053-WITHDRAW`, `UT-0053-TENANT`, `UT-0053-PERMISSION`, `UT-0053-PARTIAL` | `BDD-0053-INELIGIBLE-EVIDENCE` |
+| `REQ-0053-DATASET-GOVERNANCE` | Immutable authorised manifests, thread-disjoint temporal partitions, bounded exports and permission or erasure reconciliation prevent ineligible or incompatible derived data from entering a study | `DES-0053-FEEDBACK-PLATFORM`; `TASK-0053-FEEDBACK-PLATFORM` | `UT-0053-SPLIT`, `UT-0053-ERASURE`, `UT-0053-EXPORT` | `BDD-0053-ERASURE-BLOCK` |
+| `REQ-0053-CONTROLLED-LEARNING` | Feedback reaches training and module-stage evidence only through spec 0077's protected route, with Rust alone controlling activation, complete rollback and shadow or review authority | `DES-0053-FEEDBACK-PLATFORM`; `TASK-0053-FEEDBACK-PLATFORM` | `UT-0053-CONTROLLER-AUTHORITY` | `BDD-0053-PROMOTION`, `BDD-0053-REGRESSION`, `BDD-0053-MODE` |
+
+| Design | Owning contract | Requirements and derived task |
+|---|---|---|
+| `DES-0053-FEEDBACK-PLATFORM` | The outcomes and boundaries through the resource and operational contracts above | `REQ-0053-LABEL-INTEGRITY`, `REQ-0053-DATASET-GOVERNANCE`, `REQ-0053-CONTROLLED-LEARNING`; `TASK-0053-FEEDBACK-PLATFORM` |
+
+| Derived task | Implementation boundary | Upstream identities |
+|---|---|---|
+| `TASK-0053-FEEDBACK-PLATFORM` | Implement the Rust-owned feedback labels, manifests, package interfaces and spec 0077 control boundary without first-party Python production code or a second promotion path | `DES-0053-FEEDBACK-PLATFORM`; `REQ-0053-LABEL-INTEGRITY`, `REQ-0053-DATASET-GOVERNANCE`, `REQ-0053-CONTROLLED-LEARNING` |
+
+## Test and acceptance design
+
+Tests use synthetic tenants, content versions and signed fixtures. Rust
+tests cover product policy, storage and package integration; permitted
+non-production Python checks may exercise packaged library behaviour but
+are never shipped. Integration tests cover queue and outbox recovery
+and check that only the admitted host and helpers remain in the
+spec 0104 sidecar. Job, study policy and activation logic stay in Rust.
+
+| Test id | Requirement | Given | When | Then |
+|---|---|---|---|---|
+| `UT-0053-REASONS` | `REQ-0053-LABEL-INTEGRITY` | Every decision and reason combination | Labels are derived | Exactly the declared label kind and weight result |
+| `UT-0053-WITHDRAW` | `REQ-0053-LABEL-INTEGRITY` | A rejected suggestion later restored | Withdrawal arrives twice | One tombstone exists and future exports exclude it |
+| `UT-0053-TENANT` | `REQ-0053-LABEL-INTEGRITY` | Two tenants use the same external ids | Labels and datasets are built | No row, partition, metric or artefact crosses tenants |
+| `UT-0053-PERMISSION` | `REQ-0053-LABEL-INTEGRITY` | A moderator lacks review permission | A decision event is offered | It is rejected and produces no label |
+| `UT-0053-PARTIAL` | `REQ-0053-LABEL-INTEGRITY` | Only part of a source was read | A label is prepared | Dataset admission blocks incomplete evidence |
+| `UT-0053-SPLIT` | `REQ-0053-DATASET-GOVERNANCE` | Decisions share threads and cross the time cut-off | Partitions are built | Threads never leak and actual temporal coverage is reported |
+| `UT-0053-ERASURE` | `REQ-0053-DATASET-GOVERNANCE` | A source is erased after dataset creation | A study is requested | The dataset is blocked and affected candidates require re-evaluation |
+| `UT-0053-EXPORT` | `REQ-0053-DATASET-GOVERNANCE` | An authorised export is produced | Fields are inspected | No undeclared text, identity or credential field exists |
+| `UT-0053-CONTROLLER-AUTHORITY` | `REQ-0053-CONTROLLED-LEARNING` | Packaged training output improves a metric but lacks signed protected evidence | Activation is requested | Rust refuses; the champion and protected thresholds remain unchanged |
+| `IT-0053-DUPLICATE` | `REQ-0053-LABEL-INTEGRITY` | One decision id arrives with identical and then conflicting bodies | Events are consumed | Identical delivery is idempotent; conflict returns `ERR-0053-DUPLICATE-CONFLICT` |
+| `IT-0053-RELEASE-REVIEW-PROJECTION` | `REQ-0057-PROTECTED-RELEASE-GATES` | Use synthetic complete, 199-row and overlapping cuts. Delay a valid undo result across the cut and replay it. Plant a mismatched audit join, unrelated audit events, a false origin, an unqualified profile and an unresolved sequence gap. Exceed the admitted read bound with excluded events. In separate cases erase a contributor between pages or revoke the grant before seal | Freeze against the exact local cohort and select the two windows | Select at most 200 per window in proved commit order. Undo appears once at its terminal sequence. Known ineligible events stay excluded. A limit overrun or changed generation invalidates the affected selection. An incomplete, conflicting, overlapping or unproved selection holds with no aggregate output, older substitute or reusable continuation. Ordinary feedback and native review continue through their owning actions |
+| `IT-0053-QUEUE` | `REQ-0053-DATASET-GOVERNANCE` | Worker dies after staging and the relay restarts after delivery | Queue recovery and consumer replay run | One authoritatively published manifest, one freeze job, and no duplicate study. Withdrawal after inbox commit but before claim and a wrong site both refuse |
+| `IT-0053-AUTHORITY` | `REQ-0053-CONTROLLED-LEARNING` | The sidecar or scheduler requests direct activation | The request reaches Rust policy | It is refused regardless of metric results |
+| `IT-0053-NO-PYTHON-PRODUCTION` | `REQ-0053-CONTROLLED-LEARNING` | Check source and shipped artefacts around the admitted sidecar | Language and artefact checks run | Only approved host and helpers can run. A planted Python objective, scheduler decision or activation path is refused |
+| `BDD-0053-INELIGIBLE-EVIDENCE` | `REQ-0053-LABEL-INTEGRITY` | A source was visible at decision time but loses guest visibility before export | Permission reconciliation runs | The affected label is ineligible and the manifest records the exclusion without rewriting history |
+| `BDD-0053-ERASURE-BLOCK` | `REQ-0053-DATASET-GOVERNANCE` | An existing dataset and candidate contain an erased source | A new study or promotion is requested | Both block pending authorised reconstruction and complete re-evaluation under spec 0077 |
+| `BDD-0053-PROMOTION` | `REQ-0053-CONTROLLED-LEARNING` | A challenger improves training loss only | Weekly evidence is absent | Champion remains active and no setting or model changes |
+| `BDD-0053-REGRESSION` | `REQ-0053-CONTROLLED-LEARNING` | An activated challenger has a verified critical regression | Controller evaluates evidence | Complete previous set is restored under spec 0077 |
+| `BDD-0053-MODE` | `REQ-0053-CONTROLLED-LEARNING` | A module lacks complete stage evidence but has a high accept rate | Its candidate is evaluated | No local transition occurs; without spec 0077 admission it remains in shadow |
+| `E2E-0053-FEEDBACK` | `REQ-0053-LABEL-INTEGRITY` | A moderator approves and later removes a link | Full learning route runs | Labels reflect both events; no automatic public write occurs |
+| `NEG-0053-THRESHOLD` | `REQ-0053-CONTROLLED-LEARNING` | Optuna suggests a changed release threshold | Registry validation runs | Value is refused before a trial starts |
+| `OPS-0053-RESOURCE` | `REQ-0053-DATASET-GOVERNANCE` | A study exceeds its admitted resource profile | Scheduler observes usage | Study waits or stops; live review and rollback remain available |
+
+For the restore variant in BDD-0053-ERASURE-BLOCK, keep an authentic
+backup containing one trial checkpoint, its dataset and a previously
+verified candidate A. Erase a source used in A after the backup.
+Apply the current 0032 history before releasing restored data.
+Replay that checkpoint with the old signed success evidence.
+The affected label stays unavailable. No affected artefact is
+served, reused for training or offered for the controller decision.
+Supply the same complete A artefacts to the existing 0077 rollback
+verification with an otherwise valid current rollback decision.
+Current source proof fails with ERR-0077-ROLLBACK-UNVERIFIED.
+Report no verified rollback and keep release and new activation
+blocked. An independent synthetic control with a prior set free
+of the erased input and proof of every other current check can
+complete its own exact rollback. It supplies no substitute for A.
+
+Extend IT-0053-QUEUE under REQ-0053-DATASET-GOVERNANCE. With two
+eligible labels, let the worker read eligibility and stage the
+export. Commit the exact 0028 rejection withdrawal for one label
+before 0053 publication, leaving permission, erasure generation
+and lease unchanged. Test with the correction event still delayed
+and after the tombstone arrives. The held export gives SUT-609 and
+publishes no ready event. Also hold when the current source proof
+cannot order the commits. In separate runs, commit the eligible
+export first. Place the withdrawal after the 0077 eligibility read
+and before freeze publication, then reverse that final order in
+the control run. The first freeze holds, even with delayed delivery.
+The second preserves the prior freeze and export receipts. After
+withdrawal, replay exposes only the currently authorised historical
+result, and affected artefact reads and later study use hold. A
+fresh authorised preparation excludes the withdrawn label and keeps
+the other eligible label. Preserve the original moderation receipt.
+Use the existing source, outbox and freeze identities and synthetic
+evidence only.
+
+Property tests cover duplicate delivery, thread-disjoint splitting,
+monotonic permission withdrawal and canonical manifest serialisation.
+Failure injection covers outbox replay, job restart, stale model keys,
+erasure during evaluation and partial checkpoints. In IT-0053-QUEUE,
+keep site authority and all labels current. Use a valid manifest and
+checkpoint from admitted profile A. Separately substitute another
+admitted profile B with the same supported schema, feature dimensions
+and displayed package version but a different pinned spaCy pipeline
+artefact and key. Test at freeze admission and at resume before
+sidecar hand-off. Repeat with the required profile proof missing.
+Both cases hold before a new freeze, payload hand-off or training
+effect. A then-current exact A resumes the original effect only
+after reconciliation. A committed prior effect returns its authorised
+receipt without rerunning. Feature-specific coverage and mutation
+requirements follow ADR-0020.
 
 ## Footprint budget
 
-This part adds nothing to public pages.
+This specification adds nothing to public pages. Suggestion rendering and
+insertion retain the budgets in specs 0027 and 0028.
 
-## How it is tested
+## Provenance
 
-Rust tests in `crates/tuning/tests/`, with synthetic decisions and a fake
-ganit that answers from fixed outputs (`LabelSource`, `SignalSource`,
-`GanitClient`, `Replayer`, `SettingsWriter`, `LiveFigures`), plus ganit's
-own tests where named.
-
-1. Each reason button and decision kind makes the label in the table;
-   recalculated, parked, retired or stale suggestions make none; a restored
-   rejection withdraws its label (`labels.rs`).
-2. For any history, the split puts no thread on both sides, and every
-   check label is newer than every tuning label (property).
-3. For any value, bound, step rule and ganit answer, a value passes only if
-   a continuous weight moves at most 5%, a discrete one by one step, inside
-   its bound and above zero; otherwise SUT-608 (property and Kani proof).
-4. Three settings able to gain give exactly one proposal; 150 check-set
-   decisions give none and SUT-600 (`proposer.rs`).
-5. A proposal that helps the tuning set but not the check set fails with
-   SUT-601 and nothing changes (`compare.rs`, and a ganit test).
-6. A proposal that lowers anchor agreement beyond tolerance in one section
-   fails and the record names that section.
-7. A passing proposal gives a new settings version by `tuner` with reason,
-   benefits, drawbacks and figures, and a running job keeps its old
-   version (`promote.rs`). A restart-only setting becomes a proposal for an
-   administrator.
-8. A step whose harm chance passes the rollback level is reverted alone,
-   its setting paused 30 days with SUT-603, others untouched; while a step
-   is watched, nothing else is promoted (`watch.rs`).
-9. A manual change pauses tuning of that setting (`manual_pause.rs`).
-10. A module whose lower bound falls to 39% is demoted with SUT-606; at 45%
-    it stays in shadow; it returns only above 50% after a full period; no
-    flapping on any noisy series, and no mode beyond review after any
-    promotions (`modes.rs`, property).
-11. One moderator accepting everything cannot carry the accept rate once
-    job 154's weights apply (`label_weights.rs`, and a ganit test with
-    numerical edge cases).
-12. Replay from stored scores equals a full re-ranking on the same fixture
-    (`replay.rs`).
-13. The nightly run and an administrator saving settings at once, under
-    loom: the tuner withdraws with SUT-602 or writes after with the right
-    parent; never a lost update.
-14. The tuner killed mid-comparison resumes from its checkpoint with the
-    same verdict (chaos, nightly).
-15. Replay of 100,000 pairs on Dell takes at most 2 s, held by the 5% median
-    rule (`benches/replay.rs`); a 2-minute mix of history and accept-rate
-    requests stays at 300 ms and 100 ms at the 95th percentile (load).
-16. Erasure deletes the labels and marks proposals "evidence reduced".
-17. The history shows each step's change, reason, gains, costs and outcome
-    with no post text (acceptance and snapshot tests).
-18. The training export holds ids, hashes and reason codes only, nothing
-    from content no longer visible, and nothing aimed at transformer
-    retraining.
-19. From a weight of 1.00 and job 45's target of 1.30, over several nights,
-    each step moves at most 5%, passes its own shadow test, and the target
-    is reached only through such steps (property and Kani proof).
-20. Rule-critical code (the step check, the bound check, one change under
-    watch, the revert of exactly one step, never beyond review): 100%
-    lines, branches and MC/DC, every mutant killed, property tests and Kani
-    proofs.
-21. Each fixed bug gets a regression test that fails on the parent commit.
-
-## Changes from the source
-
-- Tuning runs per site on the owner's PC, not on each forum's server.
-- ganit is the Rust numerical engine inside the service, not a separate
-  batch container; its sub-modules are named by job number here.
-- The small networks are trained by ganit in pure Rust, and LambdaMART is
-  served by a pure-Rust model, not a native library.
-- Memory fits the limits in AGENTS.md section 5.6, in place of the old
-  5.6 GB cap.
-- Speed goals follow the 5% median rule; the old speed-multiple goal is
-  dropped.
-- Coverage adds MC/DC and kills every mutant.
+The decision mappings and interfaces are original Sutradhar design derived
+from the archived feedback specifications and revised under ADR-0020.
+Optuna and spaCy use admitted dependency licences and provenance.
+An algorithm reimplementation records its own provenance and legal
+evidence under spec 0076.
 
 Source: `docs/specifications/linking/feedback.md`,
 `linking/feedback-2.md` and `linking/feedback-3.md` in the archive

@@ -1,5 +1,8 @@
 # ADR-0003: The desktop app and the Sutradhar Design System
 
+Superseded in part by [ADR-0021](0021-version-1-product-stack-and-scope.md)
+(Dioxus dropped; the desktop app is Tauri with Angular 22).
+
 Decided by the owner on 8 November 2026.
 
 ## Decision

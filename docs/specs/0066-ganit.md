@@ -8,14 +8,16 @@ before use. ganit decides the maths; the calling part applies it. It is
 Rust, like the rest of the product. Roadmap Phase 5 item 4 builds
 ganit; a job whose caller comes in an earlier roadmap item is built
 with that caller.
-GanitEvolve (spec 0012) is a separate tool that uses ganit's maths; this
+Ganit Vikas (spec 0012) is a separate tool that uses ganit's maths; this
 spec does not describe it.
 
 Example: each night the `graph` module exports the site's link graph as
 ids and weights. ganit's Jaal engine runs job 251 (internal PageRank)
-with the run's seed, and writes a stamped output. Ranking shadow-tests
-and activates it. Job 259 then reads it to work out the PageRank gain
-if a link is accepted, and the "why" panel shows that gain (spec 0027).
+with the run's seed, and writes a stamped, inert candidate output. Spec
+0077 evaluates it within a complete challenger and alone controls any
+champion transition. Once the active manifest names that output, job 259
+reads it to work out the PageRank gain if a link is accepted, and the
+"why" panel shows that gain (spec 0027).
 
 ## What it does
 
@@ -25,8 +27,9 @@ The "Used by" column of the job table below names every spec that asks
 a numbered job; this list groups them.
 
 - Ranking (spec 0027) asks job 1 live, and uses the most nightly jobs.
-  Specs 0068 and 0069 read the same outputs as steps of method chains;
-  the table names their owner, spec 0027.
+  Keep the typed outputs and shape-specific inputs that specs 0027
+  and 0049 use. Specs 0068 and 0069 record the former chain designs.
+  Current use follows the owning pipeline and controller contracts.
 - Staff suggestions, link additions, feedback learning and feedback
   harvest (specs 0028, 0029, 0053, 0054).
 - Analytics, search connectors, search charts, the SEO crawler, the web
@@ -38,15 +41,16 @@ a numbered job; this list groups them.
   test runner and the models (specs 0030, 0032, 0038, 0035, 0011,
   0024).
 - The method catalogue, the method lab, quality judging, the research
-  rules and GanitEvolve (specs 0055, 0056, 0057, 0013, 0012), which run
+  rules and Ganit Vikas (specs 0055, 0056, 0057, 0013, 0012), which run
   on Dell.
 
 Some callers use ganit's maths through named entry points instead of
 numbered jobs, such as the settings what-ifs and before-and-after
 figures (specs 0020, 0014), the visual layer's layouts, projections and
 forecasts (spec 0017), the language layer's training (spec 0026),
-GanitEvolve's search maths (spec 0012), the module-promotion measure
-(spec 0015), safe running's band maths (spec 0033), the test room's
+Ganit Vikas's search maths (spec 0012), the module-stage evidence measure
+(spec 0015, diagnostic only), safe running's band maths (spec 0033), the test
+room's
 comparisons (spec 0039), the Editorial Coach's gap and uncertainty maths
 (spec 0041) and the backlink crawl's maths (spec 0045). Each entry point
 joins the registry by name together with the caller that needs it, with
@@ -286,9 +290,9 @@ before it.
 - Pure Rust, in the `ganit` crate. No other language, no native maths
   library and no C compiler (AGENTS.md section 4).
 - `ganit` depends on `sutradhar-methods` for the one rank-correlation
-  function that Mulyankan's behaves-the-same job and `qualify` both use
-  (spec 0055, check 3; spec 0067). Nothing in `sutradhar-methods`
-  depends on `ganit`.
+  function shared by Mulyankan's behaviour comparison and `qualify`
+  (spec 0055, check 3). Spec 0064 owns qualification evidence.
+  Nothing in `sutradhar-methods` depends on `ganit`.
 - Inputs are Arrow snapshots of ids, numbers and word counts, never post
   text, names or search terms (specs 0019, 0027, 0044, 0049). Named
   entry points follow the same rule, with one exception: the language
@@ -315,7 +319,7 @@ before it.
     of the nightly window and stops at its end, or when no `ganit.*`
     jobs are left; karya asks it to run each job, one at a time,
     through its versioned interface (spec 0019).
-  - On Dell, the lab, quality judging and GanitEvolve call it through
+  - On Dell, the lab, quality judging and Ganit Vikas call it through
     the program interface of specs 0056 and 0012, and ganit's own tests
     run there.
   ganit never runs on a site's server, and the add-ons never call it.
@@ -326,10 +330,11 @@ before it.
 - Each output carries its reproducibility stamp: job, ganit code
   version, snapshot digest, settings digest, seed and metrics. ganit
   writes it to the shared data folder and never writes Sutradhar's
-  database. karya checks its schema and the numerical guards (no NaN,
-  infinity or out-of-range value). The consumer shadow-tests it, then
-  activates it or keeps the last good one, and can roll it back (specs
-  0019, 0027).
+  database. The spec 0019 typed job boundary checks its schema and the
+  numerical guards (no NaN, infinity or out-of-range value). The output
+  is inert evidence until spec 0077 evaluates it inside a complete
+  challenger. Spec 0077 alone promotes, activates or rolls back a
+  champion; the consumer has no independent activation or fallback.
 - An output that feeds ranking reaches it either as the input of a
   catalogue method (spec 0055) or as a typed signal with its provenance,
   freshness and confidence (spec 0027, spec 0064). ganit never chooses a
@@ -338,9 +343,14 @@ before it.
   `ganit:<engine>::<function>`, such as `ganit:jaal::pagerank`
   (spec 0055). Seeds, weights and settings never make a new method.
 - Each outside library has one job in `gate/packages.toml`. A library
-  other specs already name for this work, such as `faer` for matrix
-  maths or `candle` for small networks (spec 0056), is listed there
-  before ganit uses it. Which others are needed is to research.
+  another admitted specification names for this work is listed there
+  before ganit uses it. Spec 0056's exact packaged training application
+  and its dependencies remain readiness blockers; ganit does not select
+  or embed a neural runtime. Every additional dependency requires its
+  owning research record to supply the exact package, version, hashes,
+  licence, purpose and admission evidence before implementation. An
+  unresolved dependency blocks the affected job, not an unrelated
+  admitted job.
 
 ### Jaal, graph analysis
 
@@ -353,33 +363,55 @@ directed where the source is directed, and weighted.
 
 - Centrality: internal PageRank (251), PageRank per topic hub (252) and
   the PageRank gain if one suggestion is accepted (259).
+  Spec 0027 SIM-01 to SIM-05 uses a separate 0019 advisory entry
+  that shares only the admitted 251 calculation and profile.
+  It cannot reach the candidate publisher or ranking store. Its
+  manifest, output type, access and lifecycle are preview-only.
 - Community detection: link communities and the threads that bridge
   them (254), topic cohesion (262) and rings of accounts reacting to
   each other (263). Varnakram's job 278 uses Jaal's graph for the one
-  topic definition. Which community method each job uses is to research.
+  topic definition. The exact community algorithm for each job is a
+  readiness blocker owned by that job's Jaal research record. It must
+  supply the published definition, clean-room provenance, baselines,
+  quality evidence, deterministic stopping rule and resource admission;
+  until then that job is unavailable and no substitute is chosen.
 - Structure: orphan threads and click depth (253), core knowledge
   threads by k-core (255), pairs of threads that link only to each other
   (258), tag co-occurrence (264) and pages competing for the same
   queries (265).
 - Link prediction: Adamic–Adar, resource allocation and Katz scores, and
-  the top candidates per thread (256).
+  the top candidates per thread (256). The job's research record
+  under QR-232 must bind the admitted score name and definition, graph
+  projection and edge units, numeric method and bounds, candidate
+  ordering, output profile and measured limits. The result keeps the
+  existing job stamp and exact graph and method identity. A mismatch
+  supplies no current link candidates or relevance input. Keep the
+  required 0023 retrieval routes and the current 0077 champion.
 
-Iterative algorithms stop at the problem's tolerance or its iteration
-cap, both set per job by research. The graph for one job is held in a
-compact form within the batch memory budget; what happens past that
-size is to research.
+Each job's iterative tolerance and iteration cap are readiness blockers
+owned by its research record and must be admitted before that job runs.
+The graph is held in a compact form within the admitted batch memory
+budget. A graph whose measured representation exceeds that budget is
+refused with "graph exceeds admitted memory budget"; no partial graph,
+silent truncation or unadmitted partitioning route is used. A streaming
+or partitioned algorithm requires its own method admission first.
 
-NetworkX's public list of graph operations is a clean-room reference
-for which operations to offer, as spec 0064 says. No NetworkX code is
-read, copied or run. Each algorithm is written from its published
-definition. A further operation from that list enters as a catalogue
-candidate (spec 0055) and is admitted through the lab (spec 0056) before
-any job uses it.
+NetworkX's public list of graph operations is a public functional
+reference for which operations to offer, as spec 0064 says. Its
+provenance is classified under spec 0076; strict researcher/implementer
+separation applies only where strict clean-room reimplementation is
+actually required. The public operation list does not itself impose that
+route. No NetworkX code is copied. Each algorithm is written from its
+published definition. A further operation from that list enters as a
+catalogue candidate (spec 0055) and is admitted through the lab
+(spec 0056) before any job uses it.
 
-Pixie-style bounded random walks are lab candidates only. They are
+Pagdandi-style bounded random walks are lab candidates only. They are
 compared with named baselines on held-out sites, and reach a job only
 once the method lab admits them (specs 0049, 0056, 0064). Their walk
-counts and lengths are to research.
+counts and lengths are readiness blockers owned by the experiment's
+frozen protocol; without admitted values and quality and resource
+evidence, the experiment and every production use are blocked.
 
 ## Limits
 
@@ -393,8 +425,11 @@ counts and lengths are to research.
 - On Dell, ganit's verdict on a lab reconstruction run, and each lab
   job's place in the heavy job slot, are as spec 0056 sets.
 - All of this sits within the memory limits in AGENTS.md section 5.6.
-- Time limits per batch job, and Jaal's run time on the 50,000-thread
-  tier, are to research.
+- Every batch-job time limit and Jaal's admitted run-time budget on the
+  50,000-thread tier are readiness blockers owned by the relevant job's
+  research record. It must supply measured distributions, environment
+  fingerprints and safe stopping behaviour. Until then the affected job
+  cannot run and no timing claim is made.
 
 ## Footprint budget
 
@@ -414,7 +449,24 @@ Rust tests in the `ganit` crate, run on Dell through pankti:
    link is an orphan.
 2. Link prediction on small graphs matches hand sums: two threads whose
    only shared neighbour has two links score 1/ln 2 for Adamic–Adar and
-   1/2 for resource allocation.
+   1/2 for resource allocation. For the Katz oracle use the
+   distance-weighted walk definition in source SR-065. On the
+   undirected unit-edge path A–B–C with isolated D, set attenuation
+   to 1/4 for the synthetic fixture only. With an unnormalised
+   sum of walks of all positive lengths, A to C and C to A each
+   give 1/14. The length-2k count is 2^(k−1) for k ≥ 1. A to D
+   gives zero. The same path with a length-two limit gives 1/16
+   and with a length-four limit gives 9/128. Declare the matching
+   oracle and tolerance for each admitted profile. These fixture
+   inputs do not fix production attenuation or iteration limits.
+   Plant an unchanged score with a mismatched graph digest, method
+   settings or code version. It supplies no current result. Retry
+   the exact original inputs and verify one logical result. For a
+   fixture with an admitted memory bound M bytes, check M and M+1.
+   M passes the memory check. M+1 refuses the whole graph and gives
+   no score, partial list or active ranking change. Missing stopping
+   proof holds the job. An unconverged or expired job supplies no
+   candidates.
 3. Job 258 flags two threads that link only to each other, and clears
    the flag once a third thread links to either.
 4. Every expected value is worked out by hand from the algorithm's
@@ -434,7 +486,8 @@ Rust tests in the `ganit` crate, run on Dell through pankti:
    numerical edge cases empty data, one observation, all accepts, ties
    and missing days.
 8. Guards: an output holding NaN, infinity or an out-of-range value is
-   refused, and the last good one stays active (specs 0019, 0049).
+   refused, and the verified champion remains unchanged under spec 0077
+   (specs 0019, 0049).
 9. Contract: every snapshot schema holds ids, numbers and word counts
    only, and a field of text is refused; the training entry point and
    held-out scoring on admitted test sets refuse any sentence from no
@@ -467,8 +520,8 @@ Rust tests in the `ganit` crate, run on Dell through pankti:
   give way to Rust lab runs (spec 0056).
 - The 23 engines and the owner's job numbers are kept. Consumers that
   were Elixir modules are now Rust parts of the service.
-- New: NetworkX as a clean-room reference list, and Pixie-style walks as
-  lab candidates only (spec 0064).
+- New: NetworkX as a public functional reference list classified under
+  spec 0076, and Pagdandi-style walks as lab candidates only (spec 0064).
 
 Source: `docs/dev/ganit.md` and `docs/dev/ganit-2.md` to
 `docs/dev/ganit-5.md` in the archive `archive-2026-11-08-old-repo`.

@@ -1,36 +1,53 @@
 # ADR-0001: Languages and files
 
-Decided by the owner on 8 November 2026.
+Superseded in part by [ADR-0021](0021-version-1-product-stack-and-scope.md)
+(background processing is PostgreSQL outbox and our own Axum/Tokio
+scheduler, not Kafka or Airflow).
+
+Decided by the owner on 8 November 2026. Revised by ADR-0019,
+[ADR-0020](0020-version-1-documentation-and-architecture-baseline.md) and
+the owner's packaged-Python decision of 19 November 2026.
 
 ## Decision
 
-Rust is the language for the product and for the operations and
-developer tools. No Go is used in our code, and no shell is written by
-hand ([ADR-0019](0019-rust-for-tools.md), owner, 17 November 2026).
-Beside Rust, CSS (with Tailwind), strict TypeScript for small interop
-modules and PHP for the two site add-ons are allowed, with a few other
-kinds of file. The full list of allowed languages, versions and file types is in
-[AGENTS.md section 4](../../AGENTS.md#4-languages-and-files). Cargo
-builds the Rust. Ready-made tool programs may run only when pinned and
-listed in `gate/tools.toml`.
+Rust is the language for all first-party production services, integration,
+adapters and substantive operations and developer tools. CSS with
+Tailwind, strict TypeScript for small browser interop modules and PHP for
+the two site add-ons remain allowed, with the other file kinds listed in
+[AGENTS.md section 4](../../AGENTS.md#4-languages-and-files).
+
+First-party Go is banned. Bounded operational shell is allowed under
+ADR-0019. The product must use approved Python packages and libraries for
+BGE, spaCy, Optuna and Airflow, but no first-party Python production code
+is permitted. Rust owns integration through admitted embedding, packaged
+executable or packaged service interfaces. Declarative configuration is
+allowed; first-party production Airflow DAGs, Optuna objectives, adapters
+and custom spaCy components are not.
+
+First-party Python is limited to explicitly permitted non-production tests
+and development checks. Ready-made tools and packages of any implementation
+language require approved pins, hashes, licences and security checks.
 
 ## Why
 
-- With one main language for the product there is one set of checks,
-  one style and one way to test, so every check can really reach 100%.
-- Rust is memory-safe and fast without a garbage collector, which helps
-  keep within the memory limit.
-- PHP is needed only because XenForo and WordPress run PHP.
+A small number of explicit language boundaries keeps the product coherent
+while reusing maintained Python-native libraries. The boundary prevents a
+second first-party production stack without forcing risky reimplementation
+of specialist algorithms.
 
 ## Trade-offs
 
-- Rust has fewer ready-made libraries for some tasks, so we write more
-  ourselves.
-- TypeScript waits for the condition in
-  [AGENTS.md section 4](../../AGENTS.md#4-languages-and-files).
+The Rust/package bridge and declarative orchestration need compatible
+locks and integration evidence. A package feature that needs custom Python
+is blocked until a supported packaged or Rust-hosted route exists. Neither
+shell nor a Python package may contain hidden first-party business rules or
+alter protected release policy.
 
 ## How we check it
 
-The language check refuses any file whose type is not on the allowed
-list, at commit, push and release. It is proven on a planted file of each
-refused kind.
+The language and artefact checks refuse first-party production Python,
+including embedded or generated Python. Contract tests cover Rust/package
+interfaces and failures. ShellCheck, shfmt and failure-path tests cover
+shell. Dependency, licence, hash and security checks cover every Python
+package and transitive artefact. The architecture check enforces protected
+release authority.

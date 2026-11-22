@@ -1,9 +1,9 @@
 skill = "unsafe-patterns"
-change = "sha256:a390528ad6f6f97eaca5e09583a82ead225c116ced48ff625b9f37540bbf2716"
+change = "sha256:e5903784ac2150fce301af6be53342d6b1336d5d8fcc5ecda4b68f12119d34a4"
 verdict = "pass"
-agent = "claude subagent"
-summary = "Re-read the loop guard section of spec 0016: per-task lock over read-add-save, own part-file per save, bounded fields and file size, links and pipes refused, two-writers test now uses child processes, tamper limits stated. Earlier finding fixed; nothing open."
+agent = "claude subagent round six"
+summary = "Round six tried to defeat the simplified waiver rule: duplicate check ids, chains of further waivers, narrow-then-widen scope, base revision and candidate games, and clock skew. Counting per check id regardless of scope closes the scope games. A rename, split or merge needs the owner's signature, which carries the count. The later time is used for expiry and the earlier for the future-signing check, refused when over 5 minutes apart. The revised 0135 spool arithmetic and the 0137 clamp are sound. No blocking hole. Minor notes left open: define signed history; name the stored baseline for the backwards-time check; state the worker bound as a precondition of the spool overshoot figure; a hard cap on further waivers is the open question in QR-253. Round six was read at fingerprint 144bb425. The only changes after that read are two link definitions re-wrapped for the line-length check, one catalogue row reworded, and fixed names and identifiers added to the spelling allow-list in _typos.toml. Later addition, reviewed in two further rounds: a planted test the_version_one_names_are_not_spelling_checked_as_english, the Organization and Dueling patterns narrowed to exact phrases and one dead pattern removed; the test fails without the allow-list and passes with it."
 
 [[finding]]
-what = "spec 0016 'Records': shared record had no lock or own part-file, so two writers could lose an attempt or rename a half-written file."
+what = "Round five found the lineage scope and alias design could be reset by scope changes, splits or merges, and a lenient clock. Replaced by counting per check id with an owner-signed catalogue change and a stricter time rule."
 fixed = true

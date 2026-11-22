@@ -15,7 +15,10 @@ rules are in [AGENTS.md section 7](../../AGENTS.md#7-the-gate).
 - Running the whole project at every commit would take hours. So the
   commit tier covers the changed code and everything that depends on
   it, and the push tier covers everything. The tiers grow in scope, not
-  in leniency.
+  in leniency. The owner requires official WordPress Plugin Check on
+  every candidate once the WordPress plugin exists. This gives the
+  plugin the same complete check even when a change cannot reach it
+  through the ordinary commit dependency scope. See DR-157 and 0003.
 - Subagent reviews keep costs down while staying independent: each
   reviewer starts fresh and never wrote the change.
 

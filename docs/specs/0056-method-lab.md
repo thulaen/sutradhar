@@ -12,7 +12,7 @@ away from the sites. It produces the evidence that method admission
   verdicts.
 - Lab runs that explain: each method's explanation is a Rust lab run
   with recorded inputs and outputs, shown step by step with charts in
-  the Dioxus app's lab screen. They read the same records and call a
+  the desktop app's lab screen. They read the same records and call a
   lab instance of Sutradhar through its API.
 
 Nothing in the lab runs on a site's server, and a site request never
@@ -24,7 +24,8 @@ write experiment `exp-0043-title-weight`. On Dell it runs link
 reconstruction on the 2,000-thread tier at two title weights, with seed
 7, and exports each case's outcome as an Arrow file. ganit's Mulyankan
 compares the two: recall at 5 rose 1.8 points, range 0.9 to 2.7. The
-report says "propose through the tuner"; the method's explaining lab
+report says "submit as a sealed candidate to spec 0077"; the method's explaining
+lab
 run shows the same result as a chart.
 
 ## What it does
@@ -108,7 +109,8 @@ run shows the same result as a chart.
 
 Link reconstruction is run once, in `pariksha`, and its statistics are
 computed once, in Mulyankan. The model comparison, the small networks'
-competitions, the measure, the ranking experiments and the tuner all use them.
+competitions, the measure, the ranking experiments and spec 0077's
+evaluations all use them.
 
 - Splits by thread and by time: the newest share of decisions or links
   is held out, and no held-out thread appears in tuning.
@@ -123,10 +125,10 @@ competitions, the measure, the ranking experiments and the tuner all use them.
   control (130), early stopping (131) and "no worse than" decisions
   (132). The model comparison's "clearly wins" rule and each small
   network's "better" rule are protocol parameters for these jobs.
-- One proof standard for the lab and GanitEvolve: the frozen protocol
+- One proof standard for the lab and Ganit Vikas: the frozen protocol
   states the unit, the stopping rule, the smallest gain and the largest
   harm. Where this page words a test differently, the research rules of
-  GanitEvolve win.
+  Ganit Vikas win.
 - Probe sets for method fingerprints: seeded generated inputs per output
   kind, versioned.
 
@@ -179,33 +181,44 @@ competitions, the measure, the ranking experiments and the tuner all use them.
 
 ### Small neural networks: trained in ganit, served by the service
 
-- Training: pure-Rust models (candle) in ganit's batch jobs on the CPU,
-  with resumable checkpoints and weights exported as safetensors.
+- Training uses an exact-pinned packaged training application with a
+  declarative, non-Python configuration, resumable checkpoints and
+  hash-locked exported weights. Rust owns the typed integration and
+  spec 0019 job boundary; Sutradhar writes no training adapter, custom
+  training callable or first-party Python production code. The exact
+  package, dependency hashes, configuration schema and measured
+  resource profile are readiness blockers: no candidate trains until
+  they are admitted.
 - Scope: small networks only, each competing inside an existing job: an
   embedding adapter against whitening in job 273 (trained on
   reconstruction pairs and accepted links); neural classifier heads on
   embeddings against GLM or gradient-boosted trees inside each
   classifier job (for example 66, 68 and 74); and universal
   differential equations against the plain equation in job 222.
-- The winner is on, and every rival that passes ships sealed and
-  selectable. A network that fails is not exported.
+- A network that fails its frozen evaluation is not admitted. Passing
+  candidates remain sealed artefacts; spec 0077 alone evaluates,
+  promotes, activates and rolls back a complete champion. A lab verdict
+  never activates a network or creates a second selection route.
 - Never: fine-tuning the transformer models themselves (the embedder,
   the reranker) on this hardware.
 - The competition is an experiment like any other: frozen protocol,
-  Mulyankan's verdict, and the winner chosen by the job's own measure.
-- The old Tri-Rank scoring method is tested as a rival, not chosen as a
-  ranker. The 34 old text-style signals are not tested in the lab.
-- Serving: the inference worker loads the weights with the
-  `safetensors` crate and runs the forward pass itself, with `faer` for
-  the matrix maths.
-- The parity test, a gate check: training exports fixed test inputs
-  with their expected outputs beside the weights; the serving forward
-  pass runs the same inputs and must match within the stated tolerance
-  (set per model in its export; by default within 1e-5 absolute or
-  1e-4 relative, whichever is looser), or the gate fails and the
-  weights are not activated.
-- Each exported network is a versioned ganit output: shadow-tested,
-  activated and rolled back like any other.
+  Mulyankan's verdict, and the job's own measure supplying evidence to
+  specs 0057 and 0077. The old Tri-Rank scoring method is tested as a
+  rival, not chosen as a ranker. The 34 old text-style signals are not
+  tested in the lab.
+- Serving uses the admitted packaged application behind the same typed
+  Rust-owned contract as training. Sutradhar does not implement a
+  bespoke forward pass or neural runtime. The package and artefact
+  identity are part of spec 0077's complete champion manifest.
+- The compatibility test, a gate check: training exports fixed test
+  inputs with their expected outputs beside the weights; the admitted
+  packaged serving route runs the same inputs and must match within the
+  stated tolerance (set per model in its export; by default within 1e-5
+  absolute or 1e-4 relative, whichever is looser), or the gate fails
+  and the weights cannot be promoted.
+- Each exported network is a versioned ganit output and an immutable
+  candidate artefact under spec 0024. Spec 0077 owns its evaluation,
+  promotion, activation and rollback receipts.
 
 ### Experiment results
 
@@ -326,8 +339,8 @@ Plain-English messages with SUT codes:
   the run and the step.
 - SUT-528: the ganit output's snapshot digest does not match the
   export; the verdict is refused.
-- SUT-529: a network's parity test failed; the gate fails and the
-  weights are not activated.
+- SUT-529: a network's packaged-serving compatibility test failed; the
+  gate fails and the weights cannot be promoted.
 
 A timed result taken while the governor paused the run, or while a live
 threshold was crossed, is discarded and re-run. The nightly's full runs
@@ -473,16 +486,18 @@ unless they start with `tests/acceptance/`.
   the frozen "clearly wins" rule through jobs 128 and 129 and records
   exact revisions. `tests/acceptance/cap_159_compare_models.rs`,
   acceptance.
-- AT-LB22: the serving forward pass matches every exported expected
-  output within tolerance; weights altered by one bit in one tensor, or
-  an expected output shifted past the tolerance, fail the gate with
-  SUT-529 and are not activated. `nn/tests/parity.rs`, regression and
-  property over the exported cases; plus a ganit export test.
-- AT-LB23: a network that loses its job's competition is not exported,
-  and the existing method's output is activated; a winner's weights,
-  test cases and verdict are exported together as one versioned
-  output, and passing rivals stay sealed and selectable. ganit unit
-  test; `lab/tests/winner_only.rs`, unit with the fake.
+- AT-LB22: the admitted packaged serving route matches every exported
+  expected output within tolerance; weights altered by one bit in one
+  tensor, or an expected output shifted past the tolerance, fail the
+  gate with SUT-529 and cannot be promoted. The integration regression
+  and property tests cover every exported case, alongside a training
+  export test.
+- AT-LB23: a network that loses its job's competition is not admitted,
+  and spec 0077 retains the verified champion; a passing candidate's
+  weights, test cases and verdict are exported together as one
+  versioned output, and passing rivals stay sealed. No lab result
+  activates one. Training and integration tests use the packaged
+  application's fixed fake or test interface.
 - AT-LB24: a training job killed mid-epoch resumes from its checkpoint
   with the same seed and reaches the same weights. ganit chaos test,
   nightly.
@@ -496,10 +511,14 @@ unless they start with `tests/acceptance/`.
   honest candidate with the expected answers.
   `lab/tests/assessment_seal.rs`, end to end.
 
-Rule-critical code: the split rule and the final-assessment barrier.
-Besides 100% line, branch and MC/DC coverage, they need zero surviving
-mutants, the property test above, and a Kani proof that `split` never
-puts one thread on both sides.
+Rule-critical code: the split rule and the final-assessment barrier are
+strict-core components only where ADR-0020 explicitly assigns them.
+Those assigned components require 100% line, branch and MC/DC coverage,
+no unexplained surviving killable mutant, the property test above and a
+Kani proof that `split` never puts one thread on both sides. Equivalent
+mutants require proof and independent review. Other lab code follows the
+ordinary repository test policy; this paragraph does not widen the
+strict core.
 
 Test-first order: splits, the final-assessment type and the proof (LB05,
 LB06); reconstruction with a fake linker (LB08), then the Arrow contract
@@ -508,24 +527,28 @@ LB06); reconstruction with a fake linker (LB08), then the Arrow contract
 LB04), then reproducibility (LB01); checkpoints, governor and resume
 (LB09, LB10); snapshots and erasure (LB11); run scan and replays (LB14,
 LB15); boundaries, memory, speed and load (LB16 to LB19); capability
-tests (LB20, LB21); networks, with the parity test failing on purpose
-first, then the forward pass, the competition and resume (LB22 to
-LB25).
+tests (LB20, LB21); networks, with the packaged-serving compatibility
+test failing on purpose first, then the typed integration, competition
+and resume (LB22 to LB25).
 
 ## Changes from the source
 
 - The old notebooks become Rust lab runs with recorded inputs and
-  outputs, replayed in the gate and nightly, and shown in the Dioxus
+  outputs, replayed in the gate and nightly, and shown in the desktop
   app's lab screen.
 - ganit, its jobs and their tests are rewritten as Rust.
-- Network training uses pure-Rust models; the parity test compares the
-  training side's exported outputs with the serving forward pass.
+- Network training and serving use an admitted packaged application
+  behind typed Rust integration; the compatibility test compares its
+  exported expected outputs with outputs from the same admitted route.
+  No bespoke Sutradhar forward pass or first-party Python production
+  adapter is permitted.
 - The report is generated by the Rust runner, not an outside report
   tool.
 - Commands are `sutra lab ...` and `sutra ganit ...`, built with Cargo.
 - Lab jobs run in Dell's heavy-job queue rather than their own
   containers.
-- Model time is excluded as time inside the pure-Rust models.
+- Model time is reported separately as time inside the admitted packaged
+  application, with its package and artefact identity recorded.
 - Speed follows the 5% median rule; the 20x goal is kept (spec 0007).
 
 Source: `docs/specifications/linking/lab.md`,

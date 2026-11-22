@@ -1,13 +1,18 @@
 # 0025: Paid embeddings
 
-This part lets the owner use a paid embedding model through AWS Bedrock,
-with the owner's own key, in place of the local embedder for one site's
-whole index. It is optional and off by default; local models always work
-without it (AGENTS.md 5.5). It covers setup and safeguards, spending
-caps and the fallback to the local model, the index and the rebuild,
-running, the one network exception, failures, erasure and removal. It
-is roadmap Phase 4 item 3, and builds on 0022 (reading and indexing),
-0023 (matching and anchors) and 0024 (models).
+This part lets the owner propose a paid dense embedding model through
+AWS Bedrock, with the owner's own key, for one site's dense generation.
+It is optional and off by default; the complete local hybrid stack works
+without it (AGENTS.md 5.5). Under ADR-0020, an exact admitted Bedrock
+model promoted through spec 0077 may replace BGE-M3 dense computation in
+that site's production champion. This is the sole production exception to
+BGE-M3 dense retrieval. It covers setup and safeguards, spending caps,
+restoration of the local champion, the dense index and rebuild, running,
+the one network exception, failures, erasure and removal. It is roadmap
+Phase 4 item 3, and builds on specs 0022, 0023 and 0024. Spec 0057 owns
+quality evidence and spec 0077 owns evaluation, activation, return and
+rollback. Paid provider and model identities are not Optuna parameters or
+nudges.
 
 ## What it does
 
@@ -19,17 +24,22 @@ is roadmap Phase 4 item 3, and builds on 0022 (reading and indexing),
 - Route record: the project's record of one checked route, with its
   checked facts and the date each was checked. It names no model and
   holds no price.
-- Typed-in model: the name of a Bedrock embedding model the owner
-  enters. Paid embedder: a typed-in model in the `embedder` role. Local
-  embedder: Qwen3-Embedding-0.6B or a community model, run on the
-  owner's PC in pure Rust at its published precision (0024).
+- Proposed paid model: the exact Bedrock embedding model identity the
+  owner enters. It remains a proposal until its provenance, API
+  behaviour, terms, quality and resource admission are recorded. Paid
+  dense embedder: that admitted model serving only the dense retrieval
+  representation in a spec 0077 champion manifest.
+- Local embedder: the pinned `BAAI/bge-m3` package route in spec 0024.
+  BM25 and BGE-M3 sparse and multi-vector representations remain local
+  and mandatory; a paid dense vector never replaces or averages into
+  those channels.
 - Key: the owner's own AWS credential that lets programs call Bedrock
   and be billed. Called "key" here, never "token", which means a unit
   of text. A Hub access token (0024) is a different thing.
 - Provider client: the one process that may call Bedrock.
-- Input: one text sent to be turned into a vector: a piece, an extras
-  input, a title or an anchor phrase, exactly as
-  0022 and 0023 define them.
+- Input: one text sent to be turned into a dense vector: a piece, an
+  extras input, a title or an anchor phrase, exactly as specs 0022 and
+  0023 define them.
 - Spending caps: the rebuild budget (most allowed for one rebuild), the
   monthly cap (everything else in a calendar month) and the daily
   ceiling (a share of the monthly cap one day may use).
@@ -37,12 +47,11 @@ is roadmap Phase 4 item 3, and builds on 0022 (reading and indexing),
   site's own counted text and the price in force.
 - Hard stop: no request starts that could take spending, by
   Sutradhar's own count, past a cap.
-- Fallback: at a cap, the local model that served before the paid one
-  (Qwen3-Embedding-0.6B, or a community model that served before)
-  takes over automatically from its saved index, and the paid index
-  waits to catch up. "The local model" below means whichever it is;
-  screens call its kept generation the "saved local index", or the
-  saved index of the named community model.
+- Fallback: at a cap, spec 0077 restores the previous complete verified
+  local champion and its saved dense index generation. The paid dense
+  generation waits to catch up. BM25, BGE sparse and multi-vector
+  retrieval, reranking and spaCy never change providers. Screens call
+  the retained dense generation the "saved local index".
 - Send log: what was sent and when, by ids and versions, never text.
 - Retention: how long Bedrock keeps inputs it received, under its terms.
 - Pause after repeated failures: calls stop for a short time after many
@@ -51,31 +60,35 @@ is roadmap Phase 4 item 3, and builds on 0022 (reading and indexing),
 ### What changes and what does not
 
 1. Unchanged:
-   - one embedder per index generation; vectors from different models
-     never share an index, so a paid model replaces the local model for the
-     whole index and cannot shorten the local model's first run;
-   - pieces of the piece size in the active embedder's tokenizer
-     (1,024 by default, never fewer), titles prefixed, the overlap
-     setting (64 by default), nothing truncated; quotes,
-     code, spoilers and signatures skipped;
-   - changing the embedder is a full rebuild with new suggestions paused
-     and a one-step switch; suggestions already made stay approvable;
-     the thread-level index comes first;
-   - the compatibility rule, the key check on every search, exact
-     search, and a moderator's approval of every link.
+   - one dense embedder per dense-index generation; vectors from
+     different dense models never share that generation. The paid route
+     replaces only BGE-M3's dense computation and cannot shorten the
+     first complete hybrid build;
+   - spec 0022 owns source-part boundaries, BGE-compatible tokenisation,
+     titles, overlap and complete-reading receipts. A paid candidate
+     must accept every whole source part under the candidate's declared
+     segmentation; it cannot impose a second piece size or truncate;
+   - changing the dense embedder rebuilds that complete generation with
+     new suggestions paused and spec 0077 performing the atomic champion
+     switch; earlier valid suggestions stay approvable and the
+     thread-level index comes first;
+   - each channel keeps its representation-specific compatibility key;
+     hybrid search and a moderator's approval of every link remain.
 2. New: guest-visible text leaves the owner's PC, so consent,
    disclosure, terms and erasure rules apply; it costs money per token,
    so a forecast, caps and the fallback apply; it needs the network, so
    one process gets a narrow exception to "reading makes no network
    calls"; the provider can be slow, rate-limited, down, changed or
-   withdrawn, so failure handling and drift checks apply; the local model is not
-   loaded while a paid embedder serves, until a fallback loads it.
-3. Only the `embedder` role can be paid. The reranker, the anchor phrase
-   finder and potion stay local. Anchor phrase vectors come from the
-   active embedder. Paid rerankers, summaries and other paid model
-   services are out of scope.
+   withdrawn, so failure handling and drift checks apply. Local BGE-M3
+   remains available for sparse and multi-vector retrieval, so no memory
+   saving from unloading the whole local model is assumed.
+3. Only the dense embedding role can be paid. BM25, BGE-M3 sparse and
+   multi-vector representations, the BGE cross-encoder, spaCy and anchor
+   feature extraction stay local. Dense anchor phrase vectors come from
+   the active dense embedder. Paid rerankers, summaries and other paid
+   model services are out of scope.
 
-### Checked routes and typed-in models
+### Checked routes and proposed models
 
 1. A route is offered only once its terms (training use, retention and
    service locations) have been checked and dated on Dell from AWS's
@@ -83,7 +96,7 @@ is roadmap Phase 4 item 3, and builds on 0022 (reading and indexing),
    hosts are not offered, nor a route needing a contract the owner
    cannot sign online.
 2. Route records are `[[provider]]` tables in `models.lock`, with no
-   files to download. Fields: `id`, `role` (`embedder`), `purpose`,
+   files to download. Fields: `id`, `role` (`dense_embedder`), `purpose`,
    `provider`, `route`, `api_hosts`, `key_auth`, `size_request`,
    `token_count`, `tokenizer`, `tokenizer_sha256`, `excluded_models`,
    `terms_checked`, `retention_days` (never unlimited),
@@ -95,17 +108,23 @@ is roadmap Phase 4 item 3, and builds on 0022 (reading and indexing),
    no limit on how long inputs are kept. A published local tokenizer is
    pinned with SHA-256 like any model file and must be data-only. A
    change to a record needs the owner's approval.
-4. The owner types in any Bedrock embedding model name. The project
-   keeps no model list and reviews no model. Sutradhar checks only that
-   the model answers as the index needs (key check and self-test); its
-   price and limits are read from the provider when used, or entered by
-   the owner and confirmed every 180 days; the trial gives the evidence
-   of how well it links.
-5. Tier and badge: a tier "paid", badge "paid service: sends
-   guest-visible text to AWS Bedrock", with the lines "model chosen by
-   the owner, not reviewed by the Sutradhar project" and "not part of
-   Sutradhar's release quality evidence", because the project never
-   sends site content to a provider to test it.
+4. The owner may propose an exact Bedrock embedding model identity. An
+   unknown identity is not admitted merely because the API answers.
+   Admission records its provider version and API contract, provenance,
+   terms, tokenizer, dimensions, complete-input behaviour, quality and
+   resource evidence. Price and limits are read from the provider when
+   used, or entered by the owner and confirmed every 180 days.
+5. The 200-link trial below is a cost-bounded diagnostic only. Before
+   activation, the complete paid champion candidate must pass spec 0057
+   evaluation and spec 0077's weekly promotion, including nDCG@10,
+   per-forum BM25 Precision@6, link suitability, severe failures,
+   calibration, p95 latency and memory. No owner confirmation or trial
+   can waive those gates.
+6. Tier and badge: a tier "paid", badge "paid service: sends
+   guest-visible text to AWS Bedrock", with the lines "model proposed
+   by the owner and admitted only with recorded project review" and
+   "quality evidence applies only to the exact evaluated candidate".
+   A proposal without that evidence remains inactive.
 
 ### Who may set it up
 
@@ -121,34 +140,39 @@ is roadmap Phase 4 item 3, and builds on 0022 (reading and indexing),
 ### Setup steps
 
 Each step must finish before the next is offered. No site content
-leaves the PC before step 8, and then only the trial's sample.
+leaves the PC before step 8. Step 8 sends only the trial sample; step 9
+sends only the separately forecast and authorised evaluation inputs.
 
-1. Choose a checked route and type in the model name. Only routes with
-   a record are listed. The screen shows each checked fact with its
-   date (retention, training use, service locations, region choice, API
-   hosts) and says the model is not reviewed. A fact checked over 180
-   days ago shows "not re-checked since <date>".
+1. Choose a checked route and enter the exact model identity. Only
+   routes with a record are listed. The screen shows each checked fact
+   with its date (retention, training use, service locations, region
+   choice and API hosts) and whether model admission is complete. A fact
+   checked over 180 days ago shows "not re-checked since <date>".
 2. Terms check: the owner confirms the account settings only they can
    see (below). If any cannot be confirmed, setup stops.
 3. Disclosure: the screen states what leaves the PC and what Bedrock may
    keep, offers a paragraph for each site's privacy notice, and asks the
    owner to confirm the notice covers it.
 4. Key: entered and checked with one fixed neutral sentence sent to the
-   typed-in model, which must return one vector.
+   proposed model, which must return one vector.
 5. Self-test, fixed neutral text only: 0024's four embedder sentences
-   (vector size, finite values, paraphrase ordering), and one fixed
-   neutral text of the piece size (1,024 tokens by default) by the
-   record's counting method, which must be accepted whole. Reported
-   token counts must agree with that method. The vector size requested
-   is always 1,024. A model that cannot give 1,024 numbers, fails, or
-   that the checked terms exclude is refused with its reason (PE-E17).
-   The outputs become the reference for the daily drift check. The
-   model is "added (inactive)".
+   (vector size, finite values, paraphrase ordering), and the largest
+   complete source part declared by the candidate, counted by the
+   record's method and accepted whole. Reported token counts must agree
+   with that method. The paid dense vector size is 1,024. A model that
+   cannot give 1,024 finite numbers, fails the complete-input check, or
+   is excluded by the checked terms is refused with PE-E17. The outputs
+   become the reference for the daily drift check. The model is "added
+   (inactive)".
 6. Price and limits: read from the provider, or, where not published to
    programs, entered by the owner, dated.
 7. Forecast and caps.
-8. Trial on a sample of the site's own links.
-9. Activation: the rebuild, with new suggestions paused.
+8. Diagnostic trial on a sample of the site's own links.
+9. Promotion evaluation under specs 0057 and 0077, with its own forecast
+   and spending reservation. A diagnostic trial cannot authorise
+   activation.
+10. Activation: after `PROMOTE`, the dense rebuild and atomic champion
+    transition, with new suggestions paused.
 
 Every step writes one audit event: time, actor, action, route record,
 model name, region chosen (or "none") and result code; identifying
@@ -226,17 +250,17 @@ details kept apart from the minimal event.
    edits it; it offers a paragraph and records the owner's confirmation.
    There is no per-member choice: only text any visitor can read is
    sent.
-3. The disclosure states: route and model; that the model is the owner's
-   choice and not reviewed; what is sent and never sent; that only
-   guest-visible text is sent; the redaction, and that member names,
-   mentions included, are sent as guests read them; retention and
-   training terms; service locations and the region chosen; that AWS
-   also sees the PC's network address and the account; that vectors
-   come back and are stored on the PC; that at a cap the local model
-   that served before takes over and changed posts are sent later to
-   catch up; and that switching back or removing cannot recall what was
-   sent. It says post text can hold personal data, never calling it
-   anonymous.
+3. The disclosure states: route and model; that the owner proposed the
+   model and the exact candidate underwent recorded admission; what is
+   sent and never sent; that only guest-visible text is sent; the
+   redaction, and that member names, mentions included, are sent as
+   guests read them; retention and training terms; service locations
+   and the region chosen; that AWS also sees the PC's network address
+   and the account; that dense vectors come back and are stored on the
+   PC; that at a cap spec 0077 restores the previous local champion and
+   changed posts are sent later for an evaluated catch-up; and that
+   switching back or removing cannot recall what was sent. It says post
+   text can hold personal data, never calling it anonymous.
 
 ### What leaves the PC
 
@@ -332,46 +356,45 @@ details kept apart from the minimal event.
    bill may differ; the screen shows both, and AWS's own spending limit
    is the final guard.
 7. At a cap, the fallback: when the monthly cap or daily ceiling holds a
-   request back while a paid embedder serves, Sutradhar switches to
-   the local model automatically from its saved index in one step, as 0024's
-   rollback does:
-   - no further paid request starts; the local model is loaded ahead of optional
-     work such as 0017's map projection, which pauses;
-   - posts written or edited since the local model's generation was last current
-     are read again by the local model, live lane first; only those wait, as
+   request back while a paid dense embedder serves, Sutradhar stops new
+   paid calls and asks spec 0077 to restore the previous complete
+   verified local champion and saved dense index automatically:
+   - optional work such as 0017's map projection pauses where its
+     resource profile is needed for verified restoration;
+   - posts written or edited since the local dense generation was last
+     current are read again locally, live lane first; only those wait as
      "waiting: spending cap reached"; other suggestions continue and
-     earlier ones stay approvable;
-   - new and edited posts are read by the local model and count toward the
-     30-second figure as usual;
-   - the paid generation is kept and falls behind; deletions, erasures
-     and losses of guest visibility still apply to it at once.
+     earlier valid ones stay approvable;
+   - new and edited posts are read by the local dense model and count
+     toward the 30-second figure as usual;
+   - the paid dense generation is kept inactive and falls behind;
+     deletions, erasures and losses of guest visibility still apply to
+     it at once.
 8. Returning: when the period resets, the cap is raised or an
    unconfirmed price is confirmed, the catch-up is forecast and shown.
    It starts on its own (`models.paid.return.automatic`) if its upper
    end fits what is left of the monthly cap; otherwise the screen offers
-   raising the cap. While the local model serves, the provider client sends
-   every item changed since the fallback, and during the catch-up, in the
-   backlog lane, stopping each day at the daily ceiling and going on the
-   next. When the paid generation is whole again, one atomic switch returns
-   to it and nothing waits. If the monthly cap is reached first it stops
-   until next month. The owner may instead roll back, which ends the
-   return. A return does not pause suggestions.
-9. During an activation's rebuild, a cap cancels the activation: the
-   embedder that served before is loaded again and suggestions resume,
-   as a cancelled activation does. The partial paid generation is kept;
-   resuming needs a raised budget and costs the rest plus posts changed
-   since, forecast and shown. A rebuild that pauses nothing (such as
-   one for new reading rules) or a trial just stops at a cap while the
-   serving generation continues, and resumes when the cap allows.
-10. With no saved local index able to serve (deleted to free disk or at
-    a second paid activation, or never built because the paid
-    generation was the first), paid calls stop at a cap: new and edited
-    posts wait as "waiting: spending cap reached" until the period
-    resets or the cap is raised, then are read oldest first, live lane
-    before backlog, each checked again just before sending. The screen
-    offers raising the cap or a full local rebuild, and warns before
-    anyone deletes the saved index that the fallback will then be
-    impossible. An unconfirmed entered price is handled the same way.
+   raising the cap. While the local champion serves, the provider client
+   sends every item changed since the fallback, and during the catch-up,
+   in the backlog lane, stopping each day at the daily ceiling and going
+   on the next. When the paid dense generation is whole again, spec 0077
+   must evaluate and promote the exact candidate before its atomic
+   return. Catch-up itself does not pause local suggestions. If the
+   monthly cap is reached first it stops until next month. The owner may
+   instead keep the restored local champion, which ends the return.
+9. During an activation's rebuild, a cap cancels the pending activation:
+   the current champion continues and suggestions resume under its normal
+   readiness rule. The partial paid dense generation is kept; resuming
+   needs a raised budget and covers the rest plus posts changed since,
+   forecast and shown. A rebuild that pauses nothing or a diagnostic
+   trial stops at a cap while the serving champion continues, and resumes
+   when the cap allows.
+10. If no saved local index can be verified, paid calls stop at a cap:
+    new and edited posts wait as "waiting: spending cap reached" until
+    the period resets or the cap is raised, then are read oldest first,
+    live lane before backlog, each checked again just before sending.
+    The screen offers raising the cap or a full evaluated local rebuild.
+    An unconfirmed entered price is handled the same way.
 11. Alerts at 50%, 80%, 95% and 100% of each cap, each once per period,
     grouped in the app with a code and manual link. The 100% alert says
     the local model has taken over, or, with no saved index, that calls have
@@ -410,87 +433,94 @@ details kept apart from the minimal event.
    it and the index refuses another key. A fallback or return switches
    the key with the generation. Anchor phrase vectors share the key.
 
-### The trial
+### The diagnostic trial
 
-1. Activation needs a finished trial; it is the evidence the owner
-   decides on. It is 0024's link reconstruction on the site's own
-   member-written links, except:
+1. Activation needs both this finished trial and the later full promotion
+   evaluation. The trial informs the owner's spending choice but has no
+   promotion authority. It uses 0024's link reconstruction on the site's
+   own member-written links, except:
    - it runs only after setup steps 1 to 7;
    - sample 200 links and pool 2,000 threads by default
      (`models.paid.trial.sample_size`, `.pool_size`), to limit cost and
      text sent; its forecast is shown and counted against the monthly
      cap;
    - the paid side embeds pool and sources through Bedrock; the local
-     embedder reuses its stored vectors; suggestions continue;
+     dense embedder reuses its stored vectors; suggestions continue;
    - results: how often the real link came first, in the top 3 and top
      5; anchor match rate; usual and slowest-1-in-20 response times;
      projected first-suggestion time; rebuild forecast (money and time);
      each with sample size and margin of error. Results store numbers
      and ids only; the trial's paid vectors are deleted when it ends.
+2. The trial cannot establish the mandatory nDCG, per-forum BM25,
+   suitability, severe-failure or protected-regression gates. Spec 0057
+   supplies the full evaluation and spec 0077 must return `PROMOTE`
+   before the rebuild can become active.
 
 ### Activation, with suggestions paused
 
 1. Before starting, the screen states: new suggestions pause for the
-   whole rebuild; forecast time and cost; the rebuild budget; the
-   projected first-suggestion time and, if it misses 30 seconds where
-   the local model meets it, a warning; and that what is sent cannot be
-   recalled. The owner confirms; the confirmation is audited. A slower
-   model is allowed after that warning, and the health screen then says
-   the site runs outside the qualified target while the paid embedder
-   serves.
-2. 0022 builds a whole new generation, thread-level index first,
-   then per-post; posts written or edited meanwhile are read into it.
-   New suggestions pause from both queues; earlier ones stay approvable;
-   readiness says "not ready for suggestions: model update running".
-   the local model is unloaded for the rebuild.
-3. On completion one atomic change switches embedder and index; new
-   suggestions resume, posts saved during the pause first, reported
-   separately. The local model stays unloaded; its files and saved
-   index are kept for rollback and fallback, with disk use shown.
-4. 0024 keeps one previous model per role, so activating a second paid
-   model deletes them: before that the screen warns, naming the local
-   model, that its saved index will be deleted and that a later cap will
-   then stop calls with posts waiting; the confirmation is audited.
-5. First generation: a paid embedder chosen before any generation exists makes
-   the first one, serving once its thread-level index is built. Chosen during
-   the local model's first run, the local model's partial generation is kept,
-   stopped, for resuming after a rollback. Either way the screen says there is
-   no fallback until a local generation can serve.
-6. Before the switch, the owner or a cap can cancel: the local model is loaded
-   again, suggestions resume, posts written meanwhile are read by it;
-   the partial paid generation is kept or deleted on request. Money
-   spent stays spent, and is shown.
+   whole rebuild; forecast time and cost; the rebuild budget; measured
+   first-suggestion evidence; and that what is sent cannot be recalled.
+   A predicted or measured miss of the 30-second qualification floor
+   refuses activation. No warning, owner confirmation or slower-profile
+   label waives it or any spec 0057/0077 quality gate.
+2. Spec 0022 builds a complete new dense generation, thread-level index
+   first, then per-post, and verifies every unchanged BM25, BGE sparse,
+   BGE multi-vector, reranker and spaCy identity. Posts written or edited
+   meanwhile are read into it. New suggestions pause from both queues;
+   earlier valid ones stay approvable; readiness says "not ready for
+   suggestions: model update running".
+3. On completion, spec 0077 atomically switches the complete champion
+   manifest and dense generation. New suggestions resume, posts saved
+   during the pause first, reported separately. Local BGE-M3 remains
+   available for mandatory non-dense channels. The previous verified
+   complete champion and its dense index are retained for rollback and
+   fallback, with disk use shown.
+4. A second paid activation is blocked until a complete verified local
+   rollback set and compatible dense index are retained. The only
+   rollback set cannot be deleted to make room. Disk shortage blocks
+   activation rather than removing the safety route.
+5. The first production generation must be the admitted complete local
+   champion. A paid-only first generation is inactive because it lacks
+   the locked local baseline and verified restoration route. A partial
+   local generation is never presented as a fallback.
+6. Before the switch, the owner or a cap can cancel: the current
+   champion keeps serving, the partial paid dense generation is kept or
+   deleted on request, and money spent stays spent and is shown.
 
-### Rollback and switching off
+### Restoration and switching off
 
-1. Rollback with the saved index (`sutra models rollback --role
-   embedder`, or "Roll back"): one step back to the previous local
-   model; posts read since the switch are read again; only those wait.
-   The provider client stops. During a fallback, rollback makes that
-   model the chosen embedder and ends the return.
-2. Without it: switching back is a full local rebuild, one to several
-   weeks per million posts by 0022's estimate, with new suggestions
-   paused. The screen states this before the saved index is deleted and
-   before the rebuild starts.
-3. After a rollback the paid generation is kept as the previous one
-   until the next activation; re-activating costs only posts changed
-   since, if key, terms and drift check are still in order.
+1. "Restore local" stops the provider client and asks spec 0077 to
+   restore the previous complete verified local champion and saved dense
+   index atomically. Only posts read since the switch wait for compatible
+   re-reading. During a fallback, restoration ends the automatic return.
+   There is no independent paid-model rollback controller.
+2. Without a saved compatible local index, restoration needs a complete
+   local rebuild and fresh spec 0057/0077 evaluation before activation.
+   The screen states the measured forecast and pause before the saved
+   index can be deleted and before the rebuild starts.
+3. After restoration the paid generation is an inactive candidate, not a
+   second champion. Returning requires current keys, terms and drift
+   checks, compatible catch-up and a new spec 0077 promotion. Changed
+   posts alone do not authorise reactivation.
 4. Switching off (`models.paid.enabled` false), removing the key, or a
    terms change awaiting confirmation stops every call within 5
-   seconds. New and edited posts wait. The screen offers the rollback at
-   once, without starting it. During a fallback, switching off ends the
-   return. Data stays until the owner rolls back, removes the paid
-   generation or removes the site.
+   seconds. New and edited paid inputs wait. The screen offers spec 0077
+   restoration without starting it. If no complete local set can be
+   verified, new suggestions remain stopped. Data stays until the owner
+   restores locally, removes the paid generation or removes the site.
 
 ### The provider client
 
 1. One separate process of the service, in the service slice, started
    only while a paid embedder is set up, on trial, serving or catching
    up. It alone holds the key and alone reaches Bedrock.
-2. `ModelRegistry::get(Role::Embedder)` returns a `PaidEmbedder`, a Rust
-   type implementing 0024's `Embedder` trait, so 0022 and 0023 call it
-   as they call the local model. It passes inputs to the provider client over a
-   local connection and receives vectors back.
+2. `ModelRegistry::get(Role::DenseEmbedder)` returns a `PaidEmbedder`,
+   a Rust type implementing spec 0024's dense embedding interface, so
+   specs 0022 and 0023 can select it for the dense channel only. It
+   passes inputs to the provider client over a local connection and
+   receives dense vectors back. It cannot supply sparse or multi-vector
+   representations or a cross-encoder score.
 3. Its error type adds variants callers treat as "the embedder is
    missing or failed": `ProviderUnavailable`, `SpendingStopped`,
    `KeyRefused`, `ModelWithdrawn`, `ModelUnsuitable`, `InputRefused`
@@ -538,7 +568,7 @@ details kept apart from the minimal event.
    unavailable", and new posts are still accepted and wait in order.
    The fallback is for the spending caps and an unconfirmed price only;
    outages, a refused key, a withdrawn model, changed terms and
-   switching off keep posts waiting and offer the rollback.
+   switching off keep posts waiting and offer spec 0077 restoration.
 10. Every response must hold one vector per input, in order, each of the
     requested size, with finite values. Sutradhar normalises vectors
     itself. A failing response is retried once; a second failure marks
@@ -549,15 +579,18 @@ details kept apart from the minimal event.
 1. Daily, and after any provider fault lasting over an hour, the
    self-test sends its four sentences. Each vector must have cosine
    similarity of at least 0.999 with the setup reference, and pairwise
-   similarities must match within 0.002. How repeatable Bedrock's
-   vectors are is to be checked and may change these figures.
+   similarities must match within 0.002. These are admission bounds, not
+   measured claims about Bedrock. Exact-model admission must record
+   repeatability evidence against them; missing evidence or a failed bound
+   keeps the candidate inactive. A weaker bound requires a new owner ADR
+   and cannot be introduced by a provider observation or agent.
 2. A failure means the model changed behind its name: "index mismatch",
-   no new suggestions, earlier ones approvable, rebuild or rollback
-   offered (PE-E09).
+   no new suggestions, earlier ones approvable; the screen offers a new
+   evaluated candidate rebuild or spec 0077 restoration (PE-E09).
 3. A withdrawn model, or a route that lost its record, gives PE-E02:
-   every call stops, the row is "failed" and rollback is offered at
-   once. A model's retirement date, where reported, is shown 90 days
-   ahead.
+   every call stops, the row is "failed" and spec 0077 restoration is
+   offered at once. A model's retirement date, where reported, is shown
+   90 days ahead.
 
 ### Service levels
 
@@ -625,33 +658,44 @@ details kept apart from the minimal event.
   the record's API hosts. Redirects elsewhere are refused. An HTTPS
   proxy may be set (`models.paid.proxy`); the allowlist still applies.
 - What: "What leaves the PC" above, and nothing else.
-- Enforced by systemd network rules on the processes, shared with the
-  fetcher, and proven by test.
+- Enforced by the engine supervisor's network fence (spec 0030) on the
+  processes, shared with the fetcher, and proven by test.
 
 ### Updates to a route record
 
 A release may re-check a route. A changed term follows the terms rule; a
-changed API host is shown and applied after the owner confirms; a
-changed counting method changes the key, so only a new activation adopts
-it. Models are never updated by a release: the owner may type in another
-model, adopted only by a new activation with its own self-test, trial,
-forecast, budget and pause, which deletes the saved index after a
-warning.
+changed API host is shown and applied after the owner confirms. A
+changed counting method changes the compatibility key and requires a
+new candidate. Models are never silently updated by a release: another
+exact model identity needs its own admission, self-test, diagnostic
+trial, full evaluation, forecast, budget, pause and spec 0077 promotion.
+The verified local rollback set is retained.
 
 ### Interfaces
 
 - `PaidEmbedder` and the provider client, above.
 - App to service over the owner-only socket, Cedar-checked: `PaidKeySet`
   (the key, once); `PaidSetupStep` (each step's confirmations and the
-  model name); `PaidStatus` back (status, spending, forecast, price and
-  limits, lifecycle label, reasons, never the key).
-- Events: `models.paid.cap_warning`, `models.paid.cap_reached`,
-  `models.paid.fallback`, `models.paid.returned`,
-  `models.paid.provider_fault`, `models.paid.key_refused`,
-  `models.paid.output_changed`, `models.paid.terms_changed`, with
-  0024's `models.switched` and `models.rolled_back`.
+  exact model identity); `PaidStatus` back (status, spending, forecast,
+  price and limits, lifecycle label, reasons, never the key).
+- Versioned outbox events under spec 0019: `models.paid.cap_warning`,
+  `models.paid.cap_reached`, `models.paid.fallback`,
+  `models.paid.returned`, `models.paid.provider_fault`,
+  `models.paid.key_refused`, `models.paid.output_changed` and
+  `models.paid.terms_changed`. Use the site and provider ordering
+  key and spec 0110 receipts. Provider notices carry only scoped
+  identifiers, provider generation and safe status codes. Commit
+  them with the provider state. The paid status module applies
+  them idempotently to its view, rejecting obsolete provider or
+  grant revisions. A notice grants no champion change.
+- Publish `fallback` and `returned` as status only after the exact
+  signed transition receipt under spec 0077. Bind that receipt,
+  champion stream and generation to the status and dedupe key.
+  A duplicate or late projection cannot change the champion.
+  Test duplicate, stale and mismatched receipts and inspect the
+  champion pointer. Spec 0077 owns the only transition.
 - The paid row in the models health check; setup checks, trials,
-  forecasts, rebuilds and catch-ups report through 0016.
+  forecasts, rebuilds and catch-ups report through spec 0016.
 
 ### Settings
 
@@ -659,7 +703,7 @@ Applied atomically between jobs, with history; the key is never a
 setting.
 
 - `models.paid.enabled`: false. `models.paid.provider`: none.
-  `models.paid.model`: none, typed in.
+  `models.paid.model`: none, proposed exact identity.
 - `models.paid.price_per_million`: read, or entered.
 - `models.paid.cap.rebuild`, `models.paid.cap.monthly`: none, required
   before activation. `models.paid.cap.daily_share`: 10%.
@@ -677,8 +721,9 @@ setting.
 - `models.paid.proxy`: none.
 
 Fixed, not settings: guest-visible only; the redaction; the hard stop;
-the fallback at a cap; the trial before activation; the pause during a
-rebuild; certificate checks; the allowlist.
+spec 0077 restoration at a cap; diagnostic trial and full promotion
+evaluation before activation; the pause during a rebuild; certificate
+checks; and the allowlist.
 
 ### Commands
 
@@ -692,8 +737,10 @@ and exits non-zero on failure.
 - `sutra models paid price set <amount>`; `paid forecast`;
   `paid cap set --rebuild <amount> --monthly <amount>
   [--daily-share <percent>]`.
-- `sutra models paid trial`, `paid activate`, `paid cancel`; rollback
-  is `sutra models rollback --role embedder`.
+- `sutra models paid trial`, `paid evaluate`, `paid activate`, `paid
+  cancel` and `paid restore-local`. Activation consumes an existing
+  spec 0077 `PROMOTE` receipt; restoration invokes its verified rollback
+  contract. Neither command is a separate controller.
 - Dell only: `sutra models pin-provider <record file>`.
 
 ### Failures
@@ -718,7 +765,8 @@ never invented or treated as zero.
 - PE-E08 a cap reached: fallback, or during a rebuild the activation is
   cancelled; with no saved index, calls stop.
 - PE-E09 output changed: "index mismatch"; no new suggestions; earlier
-  ones approvable; rebuild or rollback offered.
+  ones approvable; a new evaluated candidate rebuild or spec 0077
+  restoration is offered.
 - PE-E10 host unreachable, refused redirect or certificate failure: as
   PE-E04, with the reason; checks never relaxed.
 - PE-E11 secret file missing, unreadable or with changed permissions:
@@ -727,17 +775,19 @@ never invented or treated as zero.
   refused until read or confirmed; while serving, an unconfirmed price
   acts as a cap.
 - PE-E13 terms changed and awaiting confirmation: calls pause.
-- PE-E14 rebuild or activation failure: the local model is loaded again and
-  suggestions resume on the old index; the partial generation is kept.
-- PE-E15 rollback impossible, saved index missing: the full rebuild is
-  offered with its estimate and pause.
+- PE-E14 rebuild or activation failure: the current verified champion
+  remains active and suggestions resume under its readiness rule; the
+  partial paid dense generation is kept.
+- PE-E15 restoration impossible because the saved index is missing or
+  incompatible: a complete local rebuild and fresh evaluation are
+  offered with their forecast and pause.
 - PE-E16 live queue full: new posts are not taken; counts as
   unavailable.
-- PE-E17 typed-in model unsuitable at setup: unknown, not an embedding
-  model, refuses the 1,024-token text, cannot give 1,024 numbers, gives
-  unusable vectors, reports counts that disagree, or is excluded by the
-  terms. Setup stops with the reason; nothing is stored and no site text
-  has been sent.
+- PE-E17 proposed model unsuitable at setup: unknown or unadmitted, not
+  an embedding model, refuses a complete source part, cannot give 1,024
+  finite dense values, reports counts that disagree, or is excluded by
+  the terms. Setup stops with the reason; nothing is stored and no site
+  text has been sent.
 
 An item made private, deleted or erased before its request leaves is
 dropped without an error, and counted.
@@ -823,22 +873,22 @@ Figures that vary by model are read or tested at use time.
 
 ## Limits
 
-1. Memory: the provider client, with at most 8 MB of text and vectors in flight,
-   has a budget of about 64 MB, a new row in 0024's memory table inside the
-   service slice, within the memory limits in AGENTS.md section 5.6. While a
-   paid embedder serves, the local model (about 1,300 MB on a PC under 16 GB) is
-   not loaded, leaving that room; a fallback loads it again within the same row,
-   ahead of optional work such as the map projection, and the provider client
-   keeps its own row, so a catch-up fits beside it. All figures are estimates,
-   to be measured on Dell.
-2. Disk: the paid generation's size follows 0022's formula; at 1,024
-   numbers it matches the local model's and must fit 0022's index
-   budget. The saved local index needs room beside it until a second paid
-   activation deletes it.
+1. Memory: the provider client, with at most 8 MB of text and dense
+   vectors in flight, has a 64 MB admission ceiling in spec 0024's table
+   inside the service slice. Local BGE-M3 remains available for sparse
+   and multi-vector retrieval, so no whole-model memory saving is
+   assumed. Fallback and catch-up need their own measured combined
+   profile; optional work pauses where required. Missing measurement
+   blocks the profile.
+2. Disk: the paid dense generation follows spec 0022's dense-vector
+   storage rule and must fit the measured index budget. Sparse and
+   multi-vector storage is unchanged and counted separately. The saved
+   local dense index and complete rollback set remain beside it.
 3. Time: rebuild time is set by the account's rate limits and Bedrock's
-   speed, forecast from the trial and measured. Live time: measured
-   provider latency replaces the local model's step. After a fallback,
-   the local model's re-reading takes local time, shown with progress.
+   speed, forecast from the diagnostic trial and measured at promotion
+   tier. Live provider latency replaces only local dense computation;
+   every other hybrid stage still counts. After a fallback, local dense
+   re-reading is measured and shown with progress.
 4. Speed targets set from what users need: a new post's suggestion
    within 30 seconds for 99% of posts, hence the 10-second live timeout
    and 2 retries within 20 seconds; switching off or removing the key
@@ -899,16 +949,16 @@ logged.
   the fake before the trial, nor before the terms and disclosure
   confirmations, key check, self-test, price and caps are recorded; each
   step writes one audit event.
-- Only checked routes can be chosen and any model name typed in: two
-  names the fake accepts both pass with no list consulted; a route
-  without a record cannot be chosen; a fact over 180 days old shows "not
-  re-checked since <date>". Without "Manage paid embeddings", the screen
-  and every command refuse alike.
-- A model the fake does not know, one refusing the 1,024-token text,
-  one whose counts disagree, and one in `excluded_models` each give
-  PE-E17 before any site text is sent. The vector size requested is
-  always 1,024; a model that cannot give it is refused; a projection over
-  0022's index budget refuses activation.
+- Only checked routes and admitted exact model identities can proceed:
+  two names accepted by the fake remain inactive until their admission
+  records and quality evidence exist; an unknown model gives PE-E17. A
+  route without a record cannot be chosen; a fact over 180 days old
+  shows "not re-checked since <date>". Without "Manage paid embeddings",
+  the screen and every command refuse alike.
+- A model refusing the largest complete source part, one whose counts
+  disagree, one returning other than 1,024 finite dense values, and one
+  in `excluded_models` each give PE-E17 before any site text is sent.
+  A projection over spec 0022's dense-index budget refuses activation.
 - Key: the key check and self-test send only fixed neutral text; a
   refused key gives PE-E01 and is not stored. After setup, a forced error
   on the key route and a full diagnostics bundle, the key appears only in
@@ -931,68 +981,57 @@ logged.
   audit event, consent record and setting, and used. An item made
   private while waiting is not sent; one made private just after its
   request left shows in the send log and the after-hidden metric.
-- The disclosure names route and model, says it is not reviewed, lists
-  what is and is never sent, the redaction, retention, training terms,
-  locations, the fallback and catch-up, and that nothing sent can be
-  recalled; its SHA-256 is stored with the consent.
+- The disclosure names route and model, distinguishes owner proposal
+  from recorded admission, lists what is and is never sent, the
+  redaction, retention, training terms, locations, fallback and catch-up,
+  and that nothing sent can be recalled; its SHA-256 is stored with the
+  consent.
 - Spending: the rebuild forecast's tokens lie within 5% of tokens sent,
   and money equals tokens times the price in force (the higher of read
   and entered). With no published price, activation waits for an
   entered one; one over 180 days old gives PE-E12; a rise alerts and
-  applies. While serving, an entered price alerts from 30 days before
-  turning 180 days old and, unconfirmed, hands over to the local model with no
-  further request; confirming starts the return; with no saved index it
-  stops calls and posts wait until confirmed, each checked again. A
-  rebuild budget below the forecast's upper end refuses activation.
+  applies. While serving, an unconfirmed entered price invokes spec 0077
+  restoration with no further request; confirming starts only the
+  catch-up forecast, not an automatic champion switch. A rebuild budget
+  below the forecast's upper end refuses activation.
 - Property test: over 1,000 random interleavings of live, backlog,
   catch-up and trial requests, spending never passes any cap and the
   request that would pass one never starts.
-- At the monthly cap with the saved index: one-step switch to the local model,
-  no further request, only posts changed since the local model was last current
-  wait as "waiting: spending cap reached", others continue, earlier ones
-  approvable. When the month turns, the catch-up forecast shows and
-  starts on its own if it fits, sends only items changed since the
-  fallback while the local model serves, stops daily at the ceiling, and ends in
-  one switch with no post waiting. Raising the cap starts it the same
-  day if it fits; otherwise nothing starts and raising is offered. With
-  no saved index, calls stop, posts wait with the reason in readiness,
-  and when the month turns are read oldest first, live before backlog,
-  never sending a post erased or hidden meanwhile, reported apart from
-  the 30-second figure; the warning appeared before the index was
-  deleted. A synthetic flood stops at the daily ceiling, falls back and
-  raises the unusual-day alert; each threshold alert fires once per
-  period per cap, grouped. When the fake reports more tokens, the ledger
-  uses its figure and a daily gap over 2% warns. A rebuild stopped by
-  its budget cancels the activation, reloads the local model, keeps the partial
-  generation and shows the money spent.
-- Index: pieces never pass the piece size; an input one over the
-  window is refused before sending; nothing is cut. The generation record holds
-  the full paid key; a search with another key is refused, and after a
-  fallback or return every search carries the serving key.
+- At the monthly cap with the saved index: spec 0077 restores the local
+  champion atomically, no further request starts, and only posts changed
+  since the local dense generation was current wait. When the month
+  turns, catch-up sends only items changed since fallback and stops at
+  the daily ceiling. The paid candidate cannot return without a fresh
+  spec 0077 `PROMOTE`. With no saved index, calls stop and posts wait
+  with the reason in readiness. A rebuild stopped by its budget cancels
+  only the pending activation, keeps the current champion and partial
+  paid generation, and shows the money spent.
+- Index: every complete source part stays within the candidate's
+  declared segmentation and provider window; an input one token over is
+  refused before sending and nothing is cut. The dense generation record
+  holds the full paid compatibility key; BM25, sparse, multi-vector,
+  reranker and spaCy identities remain present and unchanged. A search
+  with another dense key is refused.
 - Trial: runs only after steps 1 to 7, sends only its sample, stays in
   forecast and cap, keeps suggestions running, stores numbers and ids
-  and deletes its vectors; activation is refused without it.
-- Activation states pause, time and cost first; no new suggestion from
-  either queue during the rebuild, earlier ones approvable, "model
-  update running" shown; one-step switch, paused posts matched first
-  and reported apart; the local model then not resident. Chosen on a fresh
-  install, the paid generation serves once its thread-level index is
-  built, and the screen says no fallback exists yet. A slower
-  projected model needs the warning confirmed and audited, and the
-  health screen says the site runs outside the target.
-- Rollback with the saved index is one step, only posts since the switch
-  wait, and the fake gets no further request; during a fallback it ends
-  the return. With the index deleted, the full rebuild's estimate and
-  pause are shown before deletion and before the rebuild. Switching off
-  or removing the key stops every call within 5 seconds and offers the
-  rollback. An upgrade changing reading rules starts no paid rebuild
-  until its forecast is approved. A second paid activation warns that
-  the saved index will go, audits the confirmation, and later caps stop
-  calls. With a community model before the paid one, a cap falls back to
-  it, rollback returns to it, and the warning names it.
+  and deletes its vectors. Activation is refused without both the
+  diagnostic trial and full spec 0057/0077 promotion evidence.
+- Activation states pause, time and cost first; no new suggestion comes
+  from either queue during the rebuild, earlier valid ones stay
+  approvable and "model update running" is shown. A projected or measured
+  30-second miss, a failed quality floor or an unmeasured resource
+  profile refuses activation. Spec 0077 performs the atomic switch;
+  local BGE-M3 remains for non-dense channels. A paid-only first
+  generation and deletion of the only local rollback set are refused.
+- Restoration with the saved index uses spec 0077's verified rollback;
+  only posts since the switch wait and the fake gets no further request.
+  With the index missing, the full local rebuild and fresh evaluation
+  are shown before work starts. Switching off or removing the key stops
+  every call within 5 seconds and offers restoration. A second paid
+  activation cannot delete the saved local rollback set.
 - A release with a changed term pauses calls until confirmed, showing
   "paused: terms changed"; a removed record stops calls with PE-E02 and
-  offers rollback.
+  offers spec 0077 restoration.
 - Running: a rate-limit wait time is honoured exactly; without one,
   pauses grow from 1 second to at most 5 minutes; live posts get their
   share while the backlog is throttled; reported limits replace the
@@ -1004,7 +1043,7 @@ logged.
   accepted, no fallback happens; with the live queue full, PE-E16 and
   unavailable time. Bad responses are retried once and never stored. A
   refused key probes only every 10 minutes; a withdrawn model offers
-  rollback. Changed outputs give "index mismatch" at the next drift
+  spec 0077 restoration. Changed outputs give "index mismatch" at the next drift
   check. The health row shows only the allowed statuses and fields, with
   "local model serving at spending cap" and ready during a fallback. Metrics
   count calls by outcome and code and tokens by lane and kind, with no
@@ -1031,7 +1070,9 @@ logged.
   and an erasure are tested.
 - Resources: with a paid embedder serving, and after a fallback, every
   process's peak stays within its row, the provider client's within its
-  64 MB; the local model is absent while the paid one serves and present after.
+  64 MB. BGE-M3 sparse and multi-vector remain available during paid
+  serving, and no whole-model memory saving is claimed. After restoration,
+  the complete verified local champion, including BGE-M3 dense, serves.
 - A log scanner finds no post text, names or key in logs, metrics,
   traces, progress or audit events. No committed fixture holds real site
   content or a real key.
@@ -1041,19 +1082,24 @@ logged.
 - The paid providers are replaced by AWS Bedrock with the owner's own
   key (AGENTS.md 5.5); the per-provider route split is dropped.
 - The site administrator's role is taken by the owner, per site, in the
-  Dioxus app, with Cedar permissions instead of site admin permissions.
+  desktop app, with Cedar permissions instead of site admin permissions.
 - The key is entered in the app over the owner-only socket, not through
   the site add-on, so the site log checks are dropped; it is held by
   tijori.
 - The provider client is a separate process of the service in the
-  service's systemd slice, not its own container; network confinement uses
-  systemd network rules.
+  service's supervised process group (spec 0030), not its own container;
+  network confinement uses the supervisor's network fence.
 - With the live queue full, the service stops taking posts from the site
   instead of refusing calls from it, since the site never calls the PC.
 - Alerts appear in the app, not in site staff alerts.
 - The 5% best-result ratchet becomes the 5% median rule, and
   the 20x goal is kept (spec 0007, "The 20x goal").
-- Rewritten as Rust; the local embedder runs in pure Rust.
+- First-party provider integration is Rust. Local BGE execution uses the
+  pinned approved package route, with no first-party Python production
+  adapter or bespoke pure-Rust model runtime.
+- A paid model supplies only the dense channel. It needs recorded model
+  admission and spec 0057/0077 promotion; mandatory quality and latency
+  gates cannot be waived. Spec 0077 owns activation, return and rollback.
 
 Source: `docs/specifications/linking/paid-embeddings.md`,
 `paid-embeddings-2.md`, `paid-embeddings-3.md`, `paid-embeddings-4.md`,

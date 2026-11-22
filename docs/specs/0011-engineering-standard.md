@@ -141,7 +141,7 @@ Nothing is applied without review.
    goal, files, tests and risks. The owner or a reviewer may comment on
    it.
 2. The agent then keeps a task list and ends with a walkthrough: what
-   changed, the evidence, screenshots or recordings of the Dioxus app
+   changed, the evidence, screenshots or recordings of the desktop app
    for screen work, and the `Defects:` line.
 3. Plans and walkthroughs are posted on the Forgejo task. They are
    evidence, never approval.
@@ -262,7 +262,7 @@ it: unit, property, integration, failure-injection and regression tests.
   jobs sharing 12 GB.
 - Plans and walkthroughs go on the Forgejo task, not into `docs/work/`,
   to keep status out of the docs.
-- Screenshots come from the Dioxus app, not from a browser test tool.
+- Screenshots come from the desktop app, not from a browser test tool.
 - The fixed count of 47 checks is replaced by the catalogue.
 - Owner and readability approvals sit beside the required reviews.
 

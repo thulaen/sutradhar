@@ -13,12 +13,16 @@ ranges, in this order:
 4. Features 1313 to 1357: crawler, monitoring, bot and analytics
    additions, and two content tools.
 
-Clean-room rule. Every feature is our own design. A feature that works
-"as" another product does names the idea only. We learn what exists
-from public pages and documents, never how it is built. We copy no
-code, wording, screens, data, formulas or trademarked names. Features
-that come close to another product get our own design, set out in the
-"Clean-room notes" at the end of this list.
+Provenance rule. Every consequential feature and method records its
+provenance class and evidence under spec 0076. A feature that works "as"
+another product does names the idea only. Public pages and documents may
+support a permitted functional observation; they do not authorise copying
+code, wording, screens, data, formulas or trademarked names. Licensed
+reuse and public-standard implementation are not described as strict
+clean-room work. Where strict clean room is required, the researcher and
+implementer are separate and the controlled transfer is evidenced.
+Features needing that treatment name it in the "Clean-room notes" at the
+end of this list. Patent and legal clearance remain separate evidence.
 
 Within each range, features are built in four kinds, in this order:
 insight-only features, then review-page changes, then drafts, then
@@ -59,11 +63,12 @@ Rules that hold for every feature:
 - Assistants using the MCP server make drafts only. A person approves
   before anything is published. AI-written content is never posted as a
   member.
-- A feature that learns something about a page passes it to link
-  ranking only as a typed signal. A signal can only reorder links that
-  already passed the relevance gate; popularity and traffic never make
-  an off-topic link rank higher (spec 0027, "Signals from other
-  features").
+- A feature supplies a link-ranking signal only when its owning
+  specification defines a relevance hypothesis, typed schema, provenance,
+  freshness, confidence, held-out evaluation and opt-out where needed.
+  A signal can only reorder links that already passed the relevance gate;
+  popularity and traffic never make an off-topic link rank higher (spec
+  0027, "Signals from other features").
 
 Tags at the end of a feature:
 
@@ -503,7 +508,7 @@ the writing brief (36, task #54).
      expressions.
 184. Custom search: Search for any text or code across the site.
 185. Custom rule checks: Run custom checks on every crawled page, written as
-     user scripts in Rhai, a small scripting language run inside Sutradhar.
+     user scripts in Python, run inside Sutradhar.
 186. Spelling and grammar checks: Check staff-written pages with a self-hosted
      LanguageTool. Check members' posts only if the owner opts in.
 187. Crawl segments: Segment crawls by section, template or author, usable in
@@ -974,7 +979,7 @@ the writing brief (36, task #54).
      steps and sends alerts.
 466. Branching, loops and data mapping: Lets workflows branch, loop and map data
      between steps.
-467. Script steps: Lets workflow steps run user scripts written in Rhai.
+467. Script steps: Lets workflow steps run user scripts written in Python.
 468. AI steps: Lets workflow steps use the local AI model.
 469. Human approval steps: Adds steps that wait for a person's approval.
 470. Workflow versions and rollback: Keeps versions of each workflow and can
@@ -2421,24 +2426,19 @@ identity and no customer records.
 
 ## Which spec designs each feature
 
-Each feature is designed in one place: the specification named below,
-or, for a feature not named below, its Phase 6 range task. That task
-writes the feature's specification, and gets it approved, before the
-feature is built:
+Each feature is designed in one place: the specification named below. A
+feature not named below is not design-complete and must not receive an
+implementation task or be built. Its owning specification must first add
+the complete readiness record, concrete tests and provenance required by
+[spec 0076](0076-specification-completeness.md), and this table must then
+name that feature. Phase 6 range tasks are derived execution records; they
+have no authority to invent or defer these designs.
 
-| Features | Range task |
-|---|---|
-| 1 to 56 | #54 |
-| 57 to 112 | #55 |
-| 113 to 712 | #56 |
-| 713 to 1312 | #57 |
-| 1313 to 1357 | #164 |
-
-"Part of" means the specification designs only part of the feature; the
-range task designs the rest in that same specification, approved like
-any change to it, so the feature keeps one home. Where the rest clashes
-with a rule that specification already states, the specification's rule
-holds and the clash goes to the owner as a question ([AGENTS.md section
+"Part of" means the specification designs only the named shared part. The
+same owning specification must contain the rest of that feature's
+readiness record before implementation, so the feature keeps one home.
+Where a clash exists, all affected work blocks and the clash goes to the
+owner as a question ([AGENTS.md section
 13](../../AGENTS.md#13-when-rules-clash)). A feature that uses a shared
 part (see "Shared parts") is designed where its own number is listed.
 
@@ -2514,7 +2514,7 @@ design, as set out here.
 - 1322 Off-topic page finder: our own measure, the distance of a page's
   embedding from the centre of its section, using our own embedder.
 - 1324 Tunable issue rules: our own issue catalogue, with custom checks as
-  Rhai user scripts (feature 185); no copied issue names or default
+  Python user scripts (feature 185); no copied issue names or default
   thresholds.
 - 1326 Checks by page importance: importance is our own score, made from
   the need inputs of ganit job 324 and the page's share of search; no

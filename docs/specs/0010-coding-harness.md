@@ -40,7 +40,12 @@ Language. aegis and nirikshak are developer tools, written in Rust
    reused only when every input identity is the same: dependencies,
    fixtures, environment, secret-input pins and advisory data where
    relevant. A command, result or cache supplied by an agent is never
-   trusted. The release tier always runs fresh.
+   trusted. The release tier always runs fresh. A `cache-entry` gives
+   no release execution proof even when every input matches. Resuming
+   an unchanged authorised release run can reconcile a completed
+   fresh check from that exact run through its original execution
+   receipt and current verification. This cannot supply an unperformed
+   check or credit a different run.
 6. Reports come in plain English, JSON, SARIF, generated HTML and
    Prometheus form, with steps to reproduce and links to the autoissues
    records (spec 0063).
@@ -51,6 +56,188 @@ Language. aegis and nirikshak are developer tools, written in Rust
    exact pushed commit itself. The gate creates no branches.
    Its one worktree is the push hook's clean copy beside the checkout
    (AGENTS.md section 8.2).
+
+### Phase acceptance gate-run
+
+For the Phase 2 → 3A → 3B → 3C exits, use the existing 0065
+`gate-run` purpose. The authorised gate account signs the
+`phase-gate-run` record only after verifying the applicable protected
+plan and its current signed proofs under 0008. This record type does
+not alter any other `gate-run` encoding. Neither the candidate nor a
+caller can select the phase, profile, permitted inputs or signer.
+
+Use 0064 canonical framing. `T` is exact UTF-8 prefixed by its
+unsigned 64-bit big-endian byte length. `U` is an unsigned 64-bit
+big-endian integer. `D` is 32 raw SHA-256 bytes. Lists start with a
+`U` count. Tijori prepends `T("gate-run")`. Concatenation adds no delimiter.
+Read canonical IDs from their owning protected sources with exact
+UTF-8 byte equality and no normalisation. The caller supplies
+these fields in order.
+
+| Order | Field and encoding |
+|---|---|
+| 1 | `T("phase-gate-run") \|\| U(1)` |
+| 2 | `T(repository_id) \|\| T(protected_phase_task_id) \|\| T(run_id) \|\| T(stage)`. Allowed stages are `2`, `3A`, `3B`, `3C`. |
+| 3 | `T(accepted_commit_object_id) \|\| D(accepted_source_tree_digest) \|\| D(protected_policy_digest) \|\| D(protected_phase_profile_digest) \|\| D(check_catalogue_digest)`. |
+| 4 | `U(predecessor_count)` followed by the predecessor reference when count is 1. Count is 0 for Phase 2 and 1 otherwise. The other Phase 2 prerequisites remain required evidence. |
+| 5 | `U(subject_count)` followed by `T(role_id) \|\| D(subject_digest)` for each exact protected prerequisite or output role in the phase profile. |
+| 6 | `U(evidence_count)` followed by each exact evidence reference. |
+| 7 | `T("pass")`. Hold or failure stays in the existing gate reports and supplies no accepted phase receipt. |
+
+A reference is `T(role_id) || T(purpose) || T(instance_id) ||
+U(log_entry_counter) || D(log_entry_hash) || D(signed_bytes_digest)`.
+Resolve the owning protected record and its 0065 log entry.
+Check the log bytes hash against SHA-256 of the exact caller
+bytes. Reconstruct the purpose field and caller bytes. Compare
+the signed-bytes digest to SHA-256 of that full preimage and
+verify its logged purpose, signer and signature.
+Sort subjects by exact unsigned UTF-8 role bytes and
+evidence references by unframed role, purpose and instance in
+unsigned byte order, then counter numerically and both digests
+in byte order. Refuse duplicates, a missing or
+extra role, unsupported type, bad order, invalid UTF-8, excess or
+trailing data. Take all size and count limits from the admitted
+phase profile and 0065. Check remaining bytes and element count
+before allocation. A missing bound holds.
+
+| Stage | Subject and required proof roles |
+|---|---|
+| 2 | Exact accepted gate and signing bootstrap. Require existing Phase 0/1 prerequisites, full Phase 2 check and tier coverage, clean and planted checks, reviews and required platform proofs. The phase owns no Boot qualification. |
+| 3A | Exact Phase 2 receipt and approved source baseline; bind reviewed foundation inventory and accepted refactor graph and locks. Require all applicable compatibility, migration, recovery, gate and review proofs under 0139. |
+| 3B | Exact 3A receipt and accepted foundation; bind complete official train inventory, parity ledger, graph, pinned dependencies, platform matrix and exact Boot output artefacts. Require current 0081, 0114 and 0116 proofs and the 0003 protected Bazel cutover. |
+| 3C | Exact 3B receipt and admitted Boot artefacts for the consuming platform and profile; bind the exact first product slice and its gate, review and end-to-end integration evidence. |
+
+Verify record type `phase-gate-run` and version 1 under the exact
+`gate-run` purpose. An ordinary gate verdict gives no phase proof.
+
+The exact subject role sets are:
+
+| Stage | Role IDs |
+|---|---|
+| 2 | `accepted-gate`, `bootstrap-trust`, `required-check-inventory` |
+| 3A | `foundation-baseline`, `foundation-inventory`, `accepted-refactor` |
+| 3B | `adopted-refactor`, `boot-artefact-inventory`, `boot-build-inputs`, `boot-parity-ledger`, `boot-platform-matrix`, `official-train-inventory` |
+| 3C | `adopted-boot-artefacts`, `first-product-slice` |
+
+Each digest names the exact canonical owning record in the
+protected profile. The profile names the applicable owner format
+and reference and holds for any missing or undefined record.
+The 3A baseline binds the Phase 2 accepted-gate prerequisite,
+and 3B's `adopted-refactor` digest equals 3A's
+`accepted-refactor` digest. The 3C adopted inventory names the
+exact 3B `boot-artefact-inventory` digest and selects only
+its proved consumer-platform cells. Its selection and
+matching proof are in the protected 3C evidence. Evidence role IDs
+come from the complete protected applicable proof roster, with one
+role per required check, variant, review or prerequisite. The gate
+checks that roster against the owning requirements before use.
+
+For Phase 2, resolve each required check evidence role from the
+protected inventory and verify its observed outcome for the exact
+applicable language, tier and profile. The `items` field declares a
+full catalogue mapping. A `partly` entry cannot supply one, and a
+mapping declaration gives no observed result. Verify the required
+clean or planted outcome as set out in the roadmap. A structure
+check, fixture name or exit-zero coverage report cannot fill a
+missing role. Hold the phase without advancing the accepted pointer.
+
+For 3C, `first-product-slice` resolves the protected evidence
+for spec 0106's actual product journey. Its owner format and
+reader must be admitted in the protected phase profile. It
+declares the required consuming cells and proof roles. The
+protected run binds the exact candidate, observed product
+results and the matching gate and review evidence.
+The `adopted-boot-artefacts` subject proves the separate Boot
+dependency. A valid subject digest, milestone summary or
+ordinary gate result cannot fill an unproved product record.
+If the authorised owner format or reader is unavailable, hold
+the 3C result before signing or moving the phase pointer.
+The owner and protected policy custodian admit the profile and
+reader with the gate and integration spec owners. The existing
+0065 gate account and `gate-run` purpose govern the outer
+phase record. QR-251 qualifies this specific product subject.
+
+For 3B, resolve the required 0003 cutover proof through that roster.
+Verify the authorised switch and the active generation it installed.
+Match the protected runner, policy, check route and applicable graph
+to the Boot build evidence and target profile. Verify `boot-build-inputs`
+against the exact 3B candidate. The cutover candidate and later Boot
+candidate may differ. A proposed, interrupted or superseded route
+cannot supply current proof. Verify a current successor through its
+own protected evidence when the route has changed.
+
+Derive required proof identities from the protected plan and owning
+specs. Verify each referenced record's exact subject, purpose,
+profile, authorisation and outcome directly. Use existing signed
+runner, gate and review records. A digest or a candidate's summary
+is insufficient. A valid predecessor keeps its own accepted tree and
+recorded policy. Preserve that policy digest in its signed bytes. Use
+the current 0065 trust source and verified log to decide eligibility.
+A recorded earlier policy never becomes the current trust source.
+Verify the exact chain from the current accepted stage pointer
+outside restored data. Each predecessor must be earlier in the
+verified log, belong to this repository, match the preceding
+stage and still pass the current protected trust and authority
+checks. Review any policy or key mismatch through 0065. An ordinary
+retired key can supply only evidence verified as signed while
+active under 0065. Revoked or unproved evidence confers no pass.
+The old and new candidate commits may differ. Check the exact
+adopted outputs. Bind Phase 0 and 1 proofs through Phase 2's
+protected validation without inventing past phase receipts.
+
+Bind one immutable expected preimage to the exact protected run
+before asking the gate to sign. Use the same protected phase
+check to publish each verified log entry. Bind the acceptance
+decision to the repository, observed current pointer and policy.
+Update the pointer atomically only if they still match.
+
+Initial Phase 2 acceptance requires verified protected state that
+proves no prior acceptance, plus the new verified Phase 2 record
+with zero predecessor references. An absent, unreadable or
+restored pointer is insufficient proof of initial state. An
+ordinary next stage must name the current eligible predecessor.
+
+To replace an accepted stage, verify a fresh result for that
+stage under its existing entry and exit rules. Its predecessor,
+if required, must be the preceding stage on the current protected
+chain. Atomically set the pointer to the replacement against the
+exact observed chain head. Keep the old entries as history. The
+replaced record and its former descendants cease to be current
+in the same update. No stale task may claim, renew, resume or
+complete work on those records. Reconcile any earlier committed
+effect through its existing owner. An older signature or restored
+pointer cannot reactivate the superseded chain.
+
+After replacing 3B, only a fresh 3C result over that exact Boot
+qualification can provide Phase 3 closure. Block product work
+under the old qualification and Phase 4 work under the old
+closure. Reconcile a lost reply to the same preimage and its exact
+committed entry. The same run with changed bytes, a competing
+pointer update or unproved current state holds. The release step
+and release purposes remain separate. A replacement changes which
+phase evidence admits new work. Keep prior artefact and profile
+evidence as exact history. Local compatibility for an already
+published installation remains under specs 0030 and 0031.
+A phase replacement itself gives no local compatibility verdict,
+install, update, rollback or revocation action.
+
+Extend the existing 0139 order, coverage and recovery cases with
+synthetic predecessor and proof records and test keys. Check valid
+2→3A→3B→3C, no predecessor, skipped or wrong phase, same-stage
+receipt from another repository or run, wrong purpose, changed
+artefact or platform, partial coverage, revoked or stale proof,
+same-purpose wrong record type, superseded predecessor, swapped
+caller and signed-input digests, duplicate role, malformed
+count, changed bytes under one run and lost reply. Contrast initial
+Phase 2 acceptance with a missing pointer after restore. Plant a
+3B replacement racing a 3C acceptance, a copied claim and an
+old Phase 4 prerequisite. Keep one already installed, independently
+verified release unchanged across that replacement. New work under
+the old phase holds. The installation retains the outcome of its
+governing local checks and the phase event causes no local pause,
+switch or rollback. The fixtures prove the decoding and
+admission contract only. They do not qualify Boot
+or any product artefact.
 
 ### What each tier runs
 
@@ -143,9 +330,13 @@ Language. aegis and nirikshak are developer tools, written in Rust
    fixture in every language it applies to.
 6. An unknown fact or a parse failure never becomes "no finding" or a
    safe choice of what to check. Limits are recorded.
-7. Before a rule may block, nirikshak itself needs 100% line and branch
-   coverage, property tests and a measured false-alarm rate of at most
-   2%. A missing measurement is not a rate of zero.
+7. Before a rule may block, its nirikshak implementation needs the line
+   and branch coverage assigned by ADR-0020 and the owning risk matrix,
+   property tests and a measured false-alarm rate of at most 2%. An
+   admitted strict-core component requires 100% line, branch and MC/DC
+   coverage and every killable mutant killed; equivalent mutants require
+   proof and independent review. A missing measurement is not a rate of
+   zero, and strict-core coverage is not a universal whole-crate target.
 8. Site-platform facts are added to the same rules, keeping their order:
    platform and site, validator, site write, object capability, content
    version, pause, journal, handoff purpose, recipient, expiry, epoch and
@@ -188,15 +379,17 @@ Language. aegis and nirikshak are developer tools, written in Rust
    never nest links; keep BBCode balanced; the target must be visible to
    guests now; no duplicate targets and no link where one exists; lose
    no content. Adding link markup is not rewriting words.
-2. Kani proves the real validator within stated bounds, backed by
-   proptest, fuzzing and zero surviving mutants on the hard rules.
+2. Kani proves the real validator within stated bounds, backed by proptest,
+   fuzzing and zero unexplained surviving killable mutants on the hard rules.
+   Equivalent mutants require proof and independent review under ADR-0020.
 3. WordPress has its own HTML and block rules: a whole item is refused
    if any of its blocks is not qualified, and the editor must round-trip
    it. Proofs cover Rust code only, not the editor or other plugins.
 4. stateright models cover: publishing, gating, forward and revert;
    queues with leases and retries; idempotent delivery; blue/green
-   indexes and model switching; the 30-day recalculation; and module
-   promotion. Each states safety and liveness properties, bounds and
+   indexes and model switching; the 30-day recalculation; spec 0077
+   champion control; and spec 0015's application of champion-admitted
+   module stages. Each states safety and liveness properties, bounds and
    assumptions, and links its traces to real code. Models may change
    with the code; protected properties may not.
 5. The protected checks also include agent rules in Rego, app
@@ -425,6 +618,11 @@ Tests live in `crates/aegis/tests/` unless named otherwise.
 - `results.rs`: forged, stale and incomplete results, altered cache
   inputs, oversized and malformed reports, a zero exit with no result,
   and missing, cancelled, skipped and timed-out checks all block.
+  Reuse 0005's release recovery case. A correctly test-signed
+  `cache-entry` with identical comparable inputs verifies in its own
+  cache scope but cannot fill a missing fresh release check. Verify
+  the distinct original fresh execution receipt in the authorised
+  same-run recovery control and require all remaining checks.
 - `planted.rs`: every check refuses its planted fault in every allowed
   language switched on, and passes clean code. Also: missing tools,
   malformed facts, weak coverage, surviving mutants, leaks and loosened

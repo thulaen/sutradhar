@@ -1,7 +1,7 @@
-# 0072: RankMedulla and SpamGuard
+# 0072: Buddhi and Rakshak
 
-RankMedulla judges whether a link would help a reader and orders the
-choices a moderator sees. SpamGuard looks for attempts to distort that
+Buddhi judges whether a link would help a reader and orders the
+choices a moderator sees. Rakshak looks for attempts to distort that
 choice and explains its cautions. Both use Sutradhar's own designs and the
 owner's own site evidence. Public descriptions of search systems give
 research questions. Our charts and scores describe the site and our model.
@@ -12,13 +12,13 @@ research questions. Our charts and scores describe the site and our model.
 |---|---|
 | Reading and storage | Sampark reads signed guest-visible revisions (0021). Shodhan supplies readable pieces, their primary ranges and the active index generation (0022, 0026). |
 | Text models and matching | Specs 0024 and 0023 own the pinned embedder, reranker, candidate search, safe anchors and matching's hard filters. |
-| RankMedulla | The existing `shodhan.rank` path owns pair scoring, calibration, the relevance gate, ordering and explanations (0027). Its full-body method uses the existing method registry (0055). |
-| SpamGuard | Kavach owns detection and the existing `SpamSignal` contract. The review view uses the existing moderation hint route (0051), with no member sanctions. |
+| Buddhi | The existing `shodhan.rank` path owns pair scoring, calibration, the relevance gate, ordering and explanations (0027). Its full-body method uses the existing method registry (0055). |
+| Rakshak | Kavach owns detection and the existing `SpamSignal` contract. The review view uses the existing moderation hint route (0051), with no member sanctions. |
 | Graph and activity | Specs 0049, 0034 and 0050 own graph facts, human rates and votes. Each producer supplies its existing typed signal or an admitted method input. |
-| Learning | Ganit owns maths, the lab owns comparisons and the tuner owns activation and rollback (0053, 0056). |
-| Search changes | QuarryView owns event bands and separate metric series (0043). GanitEvolve owns research trials and evidence receipts (0012, 0013). |
+| Learning | Ganit owns maths and the lab owns comparison evidence (0053, 0056); spec 0077 alone owns optimisation, evaluation, promotion, activation and rollback. |
+| Search changes | Alekh owns event bands and separate metric series (0043). Ganit Vikas owns research trials and evidence receipts (0012, 0013). |
 
-## RankMedulla
+## Buddhi
 
 ### Full-body evidence
 
@@ -84,10 +84,50 @@ pair. The bounded-window reranker still checks the anchor in context.
    Break score ties by canonical destination ID. Keep existing suggestion,
    signed review, acceptance and undo routes (0028, 0029).
 
-## SpamGuard
+### Optional script quality rate
+
+The only script-produced order input is `script_quality_rate` (RS30).
+It is a destination quality rate through the existing quality component
+(job 325). Its hypothesis is that an admitted rate of relevant, useful
+evidence distinguishes the order of already eligible targets. The script
+runs in spec 0104's background worker. Live ranking reads an admitted
+snapshot and never starts or waits for Python.
+
+1. Rust verifies the admitted numerator and positive denominator
+   against one allowed, guest-visible site evidence snapshot. Accept
+   only a finite numeric rate in [0, 1]. Refuse booleans, tags, counts,
+   invalid support and conflicting records. The service binds site
+   and destination revision, not script metadata. Pin script,
+   dependency and settings digests, rate definition, window,
+   coverage, confidence and expiry. No private, outside or
+   unregistered input. Human rates retain the traffic freeze rules.
+2. Specs 0027 and 0055 admit the typed optional component and its
+   owner. QR-082 requires exact population, lineage, support,
+   freshness, confidence, numerical cap and weight evidence.
+   Pin these and the script identity in the admitted champion
+   manifest. Compare on and off with the frozen baseline. If
+   admission changes the champion, spec 0077 owns PROMOTE and
+   rollback. A script cannot set its own weight or add a count.
+3. Register bool `ranking.script_quality_enabled` per site, default
+   false, owner-only local app with spec 0014 history and immediate
+   invalidation. The switch cannot admit a script or activate a
+   replacement. Pin setting and admission revisions to the job and
+   proposal. Check the current revisions before accepting a result,
+   using it, showing the proposal and its conditional apply. Turn-off,
+   edit, removal, revoke and expiry fence queued work, cache and
+   restore. Stale results cannot become visible.
+4. Off, missing or invalid is unavailable. Omit the optional
+   component and keep the pre-RS30 order and required weights,
+   without renormalising or substituting zero. An admitted zero is
+   a value. Neither the rate nor derived values feed candidates,
+   hard filters, relevance, calibration, gate, anchors or any
+   training or tuning inputs, labels, objectives or rules. Spec
+   0028 owns moderator review and conditional writes.
+
+## Rakshak
 
 Kavach reads the same guest-visible revision and its site-local facts.
-SpamGuard checks posts and the links inside them, on both site types, with
+Rakshak checks posts and the links inside them, on both site types, with
 all three evidence families below. WordPress comments are left to Akismet
 (owner, 12 November 2026): kavach reads whether Akismet is installed and
 active, a signed plugin fact of spec 0021, through sampark's public API
@@ -95,7 +135,7 @@ once at the start of every run, treating an absent or stale answer as not
 active, and where it is missing or switched off, the explanation surfaces
 say that comments are unchecked.
 
-SpamGuard examines three evidence families. Content evidence covers
+Rakshak examines three evidence families. Content evidence covers
 repetition and duplication, found by kavach's own near-duplicate method
 over hashed body token ranges outside links. Under the short-post rule, a
 post with fewer than `kavach.duplicate.min_tokens` (default 20) body
@@ -286,12 +326,14 @@ and copied publicly first by someone else, is never lowered and never
 hinted for that copy. Content and link evidence reach ranking only through
 `SpamSignal`, never through the trust door. The spam risk method reads
 only `SpamSignal` and keeps spec 0027's caution contract and spec 0069's
-fusion rules; SpamGuard adds no other route into the fused score or the
+fusion rules; Rakshak adds no other route into the fused score or the
 gate. These, and only these, read `SpamSignal` or the spam risk column:
-the spam risk method, with its own lab trials, tuner runs and variants in
+the spam risk method, with its own lab trials, spec 0077 study runs and variants
+in
 its caution role; every fuse step, in the live scoring model and in chains
-(specs 0068 and 0069), with its job 45 weight training, the tuner's weight
-steps and job 46's feature importance, each reading the spam risk column
+(specs 0068 and 0069), with its job 45 candidate weight training, spec
+0077's registered weight suggestions and job 46's feature importance, each
+reading the spam risk column
 only as written and turned by its direction; and the explanation surfaces,
 where the spam risk method's reason codes by family are shown only to
 holders of "View content hints" and other reviewers see its score, weight
@@ -301,26 +343,27 @@ the calibrated probability, as specs 0027, 0028, 0053, 0056, 0066 and 0069
 already set: calibration (job 33), the relevance gate, the order key, job
 2's replacement margin, job 3's display threshold, job 4's review-queue
 order, job 34's conformal count, jobs 95 and 142 (spec 0027), job 192 and
-the tuner's replay of current and proposed scores with jobs 128, 129 and
-147 (spec 0053), the confidence filter on spec 0028's review queue, the
-explanation's confidence, spec 0069's probe-set selection, lab comparisons
-and release evidence. Lab comparisons, release evidence and the tuner's
-replay may measure them, and a guard that compares them with moderators'
-choices, as spec 0053's step 3 does, is allowed. Job 147's offline policy
-scoring (spec 0053, step 3) may weight logged decisions by ratios from
-them; but no tuner, lab trial or GanitEvolve variant may otherwise weight
+spec 0077's replay of current and proposed scores with jobs 128, 129 and
+147 under its evaluation contract, the confidence filter on spec 0028's
+review queue, the explanation's confidence, spec 0069's probe-set selection,
+lab comparisons and release evidence. Lab comparisons, release evidence and
+spec 0077's replay may measure them. A guard that compares them with
+moderators' choices under spec 0077's evaluation contract is allowed. Job
+147's offline policy scoring, admitted as spec 0077 evaluation evidence,
+may weight logged decisions by ratios from them; but no optimisation study,
+lab trial or Ganit Vikas variant may otherwise weight
 or filter its cases by them or use their own values, such as the mean
 calibrated probability of accepted links, as its objective, fitness or
-guard. No other method, job, detector, tuner, lab trial or GanitEvolve
+guard. No other method, job, detector, Optuna study, lab trial or Ganit Vikas
 variant may declare `SpamSignal`, the spam risk column or any value
 computed from either as an input, objective, guard, fitness, label, case
 filter, sample weight, split or stopping rule. Outside the spam risk
-method's own trials, tuner runs and variants, no objective, fitness,
+method's own trials, Optuna study runs and variants, no objective, fitness,
 guard, label or stopping rule may be built from spam risk itself, such as
-the spam risk of accepted links. Outside those trials, tuner runs and
+the spam risk of accepted links. Outside those trials, Optuna study runs and
 variants, the false cautions on legitimate content that the release
 evidence below records may serve only as a comparison's predeclared
-permitted harm. Kavach's own SpamGuard findings on guest-visible content
+permitted harm. Kavach's own Rakshak findings on guest-visible content
 and its links outside `SpamSignal`, such as its cross-author diagnostic,
 single-family support, duplicate clusters and traffic findings, and any
 value computed from them, are read only by kavach itself, its detectors
@@ -329,9 +372,9 @@ diagnostic only to leave cross-author pairs out and traffic findings only
 in its traffic detectors, by the hints module for content hints only,
 never account hints, by the explanation surfaces, which show them only to
 holders of "View content hints", by the spam-view estimate and
-GanitEvolve's own search over its versions, and, for traffic findings
+Ganit Vikas's own search over its versions, and, for traffic findings
 only, by the trust door of spec 0027's order stage; no other method, job,
-detector, tuner, lab trial or GanitEvolve variant may declare them in any
+detector, Optuna study, lab trial or Ganit Vikas variant may declare them in any
 of the uses above. Kavach builds only these values from these findings for
 other readers, each under its own rule in this spec: `SpamSignal` and the
 spam risk column, under the list above of the only readers of
@@ -344,8 +387,8 @@ order-stage signal under spec 0027, it only freezes traffic evidence and
 never lowers a place, and its "traffic frozen" label stays visible to
 every reviewer, as spec 0027 says. Spec 0050's guest vote checks read
 kavach's spam check on the vote itself (item 4 there), which is not
-SpamGuard evidence. Outside the hints module's own handling of content
-hints, no method, job, detector, tuner, lab trial or GanitEvolve variant
+Rakshak evidence. Outside the hints module's own handling of content
+hints, no method, job, detector, Optuna study, lab trial or Ganit Vikas variant
 at all may declare, in any of those uses, content-hint rows,
 `content_hint_evidence`, `hint.raised` or `hint.decided` of the content
 kind, the `spam.content_hint_*` events, or any value computed from them,
@@ -355,13 +398,13 @@ each refuse every declaration outside these rules. The traffic family
 reaches ranking only through the trust door of spec 0027's order stage,
 since rule 4 there keeps traffic out of relevance. The spam-view estimate
 below never enters `SpamSignal`, the trust door or any method input.
-Through that door, SpamGuard's traffic findings only freeze traffic
+Through that door, Rakshak's traffic findings only freeze traffic
 evidence, as above. The trust door can never improve relevance or promote
 a target. A single family is a diagnostic for hints, though its support in
 `SpamSignal` can still lower relevance through the spam risk method. A
 content hint needs current support from at least two separate families
 counted against that content, the rule spec 0051 applies to account hints,
-here applied to SpamGuard's families. A current `SpamSignal` with no
+here applied to Rakshak's families. A current `SpamSignal` with no
 qualifying support gives the spam risk method a current "no finding"
 value, so a clean page does not wait. Missing or stale output is
 unavailable, not zero, and the proposal waits under spec 0027's rule for
@@ -369,19 +412,27 @@ missing inputs; it is never read as an accusation or as clean.
 
 A content hint holds one content ID and revision, never accounts, and
 closes when its revision is superseded, its content is deleted or it stops
-being guest-visible. Kavach emits each content hint as a typed outbox
-event, `spam.content_hint_raised`, for one flagged content revision. The
-event carries that content ID and revision, kavach's finding ID, the
-families, strengths and stable reason codes only, never post text, names,
-anchors or a list of other content (spec 0019). The hints module reads the
-related content, such as a duplicate cluster, through kavach's public API
-by finding ID, and builds each evidence summary from codes and counts.
-Panchayat's hints module (spec 0051) consumes that event safely when it is
+being guest-visible. Kavach commits each hint change and its
+versioned spec 0019 outbox row in one transaction. It emits
+`spam.content_hint_raised`, for one flagged content revision. The event
+carries that content ID and revision, kavach's finding ID, the families,
+strengths and stable reason codes only, never post text, names, anchors
+or a list of other content. The hints module reads the related content,
+such as a duplicate cluster, through kavach's public API by finding ID,
+and builds each evidence summary from codes and counts. Panchayat's
+hints module (spec 0051) consumes that event idempotently when it is
 delivered again and stores it in `content_hint` for both site types. It
 closes the hint on sampark's existing revision, deletion and visibility
-events (spec 0021), and on kavach's typed outbox event
+events (spec 0021), and on kavach's event
 `spam.content_hint_withdrawn`, which carries only the finding ID, content
-ID and revision. On XenForo, content hints appear in the review queue as
+ID and revision. A hint event uses the strict site and content key.
+The consumer commits its inbox receipt and hint state together.
+Check the current revision, visibility and authoritative finding
+generation in the consumer transaction. Withdrawal or expiry keeps
+a monotone marker across replay and restore. Retain it while an old
+raise could be delivered. A same-revision delayed raise cannot
+resurrect a withdrawn finding, even after inbox expiry. On XenForo,
+content hints appear in the review queue as
 one hint kind; on WordPress, where that queue is not available, they
 appear only in the explanation surfaces of spec 0027, which read them
 through a typed content-hints trait that shodhan declares, with a test
@@ -402,7 +453,7 @@ graph, activity or training data is pooled across them.
 
 ## Our estimate of a search engine's spam view
 
-SpamGuard also keeps our own estimate of how a search engine's spam system
+Rakshak also keeps our own estimate of how a search engine's spam system
 might judge each site, so a moderator can see which pages look at risk
 before a search change does. It is our model, built from public spam
 policies and the site's own measured data, and every screen, report,
@@ -411,12 +462,12 @@ our estimate, never a search engine's verdict or a copy of its system
 (owner, 12 November 2026).
 
 The estimate reads the same three evidence families per page and per site,
-counted under SpamGuard's order, same-author, cross-author, quote and
+counted under Rakshak's order, same-author, cross-author, quote and
 own-link rules, so a copy's evidence never raises the original's band,
 with the site's own Search Console and GA4 series (spec 0043). It reports
 a risk band with its support and uncertainty, and the reasons, by family.
 With a missing or stale Search Console or GA4 series, the band is unknown,
-never low. Like SpamGuard, the estimate never counts links or traffic
+never low. Like Rakshak, the estimate never counts links or traffic
 aimed at a page against that page: traffic findings only make its band
 less certain, never higher. Per-page bands and their reasons need the
 "View content hints" permission; site-level bands are shown only to the
@@ -424,24 +475,25 @@ staff who may view that site's charts under spec 0043; estimate events
 carry IDs, bands and reason codes only. Neither it nor any value computed
 from it is ever an input, objective, guard, fitness, label, case filter,
 sample weight, split or stopping rule for any ranking, relevance,
-detection, tuner, lab or GanitEvolve method or job, except GanitEvolve's
+detection, Optuna study, lab or Ganit Vikas method or job, except Ganit Vikas's
 own search over versions of the estimate, whose fitness is its agreement
 with the site's measured series. It is a report only: it never enters the
 relevance gate, never orders candidates and never acts on a page or a
-member. GanitEvolve may search versions of it under the release evidence
-rules below; each counts only as specs 0055 and 0071 allow.
+member. Ganit Vikas may search versions of it under the release evidence
+rules below. A report trial supplies no release count or live ranking use.
 
 ## Research and release evidence
 
-GanitEvolve runs frozen, seeded comparisons on synthetic cases and
+Ganit Vikas runs frozen, seeded comparisons on synthetic cases and
 approved snapshots of the owner's sites. Use the lab's thread and
 time splits and held-out evaluation. Record support by topic and site
 type, useful relevance and ranking change, false cautions on legitimate
 content, calibration, latency, memory and work spent. Predeclare the
 comparison, required gain, permitted harm and stopping rule. Shadow
-results are reports. The existing tuner and approval path govern any
-activation. Keep the last admitted bundle on a failed check and prove
-rollback on both site types. The live inference and batch code follow
+results are reports. Only spec 0077's controller governs candidate
+activation; moderator approval governs site writes separately. Keep the last
+admitted bundle on a failed check and prove rollback on both site types. The
+live inference and batch code follow
 the Rust rules in AGENTS.md.
 
 Study published core and spam update dates as event bands in 0043. Use
@@ -451,25 +503,52 @@ uncertainty with the comparison. Use the dates as observations, so the
 report establishes no cause or private search system decision.
 Search-update chart observations from this study are never an input,
 objective, guard, fitness, label, case filter, sample weight, split or
-stopping rule for any ranking, relevance, detection, tuner, lab or
-GanitEvolve method, and never enter the relevance gate. The site's own
+stopping rule for any ranking, relevance, detection, Optuna study or
+Ganit Vikas method or ranking or spam lab. They never enter the
+relevance gate. The site's own
 Search Console and GA4 series are likewise never an input, objective,
 guard, fitness, label, case filter, sample weight, split or stopping
 rule for any detection method, kavach detector, or the spam risk method
-or any of its lab trials, tuner runs and variants; within SpamGuard,
-only GanitEvolve's own search over versions of the estimate may use
+or any of its lab trials, Optuna study runs and variants; within Rakshak,
+only Ganit Vikas's own search over versions of the estimate may use
 agreement with them. Spec 0027's gate check and spec 0055's catalogue
 check refuse these uses too.
 
-A method counts only through spec 0055. Give each genuinely different
-computation a stable identity, behaviour digest, nearest-rival test
-and independent signed admission against the exact candidate. A
-changed weight, seed, label or surface keeps its owning identity.
-Each shipped operation gets one capability entry even when it has
-desktop, CLI, MCP and both site surfaces. Record its actual
-integration and end-to-end proof. Spec 0064 owns the release floors,
-variant identity, scope shares and signed group verification. A
-trial or group size supplies no credit without its required proof.
+The local Empirical Update Lab is an advisory exception in
+spec 0138 under ADR-0024 and DR-124. With the owner's approval for
+the exact study, its own-site reader may use eligible, settled spec
+0137 Search Console outcome labels and the specified before-window
+controls. That route uses the active owned site's verified property.
+Lab inputs, outputs and derived values give no authority for any
+ranking, relevance, calibration, detection, candidate or anchor
+selection, method research, promotion, or release qualification.
+The catalogue and ranking checks keep their refusal for the same
+data and its derivatives. Only the advisory route exercises the
+0138 admission and isolation cases.
+
+ADR-0026 admits a separate advisory reader for
+[0148](0148-scientific-experimentation-engine.md). It can evaluate
+an approved experiment on the active owned site using the exact
+0149 method and 0150 source admission. The 0151 result, forecast
+calibration and guidance proposals stay within their approved
+advisory projections. This reader, its evidence and its outputs
+confer no authority on ranking, spam, relevance, detection,
+method research, sealed holdouts, Optuna, Ganit Vikas ranking or
+release qualification. The existing refusals apply to derivatives.
+
+A method gains catalogue admission only through spec 0055. Give each
+genuinely different computation a stable identity, behaviour digest,
+nearest-rival test and independent signed admission against the exact
+candidate. A changed weight, seed, label or surface keeps its owning
+identity. Each shipped operation gets one capability entry even when it
+has desktop, CLI, MCP and both site surfaces. Record its actual
+integration and end-to-end proof. Spec 0064 owns complete feature and
+variant qualification and signed group verification. Where the adopted
+protected release policy applies
+[0079](0079-ranking-method-catalogue.md#what-counts-toward-the-floor),
+verify the per-family ranking-method floor on the exact candidate.
+The 0057 quality gates apply independently. A trial, catalogue total
+or evidence group size supplies no qualification proof by itself.
 
 ## Acceptance tests
 
@@ -485,15 +564,16 @@ acceptance and undo in the signed end-to-end route.
 | RM03 Relevance first | Freeze a fixture gate with thresholds 0.70 for both inputs. Pair A returns 0.80 for each. Pair B returns 0.69 for reranker relevance and 0.80 for acceptance. Give B the best possible order signals. Only A passes. A low acceptance input or an input equal to its threshold is also refused with SUT-550. |
 | RM04 Incomplete | Remove the tail range or mix two generations. The result names unavailable body evidence, with no approvable proposal. Restore it and use the same test input to reproduce the complete result. |
 | RM05 Link cap | On XenForo, where a quote link does not count, set the cap to five and provide four content links, as spec 0028 counts them, in one thread, plus a quote link that does not count. One valid addition can be approved. With five, the proposal is skipped. Start two approvals at four on different posts of that thread, let the first apply, and require spec 0028's thread allowance guard to refuse the other. Repeat at a different configured cap and with a missing inventory. |
+| RM06 Script quality | Compare off, missing, zero and one against equal gate sets and calibration. Refuse malformed, non-finite, just outside, wrong site and wrong-role switch. Test the admitted maximum effect and stable ties. Race switch, revocation, delayed result, replay and conditional apply. The below-gate target stays refused, no protected input reads the rate, and no live request starts Python. |
 | SG01 Corroboration | On WordPress, each case below that orders posts by different authors instead gives no duplicate evidence against either post. Duplicate evidence between different authors below is a diagnostic only, never counted in `SpamSignal` or towards a hint; the synthetic spam fixture is one author's. Repeat a legitimate template on two pages without suspicious links. The content family alone yields no content hint. Add corroborating link evidence for a synthetic spam fixture. The hint names both families, and its content and link detectors share no input fact. Two records in the content family alone still yield no hint. A rival post that others copy into their threads and link to many times with one repeated anchor gets no content hint, and its spam risk is unchanged; the copies and the linking posts carry the evidence. The same holds after the rival edits its post once the copies exist, and when an outsider links back to a rival that linked to it first, or baits the rival into linking back: a pair by different authors gives no reciprocity evidence against either, while one author's two posts in different threads linking each other carry it against the post whose link completed the pair. An old post edited to copy a newer post carries the duplicate evidence; the newer post carries none. An original numbered first, copied, then given a typo fix before kavach runs keeps its first place and carries none. When the original's first matching revision was dropped past `kavach.revisions.max` or purged while the original was hidden, the pair gives no duplicate evidence against either post, and a post edited 1,000 times keeps no more than that many order rows, signatures and index entries; a copy matching any revision of that post other than its first gives no evidence. A member's post first made in a members-only section, copied publicly by an outsider first, then posted publicly by the member with the member's usual repeated link, gets no content hint from the copy and keeps its spam risk and estimate band unchanged by it. After a purge or a change of tijori's per-site key, an original numbered before its copy and edited after it carries no duplicate evidence. A flood of identical spam posts delivered in one batch carries duplicate evidence, ordered by delivery number, and link evidence when one author posts it. Two near-duplicates by different authors, one first read by a backfill run, give no duplicate evidence against either. A rival's members-only post copied into a public thread, then moved public by a moderator, gets no duplicate evidence, and the same holds when the moderator splits the rival's posts into a new public thread, or when the rival fixes a typo just after its section is opened to guests. A WordPress post copied from an older post by the same author, then moved from draft to published by that author in the editor, carries the duplicate evidence; a XenForo copy by the same member published on a moderator's approval gives none, since the approval is not the member's own save. A post made public by removing its password, or a private post made public, gives no duplicate evidence either way, even when the same save also edits it, and the same holds when the private original is first moved to draft and then published, when a published post is given a password, edited, copied by a password holder and published again, and when a post that was password-protected before the plugin was installed is published through a draft. A post published before install, copied after it, moved to draft and published again gives no duplicate evidence against the original, and neither does a XenForo post that is unapproved, copied and approved again, even when it sat in a members-only section that was opened to guests while it was unapproved. A member who quotes a revision that was edited again, or deleted, before sampark delivered it carries no evidence from the quote. A new resource update copied from an older one carries the duplicate evidence; the older one carries none. A delivery that coalesces an edit with a move carries no number and gives no evidence either way. An outsider's post that sits close to both an earlier post and a rival's later post gives the rival no duplicate evidence. A delivery whose handler reads a newer state than its note's, or whose note was found only on asking again after a later note was numbered, carries no number and gives no evidence either way. When the counter read from sampark falls below kavach's highest recorded number, or a new epoch starts, every number of the old epoch has no known order, hints resting on them are withdrawn and a health alert is raised. Numbers from different epochs never order a pair. Two guest posts with user id 0 are never treated as one author. A 15-token post copied with five tokens added, then expanded by its author, carries no duplicate evidence, whether the copy is by its author or another member. Posts under one shared WordPress account count as one author. A new resource with a link in its description gives no duplicate evidence between its description and its first update row. Posts sent through a front-end form, a "fetch now" feed import from wp-admin or a REST post with the admin's application password, all under the admin account, flooding a destination and anchor before an admin article, give that article no duplicate or link support, and so do XenForo feed-reader posts made under a member's account before that member's own post. On WordPress, a near-copy by another author published while the original's save hook is still running gives no duplicate evidence against the original. Short stock replies such as "Thanks!" or "+1" by different members, and image-only posts, give no duplicate evidence. On WordPress, a post that quotes an earlier post in a blockquote gives no duplicate or link evidence from the quote. Part 2 linking to Part 1 by the same author, then Part 1 edited to link back, carries reciprocity against Part 1, whose link joined last. A flood of one author's copies with no known order between them still carries duplicate and link evidence against every copy, even after the author deletes their account. A member who quotes an outsider's spam link in a reply joins no link pattern, at any quote depth, and neither does a fake quote naming no post. A rival whose thread links to an outsider's page and who quotes that page's link back with the Reply button gives no reciprocity against the rival. When Sutradhar inserts a link from A to B and later from B to A, neither post carries link evidence for them, even when sampark delivers the edit before `suggestion.approved` or `suggestion.applied` arrives, or an undo leaves the link in place after a conflict. A post whose suggestion goes stale while approving stops waiting. When a quoted source is edited to drop its link, or deleted, the quoting posts carry none, and a member who quotes a backfilled post holding a link carries no evidence for it. Outsiders who flood a destination with an anchor before or after a rival's single ordinary link to it give the rival no link support from the flood. A flood of one common anchor such as "click here" forms no pattern on its own. A repeated link gives link evidence only, never content evidence. A spam reply in a rival's thread counts against the reply, not the thread, and a link whose target spec 0023 picks as that reply reads the reply's own signal. A detector declared in the content family that reads link facts is refused, so it adds no family. Two detectors whose inputs only partly overlap also give one family. |
 | SG02 Traffic freeze | Supply a last good human rate and then a bot anomaly with a fabricated high rate. The retained rate stays unchanged. With no last good rate, the feature is unavailable. Neither state improves order or passes the relevance gate. Traffic findings never enter `SpamSignal`; they act only through the trust door. Bots sent to a rival page freeze its traffic evidence but do not lower its place and add no family towards a content hint. A detector that reads traffic findings but declares the content or link family is refused and adds no family. |
-| SG03 Access and ageing | Feed another site's signal, an old revision, and a deleted target in turn. None affects the current result. Verify evidence erasure and an event containing only IDs and codes. |
-| SG04 Action boundary | Spec 0027's gate check admits the spam risk method with its own trial, tuner run and variant, including one whose fitness is its false-caution rate, the live scoring model and a chain fuse step reading the spam risk column as written, job 45's weight training and job 46's feature importance. It admits jobs 2, 3, 4, 33 and 34, the gate, the order key, a probe set chosen by calibrated probability and a lab comparison of chains reading the fused score or calibrated probability. The gate check refuses a candidate generator, a hard filter and each relevance, order-stage or anchor-quality method, tuner, lab trial and GanitEvolve variant that declares `SpamSignal`, the spam risk column or another value computed from them as an input, objective, guard, fitness, label, case filter, sample weight, split or stopping rule; a tuner whose fitness is the spam risk, or the calibrated probability, of accepted links; a GanitEvolve variant relevance method that uses the stored fused score as a feature; and job 2, 3 or 4, or a calibration fit, that declares the spam risk column directly. The gate check refuses each of them that declares content-hint rows, `content_hint_evidence`, content-kind `hint.raised` or `hint.decided`, `spam.content_hint_*` events or a value computed from them in any of those uses, such as a fitness built from upheld hint counts, and each that so declares our estimate or a search-update chart observation. Spec 0055's catalogue check refuses a kavach detector, ganit job 74, an account-hint job of spec 0051 or a darshak detector trained on content-hint decisions. It also refuses a kavach or darshak detector, or the spam risk method or any of its lab trials, tuner runs and variants, that declares our estimate or a search-update chart observation, and a darshak detector that uses the site's Search Console or GA4 series, in any of those uses. In a fixture chain, the gate check refuses an anchor step that declares the spam risk column. Both checks refuse a relevance method, an order-stage method other than the trust door, and a hard filter that declare kavach's cross-author diagnostic or any other SpamGuard finding outside `SpamSignal`, and admit the spam-view estimate and its GanitEvolve search reading them and the trust door reading kavach's traffic findings, and admit the quality door and the order key reading the trust door's frozen traffic rate. They refuse the trust door reading a finding other than traffic, such as the cross-author diagnostic; an account-hint job of spec 0051, or the hints module, building an account hint from kavach's findings; and a tuner, lab trial or GanitEvolve variant other than the estimate's own search that declares them. The gate check admits GanitEvolve's search over versions of the estimate whose fitness is agreement with the site's measured Search Console and GA4 series, and job 147's policy scoring weighted by ratios from the fused score. Spec 0055's catalogue check refuses a kavach detector, and the spam risk method or any of its lab trials, tuner runs and variants, that uses the site's Search Console or GA4 series as its input, objective, guard, fitness, label, case filter, sample weight, split or stopping rule. The gate check admits the tuner's replay of current and proposed scores in spec 0053. Attempt apply without moderator approval, with an expired proposal, and after a newly failed hard filter. No site write occurs. An approved current proposal applies once. Undo restores the exact change and preserves later edits. |
+| SG03 Access and ageing | Feed another site's signal, an old revision, and a deleted target in turn. None affects the current result. Verify evidence erasure and an event containing only IDs and codes. Delay a same-revision raise until after withdrawal, inbox expiry and restore. It never restores the hint. |
+| SG04 Action boundary | Spec 0027's gate check admits the spam risk method with its own trial, Optuna study run and variant, including one whose fitness is its false-caution rate, the live scoring model and a chain fuse step reading the spam risk column as written, job 45's weight training and job 46's feature importance. It admits jobs 2, 3, 4, 33 and 34, the gate, the order key, a probe set chosen by calibrated probability and a lab comparison of chains reading the fused score or calibrated probability. The gate check refuses a candidate generator, a hard filter and each relevance, order-stage or anchor-quality method, Optuna study, lab trial and Ganit Vikas variant that declares `SpamSignal`, the spam risk column or another value computed from them as an input, objective, guard, fitness, label, case filter, sample weight, split or stopping rule; an Optuna study whose fitness is the spam risk, or the calibrated probability, of accepted links; a Ganit Vikas variant relevance method that uses the stored fused score as a feature; and job 2, 3 or 4, or a calibration fit, that declares the spam risk column directly. The gate check refuses each of them that declares content-hint rows, `content_hint_evidence`, content-kind `hint.raised` or `hint.decided`, `spam.content_hint_*` events or a value computed from them in any of those uses, such as a fitness built from upheld hint counts, and each that so declares our estimate or a search-update chart observation. Spec 0055's catalogue check refuses a kavach detector, ganit job 74, an account-hint job of spec 0051 or a darshak detector trained on content-hint decisions. It also refuses a kavach or darshak detector, or the spam risk method or any of its lab trials, Optuna study runs and variants, that declares our estimate or a search-update chart observation, and a darshak detector that uses the site's Search Console or GA4 series, in any of those uses. In a fixture chain, the gate check refuses an anchor step that declares the spam risk column. Both checks refuse a relevance method, an order-stage method other than the trust door, and a hard filter that declare kavach's cross-author diagnostic or any other Rakshak finding outside `SpamSignal`, and admit the spam-view estimate and its Ganit Vikas search reading them and the trust door reading kavach's traffic findings, and admit the quality door and the order key reading the trust door's frozen traffic rate. They refuse the trust door reading a finding other than traffic, such as the cross-author diagnostic; an account-hint job of spec 0051, or the hints module, building an account hint from kavach's findings; and an Optuna study, lab trial or Ganit Vikas variant other than the estimate's own search that declares them. The gate check admits Ganit Vikas's search over versions of the estimate whose fitness is agreement with the site's measured Search Console and GA4 series, and job 147's policy scoring weighted by ratios from the fused score. Spec 0055's catalogue check refuses a kavach detector, and the spam risk method or any of its lab trials, Optuna study runs and variants, that uses the site's Search Console or GA4 series as its input, objective, guard, fitness, label, case filter, sample weight, split or stopping rule. The gate check admits spec 0077's replay of current and proposed scores under its evaluation contract. Attempt apply without moderator approval, with an expired proposal, and after a newly failed hard filter. No site write occurs. An approved current proposal applies once. Undo restores the exact change and preserves later edits. |
 | SG05 Akismet | On a WordPress fixture with Akismet installed and active, a spam comment produces no kavach check, while a spam post and the links inside it still produce all three families' evidence. With Akismet missing, or installed but switched off, the explanation says comments are unchecked. An absent or stale Akismet answer counts as not active. |
 | SG06 Our estimate | A synthetic site with link-concentration spam yields a raised risk band naming the link family, labelled as our estimate. The band changes no relevance score, order or site content. Bot traffic sent to a rival page never raises that page's band, and an honest post copied into twenty threads by other members keeps its band, while the copies carry only the cross-author diagnostic. With no Search Console or GA4 series, or a stale one, the band is unknown, never low. A user without "View content hints" sees no per-page band or reason, a member sees no site-level band, and estimate events hold only IDs, bands and reason codes. |
 | SG07 Missing kavach | With no current kavach output for a destination, the spam risk method is unavailable, the proposal waits, and no score of zero is used. A current signal with no finding lets a clean page through without waiting. A pair just below the gate with "no finding" is still refused with SUT-550. |
 | SG08 Hint permission | A reviewer without "View content hints" sees in the explanation the spam risk method's score, weight and importance and that a spam caution applied, never its reason codes or families, nor any of kavach's other findings such as duplicate clusters or the cross-author diagnostic. On XenForo, a moderator without "View content hints" sees no content hint, and one granted it sees the hint with both families named. On WordPress, a user without the capability sees the explanation with no hint, and one with it sees the hint in the explanation. Superseding the revision, deleting the content or making it no longer guest-visible closes the hint. The same `spam.content_hint_raised` event delivered twice stores one hint. The event schema has no free-text field, and the hint view shows no anchor or post text. |
-| RP01 Trial replay | Repeat the fixed seed and held-out protocol on the same candidate. Get the same group member identities, decisions and reasons. A stale bundle, alias, changed setting or repeated check cannot add a count. |
+| RP01 Trial replay | Repeat the fixed seed and held-out protocol on the same candidate. Get the same group member identities, decisions and reasons. A stale bundle, alias, changed setting or repeated check cannot add a count. Offer a test-signed historical 0071 `V-` result for a report trial with the exact candidate bytes and its historical record type. Supply no current admitted 0064 variant proof. The historical result satisfies no current variant or 0079 method evidence requirement. It changes no ranking input or result. |
 | RP02 Update bands | Join an update notice to a measured day and a missing day in each metric source. Keep the event date and separate series. Missing input stays unknown and the display gives no causal verdict. |
 
 ## Limits and footprint
@@ -524,9 +604,13 @@ to those budgets belong to the existing footprint specifications.
 - Archive ADR-0063, item 3, and the public update study notes in
   `docs/requirements/sources/harness-statistics-seo-ideas-2026-11-06.md`.
 - Public descriptions of ranking and spam provide research context.
-  [Google Search ranking systems](https://developers.google.com/search/docs/appearance/ranking-systems-guide)
+  [Google Search ranking systems][g-ranking]
 - Public examples describe abuse patterns for synthetic cases.
-  [Google Search spam policies](https://developers.google.com/search/docs/essentials/spam-policies)
+  [Google Search spam policies][g-spam]
 - The original published account supports the existing comparative
   learning-to-rank research in spec 0027.
-  [Burges, From RankNet to LambdaRank to LambdaMART](https://www.microsoft.com/en-us/research/publication/from-ranknet-to-lambdarank-to-lambdamart-an-overview/)
+  [Burges, From RankNet to LambdaRank to LambdaMART][burges]
+
+[g-ranking]: https://developers.google.com/search/docs/appearance/ranking-systems-guide
+[g-spam]: https://developers.google.com/search/docs/essentials/spam-policies
+[burges]: https://www.microsoft.com/en-us/research/publication/from-ranknet-to-lambdarank-to-lambdamart-an-overview/

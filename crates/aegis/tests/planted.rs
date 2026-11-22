@@ -189,6 +189,40 @@ fn the_hindi_word_list_is_not_spelling_checked_as_english() {
 }
 
 #[test]
+fn the_version_one_names_are_not_spelling_checked_as_english() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
+    let dir = std::env::temp_dir()
+        .join(format!("aegis-planted-names-{}", std::process::id()));
+    let _ = fs::remove_dir_all(&dir);
+    fs::create_dir_all(&dir).unwrap();
+    let _bytes =
+        fs::copy(root.join("_typos.toml"), dir.join("_typos.toml")).unwrap();
+    // One use of every version 1 pattern in `_typos.toml`.
+    let names = "AX row, AX1 and AX-12 map to TASK-CATALOG. quint-modeling, \
+                 ai_optimization, audit_artifact and artifact_id are ids. \
+                 schema.org `Organization` is a Person or Organization; \
+                 see Organization guidance and [organization]. \
+                 find_by_statu_and_created_after \
+                 has field `statu`. Proxy-Authorization is a header. \
+                 The list is authorization, cookie and more. \
+                 Slite, CANVA and Dueling bandit are names.\n";
+    let all = ["a.md".to_owned()];
+    let run = |text: &str| {
+        fs::write(dir.join("a.md"), text).unwrap();
+        let found = tiers::whole_project_docs(&Repo::at(&dir), &all);
+        found
+            .into_iter()
+            .filter(|f| f.check == "text.typos")
+            .count()
+    };
+    assert_eq!(run(names), 0);
+    // The names stay narrow: the same word as prose is still caught.
+    // Built from parts, so this file passes its own spelling check.
+    let prose = format!("Organi{}ation of this part is simple.\n", 'z');
+    assert_eq!(run(&prose), 1);
+}
+
+#[test]
 fn a_planted_token_fails_the_leak_scan_and_an_allow_note_does_not_help() {
     let dir = std::env::temp_dir()
         .join(format!("aegis-planted-leaks-{}", std::process::id()));

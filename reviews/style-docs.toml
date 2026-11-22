@@ -1,5 +1,13 @@
 skill = "style-docs"
-change = "sha256:a390528ad6f6f97eaca5e09583a82ead225c116ced48ff625b9f37540bbf2716"
+change = "sha256:e5903784ac2150fce301af6be53342d6b1336d5d8fcc5ecda4b68f12119d34a4"
 verdict = "pass"
-agent = "claude subagent"
-summary = "Rebase re-check: spec 0016 loop guard section unchanged from the passed third round; new base 2205d74 touches only spec 0043 and review records, no clash. Plain English, no status, settings explained."
+agent = "claude subagent round six"
+summary = "Round six ran the style checks over 214 files: no trailing whitespace, no missing final newline, no heading skips, no table cell-count mismatches including the escaped pipes in spec 0005, no real American spellings and no real doubled words. The only long prose lines are unwrappable link and URL lines. AGENTS.md 7.2, the BJ-29 row, DR-159, QR-253, the glossary Waiver count row and the 0135 spool paragraph read in plain English. No blocking finding. Minor notes left open: ten source-list lines in spec 0149 could wrap their link text; two terse phrases in 0135. Round six was read at fingerprint 144bb425. The only changes after that read are two link definitions re-wrapped for the line-length check, one catalogue row reworded, and fixed names and identifiers added to the spelling allow-list in _typos.toml. Later addition, reviewed in two further rounds: a planted test the_version_one_names_are_not_spelling_checked_as_english, the Organization and Dueling patterns narrowed to exact phrases and one dead pattern removed; the test fails without the allow-list and passes with it."
+
+[[finding]]
+what = "Round four found a 114 character line in spec 0114 and a garbled Retry-After sentence in spec 0137. Both fixed."
+fixed = true
+
+[[finding]]
+what = "Round five found unescaped double pipes in table cells of spec 0005. Fixed."
+fixed = true

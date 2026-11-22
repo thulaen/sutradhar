@@ -1,625 +1,513 @@
 # 0064: Version 1 scope and qualification
 
-Version 1 includes the four feature ranges and the expanded scope in
-this specification. Phase 6 builds the features. Phase 7 qualifies the
-release against [AGENTS.md section
-3](../../AGENTS.md#3-the-goal-and-the-release-bar). The method catalogue
-in spec 0055 and release assessment in spec 0057 share one count
-verifier, the `qualify` crate, which this specification owns. It lives
-in `tools/qualify`, runs only on Dell and is never shipped. It depends
-on `sutradhar-methods` (spec 0055) and the signature checks of tijori,
-and nothing depends on it. It owns the verified ledger and publishes it
-as a file signed under its own ledger signing purpose. The ledger holds
-the six qualified counts (the method, capability and variant totals, the
-method and capability in-scope totals, and the ranking subtotal) and no
-member rows. It also carries the run id the protected policy issued, the
-run kind, which is one of release, pilot or fixture, the run purpose,
-the run manifest digest, the candidate, catalogue and current protected
-policy digests, the head of the Dell run ledger it was built from, and a
-sequence number for that candidate and run kind that only goes up.
+Version 1 includes every approved non-alias feature in the
+[feature register](feature-register.md), every declared supported
+variant and the expanded scope below. Phase 6 builds the features.
+Phase 7 qualifies the exact release candidate against AGENTS.md
+section 3 and this specification.
 
-The ledger type, its encoding and its one reader check live in
-`sutradhar-methods`, using tijori's signature checks; `qualify` writes
-with that code, and `sutra methods count` (spec 0055) and release
-criterion 7 (spec 0057) read with it. They take the qualified counts
-only from the ledger and never count for themselves. The reader check
-reads the ledger once into memory under a size limit and takes the
-counts from the bytes it checked. It reads the signer registry and the
-Dell run ledger's state through the `QualifyTrust` trait of spec 0055,
-and refuses when any answer `QualifyTrust` gives cannot be read. It
-checks the signature and purpose against that signer registry, and
-refuses any ledger whose run kind is not release (a pilot or fixture
-ledger, or any other kind), a ledger whose candidate, catalogue or
-policy digest differs from what it judges, a ledger that is not the
-latest for its candidate and run kind, a ledger older than any attempt
-or refused run of the same candidate and run kind recorded since in the
-Dell run ledger (not counting passing attempts of gate, nightly or soak
-runs, as the policy records them), and a ledger older than any test
-failure on the same candidate in a release or pilot run, recorded since.
-It takes the current protected policy digest from `QualifyTrust` too.
-When it refuses, `sutra methods count` shows the qualified counts as
-unverified rather than printing them. `sutra methods count`, which
-judges no release, compares against the frozen candidate the ledger
-names and the catalogue it reads.
+The former numerical method, capability and variant quotas are removed by
+ADR-0020. Qualification proves complete feature outcomes and protected
+release properties. It does not award release credit for increasing a
+count, adding wrappers or renaming methods.
 
-The reader check uses one shared ledger validator for the bounded-byte,
-signature, binding and freshness checks above. The shared validator
-checks the run kind and ledger signing purpose against a trusted run
-context. For replay, the caller names the run only by the run id signed
-in the previous ledger. `qualify` looks that id up in the record the
-protected policy issued for it ("Evidence records and groups"), which
-fixes the run's kind and run purpose, and in the approved run inputs
-that "Freeze the run" loads, before any submitted evidence is opened.
-Replay refuses if no trusted record matches, or if the record's run id,
-kind or purpose differs from the ledger's. Protected policy fixes the
-expected ledger signing purpose for that kind. A run purpose is distinct
-from a signing purpose. Neither submitted data nor a caller option may
-change this context. The reader check keeps its fixed release-only
-restriction for both of its callers, with no option to admit a pilot or
-fixture ledger. The reader check and verifier replay both use the same
-checked bytes and trust checks; they never reopen an unchecked copy to
-obtain counts.
+Spec 0076 owns implementation readiness and stable identities. Spec 0057
+owns ranking metrics and release assessment. Spec 0077 owns optimisation
+and champion control. Spec 0005 owns release coordination and signing.
+Spec 0019 owns durable execution and reconciliation.
+
+## Qualification authority and verifier
+
+The `qualify` crate in `tools/qualify` is the only Version 1 scope
+verifier. It runs only on Dell, is never shipped and has no production
+dependencies. It reads the feature register, owning specifications,
+protected release policy and signed run evidence. It cannot modify source,
+labels, thresholds, policy, tasks or release state.
+
+The verifier emits a signed `FeatureQualificationLedger`. A command,
+screen, registered job or release controller reads the ledger only through
+the shared validator. No caller may recount evidence for itself or select a
+subset that hides a failed feature, variant, forum or target.
+
+The ledger proves only the qualification evidence. Spec 0005 uses it
+before release approval. The ledger cannot approve, sign or tag.
 
 ## What the product covers
 
 | Area | Work and owning designs |
 |---|---|
-| On-page and technical search | Specs 0044, 0045, 0047 and 0048 own crawling, page and site audits, speed diagnosis, remedies and evidence that a remedy helped. Leviathan names the shared crawler and its block-page handling in specs 0044 and 0045. The feature catalogue owns enterprise search workflows across content, visibility, crawl, links, competitors, experiments, local presence and reporting. |
-| Editorial coaching | Specs 0041 and 0042 own the SEO Editorial Coach and Narada checks. Factledger is the contradiction tip in spec 0042: it compares passages and stores no list of facts. Each suggestion binds the exact passage, page version, evidence and moderator decision. Shared text checks keep their owning computation and identity. |
-| Text and meaning | Specs 0024 and 0026 own text mining, linguistic analysis and embedding quality. The clean-room language pipeline covers segmentation, morphology, parts of speech, syntax, entities, entity linking, coreference, sentiment and relations. Test every public operation and the quality of the annotations used downstream. |
-| Knowledge and graph analysis | Spec 0049 owns entity and site graphs. ganit owns the pure-Rust graph algorithms, including centrality, community detection, graph structure and link prediction. Use NetworkX public graph operations as clean-room research references for the Rust implementations. Pixie-style bounded random walks enter only as candidates that the method lab admits (spec 0056), compared with named baselines on held-out sites. |
-| Link ranking and protection | Specs 0022, 0027, 0053, 0055 and 0056 own full-body analysis of source and destination, learning to rank, blending, calibration, reranking and bounded autotuning. Choosing destination threads or pages for a phrase or passage is matching and link ranking (specs 0023 and 0027), the one recommendation engine; no other spec owns one (spec 0027, "Words used here"). RankMedulla, the ranking model that `shodhan.rank` serves (spec 0027), and SpamGuard, the spam model of kavach, own the ranking and spam evidence. Keep a separately qualified ranking-method subtotal. |
-| First-party and enterprise analytics | Specs 0034 and 0040 own events, attribution, segmentation, funnels, cohorts, journeys, retention and source connectors. Join analysis to the page or content version it describes. Provenance, sample size and uncertainty travel with any ranking signal. |
-| Research and bounded optimisation | Specs 0012, 0013, 0055 and 0056 own King Solomon research cards, evaluator qualification, research memory, admitted methods and controlled optimisation. Qualify shipped public operations separately from the evidence they produce. |
-| Agent operations | Spec 0014 owns the settings registry and its discovery; spec 0020 owns scoped MCP, the `sutra` command, change requests, permission checks and live confirmation. Every action and setting has an owner, reference documentation and machine-readable discovery. |
+| On-page and technical search | Specs 0044, 0045, 0047 and 0048 own audit and backlink uses, speed diagnosis, remedies and their evidence. Spec 0082 owns the shared Leviathan crawler, including fetch admission and block-page handling. Specs 0115 and 0116 own rendering, audit custody and crawler verification under their own admission rules. The feature catalogue owns enterprise search workflows across content, visibility, crawl, links, competitors, experiments, local presence and reporting. |
+| Editorial coaching | Specs 0041 and 0042 own the SEO Editorial Coach and Narada checks. Tathya compares passages under 0042 and stores no fact list. Advice binds its exact passage, page or draft revision and evidence under the owning route. An edit or publication uses that route’s separate staff or moderator authority. Shared text checks keep their owning computation and identity. |
+| Text and meaning | Specs 0024 and 0026 own text mining, linguistic analysis, BGE/spaCy artefact admission and feature quality. The pipeline covers segmentation, morphology, parts of speech, syntax, entities, entity linking, coreference where an admitted packaged component supports it, sentiment, relations and declared custom-trained packaged pipelines. Every public operation and downstream annotation has language-specific quality evidence. |
+| Knowledge and graph analysis | Spec 0049 owns entity and site graphs. [Spec 0066's Jaal](0066-ganit.md#jaal-graph-analysis) owns the Rust centrality, community, structure and link-prediction algorithms. The [job 256 scope trace](../planning/test-and-traceability.md#jaal-link-prediction-in-the-expanded-scope) binds the link-prediction work to its own evidence. NetworkX public operations are research references, not a claim of strict clean-room work. Pagdandi-style bounded random walks enter only through method-lab admission in spec 0056 and held-out comparison. |
+| Link retrieval, ranking and protection | Specs 0022, 0023, 0024, 0026, 0027, 0053, 0055, 0056 and 0077 own full-body reading, BGE retrieval, cross-encoder reranking, spaCy features, learning, calibration and champion control. Spec 0027 owns the single recommendation path and the 3–6 suitable-destination gate. Buddhi and Rakshak supply evidence only through their declared owners. |
+| First-party and enterprise analytics | Specs 0034 and 0040 own events, attribution, segmentation, funnels, cohorts, journeys, retention and source connectors. Analysis joins to the page or content version it describes. Provenance, sample size and uncertainty travel with every ranking signal. |
+| Research and bounded optimisation | Specs 0012, 0013, 0055 and 0056 own research cards, evaluator qualification, research memory and method admission. Spec 0077 is the sole Optuna and promotion path. Spec 0053 supplies governed feedback. No separate settings tuner or activation route exists. |
+| Agent operations | Spec 0014 owns the settings registry and discovery. Spec 0020 owns scoped MCP, `sutra`, change requests, permission checks and live confirmation. Every action and setting has an owner, reference documentation and machine-readable discovery. |
+| Events and background work | Spec 0019 owns the product transactional outbox, PostgreSQL queue, Rust scheduler, recovery and migration. Spec 0110 owns the shared framework primitives. The XenForo change feed remains a separate site-side contract in 0021 and does not supply a second product job queue. |
 
-The enterprise research inventory names Adobe Analytics, Mixpanel,
-Semrush Enterprise, Conductor, Piano, Optimizely, Botify, Ahrefs,
-Lumar and BrightLocal. Research records link to public descriptions,
-map each agreed workflow to one of our designs and state how we test
-it. Public papers and documentation give research references for
-[graph walks](https://arxiv.org/abs/1711.07601),
-[graph analysis](https://networkx.org/documentation/stable/reference/)
-and [linguistic analysis](https://stanfordnlp.github.io/CoreNLP/).
-Use the clean-room rules in AGENTS.md section 3 for all implementations.
-
-Read both pages' full guest-visible bodies when qualifying link
-relevance. Preserve the relevance gate in spec 0027 before any
-reordering. Record a typed signal with provenance, freshness and
-confidence for every feature that learns about a page. Apply all site
-changes through a moderator, with undo and a measured footprint.
-
-## Names used for these areas
-
-Older and working names point to one owning design. A name never
-creates a second home.
+Older and working names point to one owning design. A name never creates
+a second home.
 
 | Name | Owning design |
 |---|---|
-| Leviathan | The shared crawler and its block-page handling (specs 0044 and 0045) |
-| Narada | The Coach's editorial checks (spec 0042) |
-| Factledger | The contradiction tip (spec 0042); no stored fact list |
-| King Solomon | Research cards and independent checking (spec 0013) |
-| King David | Research memory and recall (spec 0013) |
-| Shraddar, Shraddha | The research memory store (spec 0013) |
-| MachineMirror | The test room (spec 0039) |
-| Subramanian | The web link study (spec 0046) |
-| QuarryView | Search charts (spec 0043) |
-| RankMedulla | The ranking model that `shodhan.rank` serves (spec 0027) |
-| SpamGuard | kavach's spam model, used as a ranking signal (spec 0027) |
-| Pixie | A graph-walk method candidate for the lab (specs 0049 and 0056) |
-| NetworkX | A public reference for graph operations; no code is copied |
+| Leviathan | Shared crawler and block-page handling, spec 0082 |
+| Narada | Coach editorial checks, spec 0042 |
+| Tathya | Contradiction tip, spec 0042; no stored fact list |
+| Nyaya | Research cards and independent checking, spec 0013 |
+| Smriti | Research memory and concept map, spec 0013 |
+| Sanchay | Research memory store, spec 0013 |
+| Prayogshala | Test room, spec 0039 |
+| Subramanian | Web link study, spec 0046 |
+| Alekh | Search charts, spec 0043 |
+| Buddhi | Ranking model served by `shodhan.rank`, spec 0027 |
+| Rakshak | kavach spam model used as a ranking signal, spec 0027 |
+| Pagdandi | Graph-walk candidate for lab admission, specs 0049 and 0056 |
+| NetworkX | Public graph-operation reference; licensed use and strict clean room are not conflated |
 
 ## One home for each behaviour
 
-The feature register maps each number, alternate name, action, surface
-and platform to one owning design and one build task. A retired
-number remains an alias and points to its owning design. A release
-refuses orphaned features, conflicting rules and separate entries
-that implement the same behaviour. A shared implementation can serve
-many features through its one declared contract. Desktop, CLI, MCP
-and platform wrappers for one behaviour share its identity.
+Every non-alias feature has exactly one owning specification and one
+derived build task. A feature may reference shared requirements and test
+contracts, but its own readiness record must contain its observable
+behaviour, applicability, variants, errors, operations and acceptance
+evidence. A title or generic range checklist is insufficient.
 
-A method is counted once by its computation and behaviour. A capability
-is counted once by its independently usable, shipped operation. A
-variant is counted once by its canonical owning behaviour and its
-admitted input class, as spec 0071 sets out. An input class is
-admitted in the frozen catalogue with an independent review. It is
-distinct from a neighbouring class only when its test fails with the
-neighbour's input in its place,
-because the input takes a different decision or code path. Classes that
-differ only by value, such as adjacent bands of one number, are one
-class. Values within one class count once. Check identities record
-evidence. Every required check must pass for that variant. Weights,
-seeds, names, reordered steps and configuration choices earn no extra
-method, capability or variant by themselves; a chain of methods counts
-only under spec 0067's rules, and a workflow of shipped actions only
-under spec 0070's. A learned weighting model
-can count as a ranking method when it meets the distinctness and
-admission checks in spec 0055. Treat the ranking subtotal as a subset of
-the qualified methods.
+An alias points to its successor and receives no independent
+implementation or qualification row. Desktop, CLI, MCP and platform
+wrappers for the same behaviour share its identity. A shared computation
+is defined once and referenced by stable requirement and design IDs.
 
-Each method and capability has one primary scope classification.
-The target share in AGENTS.md section 3 uses the on-page and technical
-search, editorial coaching, text and meaning, knowledge and graph,
-link ranking and protection, first-party and enterprise analytics,
-research and bounded optimisation, and agent operations areas above.
-Use the area that owns the computation. Agent operations covers MCP
-discovery, scoped agent access and agent requests. An underlying
-installation or backup action keeps its own scope when exposed
-through MCP. Count a member once, even if its outputs feed several
-areas or pipelines. Research cards and run records provide evidence;
-only independently usable shipped operations earn capability credit.
-A capability workflow earns one capability only as spec 0070 sets out:
-each of its actions is shipped with its own evidence, it ran end to end
-on each target of its shape, and it behaves differently from every
-other counted capability. Presets, playbooks, templates and wrappers earn none.
+Two entries conflict when they prescribe incompatible results for the same
+input and context. They overlap when both own the same decision or side
+effect. They duplicate when they define the same contract independently.
+Shared references are the required DRY mechanism; copied normative text is
+not.
 
-Implementation quality follows the code standards and required
-reviews in AGENTS.md sections 6 and 7. Review concise, readable,
-maintainable and extensible code through its module boundaries,
-public APIs and the tests of existing callers. Release credit follows
-qualified behaviour and its signed evidence. Code volume earns no
+Zero conflicts means zero known unresolved contradictions in the complete
+audited inventory at the recorded revision. It is not a claim that no
+undiscovered defect exists.
+
+## Required qualification outcomes
+
+A release candidate passes scope qualification only when all of these
+hold simultaneously:
+
+1. Every approved non-alias feature resolves to a populated spec 0076
+   readiness record and one derived build task.
+2. Every requirement and design contract traces to at least one
+   feature-specific unit test and BDD scenario, plus applicable
+   integration, end-to-end, property, operational and failure evidence.
+3. Every declared supported platform, language and input variant passes on
+   every required target. Unsupported or inapplicable cases follow their
+   explicit contract and machine-readable reason.
+4. No orphan, duplicate owner, conflicting contract, undocumented fallback,
+   placeholder or untraceable task or test remains in the frozen inventory.
+5. Source integrity, guest visibility, full reading, tenant isolation and
+   moderator approval pass before ranking or public-write evidence is
+   accepted.
+6. nDCG@10 is at least 0.95 and every eligible forum independently meets
+   the 1.20 times locked-BM25 Precision@6 gate under spec 0057.
+7. Link suitability, severe failures, calibration, diversity, privacy,
+   resource admission, p95 latency, recovery and site-footprint gates pass.
+8. The 3–6 suitable-internal-destination rule is preserved. Ranking or
+   diversity cannot force an unsuitable destination into the set.
+9. Every required review, strict-core coverage rule and qualification
+   signature binds the exact candidate and evidence set.
+10. All approved features and expanded scope are present. Spec
+    0079's evidence binds the exact candidate and each distinct
+    qualified method used by its shipped pipeline to one family.
+    The verifier refuses duplicates, omissions and a family below
+    its floor even if the total passes. Quality also passes.
+11. Give the bound qualification evidence to the spec 0005 release
+    coordinator. It checks the long lane, obtains exact approval and
+    verifies signed artefacts before publication.
+
+## Freeze the run
+
+For a release run, use the 0005 scope preflight and exact-candidate
+rechecks for the Phase 7 entry prerequisites under 0076. The 0010
+phase verifier and 0139 remain the authority for Phase 3 closure
+and the adopted Boot qualification. Check their applicability to
+the release dependencies through the existing protected context.
+A scope result or pilot cannot substitute for missing or
+superseded phase proof.
+
+The protected release policy issues a unique run id before execution. The
+run kind is `release`, `pilot` or `fixture`; its purpose is one of
+`qualification`, `gate`, `nightly`, `soak` or `replay`. The policy, not a
+submitted label, determines both.
+
+The run manifest freezes:
+
+- exact candidate commit, source-tree digest and build artefacts;
+- feature-register, specification, requirement, design and task digests;
+- supported-variant and applicability register;
+- dependency, model, tokenizer, spaCy pipeline and configuration locks;
+- metric protocol, relevance labels and BM25 baseline;
+- execution targets, site versions, languages, hardware and resource
+  profiles;
+- required check and review matrix;
+- toolchain, verifier, runner supervisor and trusted harness digests;
+- authorised signer registry and protected policy digest; and
+- canonical encoding version and manifest SHA-256.
+
+The protected policy and signer registry are loaded outside the candidate.
+Submitted evidence cannot replace them, select an older policy, grant a
+scope or choose a different trust root. Unknown, revoked or out-of-scope
+keys and policy rollback are refused.
+
+The candidate runs in a sealed job without signing keys. The trusted
+supervisor observes the approved invocation, exit and evidence. Only its
+authenticated result can become a signed check receipt. A pass printed by
+candidate code is not evidence.
+
+A pilot has a separate signing purpose and cannot qualify a release. A
+fixture uses only `FX-` identities and cannot reference release evidence.
+
+## Feature evidence records
+
+Each feature evidence record contains:
+
+| Field | Required content |
+|---|---|
+| Identity | Canonical `F-` id, feature version and owning specification |
+| Trace | Requirement, design, variant, interface, error and derived-task IDs |
+| Applicability | XenForo, WordPress, language, input and operating-mode declarations |
+| Implementation | Exact artefact and source digests that realise the contracts |
+| Verification | Runner-signed check, target, outcome and evidence digest for every required cell |
+| Operations | Install, migration, recovery, rollback, retention and footprint evidence where applicable |
+| Provenance | Source classifications, licences, research and legal-review references |
+| Review | Independent reviewer identities, disciplines, outcomes and exact content fingerprints |
+| Side effects | Last artefact reference, output digest and idempotency evidence for writes |
+
+Verify the required review identity, discipline and expected scope
+from the frozen review matrix. A member review needs that member's
+own authenticated review record under 0065. Check its exact content
+fingerprint, current signer, independence and verdict. For a required
+feature, variant or operation scope, resolve that subject through the
+existing protected evidence references under [0076][scoped-review].
+A whole-change review retains its own credit. A valid sibling review,
+unsigned scope label or unresolved subject cannot satisfy a finer
+obligation. Hold the affected qualification if its admitted reader
+cannot prove that binding. The existing signed encodings and review
+authority continue to apply.
+
+[scoped-review]: 0076-specification-completeness.md#risk-based-assurance
+
+A variant record names its `VAR-` id, owner, admitted input predicate and
+required targets. It passes only when its owning feature also passes.
+Several checks for the same feature and variant do not create another
+feature outcome. A wrapper, preset, template, seed or configuration value
+does not create one either.
+
+An inapplicable variant requires its approved reason, observable behaviour
+and test evidence. It is not silently marked unsupported after a failure.
+
+A ranking-signal feature additionally records its relevance hypothesis,
+provenance, freshness, confidence, evaluation and opt-out where required.
+Its evidence must show that it cannot promote an off-topic or otherwise
+ineligible destination.
+
+## Evidence groups and disjointness
+
+Evidence is organised into signed groups. Each group manifest binds the
+run, exact feature and variant commitments, evidence commitment, encoding
+and verifier version. Every feature's results for one target matrix reside
+in one group. A feature may not be split to hide a failed cell.
+
+Groups are disjoint by canonical feature identity. Shared implementation
+evidence is referenced by digest from each relevant feature, while the
+feature-specific contract and distinguishing test remain separate. The
+verifier rejects:
+
+- the same feature independently qualified in two groups;
+- an alias or second surface presented as another feature;
+- two owners for one behaviour or side effect;
+- copied contracts with different IDs but no distinguishing behaviour;
+- an admitted method or signal that no shipped pipeline invokes;
+- a result for another candidate, target, specification or policy digest;
+- a group total, unchecked range or sample offered in place of individual
+  feature results; and
+- a location-based evidence reference that is not resolved by digest from
+  the protected evidence store.
+
+A digest collision with different bytes is a refusal, never a match.
+
+## Attempt history and freshness
+
+The protected Dell run ledger records every attempt and final verdict.
+For each feature, check and target, derive the final verdict from every
+required cell of the frozen matrix. Within each cell, check its exact
+variant, test, fixture, input, profile and tier under the
+[test and traceability plan](../planning/test-and-traceability.md).
+Resolve its outcome and ordered attempts from the authenticated runner
+evidence and its existing digest references in the protected evidence
+store. Bind retry authority to the exact affected cells under the
+frozen policy. An interruption in one cell gives no retry authority
+for a sibling case. One supervised invocation can supply multiple
+separately verifiable case results. An aggregate pass cannot replace
+those results. If the evidence cannot identify a unique cell and its
+ordered attempts, hold qualification even when another case shares
+its check and target. This check uses the existing signed records.
+
+Only the trusted supervisor can classify an infrastructure interruption.
+A candidate-caused exit, timeout or resource-limit failure is a test
+failure. A test failure on the same candidate and evidence cell blocks
+that cell; a later pass cannot erase it. A new corrected candidate needs
+a new identity and complete qualification binding.
+
+The scope ledger refuses when:
+
+- its run kind is not `release` when read by the release gate;
+- its candidate, catalogue, specification or policy digest differs from
+  the candidate being judged;
+- a newer refused or interrupted attempt exists for the same release
+  candidate;
+- a newer relevant test failure exists;
+- a newer valid release ledger supersedes it; or
+- the run ledger or signer registry cannot be read.
+
+Passing gate, nightly or soak attempts do not by themselves stale a
+release ledger. Their failures and all refused or interrupted runs remain
+part of history. Submitted data cannot choose exclusions.
+
+## Canonical ledger and signature contract
+
+The ledger contains:
+
+```text
+format_version, record_type, signing_purpose, run_id, run_kind,
+run_purpose, run_manifest_digest, candidate_digest, feature_register_digest,
+specification_set_digest, protected_policy_digest, previous_run_ledger_head,
+current_run_ledger_head, sequence, feature_evidence_commitment,
+variant_evidence_commitment, method_evidence_commitment,
+outcome, refusal_reasons, evidence_digest
+```
+
+`outcome` is `PASS` or `REFUSE`. A `REFUSE` ledger is diagnostic and
+cannot authorise release. `sequence` increases monotonically for one
+candidate and run kind. No caller-supplied count exists. The policy
+requires the spec 0079 evidence digest in the release ledger format.
+Verify that evidence against the candidate and rederive all counts.
+
+Records use a canonical binary encoding: unsigned 64-bit big-endian byte
+lengths prefix variable-length fields; UTF-8 is mandatory for text;
+digests are 32 raw bytes; sequences carry their exact element count and
+ordered records. The format version fixes field order. Unknown versions,
+ambiguous values, trailing bytes, invalid UTF-8 and oversized lengths are
+refused before allocation.
+
+The signing service signs the canonical bytes under the scope-ledger
+purpose. Feature results, reviews and group manifests use distinct
+purposes. A valid signature under the wrong purpose is refused.
+
+IT-0064-METHOD-FLOOR holds the total above the floor with one
+family at 11. Try a setting-only duplicate, a method unused by the
+shipped pipeline and another candidate's digest. Each refuses.
+In a separate case, offer a historical spec 0067 `MC-` result
+as the missing member. Keep its historical record type. Sign
+its test bytes for the exact candidate with the fixture key and
+bind the same computation as a current qualified method in the
+short family. Separately offer a synthetic distinct computation
+with no current 0079 method admission. In both cases refuse
+the historical record as method evidence. It adds no method
+and the short family still blocks qualification.
+
+In the Family 29 case, give each of the other 29 families 13
+synthetic qualified methods and give Family 29 seven. The total
+is 384, above the floor. Offer the six deferred RM-29 entries
+with otherwise valid test-signed evidence in their separate
+scope. The version 1 count stays at seven for Family 29 and
+384 overall. The response names the short family and blocks
+qualification. In a separate case add five independently
+eligible and qualified Family 29 methods in the synthetic
+fixture, each called by the shipped fixture pipeline. The
+12-method family check passes. Apply the other checks as usual.
+
+## Input and resource limits
+
+The protected run policy fixes maximums for groups, manifests, encoded and
+decoded bytes, feature and result rows, referenced objects, bytes fetched,
+scratch space, execution time and runner memory. An absent or unbounded
+limit refuses the run. Evidence cannot raise a limit.
+
+The verifier bounds reads before authentication, then streams groups under
+those limits. It checks every length against remaining bytes before
+allocation or expansion, charges retries and scratch writes to the run and
+stops at the first excess or incomplete field. A refused run leaves the
+last verified ledger intact and removes partial output.
+
+Resource admission covers the verifier, evidence store, Rust services and
+packaged Python runtimes together. No first-party Python production
+verifier or adapter is permitted.
+
+## Replay
+
+Replay starts from a trusted policy-issued run id and reopens the frozen
+inputs with a fresh verifier. It validates the previous ledger under the
+original trusted run context, then repeats membership, applicability,
+signature, freshness, attempt-history and conflict checks.
+
+Replay preserves the original run kind, purpose and signing purpose. It
+cannot turn pilot or fixture evidence into release evidence. The trusted
+supervisor supplies the current replay invocation and ordered attempt ids;
+only those attempts are excluded from newer-attempt freshness. Their own
+failures are never excluded.
+
+Replay refuses if the protected policy, frozen inputs, feature set,
+required targets or evidence bytes changed, if any new disqualifying
+attempt appears, or if any replay attempt fails. Success returns the same
+per-feature outcomes in a new ledger bound to the exact new run-ledger
+head and next sequence. The previous file remains immutable.
+
+## Provenance and legal gates
+
+The enterprise research inventory names Adobe Analytics, Mixpanel,
+Semrush Enterprise, Conductor, Piano, Optimizely, Botify, Ahrefs, Lumar and
+BrightLocal. Research records link public descriptions to the exact agreed
+workflow and owning design. They do not establish licence, patent
+clearance or freedom to operate.
+
+Public references include:
+
+- [graph walks](https://arxiv.org/abs/1711.07601);
+- [NetworkX graph operations][networkx];
+- [CoreNLP linguistic analysis](https://stanfordnlp.github.io/CoreNLP/);
+- the BGE papers and publisher model cards in spec 0077; and
+- the locked spaCy and Optuna documentation and spec 0019's
+  queue and recovery contract.
+
+Each implementation is classified as original design, public standard or
+published algorithm, licensed dependency, permitted interoperability
+observation or strict clean-room reimplementation. Researcher/implementer
+separation applies only to the final class. Licensed package use is not
+called strict clean room.
+
+`LEG-0064-V1-LEGAL` requires the scoped patent search,
+freedom-to-operate analysis and qualified legal review where flagged.
+Engineering evidence cannot mark that obligation complete.
+
+## Fixture and pilot design
+
+A fixture uses a separate fixture catalogue and only `FX-` identities.
+It includes:
+
+1. one feature passing on two declared targets;
+2. one feature with an inapplicable variant and its approved reason;
+3. one feature with a failed distinguishing test;
+4. one alias pointing to the first feature;
+5. one shared implementation referenced by two feature-specific contracts;
+6. one ranking-signal feature with an off-topic destination; and
+7. one feature whose evidence is bound to the previous candidate.
+
+The independently expected result is refusal until every required
+non-alias feature and variant passes. The alias adds no row, shared code
+does not erase feature-specific tests and the off-topic signal cannot
+pass. Correcting evidence without changing the candidate cannot erase a
+recorded failure; a new candidate identity is required.
+
+The pilot uses real representative features from every scope area and all
+supported target classes. It exercises signing, sealing, replay, failure
+history, independent review and resource measurement. It produces no
 release credit.
 
-## How evidence is counted
+## Requirement, design and task traceability
 
-For each release, freeze the candidate, catalogue, scope classification,
-test protocol and approved execution targets. The protected policy pins
-the catalogue and scope register by digest. Each member's primary scope
-and ranking flag carries its own signature by a reviewer who is not one
-of its authors, or the owner's approval of that row, and the verifier
-checks it row by row. A method chain takes its shape's row, which
-covers each of its chains (spec 0067), and a capability workflow takes
-its workflow shape's row, which covers each of its workflows (spec
-0070). The trusted verifier
-reads signed groups with disjoint member identities. Each group
-records the proof that its admitted members actually passed, with
-their membership and evidence tied to the frozen inputs. A group
-certificate can attest pointwise checks with a replayable proof.
-The verifier counts the proven members. An interval, sample or
-calculation of all possible combinations supplies no pass count.
+These identities group the normative contracts above. They do not show
+execution state or admit an implementation task. Derived tasks still
+follow spec 0076's readiness gate.
 
-The verifier checks exact-candidate binding, independent method
-qualification, shipped capability registration, variant checks and group
-disjointness before adding counts. It checks duplicate computations and
-behaviours across groups. A group with missing, stale, forged,
-overlapping or uncheckable evidence blocks the release. Store the six
-qualified counts as unsigned 128-bit integers, and parse counts into
-that type. An empty ledger fails each share. Machine-readable JSON, MCP
-and CLI results carry counts as canonical unsigned decimal strings.
-Accept `0` or digits beginning with a non-zero digit, with no sign,
-fraction, exponent or leading zero. Parse into that type directly; never
-pass a count through floating-point arithmetic. Screens may abbreviate a
-count, but its exact value remains available from the same stored
-result. Use checked unsigned 128-bit arithmetic for accumulations, ratio
-cross-products and capacity calculations. A bad value or overflow blocks
-release and names the evidence group.
+| Requirement | Normative obligation | Design and derived task | Unit evidence | BDD evidence |
+|---|---|---|---|---|
+| `REQ-0064-FEATURE-INVENTORY-AND-PROVENANCE` | Every approved non-alias feature has one owner and derived task, aliases add no outcome, shared computations retain feature-specific evidence and provenance remains truthful; no count substitutes for completeness | `DES-0064-QUALIFICATION-PLATFORM`; `TASK-0064-QUALIFICATION-PLATFORM` | `UT-0064-FEATURE-MISSING`, `UT-0064-ALIAS`, `UT-0064-DUPLICATE-OWNER`, `UT-0064-SHARED-CONTRACT` | `BDD-0064-ALL-FEATURES`, `BDD-0064-NO-COUNT-SUBSTITUTE`, `BDD-0064-PROVENANCE` |
+| `REQ-0064-VARIANT-APPLICABILITY` | Every declared supported variant passes its required targets, and only predeclared inapplicable cases with approved reasons and behaviour evidence are accepted | `DES-0064-QUALIFICATION-PLATFORM`; `TASK-0064-QUALIFICATION-PLATFORM` | `UT-0064-VARIANT-MISSING`, `UT-0064-INAPPLICABLE`, `UT-0064-POSTHOC-UNSUPPORTED` | `BDD-0064-VARIANT-MATRIX` |
+| `REQ-0064-PROTECTED-RELEASE-GATES` | Scope evidence cannot waive the nDCG and per-forum BM25 floors, the 3–6 suitable-destination rule or the relevance gate. The exact candidate must also meet the separate 0079 method-family floor through current admission evidence | `DES-0064-QUALIFICATION-PLATFORM`; `TASK-0064-QUALIFICATION-PLATFORM` | `UT-0064-RANKING-FLOOR`, `UT-0064-BM25-FLOOR`, `UT-0064-DESTINATION-GATE`, `UT-0064-RELEVANCE-SIGNAL` | `BDD-0064-PROTECTED-GATES` |
+| `REQ-0064-TRUSTED-QUALIFICATION-EVIDENCE` | Trusted run context, candidate binding, failure history, authorised retries, signing purposes, independent reviewers, canonical decoding and bounded resources govern qualification and replay | `DES-0064-QUALIFICATION-PLATFORM`; `TASK-0064-QUALIFICATION-PLATFORM` | `UT-0064-STALE-CANDIDATE`, `UT-0064-FAILURE-HISTORY`, `UT-0064-INFRA-RETRY`, `UT-0064-WRONG-PURPOSE`, `UT-0064-REVIEWER-AUTHOR`, `UT-0064-TRUST-ROOT`, `UT-0064-ENCODING`, `UT-0064-RESOURCE` | `BDD-0064-TRUSTED-REPLAY` |
 
-The release report keeps the counts separate and links to the
-signed evidence and owning designs. Integration and end-to-end tests
-follow AGENTS.md section 7. The full release checks ranking quality,
-resources, recovery and site footprint on both test sites.
+| Design | Owning contract | Requirements and derived task |
+|---|---|---|
+| `DES-0064-QUALIFICATION-PLATFORM` | The qualification authority through the reporting, agent-configuration and footprint contracts above | `REQ-0064-FEATURE-INVENTORY-AND-PROVENANCE`, `REQ-0064-VARIANT-APPLICABILITY`, `REQ-0064-PROTECTED-RELEASE-GATES`, `REQ-0064-TRUSTED-QUALIFICATION-EVIDENCE`; `TASK-0064-QUALIFICATION-PLATFORM` |
 
-## Qualification pilot protocol
+| Derived task | Implementation boundary | Upstream identities |
+|---|---|---|
+| `TASK-0064-QUALIFICATION-PLATFORM` | Implement the Rust-owned scope verifier, protected evidence validation and replay boundary without a second qualification path or first-party Python production code | `DES-0064-QUALIFICATION-PLATFORM`; `REQ-0064-FEATURE-INVENTORY-AND-PROVENANCE`, `REQ-0064-VARIANT-APPLICABILITY`, `REQ-0064-PROTECTED-RELEASE-GATES`, `REQ-0064-TRUSTED-QUALIFICATION-EVIDENCE` |
 
-### Freeze the run
+## Verification cases
 
-The pilot uses the shared verifier. The run manifest names
-the run kind, exact commit, source tree, dependency locks, catalogue
-and scope register. It names the protocol, each execution target,
-the toolchain, fixture inputs, the gate policy and the trusted signer
-set. Use the digests of the exact bytes for these bindings. Target
-identity includes the runtime, resource profile and test site version.
-A pilot has a separate signing purpose and cannot add release credit.
+The following are required test designs, not claims that executable tests
+have run.
 
-The qualified verifier starts from the protected release policy on
-Dell (spec 0005). The owner authorises its trust root outside the
-candidate, the run and the supplied evidence. From that policy, the
-verifier loads the current authorised signer registry and the approved
-run inputs, including the exact candidate, required check and target
-matrix, and trusted protocol. It compares their digests to the run
-manifest before opening any evidence. A submitted manifest or group
-cannot change the trust root, select an older policy or grant access.
-Refuse unknown, revoked or out-of-scope keys and policy rollback.
-The protected policy pins the verifier, the runner supervisor and the
-check harness by digest. Load them outside the candidate, and give the
-sealed candidate job no access to replace them or use signing keys.
-The supervisor observes the approved invocation, exit and evidence
-through the trusted harness. The signing service accepts the result
-from that supervisor only. A pass printed or written by the candidate
-cannot serve as a result. Keep private answers and the scoring
-oracle in the trusted harness, as set out in spec 0056. Candidate
-code receives only bounded exercise inputs in its separate seal.
-The verifier, and the second verifier in "Measure the full route",
-each check the runner and harness bindings.
+| Test id | Requirement | Given | When | Then |
+|---|---|---|---|---|
+| `UT-0064-FEATURE-MISSING` | `REQ-0064-FEATURE-INVENTORY-AND-PROVENANCE` | One approved non-alias feature lacks a readiness row | Qualification runs | Refuse and name the feature |
+| `UT-0064-ALIAS` | `REQ-0064-FEATURE-INVENTORY-AND-PROVENANCE` | An alias has separate evidence | Groups are checked | Alias does not create another feature outcome |
+| `UT-0064-DUPLICATE-OWNER` | `REQ-0064-FEATURE-INVENTORY-AND-PROVENANCE` | Two specifications claim the same public write | Traceability runs | Refuse before execution evidence is accepted |
+| `UT-0064-SHARED-CONTRACT` | `REQ-0064-FEATURE-INVENTORY-AND-PROVENANCE` | Two features reference one shared computation but have different observable contracts | Evidence is checked | Shared implementation is allowed; both feature-specific tests remain required |
+| `UT-0064-VARIANT-MISSING` | `REQ-0064-VARIANT-APPLICABILITY` | A feature passes XenForo but lacks its declared WordPress target. Separately, keep the same feature, check and target for two required cases. Supply exact signed evidence that the refusal case passed and omit the recovery case's evidence. | Qualification checks the frozen matrix and resolves the evidence references | Refuse without dropping the target. In the second case keep the verified refusal result in its own case and name the missing recovery case. |
+| `UT-0064-INAPPLICABLE` | `REQ-0064-VARIANT-APPLICABILITY` | A declared inapplicable variant has an approved reason and passing behaviour test | Evidence is checked | Accept only that declared path |
+| `UT-0064-POSTHOC-UNSUPPORTED` | `REQ-0064-VARIANT-APPLICABILITY` | A failed variant is reclassified after results | Manifest is checked | Refuse the changed register and post-hoc exclusion |
+| `UT-0064-RANKING-FLOOR` | `REQ-0064-PROTECTED-RELEASE-GATES` | Every feature passes except nDCG@10 is below 0.95 | Release assessment joins | Scope evidence cannot compensate; release refuses |
+| `UT-0064-BM25-FLOOR` | `REQ-0064-PROTECTED-RELEASE-GATES` | nDCG passes but one forum misses the BM25 margin | Release assessment joins | Refuse and name the forum |
+| `UT-0064-DESTINATION-GATE` | `REQ-0064-PROTECTED-RELEASE-GATES` | A candidate returns seven destinations or an unsuitable sixth | Qualification runs | Refuse under spec 0027 |
+| `UT-0064-RELEVANCE-SIGNAL` | `REQ-0064-PROTECTED-RELEASE-GATES` | A popular but off-topic destination receives a high analytics score | Ranking evidence is checked | Relevance gate rejects it |
+| `UT-0064-STALE-CANDIDATE` | `REQ-0064-TRUSTED-QUALIFICATION-EVIDENCE` | Correctly signed evidence names the previous commit | Candidate binding runs | Refuse |
+| `UT-0064-FAILURE-HISTORY` | `REQ-0064-TRUSTED-QUALIFICATION-EVIDENCE` | A failed check is followed by a passing retry on the same candidate. In another branch, two required cases share a feature, check and target. The first case fails and a correctly signed result for the second passes. Offer the second result for both, then give a signed aggregate pass with no distinct case evidence. | Check ordered attempts and exact resolved case outcomes | The original failure remains blocking. The second case keeps its own pass and the aggregate pass supplies no missing case or authority. |
+| `UT-0064-INFRA-RETRY` | `REQ-0064-TRUSTED-QUALIFICATION-EVIDENCE` | The trusted supervisor approves an interruption and retry for one cell. Try attaching that authority to a sibling with the same feature, check and target. In a separate authorised invocation for both cells, verify signed evidence that identifies each case result. | Apply the frozen retry policy to the affected cells | Reject the sibling retry. Shared invocation can supply each independently identified result. All required cells still govern the aggregate. |
+| `UT-0064-WRONG-PURPOSE` | `REQ-0064-TRUSTED-QUALIFICATION-EVIDENCE` | A runner signature is reused as a review or ledger signature | Purpose is checked | Refuse |
+| `UT-0064-REVIEWER-AUTHOR` | `REQ-0064-TRUSTED-QUALIFICATION-EVIDENCE` | Reviewer and author are the same principal under different keys. In a separate branch, give the correct independent member and exact subject. Offer the runner's valid `review-result`, then the member's own valid `review-record`. | Check reviewer identity and the owning record purpose | Refuse the self-review and the runner substitute for a member review. The exact member record clears only the identity and purpose checks. |
+| `UT-0064-TRUST-ROOT` | `REQ-0064-TRUSTED-QUALIFICATION-EVIDENCE` | Submitted manifest supplies a replacement signer registry | Verification starts | Refuse before opening feature evidence |
+| `UT-0064-ENCODING` | `REQ-0064-TRUSTED-QUALIFICATION-EVIDENCE` | Inputs contain truncated fields, trailing bytes, invalid UTF-8 and a declared length of 2^64 minus one | Decoder runs | Refuse before allocation and preserve prior ledger |
+| `UT-0064-RESOURCE` | `REQ-0064-TRUSTED-QUALIFICATION-EVIDENCE` | Individually valid groups exhaust the whole-run fetch budget | Verification runs | Refuse and retain no partial ledger |
+| `IT-0064-REPLAY` | `REQ-0064-TRUSTED-QUALIFICATION-EVIDENCE` | A valid run is replayed with identical trusted inputs | Fresh verifier runs | Same feature outcomes and new bound sequence result |
+| `IT-0064-REPLAY-CHANGE` | `REQ-0064-TRUSTED-QUALIFICATION-EVIDENCE` | Policy, feature register or one evidence byte changes before replay. In a separate case keep the frozen release inputs and the authorised replay invocation and ordered attempt IDs fixed. | Replay runs. In the separate case, after the verifier observes the initial run-ledger head and before it binds the new head, append an independently recorded refused attempt for the same release candidate outside the replay invocation. | Refuse. The separate case yields no new passing ledger. Preserve the previous file bytes and refuse its release use under the newer-attempt freshness rule. |
+| `IT-0064-PILOT-READ` | `REQ-0064-TRUSTED-QUALIFICATION-EVIDENCE` | Correctly signed pilot or fixture ledger is offered to release | Reader validates kind | Refuse release use |
+| `IT-0064-METHOD-FLOOR` | `REQ-0064-PROTECTED-RELEASE-GATES` | Use the short-family, duplicate, unused-method, wrong-candidate and historical record cases under [Canonical ledger and signature contract](#canonical-ledger-and-signature-contract) | Validate the current spec 0079 evidence for the exact candidate and rederive the family counts | Refuse the affected release qualification. Historical or otherwise ineligible evidence supplies no qualifying method. A passing total or ranking result gives no pass to a short family |
+| `BDD-0064-ALL-FEATURES` | `REQ-0064-FEATURE-INVENTORY-AND-PROVENANCE` | Every approved feature and variant has passing signed evidence | All independent release gates pass | Scope qualification emits `PASS`; exact candidate and policy remain bound |
+| `BDD-0064-NO-COUNT-SUBSTITUTE` | `REQ-0064-FEATURE-INVENTORY-AND-PROVENANCE` | Many admitted methods exist but one approved feature is missing | Qualification runs | The result is `REFUSE`; no count or percentage can waive the omission |
+| `BDD-0064-PROVENANCE` | `REQ-0064-FEATURE-INVENTORY-AND-PROVENANCE` | A licensed spaCy package is described as strict clean room | Provenance is checked | The false classification blocks admission; package licence and actual provenance remain visible |
+| `BDD-0064-VARIANT-MATRIX` | `REQ-0064-VARIANT-APPLICABILITY` | Supported variants lack one required target and an inapplicable variant has its approved evidence | Qualification evaluates the frozen variant register | Missing target evidence refuses; only the declared inapplicable path is accepted and no post-hoc reclassification occurs |
+| `BDD-0064-PROTECTED-GATES` | `REQ-0064-PROTECTED-RELEASE-GATES` | Feature evidence is complete but a ranking, destination-count or relevance protection fails | Release assessment joins scope qualification | Refuse and name each failed protection; feature completeness cannot compensate |
+| `BDD-0064-TRUSTED-REPLAY` | `REQ-0064-TRUSTED-QUALIFICATION-EVIDENCE` | A signed candidate has attempt history and a replay request. Use 0076 `FX-0076-REVIEW-SCOPE` in a separate branch with two required scopes, complete test evidence and a valid whole-change review. Where a synthetic admitted reader can resolve scoped member reviews, bind A and B independently. | Replay the trusted context. In the scope branch, omit B's subject binding, add an unsigned mapping, or offer A's valid review for B. Compare with the exact B review under its admitted scope. | Only authorised retries apply, recorded failures remain blocking and changed inputs, purposes or trust roots refuse without replacing the prior ledger. A valid review keeps its exact credit. An unproved B obligation holds qualification and produces no new passing ledger. The exact B review clears only that obligation. The fixture provides no signed qualification. |
+| `E2E-0064-RELEASE` | `REQ-0064-TRUSTED-QUALIFICATION-EVIDENCE` | Freeze, execute, sign, verify and replay a representative candidate | End-to-end qualification runs | Every accepted row resolves to real execution evidence and every planted omission refuses |
+| `OPS-0064-STORE-DOWN` | `REQ-0064-TRUSTED-QUALIFICATION-EVIDENCE` | Evidence store or run ledger is unavailable | Verification is requested | Fail closed without using cached unverified counts or outcomes |
 
-Record the input digest before the run. Use the qualified runner and
-signing service in spec 0005. A later candidate or target needs its
-own result. Evidence reused under spec 0055 supports admission only;
-every counted member needs a runner-signed result bound to this run and
-this exact candidate. Commit and push gates apply
-before admission to the pilot. A release needs the same verifier on
-the frozen version candidate and all other release checks, including
-the resource profiles and soak. Tagging follows spec 0005.
+In BDD-0064-TRUSTED-REPLAY, include the spec 0015 AT-MR19
+ceiling change as a required synthetic fixture in the frozen matrix.
+Offer an authentic result for its static shadow branch in place of
+the changed-settings branch with the same feature, check and target.
+The result keeps its original case credit. The changed-settings
+branch requires its own resolved input and ordered attempt evidence.
+Hold the missing branch under the existing cell rules.
 
-### Evidence records and groups
+Property tests generate feature graphs, aliases, shared contracts,
+variant matrices and attempt histories. They prove that no input produces
+`PASS` with an orphan, duplicate owner, missing required cell or failed
+mandatory gate. Mutation tests cover every verifier comparison and signing
+purpose under the strict-core assurance policy.
 
-A canonical member identity is ASCII only: `M-`, `CAP-` or `V-`, then a
-decimal ordinal, or `MC-`, a shape ordinal, `-` and a chain index for a
-method chain (spec 0067), or `CW-`, a workflow shape ordinal, `-` and a
-workflow index for a capability workflow (spec 0070), each number from
-1 upwards that fits an
-unsigned 128-bit integer, written with exactly six digits with leading
-zeros below 1,000,000 and no leading zero from there up; ordinal 0 is
-not used, and a longer ordinal is refused as a bad value. The fixture's
-own ids add `FX-` in front, and a release run refuses any `FX-` id. The
-verifier refuses any other byte form, such as a padded ordinal, another
-case or a look-alike hyphen, before it compares anything. A shape's
-scope-register row is keyed by `S-` and the shape ordinal, written the
-same way; `S-` is not a member identity and never counts. An `S-` row
-carries the same signature as a member's row. The verifier finds an
-`MC-` member's scope row by its shape ordinal. A workflow shape's row
-is keyed by `W-` and the shape ordinal, written the same way; `W-` is
-not a member identity and never counts, and it carries the same
-signature as a member's row. The verifier finds a `CW-` member's scope
-row by its shape ordinal.
+## Reporting
 
-Each row has a ledger kind, canonical member identity, exact version,
-owning spec and task, primary scope and applicable target. Bind the
-run manifest digest, check identity, result and evidence digest to the
-row. Accept the primary scope and ranking subtotal flag only from
-the frozen catalogue. The signer registry maps keys to principals,
-allowed purposes and scopes. Get all authors from the authenticated
-admission and source provenance for the exact version. A reviewer
-must differ from every author by stable principal, even when one
-principal has several keys. A display name or an author field supplied
-with the result cannot establish identity.
+The report lists each feature and variant outcome, refusal reason,
+owning design, evidence digest and target. It reports elapsed time by
+queue, execution, review, signing, transfer, verification and retry, plus
+peak memory, storage and replay time on named hardware.
 
-For each required result, verify the qualified runner's signature over
-its run, member, check, target, outcome and evidence digest. The runner
-key must be authorised for that purpose, check and target. Verify the
-result against the check and target matrix from the protected run
-policy. A group signature authenticates the collection and cannot
-replace the runner's authority for each result. In a run that compares
-capability workflows, every capability result whose action writes a
-catalogued artefact kind also carries its last artefact's reference,
-output digest and key digest (spec 0070); such a result without them
-is refused.
-
-The protected policy issues each run a unique run id before it executes,
-and fixes the run's kind and its purpose (qualification, gate, nightly
-or soak) with it; the verifier refuses a manifest whose run kind or
-purpose differs from the policy's, and ignores any label in the
-manifest. Gate, nightly and soak runs of a release candidate are release
-runs whose test failures count. Their passing attempts do not make a
-release ledger stale, and the replay's history check skips them; a
-refused or interrupted run always counts, whatever its purpose. Read the
-complete attempt history from the protected Dell run ledger (spec 0005).
-For each run, member, check and target, require a single final verdict
-bound to its ordered attempts and the frozen retry policy. Only that
-policy, and only the trusted supervisor's record, can class an attempt
-as an infrastructure interruption; an exit the candidate causes, a
-resource limit included, is a test failure. A test failure in any run of
-the same candidate with the same member, check and target inputs blocks
-the cell. A later pass cannot hide it. The verifier reconciles every
-submitted result with this ledger, refuses missing or conflicting
-verdicts and uses only the approved run. Evidence suppliers cannot
-select the attempts that count.
-
-For a method, resolve the admission record and each evidence area in
-spec 0055. Check its behaviour digest, independent review and
-distinguishing test, check that its catalogue stage is
-`release_qualified`, and resolve the shipped pipeline step that runs it;
-a method nothing shipped runs is not counted. A method chain resolves
-its shape and steps through spec 0067 and counts only when a shipped
-pipeline step can run it. For a capability, resolve the shipped action
-and its integration and end-to-end evidence. A capability workflow
-resolves its shape and actions through spec 0070 and counts only when
-every action resolves as a capability does and the workflow's own
-runner-signed end-to-end result passed on each target of its shape. For a
-variant, resolve its owner, its admitted input class and its
-completed check. The owner is a counted method or method chain, or a
-capability or capability workflow once a spec admits a class list for
-its input kind (spec 0071). A variant counts only when its owner is among this
-run's verified members. Results for several required targets join under
-the same member identity. The member counts once after every required
-result passes.
-
-Within each group, store records in strictly ascending order: by kind
-(method, method chain, capability, capability workflow, variant), then
-by ordinal as a number (for a chain or a workflow, its shape ordinal
-and then its index), then by check
-identity, then by target. All of one member's results sit in one group.
-Two `V-` ids for the same owner and input class are refused. Give each
-group a manifest with its run digest, exact member commitment, evidence
-commitment, encoding and verifier version. Use SHA-256 for the
-commitments. Sign a canonical byte encoding of the manifest under its
-own signing purpose. Every signed encoding begins with its signing
-purpose, record type and format version as fields; the verifier refuses
-a signature whose purpose is not the one expected at that step. In the
-pilot, prefix each field with its byte length as an unsigned 64-bit
-big-endian integer. Encode text as UTF-8 and digests as 32 raw bytes.
-Encode a sequence with its record count and each length-prefixed record
-in order. The format version fixes the field order. Refuse unknown
-versions, ambiguous encodings, trailing bytes and evidence whose fetched
-bytes fail their digests. The verifier fetches evidence only by digest
-from the protected Dell evidence store of spec 0055, and refuses any
-reference that names a host, path or address. Retain the input manifest
-and evidence under the access controls in spec 0055.
-
-Shared values may be stored once by digest. A group may compress its
-rows and proof references, provided the verifier can recover every
-member, its admission record and its own signed review. A review
-signature covers the method, version, evidence, run and outcome. A group
-signature authenticates the manifest. It cannot stand in for the
-individual method reviews. A method chain's review is its shape's signed
-review, bound to the digest of the shape's catalogue entry, together
-with its own runner-signed result (spec 0067). A capability workflow's
-review is its workflow shape's signed review, bound to the digest of
-that shape's catalogue entry, together with its own runner-signed
-result (spec 0070). Use explicit signed per-member records in the
-pilot.
-
-### Input and resource limits
-
-The protected run policy sets maximums for the number of groups,
-encoded bytes, decoded bytes, member and result rows, referenced
-objects, bytes fetched and scratch space for the whole run. It names
-an execution time limit and the runner's memory limit. An unset or
-unbounded limit refuses the run. Evidence cannot raise a limit.
-
-For the pilot, cap each manifest at 64 KiB, each encoded group at
-16 MiB, each decoded group at 64 MiB and each row at 1 MiB. A group
-holds at most 16,384 rows. The exact pilot policy records the whole
-run's limits before work starts. The verifier runs under the Dell
-queue's limits. A larger run needs approved limits justified by
-measured resource use and cannot exceed its worker's allocation.
-
-Bound reads before authenticating a manifest. Only after checking
-its signature and run binding, stream the group under the approved
-limits. Check each declared length and count against bytes remaining
-and the policy before allocating or expanding. Count decoded bytes,
-rows and referenced bytes during streaming. Stop at the first excess
-or incomplete field, even when all signatures are valid. Charge
-retries and scratch writes against the run's limits. A refused run
-leaves the last verified ledger intact and clears its partial work.
-
-### Replay and refusal
-
-Replay by reopening the frozen catalogue and signed groups with a fresh
-verifier. Expand or check membership against the committed records.
-Compare canonical identities across all groups and run the distinctness
-checks in spec 0055 on the required catalogue domain. Any candidate code
-those checks run goes through sealed jobs under the trusted harness and
-supervisor; the verifier only reads their supervisor-signed results.
-Check implementation and behaviour as well as identity. A range of ids,
-a sampled check or a reported group total proves neither disjointness
-nor individual results. Treat a digest collision as a refusal when the
-bytes differ.
-
-Build the verified ledger in isolation. Publish its totals only after
-the whole input passes. A retry or replay of the same verified run first
-runs the shared ledger validator on the previous ledger against the
-approved original run's trusted context and refuses if that validation
-refuses. This permits replay of pilot and fixture runs without admitting
-their ledgers to the reader check. Replay preserves the original run
-kind, run purpose and ledger signing purpose; it grants no release
-credit to a pilot or fixture. It checks the policy digest against the
-current protected policy, as the reader check does. The new ledger
-carries the original run id. After the replay's own attempts and final
-verdict are recorded, replay reads the run-ledger head once and checks
-every entry for that candidate from the head the previous ledger names
-up to that exact head, whatever its run kind. In both this history check
-and the initial shared validation, the trusted supervisor supplies the
-exact current replay invocation and its ordered attempt ids. Exclude
-only those ids from newer-attempt freshness; never exclude their test
-failures or failed replay verdicts. All other attempts remain subject to
-the existing history and frozen retry rules, including refused and
-interrupted runs and the permitted passing gate, nightly and soak
-exclusion. Submitted data cannot name exclusions. This
-current-invocation exclusion is available only inside verifier replay,
-never to the reader check. Replay refuses if that history for its own
-run kind has otherwise changed or if any test failure on the candidate
-in a release or pilot run has been recorded in that range, refuses if
-any of its own attempts fails, and otherwise returns the same counts in
-a new ledger that names exactly that head and carries the next sequence
-number. A changed manifest, missing member, overlapping group or
-duplicate behaviour refuses the input. The previous ledger then stays
-unchanged on disk, and the reader check refuses it until a new verified
-run publishes. Compute the method and capability scope shares separately
-with checked integer arithmetic. Check the ranking subtotal within the
-method ledger.
-
-### Fixture and pilot cases
-
-A fixture run must name the fixture catalogue whose digest the policy
-pins, and accepts only `FX-` ids; it refuses any candidate or catalogue
-the policy names for a release or pilot run. Its attempts are recorded
-only against that catalogue and its `FX-` ids, never as test failures on
-a release candidate. Tests that need a release ledger build one from a
-separate test catalogue with the in-memory `QualifyTrust` fake. Use a
-fixture with three groups. For each row, use its listed scope for both
-the method and capability. Each variant uses the method on its row as
-its owner. Use the literal UTF-8 scenario key as the fixture's canonical
-input. Stub results may serve the arithmetic and membership tests. The
-end-to-end pilot uses actual execution evidence. Use separate author,
-reviewer and runner fixture principals and signatures scoped to this
-fixture run.
-
-| Group | Method | Capability | Variant | Scope | Ranking method | Scenario key |
-|---|---|---|---|---|---|---|
-| A | FX-M-000001 | FX-CAP-000001 | FX-V-000001 | On-page and technical search | No | redirect-chain |
-| A | FX-M-000002 | FX-CAP-000002 | FX-V-000002 | Text and meaning | No | sentence-boundary |
-| A | FX-M-000003 | FX-CAP-000003 | FX-V-000003 | Knowledge and graph analysis | No | isolated-node |
-| B | FX-M-000004 | FX-CAP-000004 | FX-V-000004 | Link ranking and protection | Yes | off-topic-signal |
-| B | FX-M-000005 | FX-CAP-000005 | FX-V-000005 | First-party and enterprise analytics | No | late-event |
-| B | FX-M-000006 | FX-CAP-000006 | FX-V-000006 | Outside the scope share | No | package-uninstall |
-| C | FX-M-000007 | FX-CAP-000007 | FX-V-000007 | Editorial coaching | No | answer-early |
-| C | FX-M-000008 | FX-CAP-000008 | FX-V-000008 | Research and bounded optimisation | No | research-card-mismatch |
-| C | FX-M-000009 | FX-CAP-000009 | FX-V-000009 | Agent operations | No | scoped-agent-request |
-
-The independently enumerated answer is nine methods, nine capabilities,
-eight in scope in each ledger, one ranking method and nine variants.
-Reorder the group inputs and replay. The totals and verified member
-set must agree. Replay a previously accepted run to prove idempotence.
-The fixture uses its own `FX-` identities in a separate fixture
-catalogue and carries no release credit.
-
-Replay accepted fixture and pilot ledgers through the verifier with
-their own protected run contexts and require the same counts. Offer
-those same correctly signed ledgers to the reader check through both of
-its callers, `sutra methods count` and release criterion 7, and require
-refusal. Name a run id that differs from the one signed in the ledger
-and require refusal. Offer a ledger to replay with another approved
-run's context and require refusal, even when its signature is otherwise
-valid. Check a request to select the expected run kind, run purpose,
-ledger signing purpose or excluded attempt ids from submitted data or a
-caller option: it must not change the trusted context. Record the
-current replay attempt before its initial validation and require a valid
-replay to pass. Add a newer attempt from another invocation and require
-refusal under the existing history rules. Record a real failure in the
-current replay, then a pass, and require refusal. After the replay's own
-attempts begin and before its final head read, record another run's
-qualification attempt, or a refused or interrupted run, of the same run
-kind, or a test failure on the candidate in a release or pilot run, and
-require refusal; record a passing gate, nightly or soak attempt, or a
-refused or interrupted run of another kind, there instead and require
-the replay to pass. Change the protected policy between the run and the
-replay and require refusal. These cases retain signature, policy,
-freshness, retry and input-binding checks; run-kind isolation grants no
-exception to them.
-
-Plant one fault at a time. Check an identity repeated across groups, the
-same behaviour under a new id, an alias or setting counted as new, a
-wrapper counted as a capability, a check rerun counted as a variant, one
-numeric setting swept to make many variants, near-identical scenario
-keys counted as separate variants, a workflow whose output matches one
-of its own actions run alone, a workflow that lists a preset or a
-second door of one action, a workflow that only rewords another's
-draft, a shape that lists an export or a message sent out of the
-product, a `CW-` id whose shape has no `W-` row, a
-padded ordinal, a look-alike hyphen
-in an id, a self-edited scope register supplied in the run manifest,
-evidence from an older version counted without a result for this
-candidate, a runner signature reused as a review or manifest signature,
-a reference that names a location, adjacent value bands of one input
-counted as separate classes, a second run of the same cell submitted
-after a test failure in the first, a scope or ranking flag signed only
-by its author, an admitted method that no shipped pipeline runs, a
-variant whose owner was refused, one input class counted under both a
-method and a capability, a method that misbehaves only when probed
-during replay, a valid ledger from the previous candidate offered to the
-release gate, an older valid ledger for the same candidate, a test
-failure recorded after the ledger was published, an empty ledger with
-each share reporting its own failure, a pilot ledger and a fixture
-ledger offered to both readers, a ledger signed under another purpose, a
-pair of ids either side of ordinal 1,000,000, an ordinal too long for an
-unsigned 128-bit integer, the run ledger or the signer registry
-unreachable for both readers, a newer pilot attempt on the release
-candidate that still leaves the release ledger accepted, a pilot test
-failure on the release candidate after publication that makes both
-readers refuse the release ledger, the same failure followed by a
-release replay, which must be refused, the fixture suite run after
-publication, which leaves the release ledger accepted, a ledger of an
-unknown run kind, an `FX-` id in a release run, a fixture-kind run on
-the release candidate with real ids, a manifest whose run kind differs
-from the policy's, a passing nightly, gate or soak run after publication
-that leaves the release ledger accepted, a refused or interrupted
-nightly run that makes it refused, a qualification run whose manifest
-calls it a nightly run, two `V-` ids for one owner and input class, a
-method whose catalogue stage is not `release_qualified`, a member's
-results split across two groups, and an id whose ordinal is zero. Check
-an orphaned feature, an incorrect scope or ranking flag, altered
-evidence bytes, a stale commit or target, a missing target, a forged or
-unauthorised signature, and a reviewer who is also the author. Replace
-the registry and run manifest, then sign all records correctly with the
-replacement keys. Refuse this run under the real trust root. Refuse a
-formerly trusted policy and a revoked key. Replace a passing check with
-forged evidence rehashed and signed by an authorised group signer who
-has no runner scope for that check. Refuse it before counting. Have the
-candidate report a pass while the trusted check fails, then try a
-candidate-supplied verifier with the same name. Neither attempt may earn
-a signed pass. Run the hidden-answer theft case in spec 0056. Try a
-second key belonging to an author, change an author's display name, then
-name a co-author as reviewer. Refuse all three reviews. Supply a later
-signed pass while leaving out an earlier test failure, then supply
-conflicting final receipts. Refuse both. Allow an approved
-infrastructure retry only when its interrupted attempt is recorded with
-the trusted classification. Check a partial group, unchecked range,
-ambiguous input and arithmetic overflow. Test a truncated field, a
-declared length of 2^64 minus one, an unsigned oversize envelope, a
-correctly signed manifest over its limit, and a small signed group that
-expands past its limit. Exhaust the whole run's fetch and scratch
-budgets using individually valid groups. Require refusal and the
-previous ledger unchanged in each case. Separately, two different check
-ids for the same owner and input must give one variant count. At each
-independent release boundary, test the floor and one below it. At the
-method and capability floors, prove that each percentage cross-product
-is represented exactly and passes at the required share. With the total
-held at the floor, moving one in-scope member out of scope must fail the
-share while every other condition passes. Round-trip each boundary, one
-below it and one above it through JSON, MCP and CLI results without
-changing a digit. Refuse numeric JSON counts, leading zeroes, signs,
-fractions, exponent forms and values outside the checked integer range;
-the prior ledger stays unchanged. The verifier reports each condition's
-own result. Exercise both scope shares independently with four in scope
-out of five, then three out of five, and assert the share condition's
-own result while the other share stays above its boundary. Change the
-target and signer bindings in a previously accepted fixture to prove
-replay refuses stale evidence. Arithmetic fixtures supply no evidence
-credit.
-
-### Measure the full route
-
-The full pilot exercises real methods, capabilities and variants from
-representative owning designs across every scope area above and includes
-out-of-scope controls. Run the tests against the actual approved
-pilot targets. Demonstrate the individual evidence, independent
-review, signing, verification and replay. Retain the signed manifest,
-verifier report and gate records. Record the proof references in
-Forgejo.
-
-Report unique verified counts and elapsed wall time through the
-whole route, including queues, execution, review, signing, transfer,
-verification and retries. Report each stage separately to locate
-the bottleneck. Measure retained evidence bytes, peak storage, CPU,
-memory and replay time on the named hardware. Give accepted and
-refused counts by kind and scope area, including the ranking
-subtotal and the measured review rate. Exclude duplicates and
-retries from the numerator. Include their work in the elapsed time.
-Run a second verifier against the frozen inputs and record any
-difference in the accepted set.
-
-Compute the remaining counts from verified release evidence only.
-Use remaining time and measured sustained rates to report the
-capacity needed for each floor and both scope shares. State hardware,
-review staffing, storage and error-rate assumptions. Pilot evidence
-covers the exercised members. Release-scale membership, cross-group
-distinctness, and per-member review and verification capacity need
-separate measured proof before use of a compact format. If a
-prerequisite is missing, report the blocked step and any fixture
-rehearsal separately. Keep the release blocked until all required
-evidence exists.
+Totals may describe coverage of the audited inventory, but they are not a
+release quota. A high percentage with one missing required feature remains
+a refusal. Pilot and fixture reports are labelled separately and cannot be
+presented as release evidence.
 
 ## Agent configuration
 
-Settings discovery is owned by spec 0014, and scoped change requests,
-permission checks and live confirmation by spec 0020. Their members
-count in the agent operations area above.
+Settings discovery is owned by spec 0014. Scoped change requests,
+permission checks and live confirmation are owned by spec 0020. Their
+features qualify under the same feature evidence contract; they receive no
+separate numerical capability credit.
 
-## How it is tested
+## Footprint budget
 
-- A release below any floor, below either required share, or below
-  the ranking subtotal is refused. A fixture at each boundary passes
-  only when every other condition passes.
-- A reused identity, alias, setting, second surface, overlapping
-  proof group, stale target or unsigned result cannot increase a
-  count. Check the verifier against an explicit small catalogue.
-- A feature missing a build task or a design, two owners for one
-  behaviour, or a conflicting feature contract blocks release.
-- Plant an analytics signal with a high score on an off-topic link.
-  The relevance gate still refuses it.
+This specification adds no work to public pages. Every owning feature
+sets and measures its own footprint budget under AGENTS.md section 5.4.
 
-This specification adds no work to public pages. Each owning feature
-sets its own footprint budget under AGENTS.md section 5.4.
+[networkx]: https://networkx.org/documentation/stable/reference/

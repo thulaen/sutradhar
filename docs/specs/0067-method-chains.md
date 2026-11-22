@@ -1,22 +1,27 @@
 # 0067: Method chains
 
-A method chain runs separately qualified methods one after another,
-each step reading the output of the step before. The owner decided on
-11 November 2026 that a chain counts once towards the method floor in
-[AGENTS.md section 3](../../AGENTS.md#3-the-goal-and-the-release-bar)
-when it behaves differently from every other counted method, and that a
-changed setting never makes a new method. This spec says how chains are
-written down, when one counts and how the `qualify` verifier (spec
-0064) proves that no two counted methods behave the same. It extends
-the catalogue of spec 0055 and is roadmap Phase 7 item 1.
+> ADR-0021 superseded this specification on 19 November 2026.
+> This page records the former design. See spec
+> [0057](0057-quality-judging.md) for release quality assessment and
+> spec [0079](0079-ranking-method-catalogue.md) for the ranking-method floor.
+
+A method chain runs separately admitted methods one after another, each
+step reading the output of the step before. ADR-0020 removes the former
+method floor. A chain receives one stable research identity only when it
+behaves differently from every other admitted method and chain; a changed
+setting never makes a new method. This spec says how chains are written
+down, admitted and checked for duplicate behaviour. Those records support
+the feature qualification in spec 0064 but create no independent release
+quota. It extends the catalogue of spec 0055 and is roadmap Phase 7 item 1.
 
 Example: a ranking shape has three slots. Slot 1 scores a candidate
 (BM25 or BM25F), slot 2 adds a second signal (link history or topic
 overlap) and slot 3 blends them (a weighted sum or a learned blend).
-That shape has 2 × 2 × 2 = 8 chains. Each counts only if all its steps
-are qualified, a shipped pipeline step can run it, it passes its own
-checks and the order of its outputs on the probe set differs from that
-of every other counted method.
+That shape has 2 × 2 × 2 = 8 candidate chains. Each receives admission
+only if all its steps are qualified, a shipped pipeline step can run it,
+it passes its own checks and the order of its outputs on the probe set
+differs from that of every other admitted method and chain. These eight
+possibilities are not a release quota.
 
 ## What it does
 
@@ -155,16 +160,15 @@ these hold:
    probe set and each step's own checks on the input that step was
    given, and carries its behaviour digest and order digest. A shape
    cannot add, remove or loosen a check.
-5. No other counted method or chain behaves the same ("Proving chains
+5. No other admitted method or chain behaves the same ("Proving chains
    differ").
 
 This is how a chain is independently qualified (spec 0055): it has its
 own run and runner-signed result, its shape has a signed independent
 review, bound to the digest of the shape's catalogue entry, that stands
 as the review of each of its chains, and each of its steps has its own
-distinguishing test. A chain counts in the ranking subtotal when its
-shape's signed scope row in spec 0064's scope register marks the shape
-as ranking; that row covers each of its chains.
+distinguishing test. A link-ranking chain supplies evidence to its
+owning feature under spec 0064. It creates no ranking subtotal.
 
 ### Proving chains differ
 
@@ -325,8 +329,8 @@ Rust tests in `sutradhar-methods` and `qualify`, with made-up shapes:
 - A run whose lists would pass the scratch-space limit, or whose
   estimated time would pass spec 0064's execution time limit, is refused
   before it starts.
-- The ranking subtotal counts a chain only when its shape's scope row
-  marks it as ranking.
+- A link-ranking chain is reported through its owning feature's release
+  evidence; no separate ranking subtotal is calculated.
 
 ## Changes from the source
 

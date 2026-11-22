@@ -5,7 +5,7 @@ Sutradhar is built from modules: internal linking (setu), SEO signals
 module registry, mandali ("troupe"), finds the modules, starts them in
 the right order, keeps one broken module from breaking the others, and
 lets the owner see and switch them. The composition root that wires them
-is sanyojan ("coordination"). It is part of Sutradhar Boot, roadmap
+is sanyojan ("coordination"). It is part of Behemoth Boot, roadmap
 Phase 3 item 1.
 
 ## What it does
@@ -149,29 +149,38 @@ the registry decides.
 5. Work under way at the fault resumes from its last checkpoint
    (spec 0019); nothing is skipped silently.
 6. A health check that panics counts as failed, not as a crash.
-7. A panic in the core is a defect: the service exits, systemd restarts
-   it, and an AutoIssue (an automatic problem report) is filed.
+7. A panic in the core is a defect: the service exits, the engine
+   supervisor (spec 0030) restarts it, and an AutoIssue (an automatic
+   problem report) is filed.
 
-### Modes and promotion
+### Modes and champion-controlled stages
 
 1. Version 1 has `shadow` and `review`. A mode of `auto` is refused by
    the settings check (SUT-166).
-2. `modules.<name>.mode` is a ceiling. The effective mode is the lower
-   of the ceiling and the promotion stage. The default for every
-   module is review; shadow stays for testing new modules. A lowered
-   ceiling wins at the next read.
-3. Promotion from shadow to review is a karya job. It reads measures a
-   module supplies through a `PromotionMeasure` trait, compares them
-   with the module's `promotion.*` settings, and records the decision
-   in lekha and on the health screen. It never goes past the ceiling
-   and never reaches auto.
-4. The measure is the module's link-reconstruction score on the site's
-   own links, from a ganit evaluation job, against a threshold the
-   owner approves after the lab measures it. With no approved
-   threshold the job reports "threshold not approved" and promotes
-   nothing.
-5. Shadow work is logged as what would have happened and is never shown
-   to members or moderators.
+2. `modules.<name>.mode` is a ceiling, not an admission decision. The
+   effective stage is the more restrictive of that ceiling and the stage
+   admitted by the active champion. The default ceiling is review.
+   A lowered ceiling wins at the next read after it takes effect.
+   A matching job keeps its spec 0014 settings snapshot. At the
+   existing 0028 result release, use the current ceiling. A saved
+   mode or champion stage receipt cannot raise it. Raising the ceiling
+   still leaves shadow suggestions hidden and ineligible for
+   approval under spec 0028.
+3. The admitted stage comes only from the current spec 0077 champion.
+   Mandali reads the module-stage map in that champion's immutable
+   manifest and records a receipt. It has no promotion job and cannot
+   make an independent stage decision.
+4. New and unadmitted modules remain in shadow. A late, failed or
+   unverified candidate leaves the verified champion and every current
+   effective stage unchanged.
+5. Module measures and link-reconstruction results are diagnostic
+   evidence only. Spec 0053 supplies governed feedback evidence and spec 0077
+   evaluates
+   it under the protected release gates. No module-owned threshold or
+   score can activate review.
+6. Shadow work is logged as what would have happened and is never shown
+   to members or moderators. Review still needs moderator approval for
+   every public write; neither stage enables automatic insertion.
 
 ### Health and readiness
 
@@ -187,7 +196,8 @@ the registry decides.
 4. If ganit's serving part is down, the service is "ready, with
    problems" and live features use the degraded mode (top-k with the
    hard rules); it never makes the service unready.
-5. systemd's readiness and start order follow "ready".
+5. The engine supervisor's (spec 0030) readiness and start order follow
+   "ready".
 
 ### Switching modules on and off
 
@@ -210,9 +220,10 @@ Schema `mandali` in PostgreSQL:
 - `module_transition` (append-only): `id`, `module`, `from_state`,
   `to_state`, `reason_code`, `actor_ref` (null for automatic moves),
   `at`.
-- `module_promotion`: `id`, `module`, `measure`, `value`, `threshold`,
-  `output_version` (the ganit output used, if any), `decision`
-  (promote, hold, demote), `at`.
+- `module_stage_receipt`: `id`, `module`, `candidate_id`,
+  `controller_outcome`, `champion_manifest_digest`, `admitted_stage`,
+  `recorded_at`. A receipt records the stage already present in the
+  verified champion; it is not a new promotion decision.
 
 Migrations live in one folder, `migrations/`, applied in order by
 sqlx. Each file is named `<sequence>_<module>_<what>.sql`. A gate check
@@ -236,10 +247,12 @@ own tables' policies.
    setup role, the only one that may write spec 0030's installation
    tables.
 3. A table whose rows can belong to more than one site carries
-   `site_id`. Each transaction sets its site with `SET LOCAL`, and
-   every policy requires the row's site to match, so a query that
-   forgets its filter still sees only its own site. With no site set,
-   every policy returns no rows.
+   `site_id`. Each site transaction binds its site through spec 0108's
+   transaction-local setter. Site policies require the row's site to
+   match. Approved installation and migration records use the separate
+   DR-150 context and existing role and row limits in specs 0030
+   and 0108. Without a valid scope the database exposes no protected
+   rows.
 4. Each module's tables live in its own schema. Every table has
    row-level security enabled and forced, and explicit policies naming
    the role and the command. Grants follow the policies; nothing is
@@ -249,7 +262,7 @@ own tables' policies.
    target is measured with row-level security on.
 7. mandali's own policies: the app role reads all three tables,
    inserts and updates `module_state`, and inserts `module_transition`
-   and `module_promotion` rows.
+   and `module_stage_receipt` rows.
 
 ### Management API, command and events
 
@@ -259,7 +272,7 @@ Routes on the management API, through the action layer and Cedar:
   what it requires and what requires it, its capability ids and its
   manual page.
 - `GET /api/v1/modules/{name}`: the same for one, with its last 50
-  moves and its promotion record.
+  moves and its module-stage receipts.
 - `POST /api/v1/modules/{name}/retry`: retry a faulty module.
 - Switching uses the settings routes (spec 0014), not a second route.
 
@@ -268,7 +281,8 @@ Routes on the management API, through the action layer and Cedar:
 (resolve the graph and declarations without starting anything).
 
 Events through sanchar: `module.state_changed` (module, from, to,
-code) and `module.promotion_decided` (module, decision).
+code) and `module.stage_receipt_recorded` (module, candidate, controller
+outcome, champion manifest digest and admitted stage).
 
 ### Error codes
 
@@ -306,8 +320,9 @@ SUT-167 affect only the module concerned.
   needed the site link cannot read the site.
 - Module routes sit behind the same action layer and Cedar checks as
   core routes.
-- States, moves and promotion records hold module names, codes and
-  pseudonymous actors only; the person behind an `actor_ref` is in
+- States, moves and stage receipts hold module names, candidate and
+  manifest digests, codes and pseudonymous actors only; the person behind an
+  `actor_ref` is in
   lekha's private part.
 
 ### Observability
@@ -321,8 +336,8 @@ SUT-167 affect only the module concerned.
 - Traces `mandali.resolve`, `mandali.start` and `mandali.health`, with
   `module.name`, `module.state` and `error.code`.
 - Logs `module_started`, `module_waiting`, `module_faulty`,
-  `module_stopped` and `module_promotion_decided`, with module, code
-  and reason.
+  `module_stopped` and `module_stage_receipt_recorded`, with module,
+  candidate, champion manifest digest, code and reason.
 - Alerts: a module faulty for more than 15 minutes; a core module not
   running; a module changing state more than 6 times an hour.
 
@@ -398,7 +413,23 @@ tables are involved.
   SUT-164 "turn on SEO signals first"; switching off a needed module
   gives SUT-165 naming the dependant.
 - AT-MR18: a settings draft with mode `auto` gets SUT-166.
-- AT-MR19: ceiling shadow and promotion stage review give shadow.
+- AT-MR19: ceiling shadow and champion-admitted stage review give shadow.
+  Keep the same verified champion and a valid receipt admitting review.
+  Start matching for a review result with its original settings
+  snapshot. Commit and apply a lower ceiling through spec 0014 while
+  the job is running. Complete the job then replay the valid receipt.
+  The next 0028 moderator result release with the lower ceiling applied
+  exposes no suggestions from that module. Separately produce a shadow
+  suggestion while that ceiling is in force. Restore the review value
+  as a new settings version. Delay delivery to the current role under
+  0014 AT-CF-DELIVERY. Report the saved review value as desired and
+  the verified running shadow value as effective. Keep the review
+  result held while shadow remains in use, even with the verified
+  champion admitting review. Apply the new settings through 0014.
+  That shadow suggestion stays hidden and cannot be approved. A newly
+  produced review suggestion can use the
+  ordinary review route if still eligible. The unchanged champion and
+  its receipt provide no public write or new stage admission.
 - AT-MR20 (loom): a panic while the registry is stopping and a retry
   timer fires ends in exactly one state, one history row per move.
 - AT-MR21 (stress): 200 concurrent requests from different viewers to
@@ -422,20 +453,22 @@ tables are involved.
 - AT-MR28 (Kani proof): for any state and input (switch, fault, health
   result, retry, stop) the transition function gives only an allowed
   move, and a faulty or waiting module is never runnable.
-- AT-MR29: shadow module, review ceiling, a very high score and no
-  approved threshold: nothing promoted, record says "threshold not
-  approved"; once a threshold is approved and met it moves to review,
-  never past the ceiling.
+- AT-MR29: a shadow module with a review ceiling and a very high
+  diagnostic score remains shadow without a spec 0077 champion admission.
+  A verified champion naming review produces a matching stage receipt and
+  review within the ceiling. A late or conflicting receipt has no effect.
 - Benchmarks under the 5% median rule: `bench_register_60`,
   `bench_ready_cached`, `bench_is_runnable`; load tests `load_health`,
   `load_fault_isolation`, `load_state_visible`.
 - Test-first order: ordering and loops; registration rules; lifecycle
-  and faults; health and stopping; switches, modes and promotion;
+  and faults; health and stopping; switches, modes and stage receipts;
   concurrency; workspace checks, `namaste` and the Kani proof; load,
   chaos and the snapshot.
-- The state machine and switch rules are rule-critical: 100% coverage
-  of lines, branches and MC/DC, every mutant killed, a property test
-  and a Kani proof.
+- The state machine and switch rules retain their property test and Kani
+  proof. Components explicitly admitted to ADR-0020's strict core require
+  100% line, branch and MC/DC coverage and every killable mutant killed,
+  with equivalent mutants proved and independently reviewed. Other
+  components follow the owning risk matrix's coverage and mutation gates.
 - Facts checked by tests: sqlx applies one folder in order under its
   advisory lock; cargo-deny's wrappers rule works for workspace crates;
   a panic in a `TaskTracker` task comes back as a `JoinError` with
@@ -445,13 +478,16 @@ tables are involved.
 
 ## Changes from the source
 
-- Several container roles became the one background service under
-  systemd; per-role states, logins and edge cases fold into one.
+- Several container roles became the one background service run
+  by the engine supervisor (spec 0030); per-role states, logins and edge
+  cases fold into one.
 - One login per container role became the single app role of AGENTS.md
   5.2, plus the migration owner and the two narrow job roles.
-- Per-forum rows set once per connection became per-site rows set with
-  `SET LOCAL` in each transaction; no site set means no rows.
-- Compose health checks and restart policy became systemd's.
+- Per-site rows use the bound site context in each transaction under
+  spec 0108. The installation context in DR-150 has only the
+  protected installation and migration records it needs.
+- Compose health checks and restart policy became the engine supervisor's
+  (spec 0030).
 - ganit's separate containers became a ganit module in the service.
 - Health routes and module routes are served on the local management
   socket, checked with Cedar.

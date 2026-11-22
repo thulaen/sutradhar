@@ -12,22 +12,32 @@ owner's PC. It is roadmap Phase 4 item 3.
 - Piece: a stretch of one post's text, at most the piece size, that a
   model reads at once. The piece size is 1,024 tokens by default and
   never fewer; the owner may set it higher.
-- Vector (embedding): a list of numbers a model writes for a text;
-  texts with similar meaning get similar vectors.
-- Embedder: the model that writes the vectors: Qwen3-Embedding-0.6B at
-  its published precision, unless an administrator turns on a
-  community model (spec 0024) or paid embeddings (spec 0025).
-- Index: the stored vectors, plus records of which post, thread,
-  resource or hub page each belongs to.
-- Thread-level index: each destination's title and summary vectors,
-  built first so that suggestions can start. Per-post index: the
-  vectors of every post's pieces and extras, built after it.
-- Coverage: destinations in the thread-level index and posts read,
-  each out of the eligible total.
-- potion (potion-retrieval-32M): a fast, simple model for a first
-  sweep. The entity model, our own and built in pure Rust (spec 0026),
-  finds names (entities); the same pure-Rust layer finds sentences and
-  noun phrases.
+- Embedding representation: a model-derived retrieval value. BGE-M3
+  produces a dense vector, learned sparse weights and multi-vector token
+  representations; these are distinct typed values, not interchangeable
+  vectors.
+- Embedder: pinned `BAAI/bge-m3`, revision
+  `5617a9f61b028005a4858fdac845db406aefb181`, executing through spec
+  0024's admitted Python package interface. It supplies the default dense
+  and mandatory sparse and multi-vector representations. The sole paid
+  exception follows spec 0025: an admitted Bedrock model supplies only the
+  active dense representation and never shares a dense-index generation
+  with BGE-M3 dense. BGE-M3 sparse and multi-vector representations remain
+  in the same complete hybrid candidate.
+- Index: the stored dense, sparse and multi-vector representations, plus
+  records of which post, thread, resource or hub page each belongs to.
+- Thread-level index: each destination's title representations and dense
+  summary vector, built first so that suggestions can start. Per-post
+  index: the representations of every post's pieces and extras, built
+  after it. Sparse and multi-vector retrieval uses the stored title,
+  first-post, accepted-answer and piece representations directly; it does
+  not average sparse weights or token representations into a fake summary.
+- Coverage: destinations in the thread-level index and posts read, each
+  out of the eligible total, reported separately for dense, sparse,
+  multi-vector and spaCy feature completion.
+- spaCy language features: the pinned packaged pipeline in spec 0026
+  finds sentences, entities and supported noun chunks. It is not a second
+  embedding or retrieval stack.
 - Lane: a queue of reading work with its own priority.
 - Checkpoint: a saved record of finished work, so a restart carries on.
 - Guest-visible: content a logged-out visitor may see. Only this is
@@ -47,9 +57,9 @@ owner's PC. It is roadmap Phase 4 item 3.
   when XenForo Resource Manager is present, and approved hub pages when
   the hub module is on.
 - Out of scope here: search, reranking, anchors and blocking
-  suggestions (spec 0023); model files, `models.lock`, community
-  models, the rule against retraining, the uninstall table and the memory table
-  (spec 0024); paid embeddings (spec 0025); progress and the live
+  suggestions (spec 0023); model and package files, `models.lock`, model
+  admission, the uninstall table and resource profiles (spec 0024); paid
+  embeddings (spec 0025); progress and the live
   stream (spec 0016); visuals (spec 0017); the parser and position map
   (spec 0026); the signed contract (spec 0021); jobs (spec 0019);
   settings storage (spec 0014); the review page, insertion and undo
@@ -67,19 +77,31 @@ repeats at most the unfinished stage.
    segments.
 3. Record: existing links and state, for every guest-visible post,
    read further or not.
-4. Language: a post whose main language is English goes on in full;
-   any other is skipped and shown.
+4. Language: only a post eligible under spec 0018 goes on in full.
+   Show the separate hold reason for unknown or unsupported language.
 5. Split: pieces with the title prefix and overlap; extras gathered.
-6. First pass, during a backlog sweep only: potion vectors (never a
-   suggestion).
-7. Full reading: embedder vectors for pieces, extras and the title.
-8. Entities: sentences, entities and noun phrases.
-9. Summary: the post's vector is added to its thread's running sum,
-   and the thread's summary vector is written again from that sum.
+6. Inventory pass, during a backlog sweep only: record exact eligible
+   totals and piece counts without model output or a ranking shortlist.
+7. Full reading: the active dense embedder writes dense representations,
+   while BGE-M3 writes sparse and multi-vector representations for pieces,
+   extras and the title through their admitted routes. The default local
+   route uses BGE-M3 for all three. Every representation carries the same
+   source identity and its exact representation and generation keys; a
+   partial representation set is not eligible for retrieval.
+8. Language features: packaged spaCy writes supported sentences,
+   entities and noun chunks under spec 0026.
+9. Summary: the post's dense vector joins its thread's dense running sum
+   and the dense summary vector is written again. Sparse and multi-vector
+   values remain addressable by their source parts for hybrid retrieval.
 
-After the first pass, the embedder builds the thread-level index
-first, then the per-post index, with new and edited posts always
-first.
+After the inventory pass, the active dense embedder and BGE-M3 build the
+thread-level index first, then the per-post index, with new and edited
+posts always first. The spec 0019 scheduler runs the typed stages
+in the live and backfill lanes under their existing priorities.
+Publish source changes and their outbox rows together. The index
+consumer binds its job to site, item, source revision and index
+generation. A late rebuild cannot publish over a newer revision
+or a visibility or erasure fence.
 
 ### What is read
 
@@ -120,28 +142,28 @@ Readable text is NFC, as XenForo stores it. Every position is in code
 points. The parser supplies a map from readable text back to the
 stored message.
 
-### Language (English only)
+### Language (British-English eligibility)
 
 - A language identifier (lingua, subject to admission) checks each
   paragraph.
-- A post is judged by its main language: the one holding most of its
-  letters. An English post is read in full, other-language paragraphs
-  included, and their count is recorded. Any other post is skipped and
-  shown as "skipped: not English" with the detected language.
-- A paragraph under 20 letters takes the language of the rest of its
-  post, or of its thread if the post has nothing else.
+- The detector records the main language by letters and preserves
+  diagnostic counts of other-language paragraphs in an eligible post.
+  Index a post only with spec 0018's current eligibility decision.
+  Hold an unsupported or unknown post and show the detected reason.
+- Spec 0026 owns short-item inheritance within the same valid site
+  authority. A paragraph with contradictory language cannot anchor.
 - A skipped post has no pieces, vectors or entity records and is never
   an anchor; its links and state are still recorded.
 - Skipped counts appear in the progress view and per thread on the
   admin pages.
   An edit runs the check again.
-- A thread's language comes from its title and first post. A thread
-  that is not English is never a destination; its English replies are
-  still read as sources.
+- A thread destination needs its own current eligibility decision.
+  Its title and first post supply the thread evidence. An eligible
+  reply can serve as a source under the same site authority.
 
 ### Pieces
 
-- Tokens are counted with the active embedder's own tokenizer, start
+- Tokens are counted with the active dense embedder's own tokenizer, start
   and end markers included. The tokenizer's identity (files and
   checksums) is part of the generation key, so pieces cut for one model
   are never read by another.
@@ -153,13 +175,15 @@ stored message.
   below. Spec 0023 records the
   reranker tokens this maps to, measured, and always lets the best
   piece into the reranker.
-- A piece size larger than the active embedder's window is refused
+- A piece size larger than the active dense embedder's window is refused
   with a plain message, such as "This piece size is longer than the
   embedder can read" (spec 0024, MF-C07).
-- A size above 1,024 is allowed only once a measured run on that PC
-  shows the embedder stays within its row in spec 0024's memory table
-  (1,300 MB under 16 GB, 1,400 MB at 16 GB or more) at that size, and
-  that the time from saving a post to its first suggestion still meets
+- A size above 1,024 is allowed only once a measured run on that exact
+  machine and workload profile shows the complete active dense and BGE-M3
+  package set, bridge, batch and concurrent index working set stays within
+  its admitted
+  resource envelope under AGENTS.md section 5.6, and that the time from
+  saving a post to its first suggestion still meets
   spec 0023's limit at that size. Otherwise the setting is refused
   with a plain message, such as "This piece size needs more memory
   than the embedder has" or "This piece size makes the first
@@ -223,20 +247,32 @@ stored message.
   form another input. An extra longer than one input splits like body
   text, with the same overlap.
 - Extras vectors are stored apart from pieces, carry weight 0.5 in
-  matching and are flagged never-anchor.
+  matching and are flagged never-anchor. For XenForo attachments, use
+  the current name eligibility from spec 0021. If only the attachment
+  permission changes, withhold the affected name, its extra and any
+  combined result derived from it through the existing visibility
+  cleanup before serving. Rebuild any affected combination using
+  only still-eligible extras. Keep eligible body pieces and unrelated
+  results. An unchanged body hash supplies no attachment permission.
 
-### Entities, sentences and noun phrases
+### Entities, sentences and noun chunks
 
-- The entity model runs on the body text of each read post, paragraph
-  by paragraph in small batches, so memory stays bounded. Extras are
-  not parsed.
-- Stored for matching: sentence boundaries, named entities of the
-  types spec 0023 allows with their labels, and noun phrases.
-  Destination titles are parsed the same way.
-- Not stored: other entity types, the grammar tree, word vectors.
-- If the entity model is unavailable, vectors are still written; the
-  post shows "waiting for entity reading" and suggestions that need it
-  are withheld.
+- The admitted packaged spaCy pipeline runs on complete authorised body
+  text in bounded requests under spec 0026. Extras are not parsed. Every
+  result carries the pipeline, knowledge-base and feature-schema keys.
+- Stored for matching: source-mapped sentence boundaries, allowed named
+  entities with mapped labels and abstention evidence, and noun chunks
+  where supported. Destination titles use the same contract. Unsupported
+  capabilities remain absent and explicit.
+- Not stored: raw per-token annotations, grammar trees or word vectors.
+  Refused entity labels are not exposed as candidates, but the minimal
+  refusal spans needed by spec 0026's hard filters remain protected.
+- If spaCy or a required pipeline capability is unavailable, active dense
+  and BGE-M3 non-dense representations may be written, but the post shows
+  "waiting for
+  language features" and every suggestion requiring those features is
+  withheld. Tokeniser-only output is never accepted as NER or noun-chunk
+  evidence.
 
 ### Existing links and state
 
@@ -286,10 +322,10 @@ stored message.
 - The title always weighs most. The first post and the accepted answer
   each weigh more than the other posts together. Settings that break
   this order are refused.
-- The starting weights are 0.4, 0.25, 0.2 and 0.15. The Dell lab tunes
-  them by link reconstruction (spec 0023): the forum's existing links
-  are rebuilt, and the weights that rebuild them best, within the
-  order above, become the defaults.
+- The starting weights are 0.4, 0.25, 0.2 and 0.15. Spec 0077 is the only
+  route that may propose, evaluate, promote or roll back a different
+  bounded set, using link reconstruction under spec 0023 and every
+  protected ranking gate. A lab result never becomes a default by itself.
 - Only guest-visible posts that are read count. Reactions do not
   choose or weigh posts.
 - Streaming: no thread is ever held whole. Each destination keeps a
@@ -315,19 +351,19 @@ stored message.
 - Resources use the same rule, with updates for replies and no
   accepted answer. Hub pages use their title and own text.
 
-### First pass with potion
+### Inventory pass
 
-- potion looks up a stored vector for each token and averages them, so
-  it is very fast on an ordinary processor.
-- At the start of the first backlog run it sweeps every eligible item:
-  extraction, links and state, language, splitting and potion vectors.
-  This gives exact totals for honest progress estimates, and each
-  thread's eligible posts for the summaries. The
-  sweep's time is measured and shown.
-- It gives an early shortlist of each thread's nearest threads, by
-  exact search over potion vectors. The shortlist feeds progress
-  counts only. It never orders reading, is never a suggestion and never
-  reaches moderators. A change of potion's revision is spec 0024's.
+- At the start of the first backlog run, the service sweeps every
+  eligible item through extraction, links and state, language and active dense
+  token-count-based splitting. It writes no embedding representation and
+  no ranking shortlist.
+- The pass supplies exact totals and piece counts for progress estimates
+  and the eligible-post ledger used by dense summaries. Its time is
+  measured and shown. It never orders reading by an unapproved similarity
+  score, creates a suggestion or reaches moderators.
+- The live lane and the deterministic views-and-recency backlog order do
+  not depend on this pass. Failure leaves exact progress incomplete and
+  visible; it does not activate a substitute model.
 
 ### Reading order: thread-level index first
 
@@ -366,12 +402,15 @@ stored message.
   token-limited group of paragraphs per entity call, and one pair per
   reranker call in backlog matching. After each backlog call, waiting
   live work is served.
-- A model call cannot be stopped part-way, so live work waits at most
-  for one backlog call: in the worst case one full piece. At 1,024
-  tokens that is about 3 to 6 seconds on the reference hardware (4
-  processor cores and a SATA solid-state disk), to be measured. A
-  larger piece size makes the wait longer; the settings screen shows
-  the measured wait before the change is made.
+- A model call cannot be stopped part-way, so live work waits for at most
+  one backlog call: in the worst case one full piece. The 3-to-6-second
+  figure was only a planning estimate and is not an accepted measurement or
+  limit. The p99 wait bound at 1,024 tokens on the reference hardware (4
+  processor cores and a SATA solid-state disk), its fixtures and the release
+  measurement are readiness blockers owned by the indexing-latency record.
+  Backlog execution cannot qualify until they are admitted. A larger piece
+  size makes the wait longer; the settings screen shows the measured wait
+  before the change is made.
 - The backlog lane runs at the lowest processor priority and idle disk
   priority. The live lane runs below normal but above the backlog.
 - The backlog pauses under load. It watches pressure (the share of
@@ -382,16 +421,19 @@ stored message.
 - On the site, the add-on feeds the backlog as a XenForo job with a
   short time limit, reading small batches by id cursor for the sweep,
   or by the ids the service asks for, never by offset.
-- The first run takes about one to several weeks per million posts.
-  Suggestions do not wait for it: they start once the thread-level
-  index is complete. The admin estimate always comes from measured
-  throughput. A paid embedder cannot shorten the local embedder's run;
-  it replaces the local embedder for the whole index.
+- No first-run duration is asserted from parameter counts or processor
+  arithmetic. The admin estimate comes from measured throughput for the
+  exact active dense producer, mandatory BGE-M3 non-dense producers,
+  representation set, machine and workload profile. Suggestions start only
+  once the thread-level index is complete. A paid embedder cannot shorten
+  the local run; it replaces only BGE-M3 dense computation for a separate
+  whole hybrid index generation. BGE-M3 sparse and multi-vector production
+  remains local and mandatory.
 - A batch holds at most 30 seconds of model work, and a checkpoint
   follows every committed batch, so a crash repeats at most one minute
   of work per worker.
-- Progress shows the stages (first pass, thread-level index, per-post
-  index, entities, summaries), counts read and skipped by reason,
+- Progress shows the stages (inventory pass, thread-level index, per-post
+  index, language features, summaries), counts read and skipped by reason,
   failed by error code, and any pause with its reason. Each lane's
   queue depth, the processing rate and the coverage also show on the
   review and health pages.
@@ -415,42 +457,61 @@ Per item (post, resource description or update, hub page):
   targets;
 - readable text with masks, and the position-map version;
 - positions of skipped zones and extras, for the "post X-ray" view;
-- pieces: offsets, token count, text, embedder vector, potion vector;
-- extras: kind, text and vector, flagged never-anchor;
-- for a post read in parts: the part boundaries and the running
-  checksum, until the post is fully read;
-- sentence boundaries, allowed entities with labels, noun phrases, and
-  the entity model's key.
+- pieces: offsets, active dense tokenizer's token count and receipt,
+  text, active dense vector, BGE-M3 sparse token-weight entries and
+  BGE-M3 multi-vector token representations, with each representation's
+  shape, precision and normalisation version;
+- extras: kind, text and the same active dense and BGE-M3 sparse and
+  multi-vector representation set, flagged never-anchor;
+- for a post read in parts: the part boundaries and the running checksum,
+  until the post is fully read;
+- sentence boundaries, allowed entities with labels and abstention
+  evidence, supported noun chunks, and the spaCy pipeline, knowledge-base
+  and feature-schema keys.
 
 Per destination (thread, resource, hub page):
 
-- canonical id, title, title vector, language, eligibility;
+- canonical id, title, complete title representation set, language and
+  eligibility;
 - view count and last post date, for the reading order;
-- in the serving generation, whether its title and summary vectors are
-  written, and how many of its eligible posts are read;
-- summary vector; the running sum of the other posts' vectors (64-bit)
-  and their count; the summary settings version.
+- in the serving generation, whether every title representation and the
+  dense summary vector is written, and how many eligible posts have each
+  required representation and language-feature set;
+- dense summary vector; the running sum of other posts' dense vectors
+  (64-bit) and their count; the summary settings version;
+- references to the first-post, accepted-answer and piece sparse and
+  multi-vector representations used by hybrid retrieval.
 
 Per index generation:
 
-- generation id (the index version each suggestion records); the
-  embedder's compatibility key (entry id, repository, revision,
-  index-compatibility version, vector size); the tokenizer's identity;
-  potion's key; the reading-rules version; start and completion times,
-  and when its thread-level and per-post indexes finished; item and
-  vector counts; coverage.
+- generation id (the index version each suggestion records); a complete
+  compatibility key covering the active dense identity and the BGE-M3
+  sparse and multi-vector identities, including their admitted package or
+  service locks, immutable model or deployment revisions, artefact hashes
+  and relevant tokenizer identities; the index-compatibility version,
+  maximum input tokens and overflow contract for each producer; every
+  representation's shape, precision and storage encoding; the spaCy
+  feature-schema key; the reading-rules version; start and completion
+  times; separate thread-level and per-post completion times; item and
+  representation counts; and coverage by representation.
 
-Vectors are kept at 32-bit precision in fixed-size segment files,
-with a table from row to piece and a list of removed rows that
-background compaction clears. Matching scans the segments in blocks.
+Dense vectors are kept at 32-bit precision unless an admitted encoding
+changes that contract. Sparse entries use typed token ids and finite
+weights; multi-vector rows retain their source-piece mapping, token mask
+and shape. No quantisation, pruning or projection is silently applied:
+any encoding change requires a new generation and quality, resource and
+rollback admission. Segment files carry row tables and removed-row lists
+that background compaction clears. Matching scans or searches each
+representation through its typed index interface.
 
 ### Uninstall classes
 
 Spec 0024 owns the uninstall table. Reading's stores fall as follows:
 
-- Always deleted, with no keep option and no export: every vector
-  (pieces, extras, titles, summaries, running sums, first pass), segment
-  files, row tables, removed-row lists and generation records.
+- Always deleted, with no keep option and no export: every dense vector,
+  sparse entry, multi-vector row and mask (pieces, extras, titles and
+  summaries), running sums, segment files, row tables, removed-row lists
+  and generation records.
 - With the export offer and keep-or-delete choice: the reading records
   the index is built from (state, skip reasons, language, readable-text
   copies, piece and extras text, entity and noun-phrase spans, link
@@ -459,8 +520,10 @@ Spec 0024 owns the uninstall table. Reading's stores fall as follows:
 
 ### Index generations and the revision check
 
-- A generation is the full set of vectors made by one embedder and
-  tokenizer under one reading-rules version. Exactly one serves.
+- A generation is the full hybrid representation set made by the active
+  dense producer and the BGE-M3 sparse and multi-vector producers, with
+  their respective tokenizers, under one reading-rules version. Exactly
+  one serves. Paid and BGE-M3 dense vectors never share a generation.
 - A rebuild (new model revision, tokenizer or reading rules) writes a
   new generation beside the serving one and switches in one step only
   when it is whole. A half-built generation is never served in a
@@ -470,35 +533,40 @@ Spec 0024 owns the uninstall table. Reading's stores fall as follows:
   rules alone keeps the serving generation and suggestions running.
 - The first generation serves once its thread-level index is
   complete, with coverage recorded, while its per-post index is built.
-- At start-up and whenever a model loads, the active embedder's key
-  and tokenizer are compared with the serving generation's. A
-  difference is reported to readiness; no new suggestions are made and
-  readiness says "not ready for suggestions" until the rebuild ends.
-  Suggestions already made stay approvable.
-- Entity records whose key differs from the active entity model's are
-  stale: they count as missing evidence, are re-read in the backlog
-  lane, and suggestions from those posts are withheld.
+- At start-up and whenever an admitted producer loads or is selected,
+  the active dense and BGE-M3 non-dense compatibility keys and relevant
+  tokenizers are compared with the serving generation's. A difference is
+  reported to readiness; no new suggestions are made and readiness says
+  "not ready for suggestions" until the rebuild ends. Suggestions already
+  made stay approvable.
+- Language-feature records whose pipeline, knowledge-base or feature-
+  schema key differs from the active admitted identity are stale: they
+  count as missing evidence, are re-read in the backlog lane, and
+  suggestions requiring them are withheld.
 
 ### The index size budget
 
-Spec 0024's community-model check and install preflight use this.
+Spec 0024's model-admission and install preflight use this.
 
-- Projected bytes = V × D × B + V × W + T + F, where V is the number of
-  stored vectors (pieces, extras inputs, titles, summaries, and each
-  running sum counted twice, as it is 64-bit); D is the vector size
-  (1,024, the size Qwen3-Embedding-0.6B's model card gives); B is 4
-  bytes per number; W is the row-table cost, about 16 bytes per vector;
-  T is stored text and records (2 KB per piece until measured); F is
-  the first-pass store (its vectors × potion's vector size × 4 bytes).
-- Before the first pass, V is 1.5 per post; afterwards the exact count
-  is used.
-- Example: a million posts give about 1.5 million vectors, about 6 GB
-  of vectors and about 3 GB of text and records. A rebuild needs room
-  for a second generation until the switch.
-- `reading.index.budget_gb` (default 25) is a ceiling, not a
-  reservation. Install and rebuild warn when the projection passes 80%
-  of it. The backlog stops writing, with a plain message, before the
-  index would exceed it; the serving index stays usable.
+- The projection is calculated from the exact inventory-pass piece counts
+  and the pinned storage manifest: dense values, sparse token-weight
+  entries, multi-vector token rows and masks, dense running sums, row
+  tables, text, metadata, free lists and compaction headroom. Dimensions,
+  token-row counts and bytes per value come from the admitted active dense
+  and BGE-M3 non-dense artefacts and encoding, not an assumed dense-only
+  size.
+- Before the inventory pass, preflight uses a clearly labelled upper
+  bound from the declared corpus envelope; a missing or non-conservative
+  bound blocks activation. After the pass, exact counts replace it.
+  Every declared corpus tier needs a measured projection-versus-actual
+  receipt. A rebuild reserves room for the complete second generation
+  and an admitted rollback set before writing begins.
+- `reading.index.budget_gb` (default 25) is a ceiling, not a reservation
+  or evidence that multi-vector storage fits. Install and rebuild warn
+  when the projection passes 80% of it. The backlog stops writing, with
+  a plain message, before the index would exceed it; the serving index
+  stays usable. Dropping sparse or multi-vector evidence to fit is not a
+  permitted fallback.
 
 ### Messages between the add-on and the service
 
@@ -549,9 +617,10 @@ approved bounds.
 Fixed, not settings: pieces never below 1,024 tokens; every post,
 extra and part read in full; parts of at most 16 MiB for a longer
 WordPress post; the order of the summary weights; the title in every
-piece; quotes, code, spoilers and
-signatures skipped; English only, by main language; dense vectors at
-32-bit; Qwen3-Embedding-0.6B at its published precision; the
+piece; quotes, code, spoilers and signatures skipped; English only, by
+main language; dense vectors at 32-bit unless separately admitted; pinned
+BGE-M3 sparse and multi-vector representations, with BGE-M3 dense by
+default or one exact paid dense identity under specs 0025 and 0077; the
 thread-level index first; the views-and-recency order.
 
 | Setting | Default |
@@ -577,26 +646,31 @@ Changing a summary weight rewrites the summary vectors in the
 background from stored sums, with no model run. Changing the piece
 size or the overlap is a rebuild for new reading rules.
 
-### Model files
+### Model and package artefacts
 
-- "Data-only" means a file that cannot run code when opened. Files
-  that can (such as pickle files) are never loaded.
-- Qwen3-Embedding-0.6B is used only through its publisher's official
-  safetensors files, a data-only format.
-- The entity model is our own, trained in the Dell lab and shipped as
-  safetensors (spec 0026).
-- The reranker (gte-reranker-modernbert-base) and potion ship
-  safetensors files.
-- For every revision spec 0024 pins: every file is listed with size
-  and SHA-256 and classified by content, not name; containers are
-  opened and checked inside, and code-carrying data at any depth fails;
-  only passing files go in `models.lock`, and only those are
-  downloaded; the loader checks each file's format again before opening
-  it and never runs code from a model's repository.
-- Reading uses models only through spec 0024's model interface.
-- The language identifier, sentence splitter, model runtime and entity
-  model each need an admission record; any file the identifier needs is
-  pinned in `models.lock`.
+- "Data-only" means a file that cannot run code when opened. Files that
+  can, such as pickle files, are never loaded as model data. Publisher
+  code, remote repository code and dynamic trust flags are never enabled.
+- BGE-M3 uses only the immutable revision and data-only artefacts pinned
+  in spec 0024. The pinned Python packages execute their own algorithms
+  through the admitted Rust-owned bridge or packaged local service;
+  Sutradhar does not reimplement BGE inference in Rust or write Python
+  production adapters.
+- The BGE cross-encoder and spaCy artefacts follow the same complete
+  manifest, package-lock and admission rules in specs 0024 and 0026.
+  Their representations are not interchangeable and their tokenizer
+  identities are recorded separately.
+- For every revision spec 0024 pins: every file is listed with size and
+  SHA-256 and classified by content, not name; containers are opened and
+  checked inside, and code-carrying data at any depth fails; only passing
+  files enter `models.lock`; the admitted loader checks each format again
+  before opening it.
+- Reading uses models only through spec 0024's typed interface. The
+  language identifier, deterministic anchor sentence splitter, active
+  dense and BGE-M3 non-dense package or service routes, and spaCy pipeline
+  each need an admission record; every required local artefact and
+  transitive package is pinned, and every paid deployment identity is
+  locked under specs 0025 and 0077.
 
 ### Failure behaviour
 
@@ -604,13 +678,17 @@ Every failure shows in plain English with an error code and a manual
 link. Missing results show as waiting or failed, never invented or
 treated as zero.
 
-- Embedder missing or failed: full reading stops, items wait visibly,
-  no suggestion can start, readiness is "not ready".
-- Entity model missing or failed: vectors continue; items show
-  "waiting for entity reading"; suggestions that need it are withheld.
-- potion missing or failed: potion vectors and the shortlist are
-  skipped and the first pass shows as degraded; the rest of the sweep
-  and the order are unchanged.
+- Active dense or BGE-M3 non-dense producer, or any required
+  representation, missing or failed: the item's new representation set is
+  incomplete and ineligible, full reading waits visibly, no new suggestion
+  uses it and readiness is "not ready". Dense output never substitutes for
+  missing sparse or multi-vector output.
+- spaCy or a required language capability missing or failed: active dense
+  and BGE-M3 non-dense representations may continue; items show "waiting
+  for language features" and suggestions requiring them are withheld.
+- Inventory pass failed: exact totals and estimates remain visibly
+  incomplete; no substitute retrieval model or shortlist is activated and
+  the deterministic reading order is unchanged.
 - Language identifier failed: the item waits and is retried, never
   assumed English.
 - Input too long for a model: refused with a code and reported as a
@@ -660,52 +738,51 @@ treated as zero.
 
 ## Limits
 
-- Memory: everything counts inside the service slice, within the memory limits
-  in AGENTS.md section 5.6. Spec 0024's memory table holds the model weights.
-  Reading adds batch working memory, the index's share and disk cache used while
-  scanning, all measured inside the cap.
-- The index's memory share is the scan buffer (64 MB by default;
-  256 MB on a PC with 16 GB or more; spec 0023) plus row tables (about
-  24 MB per 1.5 million vectors).
-- Each model loads once, in one model host shared by both lanes; no
-  worker loads its own copy.
-- Batches are limited by tokens, not items, so a long post cannot spike
-  memory.
-- Reading every post in full streams; it never holds a whole thread.
-  A post is read one piece at a time, and its vector is a running
-  average of its pieces. A thread keeps one running sum of 8 KiB. A
-  WordPress post over 16 MiB is held one part at a time, never whole,
-  so it peaks no higher than XenForo's largest post.
-- One message of up to 16 MiB is read as a stream (spec 0026): one
-  copy of the message, freed after reading; a streaming parser capped
-  at 4 MiB; text straight into the piece builder; pieces to the
-  embedder queue one at a time. Worked peak for a 16 MiB message:
-  about 26.3 MB; with one ordinary batch and the running sums beside
-  it, about 33 MB. Only one message over 1 MiB is read at a time.
-- So reading's peak does not grow with thread or post length. It stays
-  in its row of spec 0024's memory table (48 MB under 16 GB, 128 MB at
-  16 GB or more), with no change to the row, and the whole service
-  stays under the 85% line of its slice (3,825 MB under 16 GB,
-  5,950 MB at 16 GB or more).
+- Memory covers the Rust service, admitted Python runtime and packages,
+  model weights, tokenizer, bridge buffers, dense/sparse/multi-vector
+  batch outputs, spaCy features, index structures and disk-cache
+  allowance. It stays within AGENTS.md section 5.6. Spec 0024 owns the
+  measured model and package resource profile; no fixed weight-only row
+  is treated as the full cost.
+- Index memory includes the scan or search buffers, sparse postings,
+  multi-vector rows and masks, row tables and compaction workspace. The
+  exact buffer and cache settings need measured admission per machine and
+  corpus profile; a missing measurement blocks that profile.
+- Each admitted model pipeline loads at most once in the shared model
+  route for a serving generation. No worker loads a private copy to evade
+  accounting. A challenger loads only under a non-overlapping admitted
+  profile that preserves the champion and rollback set.
+- Batches are limited by active dense tokens and admitted output rows, not item
+  count. Dense, sparse and multi-vector high-water marks are measured
+  separately and together. A long post cannot silently enlarge a batch.
+- Reading every post in full streams; it never holds a whole thread. A
+  post's dense vector is a running average of its pieces and a thread
+  keeps one dense running sum. Sparse and multi-vector values stream to
+  their bounded segment writer. A WordPress post over 16 MiB is held one
+  part at a time.
+- One message of up to 16 MiB follows spec 0026's streaming parser and
+  buffer caps. Only one message over 1 MiB is read at a time. Reading's
+  actual parser, piece-builder, representation-writer and running-sum
+  peak needs a release-tier receipt; the old dense-only worked arithmetic
+  is not evidence.
 - The add-on adds at most 8 MB per request; batches and slices carry at
   most 1 MiB of text each.
-- At most 64 threads are being read at once across both lanes, each
-  holding one running sum of 8 KiB, so the sums take at most 512 KiB.
-  A thread waits for a free place before its first post is read.
-- Pieces of the piece size (1,024 tokens by default, never fewer, with
-  no fixed top); a batch at most 30 seconds of model
-  work; at most one minute of repeated work per worker after a crash.
-- Index size: ceiling `reading.index.budget_gb` (25 GB), warning at
-  80%.
-- Time, by arithmetic only: Qwen3-Embedding-0.6B has about 0.6 billion
-  numbers, of which about a quarter are a near-free word-piece table;
-  the rest needs roughly 0.9 billion operations per token. At 1.5 to
-  3 × 10^11 operations a second on 4 cores, one full piece takes about
-  3 to 6 seconds. A million posts of about 150 tokens come to about
-  165 million tokens with titles: about 1.5 × 10^17 operations, or 6
-  to 12 days of full use, stretched to one to several weeks by low
-  priority and pauses. The entity model is expected to add much less;
-  measured figures replace all of these.
+- At most 64 threads are being read at once across both lanes, each with
+  one dense running sum; the exact bytes come from the pinned dense shape
+  and 64-bit accumulation. A thread waits for a free place before its
+  first post is read.
+- Pieces use 1,024 active dense tokens by default, never fewer, with no fixed
+  top
+  beyond the model and measured resource contracts. A batch holds at most
+  30 seconds of model work and a crash repeats at most one minute per
+  worker.
+- Index size: ceiling `reading.index.budget_gb` (25 GB), warning at 80%.
+  This is a stop condition, not a claim that the full representation set
+  fits a declared corpus.
+- Throughput, first-suggestion latency and backlog duration are measured
+  release properties for each exact package lock, machine, concurrency
+  and representation profile. Parameter-count arithmetic, a dense-only
+  benchmark or a different model cannot establish them.
 
 ## Footprint budget
 
@@ -738,25 +815,28 @@ reason.
   thread with an accepted answer and every reaction type, threads with
   known views and last post dates, a resource with updates and reviews,
   and a hub page. All text is made up.
-- Integration tests on Dell use the real pinned models: vectors for
-  fixture texts match recorded values with cosine similarity at least
-  0.999.
+- Integration tests on Dell use the real pinned BGE package and
+  artefacts: dense fixture vectors meet the frozen numerical tolerance,
+  sparse token ids and finite weights match the admitted output contract,
+  and multi-vector shapes, masks and values match their frozen receipt.
+  A partial representation set fails the test. spaCy feature fixtures
+  separately check exact offsets, mapped labels and unsupported outcomes.
 - Contract tests check every add-on message, `ReadPart` included,
   against its Rust shape check.
 - Recovery, memory (under the slice cap) and pause tests (synthetic
   pressure outside and inside Sutradhar's slice).
 - Mutation tests cover the hard rules: guest-visible only, skipped
-  zones, no truncation, never-anchor flags.
-- Private-data runs use the 2,000- and 50,000-thread tiers on Dell
-  only.
-- Benchmarks under the median rule: throughput per stage (posts and
-  tokens per hour) on the reference hardware and Dell; one full piece;
-  the first-pass sweep and the thread-level index per thousand
-  destinations; peak memory with disk cache during the backlog, a 5 MB
-  post, a 40 MiB WordPress post, a 5,000-post thread and a summary
-  rewrite; index size per million posts against the
-  projection; the time from a pressure spike to pausing (target 5
-  seconds); the live wait behind a backlog call.
+  zones, no truncation, never-anchor flags and no partial representation
+  treated as complete.
+- Private-data runs use the 2,000- and 50,000-thread tiers on Dell only.
+- Benchmarks under the median rule: throughput per stage and
+  representation on the reference hardware and Dell; one full piece;
+  inventory pass and thread-level index per thousand destinations; peak
+  memory including the package and all representation buffers during the
+  backlog, a 5 MB post, a 40 MiB WordPress post, a 5,000-post thread and
+  a summary rewrite; dense, sparse and multi-vector index size per
+  million posts against the projection; pressure-spike pausing (target 5
+  seconds); and the live wait behind a backlog call.
 
 Acceptance tests (Rust):
 
@@ -782,11 +862,18 @@ Acceptance tests (Rust):
    paragraph in a mostly English post is read, with one other-language
    paragraph recorded; a mostly French post with one English paragraph
    is skipped whole.
-8. A 12-letter reply in an English thread takes the thread's language
-   and is read.
+8. A 12-letter reply inherits current eligible thread evidence.
+   Bare English without British-English authority, contrary item
+   evidence or a changed revision blocks eligibility.
 9. Alt text, attachment names and stored preview titles become extras
    with weight 0.5, in no piece, flagged never-anchor; no network
-   request is made for a title.
+   request is made for a title. With 0021 test 14, index one eligible
+   synthetic attachment name and retain an unrelated eligible extra.
+   Revoke only native attachment permission while the parent stays
+   visible and its body hash and counter match. Withhold a delayed
+   name, the old extra and any combined result using it, including
+   from warm cache. Keep the body pieces and any independent eligible
+   extra. Verify cleanup and any rebuild using current allowed extras.
 10. Editing one reply in a 2,000-post thread re-reads that reply alone;
     the thread's sum swaps the reply's old vector for its new one, and
     equals a sum made from scratch within rounding.
@@ -823,8 +910,9 @@ Acceptance tests (Rust):
     summaries are rebuilt.
 20. An erasure request purges the post's text, pieces, vectors, spans,
     extras, summary contributions and any Dell lab copies.
-21. The serving generation records the embedder's key and tokenizer; a
-    different active key or tokenizer is reported as a mismatch.
+21. The serving generation records every active dense and BGE-M3
+    non-dense compatibility key and relevant tokenizer; a different
+    active key or tokenizer is reported as a mismatch.
 22. With all code-carrying loading disabled, every production model
     loads in its chosen data-only form; a fixture model holding a
     pickle file is refused at install and load.
@@ -849,8 +937,9 @@ Acceptance tests (Rust):
     queue depth, rate and coverage show on the review and health pages.
 30. Span offsets in text with four-byte emoji and NFD input match the
     add-on fixture's offsets in code points.
-31. With potion unavailable, the sweep and backlog keep the same order
-    and the first pass shows as degraded.
+31. An inventory-pass failure leaves totals visibly incomplete, starts
+    no substitute model or shortlist, and leaves live and backlog order
+    unchanged.
 32. No `ReadBatch` exceeds its byte cap; the add-on's extra memory per
     request stays under 8 MB, measured with it on and off.
 33. A 5 MB post arrives in slices of at most 1 MiB, each request under
@@ -860,22 +949,24 @@ Acceptance tests (Rust):
     code and reported; nothing is truncated.
 35. Links inside quotes carry the inside-a-quote flag and do not count
     against the thread's allowance.
-36. The projected index size lies within 10% of the measured size; a
-    projection over the budget stops backlog writing with a plain
-    message before it is exceeded.
-37. After the first pass, every eligible destination's title and
-    first summary vectors are written before any post other than a
-    first post or accepted answer is read, live work apart. The
-    thread-level index is complete only when all have both, and no
-    suggestion comes before.
+36. The projected index size lies within 10% of the measured size for
+    every representation and in total; a projection over the budget
+    stops backlog writing before it is exceeded.
+37. After the inventory pass, every eligible destination's complete
+    title representation set and first dense summary vector are written
+    before any post other than a first post or accepted answer is read,
+    live work apart. The thread-level index is complete only when all
+    have them, and no suggestion comes before.
 38. Threads with known views and last post dates are read in the
-    views-and-recency order in both phases; changing the potion
-    shortlist leaves the order unchanged.
-39. Coverage counts destinations in the thread-level index and posts
-    read out of the eligible totals, everywhere it shows; reading the
-    last eligible post gives the completion signal exactly once.
-40. A thread made during phase 1 gets its title and summary vectors in
-    the live lane and is a destination at once.
+    views-and-recency order in both phases; inventory-pass success,
+    failure or repetition leaves the order unchanged.
+39. Coverage counts destinations and posts by dense, sparse, multi-
+    vector and required language-feature completion, everywhere it
+    shows; reading the last eligible post gives the completion signal
+    exactly once only when every required class is complete.
+40. A thread made during phase 1 gets its complete title representation
+    set and dense summary vector in the live lane and is a destination
+    only when its admission preconditions pass.
 41. The first generation serves once its thread-level index is
     complete. In a rebuild for a new embedder the new generation is not
     served before it is whole, no new suggestion is made, and the
@@ -896,15 +987,15 @@ Acceptance tests (Rust):
     No part is refused, and peak memory is no higher than for one
     16 MiB XenForo post. An edit after the second part restarts the
     read for the new version; no half-read pieces stay.
-45. A 2,000-post thread's summary vector uses every read post: a test
-    that changes the last post's text alone changes the vector. It
+45. A 2,000-post thread's dense summary vector uses every read post: a
+    test that changes the last post's text alone changes the vector. It
     equals, within rounding, a sum made from scratch over all posts.
     The daily reconciliation's recomputed sum matches the running one.
 46. In a 300-post thread, marking reply 40 as the accepted answer,
-    changing it to reply 90, then unmarking it, each gives a sum equal
-    within rounding to one made from scratch with that answer left out
-    (or with none left out after unmarking). No embedder call is made
-    and no post is fetched again.
+    changing it to reply 90, then unmarking it, each gives a dense sum
+    equal within rounding to one made from scratch with that answer
+    left out (or with none left out after unmarking). No embedder call
+    is made and no post is fetched again.
 47. A 40 MiB WordPress post with a wrong checksum on its second part
     stores none of that part's results, serves none of the post's new
     pieces, and starts again; the old version serves meanwhile. With
@@ -917,24 +1008,35 @@ Acceptance tests (Rust):
 49. An extra of 5,000 characters is read in full, split like body text
     with the overlap setting; no character of it is dropped.
 50. Reading a 16 MiB post, measured with the counting allocator in a
-    benchmark program (AGENTS.md section 6 rule 8), peaks
-    under the reading row (48 MB under 16 GB), at about 33 MB with an
-    ordinary batch beside it; the message buffer is freed when reading
-    ends.
-51. Setting a piece size of 2,048 with no measured run, or with a run
-    whose embedder peak passes 1,300 MB, is refused with a plain
-    message and the old size stays; with a passing run it is allowed.
-    A piece size over a fake embedder's window is refused with its
-    plain message.
+    benchmark program (AGENTS.md section 6 rule 8), stays within the
+    admitted reading-only resource profile, including representation
+    buffers, and the message buffer is freed when reading ends. The
+    model package and index working set are included in the combined
+    release-tier measurement.
+51. Setting a piece size of 2,048 without a measured run, or with a run
+    whose complete active dense and BGE-M3 package set, bridge, batch and
+    index working set exceeds its admitted envelope, is refused with a
+    plain message and
+    the old size stays; with a passing run it is allowed. A piece size
+    over a fake embedder's window is refused with its plain message.
 
 ## Changes from the source
 
-- The reading service is rewritten as Rust, on Sutradhar Boot, on the
-  owner's PC.
-- Models are pure-Rust models (candle or tract), including
-  Qwen3-Embedding-0.6B in place of the earlier embedder, and our own
-  entity model in place of a ready-made one.
-- The sentence splitter and language identifier are Rust.
+- The reading service is rewritten as Rust, on Behemoth Boot, on the
+  owner's PC. Pinned Python packages execute BGE and spaCy algorithms
+  through admitted Rust-owned interfaces; no first-party Python
+  production adapter or pure-Rust model reimplementation is introduced.
+- BGE-M3 supplies the default dense and mandatory sparse and multi-vector
+  representations in one complete hybrid generation. Under the sole spec
+  0025 exception, an admitted Bedrock model supplies the dense
+  representations of a separate whole hybrid generation while BGE-M3
+  sparse and multi-vector representations remain in that generation.
+  Paid and BGE-M3 dense vectors never share a dense-index generation.
+  Packaged spaCy supplies language features; the separate first-pass
+  embedding model and bespoke entity model are removed.
+- Deterministic anchor sentence splitting and language identification
+  remain Rust-owned where spec 0026 assigns them; trained language
+  features come from spaCy.
 - Reading records live in PostgreSQL with row-level security per site;
   vector segment files stay in the service's own data folder.
 - The site never calls the owner's PC: the service collects content

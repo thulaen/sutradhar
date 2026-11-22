@@ -106,10 +106,19 @@ Weeks later a theme update undoes it. The next crawl finds 40 wrong:
 3. An unreadable page (timeout, 429, 5xx, robots denial, block page,
    paused crawl) proves nothing. It neither verifies nor reopens:
    "recheck due".
-4. A 404, a 410 or a page that left guest view is "page gone". With no
-   page left, the item is "page gone", not "verified".
-5. Search-data rechecks say "not enough evidence" below a researched
-   floor.
+4. A fresh eligible 404, 410 or independently proved loss of guest
+   visibility is "page gone" for that exact named page. A blocked or
+   unread attempt gives no such proof. A 404 after a redirect to a
+   different page does not establish that the named page is gone.
+   Keep the approved page set and its per-page results for the
+   whole recheck. The item becomes "page gone" only when the exact
+   current evidence proves that outcome for every named page.
+   When some pages are right and others gone, keep a claimed fix
+   due for recheck and show both results. An unread page in that
+   scope also holds item closure. No gone or unread row counts as
+   right or silently leaves the denominator.
+5. Search-data rechecks say "not enough evidence" below their admitted
+   floor; a recheck whose floor is blocked cannot run.
 6. Every signal in the registry (spec 0044) names its recheck kind, or
    "none" and why. An entry without one fails the gate.
 
@@ -211,6 +220,38 @@ Recency is a choice.
 6. Listed metrics and fixed operators only. There is no free formula
    language.
 
+#### F-0314 versioned goal alerts
+
+REQ-0048-W2-GOAL-ALERT and DES-0048-W2-FORECAST-RELEASE
+use the existing Goals rule and 0019 and 0099 notice route.
+FX-0048-W2-GOAL-ALERT and IT-0048-W2-GOAL-ALERT compare
+the four supported outcomes using a synthetic admitted
+forecast profile. Replay a qualified miss before its target
+date. Change the target revision, cross quiet hours and try
+a late job after expiry. Send the single eligible local notice
+for the exact live goal version. An expired, replaced or
+unforecastable goal supplies no alert. An unadmitted forecast
+profile keeps the action unavailable.
+
+#### Wave 1 goal progress binding
+
+F-0079 · REQ-0048-W1-GOAL-PROGRESS · DES-0048-W1-GOAL-EVIDENCE.
+Show the owner's metric, target and date alongside comparable observed
+progress from the goal's selected source. Missing or incompatible
+intervals remain unknown. Keep expected contributions apart from measured
+changes. Show the strongest supported contributors only within comparable
+evidence and carry the uncertainty and limits from 0094. A nearby change
+alone supplies no measured contribution.
+
+FX-0048-W1-GOAL-PROGRESS · BDD-0048-W1-GOAL-PROGRESS. Given an owner goal,
+one final compatible interval, one missing interval and two separately
+recorded possible contributors, when the owner reads progress, then show
+the supported observation and distinguish each dated evidence item from
+the corresponding expectation. Where 0094 supports a comparison, carry
+its interval and limits. Where it does not, show no effect estimate.
+Reuse the 0048 no-typed-actual, separate-source and abstaining-forecast
+checks and UT-0094-PROOF for evidence admission. The goal changes no site data.
+
 ### Workflow, approvals and deadlines
 
 1. An item kind may add its own states. One guard cannot be switched off:
@@ -229,6 +270,101 @@ Recency is a choice.
    owner. Escalation re-owns the same item; it never makes a second.
 6. Freeze windows: dates when change should wait. Items show "frozen
    until".
+
+### Site work acceptance contracts (539–550)
+
+An item binds site, authorised check identity, target, kind,
+current evidence revision and logical effect ID. Automatic
+issue intake deduplicates by the owning check's item key.
+A later occurrence updates or reopens that item under the return
+rule. It cannot mark an item verified, assign access or apply a
+fix. Show current evidence and audit-safe state history. Reject
+wrong-site rechecks and stale action versions.
+
+F-0539 uses REQ-0048-W2-WORK-ITEM and DES-0048-W2-RECHECK-STATE
+for the existing local item lifecycle. FX-0048-W2-WORK-ITEM
+and IT-0048-W2-WORK-ITEM create and assign one exact authorised
+item and replay the same action. Try an older action version,
+a foreign site's item and a claimed fix without a valid recheck.
+Each unsupported transition refuses. Only a current recheck
+of its named pages with the expected evidence may set verified.
+The workflow cannot apply a native fix.
+
+Native actions require QR-089 and QR-146 mappings for work
+read, comment, mention, item approval, client flag and deadline.
+Each maps exact WordPress or XenForo permission and native object
+to a current 0101 Cedar target. Unmapped routes remain unavailable.
+A comment binds exact report or item revision, actor and audience. A mention
+must resolve to a current
+eligible account in that same site and object scope. Recheck at
+submit, notification and replay. Wrong or revoked scope shows
+no comment, title or identity to the recipient. Client read-only
+views show no comments. No mention adds a direct delivery route.
+
+An approval chain stores the expected item and chain revisions,
+ordered roles, subject digest, next position and expiry.
+Commit one step and 0019 receipt in one conditional update on
+item, chain, position, actor and grant versions. Recheck native
+and Cedar roles. Decline, expiry or withdrawal cannot advance.
+Deny self-approval across aliases or unproved identity equivalence.
+Keep a safe refusal record. Concurrent acceptance has one winner.
+Changed input or lost role invalidates queued decisions for that
+effect. A Fix list decision grants no native publish authority.
+
+An agency client view uses one site, one current site sign-in under
+0101 and the exact flagged state, checked result and date.
+Side-by-side counts are owner-local, read with a separate grant
+for each site. A native session sees only its one site.
+No portal, cross-client search, combined list, secrets or visibility from
+a shared template. A client who can approve needs the separately
+admitted action grant. Read-only view approval is never implied.
+
+A deadline pins site, item, state-entry generation, assignee,
+policy revision and entered instant. Calculate active elapsed
+time excluding exactly the stored waiting-on-owner intervals.
+A reassignment keeps accrued time and refreshes the approved
+recipient. Commit state and a single 0019/0099 breach key and
+outbox together. Recheck recipient and policy after quiet hours
+or restart. Escalation updates the same item. Keep unknown
+delivery safe without a duplicate effect.
+
+A freeze binds action scope, current policy generation, half-open
+UTC interval and original zone. Recheck at display, review and
+before any queued native action in the owning gate. A running
+0137 band can advise waiting only when confirmed and current.
+It cannot create a freeze or cancel a completed effect. Apply
+current native recovery authority under 0033 even during a freeze.
+No freeze grants a site effect.
+
+Playbooks are versioned local checklists with site-specific
+source evidence, expiry and current grants. Preview and clone an
+approved migration, launch or recovery checklist. Previewing or
+marking a step does not execute that operation. Impact order
+stays within the existing four calls and evidence kinds. Display
+range, unit, named limits and weakest evidence. Effort combines
+approved task estimates only in compatible units and separates
+time, money and uncertainty. Missing estimates stay unknown.
+
+#### Wave 2 Fix list and local workflow bindings
+
+Use synthetic native roles, item revisions, grants, clocks and
+receipts. QR-089 and QR-146 still govern native mappings and
+scope. Existing setting and evidence admissions govern limits.
+F-0541, F-0549 and F-0550 share the governing workflow or backlog
+checks. Their fixtures identify separate observations without
+creating separate actions, roles or ranking measures.
+
+| Feature | Owning requirement and design | Planned fixture and expected evidence |
+|---|---|---|
+| F-0540 | REQ-0048-W2-AUTOMATIC-ISSUE-INTAKE · DES-0048-W2-LOGICAL-FIX-ITEM | FX-0048-W2-AUTOMATIC-ISSUE-INTAKE · IT-0048-W2-AUTOMATIC-ISSUE-INTAKE. Reuse the repeat-finding and return-after-verification checks. Replay one eligible broken-link finding by exact site, check and cause. Update its evidence while open, then compare a genuine recurrence after an admitted verified recheck with an unread page. Only the supported occurrence updates or reopens the same item once. Preserve safe proof and flood bounds. No automatic verification, assignment grant or repair. |
+| F-0541 | REQ-0048-W2-SCOPED-COMMENTS · DES-0048-W2-LOCAL-COMMENT-AUDIENCE | FX-0048-W2-SCOPED-COMMENTS · IT-0048-W2-SCOPED-COMMENTS. Use the existing item or report comment and mention route. Submit against the exact revision and mention one eligible account, one foreign account and one revoked account. Recheck at submit, notification and replay. A read-only client sees no comment. Refused recipients receive no text, title or identity. No direct delivery route. |
+| F-0542 | REQ-0048-W2-APPROVAL-CHAIN · DES-0048-W2-CONDITIONAL-APPROVAL-STEP | FX-0048-W2-APPROVAL-CHAIN · IT-0048-W2-APPROVAL-CHAIN. Race two synthetic approvers at the same next position. Reuse the self-approval and moderator-boundary checks. Bind exact subject, item and chain revisions, actor, native and Cedar grants and expiry. Keep one current decision and receipt. An expired or revoked grant, stale replay or alias with unproved equivalence cannot advance. Native approval and publication keep their own gates. |
+| F-0544 | REQ-0048-W2-NATIVE-CLIENT-WORKSPACE · DES-0048-W2-SEPARATE-CLIENT-SCOPES | FX-0048-W2-NATIVE-CLIENT-WORKSPACE · IT-0048-W2-NATIVE-CLIENT-WORKSPACE. Use two separately granted owner-local sites and one client's native session under DR-080. Compare a flagged item and an unflagged item. The client sees only the flagged item's safe state, checked result and date for its one site. No comments, internal labels, combined search or remote portal. A flag gives no approval. |
+| F-0545 | REQ-0048-W2-DEADLINE-CLOCK · DES-0048-W2-DURABLE-BREACH-IDENTITY | FX-0048-W2-DEADLINE-CLOCK · IT-0048-W2-DEADLINE-CLOCK. With a synthetic admitted service-level profile, enter and replay a waiting-on-owner interval, resume, then race reassignment with the breach notice. Subtract that interval once and keep accrued time on reassignment. Recheck policy and recipient after restart or quiet hours. One breach identity and outbox outcome under 0019/0099. A missing target profile or revoked recipient holds its effect. |
+| F-0546 | REQ-0048-W2-LOCAL-PLAYBOOK-CLONE · DES-0048-W2-INERT-CHECKLIST-VERSION | FX-0048-W2-LOCAL-PLAYBOOK-CLONE · BDD-0048-W2-LOCAL-PLAYBOOK-CLONE. Preview and clone exact current approved migration, launch and recovery checklists in the authorised site. Expire a source and try a foreign template. Refuse unsupported inputs. Marking a step updates only the eligible local checklist and executes no checklist operation. |
+| F-0548 | REQ-0048-W2-SCOPED-FREEZE · DES-0048-W2-HALF-OPEN-FREEZE-FENCE | FX-0048-W2-SCOPED-FREEZE · IT-0048-W2-SCOPED-FREEZE. Use a scoped half-open UTC interval and pinned original zone across a clock shift. Check the start, end and a policy or native grant change between approval and a queued effect. Recheck the current gate and show the deciding reason. An official update band may advise waiting only. Preserve separately governed 0033 recovery and never authorise site work through the freeze. |
+| F-0549 | REQ-0048-W2-EXPLAINED-BACKLOG-ORDER · DES-0048-W2-EXISTING-PRIORITY-KINDS | FX-0048-W2-EXPLAINED-BACKLOG-ORDER · IT-0048-W2-EXPLAINED-BACKLOG-ORDER. Use the existing “What to do first” decision with compatible items of one kind, sparse evidence, unlike units and an allowed owner override. State the call, deciding reasons, weakest input, limits and revisit trigger. Order only within the existing kind and supported units. Weak evidence cannot Fund. Keep an override labelled and apply no action. |
+| F-0550 | REQ-0048-W2-SOURCED-EFFORT · DES-0048-W2-EXISTING-PRIORITY-KINDS | FX-0048-W2-SOURCED-EFFORT · IT-0048-W2-EXPLAINED-BACKLOG-ORDER. Reuse the same backlog case and vary current evidence. Compare compatible approved time ranges, an unsupported cost and one changed estimate. Keep source, units, range and uncertainty. Separate time from money and withhold missing effort. No invented conversion, effort or priority score. |
 
 ### Views and filters
 
@@ -255,7 +391,7 @@ Recency is a choice.
    change a setting, publish or call outside. Saving a rule that asks for
    more is refused.
 3. Rules are entries run on the durable jobs system (spec 0019). The
-   when and if parts are declarative; a then step may be a Rhai user
+   when and if parts are declarative; a then step may be a Python user
    script (feature 467). A script can call only the actions in item 2;
    the runner refuses any other call while the script runs. Rules use
    the jobs system's waits, limits and load governor. No second
@@ -332,10 +468,9 @@ Recency is a choice.
    only flagged items, read only: state, checked result and date. Never
    comments, owners or internal labels. A client approval step needs a
    client login.
-4. Metering, the client portal and scheduled reports belong to the
-   agency edition's own design. Rival data comes only from connected
-   services. Own-site alerts still become items; competitor alerts are
-   dropped.
+4. Metering and scheduled reports use their own designs. Client
+   access follows DR-080 and 0101 native sign-in. Existing own-site
+   alert rules apply. Rival alerts stay outside the agency work list.
 
 ### What to do first
 
@@ -357,8 +492,8 @@ change the call.
 | Defer | Small gain next to the rest; looked at again each cycle |
 
 1. Freeze reasons are real constraints: a paused crawl, a block page, a
-   freeze window, a running search update (the outside notices of spec
-   0045), or a moderator approval still awaited.
+   freeze window, a confirmed running update from 0137 through 0043,
+   or a moderator approval still awaited.
 2. Calls cover open and came-back items. Items someone has taken are
    left alone.
 3. Reasons, never one score. Each call shows its deciding reasons and the
@@ -421,37 +556,40 @@ change the call.
 | Setting | Default | Allowed range |
 | --- | --- | --- |
 | `work.enabled` | on | on or off |
-| `work.verify.clean_crawls_to_close` | researched | 1 to a safe top |
-| `work.recheck.max_pages` | researched | above zero, safe top |
-| `work.flood.items_per_run` | researched | above zero, safe top |
-| `work.return.flag_after` | researched | 2 to a safe top |
-| `work.wontfix.review_days` | researched | safe bottom and top |
-| `work.memory_share` | researched | fixed share of the service slice |
-| `work.max_depth` | researched | 1 to a safe top |
-| `work.import.max_rows` | researched | above zero, safe top |
-| `work.import.max_cell_chars` | researched | above zero, safe top |
-| `work.audit.keep_runs` | researched | safe bottom and top |
-| `work.goal.min_days_history` | researched | safe bottom and top |
-| `work.sla.target_days` | researched | per state, safe bottom, top |
-| `work.workload.capacity_hours` | researched | above zero, per person |
-| `work.rule.runs_per_hour` | researched | above zero, safe top |
-| `work.rule.actions_per_run` | researched | above zero, safe top |
-| `work.rule.versions_kept` | researched | 1 to a safe top |
-| `work.rule.history_days` | researched | safe bottom and top |
-| `work.checklist.weight.<check>` | researched | above zero, safe top |
-| `work.impact.min_days` | researched | safe bottom and top |
-| `work.impact.min_pages` | researched | above zero, safe top |
-| `work.change.window_max_days` | researched | safe bottom and top |
-| `work.next.cycle_days` | researched | safe bottom and top |
-| `work.next.share.<kind>` | researched | above zero; all sum to 1 |
-| `work.next.look_floor` | researched | above zero, safe top |
-| `work.next.min_sample` | researched | above zero, safe top |
-| `work.next.capacity_hours` | researched | above zero, per person |
-| `work.template.max_bytes` | researched | above zero, safe top |
+| `work.verify.clean_crawls_to_close` | blocked: no admitted value | 1 to a safe top |
+| `work.recheck.max_pages` | blocked: no admitted value | above zero, safe top |
+| `work.flood.items_per_run` | blocked: no admitted value | above zero, safe top |
+| `work.return.flag_after` | blocked: no admitted value | 2 to a safe top |
+| `work.wontfix.review_days` | blocked: no admitted value | safe bottom and top |
+| `work.memory_share` | blocked: no admitted value | fixed share of the service slice |
+| `work.max_depth` | blocked: no admitted value | 1 to a safe top |
+| `work.import.max_rows` | blocked: no admitted value | above zero, safe top |
+| `work.import.max_cell_chars` | blocked: no admitted value | above zero, safe top |
+| `work.audit.keep_runs` | blocked: no admitted value | safe bottom and top |
+| `work.goal.min_days_history` | blocked: no admitted value | safe bottom and top |
+| `work.sla.target_days` | blocked: no admitted value | per state, safe bottom, top |
+| `work.workload.capacity_hours` | blocked: no admitted value | above zero, per person |
+| `work.rule.runs_per_hour` | blocked: no admitted value | above zero, safe top |
+| `work.rule.actions_per_run` | blocked: no admitted value | above zero, safe top |
+| `work.rule.versions_kept` | blocked: no admitted value | 1 to a safe top |
+| `work.rule.history_days` | blocked: no admitted value | safe bottom and top |
+| `work.checklist.weight.<check>` | blocked: no admitted value | above zero, safe top |
+| `work.impact.min_days` | blocked: no admitted value | safe bottom and top |
+| `work.impact.min_pages` | blocked: no admitted value | above zero, safe top |
+| `work.change.window_max_days` | blocked: no admitted value | safe bottom and top |
+| `work.next.cycle_days` | blocked: no admitted value | safe bottom and top |
+| `work.next.share.<kind>` | blocked: no admitted value | above zero; all sum to 1 |
+| `work.next.look_floor` | blocked: no admitted value | above zero, safe top |
+| `work.next.min_sample` | blocked: no admitted value | above zero, safe top |
+| `work.next.capacity_hours` | blocked: no admitted value | above zero, per person |
+| `work.template.max_bytes` | blocked: no admitted value | above zero, safe top |
 
-"Researched" values are fixed by GanitEvolve research before the build.
+Every value marked "blocked" is a readiness blocker owned by the relevant
+fix-list Ganit Vikas research record below. The value, safe bounds, fixtures,
+supporting evidence and approval must be admitted before the dependent rule,
+forecast, import, scheduling or retention behaviour can build or run.
 
-### Research first (GanitEvolve)
+### Build-blocking research (Ganit Vikas)
 
 1. Which recheck rule gives no false "verified" or "came back"? Tested on
    made-up sites: fixed, half fixed, fixed then broken, cached, flaky
@@ -472,7 +610,8 @@ change the call.
 ### Not part of it
 
 Unattended irreversible changes; rival intelligence and alerts, or
-fetching "pages outranking it"; cross-site portfolios, brand and market
+fetching "pages outranking it"; cross-site portfolios (spec 0102), brand and
+market
 optimisation, or one headline number; money values, order values and
 spend ceilings; standing delegations and signed tokens (nothing here
 acts); user-written code steps; an ontology or its query language.
@@ -495,16 +634,32 @@ acts); user-written code steps; an ontology or its query language.
 This part adds nothing to public pages. Rechecks are crawler reads under
 the crawler's limits (spec 0044).
 
+### Portfolio summary read
+
+Return a count of open work for each severity in the Fix list. Use
+the four open-work states above. Count once by the site's fix item
+identity, including one reopened item. A severity or state change
+moves the count in the same transaction as the item.
+
+Expose one bounded, site-scoped summary read under spec 0102. Its
+source and failure cases run in IT-SS-06 with the owning module.
+
 ## How it is tested
 
-Rust tests on made-up sites with known answers, Dioxus screen tests, and
+Rust tests on made-up sites with known answers, Angular screen tests, and
 property tests where noted:
 
 - A repeat finding updates its open item; no second item is made.
 - Only the recheck sets verified, came back and page gone; a person, an
   MCP agent and an outside call each get a logged refusal.
-- An unreadable page verifies and reopens nothing ("recheck due"); a 404,
-  a 410 or a page out of guest view gives "page gone".
+- F-0190 rechecks the exact named pages. A fresh eligible 404 or 410
+  for one named page marks that page gone. A 404 for a different
+  redirect destination and a denied or timed-out attempt prove no
+  named page gone. Two proved gone pages yield the item state
+  "page gone". One gone and one right stay "fix claimed" and show
+  "1 of 2 right" with the gone page. One gone and one unread also
+  stay "fix claimed" with both reasons. Only two right can verify.
+  Reconcile outcomes under the exact claim and grant after replay.
 - 211 of 212 right stays "fix claimed" and names the page left.
 - A return after verified reopens the item, counts once and keeps proof.
 - A recheck reads only named pages, in guest view, within the rate limit,
@@ -572,9 +727,9 @@ property tests where noted:
 - States, permissions, verdicts, calls and order are decided in Rust,
   with Kani proofs where they fit.
 - Forecasts, fits and effects run in ganit, the Rust numerical engine.
-- Screens, heavy visuals and the rule canvas are a Dioxus app built from
+- Screens, heavy visuals and the rule canvas are a desktop app built from
   SDS components, not browser-side code.
-- Owner-written rule steps are Rhai user scripts (feature 467), limited
+- Owner-written rule steps are Python user scripts (feature 467), limited
   to the actions in Rules item 2.
 - XLSX import and export wait for a Rust library pinned as AGENTS.md
   section 4 sets out.
@@ -587,3 +742,13 @@ Source: `docs/specifications/signals/work-graph.md`, `work-graph-2.md`,
 `work-graph-3.md` and `work-graph-4.md` (all in
 `docs/specifications/signals/`) in the archive
 `archive-2026-11-08-old-repo`.
+
+## Audit suite intake
+
+[Spec 0143](0143-audit-grid-findings-and-local-preview.md) reads
+and proposes work through this Fix List. Use the existing
+site, check and cause key and exact recheck authority. An unknown
+or incomparable check cannot close a finding. Category views
+present individual severity, impact and sourced effort within a
+compatible kind. The suite adds no combined score or state write
+on opening a view.

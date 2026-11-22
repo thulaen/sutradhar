@@ -1,14 +1,20 @@
 # 0071: Checked variants
 
-This spec says how checked variants are counted towards the variant
-floor in [AGENTS.md section 3](../../AGENTS.md#3-the-goal-and-the-release-bar),
-item 5, when their owners are methods or method chains (spec 0067). It
-applies spec 0064's rule: a variant is counted once by its canonical
-owning behaviour and its admitted input class, and a class is distinct
-from its neighbour only when its test fails with the neighbour's input
-in its place, because the input takes a different decision or code
-path. It extends the catalogue of spec 0055 and the `qualify` verifier
-of spec 0064, and is roadmap Phase 7 item 1.
+> ADR-0021 superseded this specification on 19 November 2026.
+> This page records the former design. See spec
+> [0057](0057-quality-judging.md) for release quality assessment and
+> spec [0079](0079-ranking-method-catalogue.md) for the ranking-method floor.
+
+This spec says how supported input variants are declared and checked when
+their owners are methods or method chains (spec 0067). ADR-0020 removes
+the former variant floor. A variant has one canonical owning behaviour and
+admitted input class. A class is distinct from its neighbour only when its
+test fails with the neighbour's input in its place because the input takes
+a different decision or code path. Every declared supported variant needs
+feature-specific acceptance evidence under specs 0064 and 0076; artificial
+variant counting earns no release credit. This extends the catalogue of
+spec 0055 and the `qualify` verifier of spec 0064, and is roadmap Phase 7
+item 1.
 
 Example: a chain of spec 0069's wide link ranking shape is run on a
 batch in which one destination carries a "Closed" prefix and on its
@@ -27,12 +33,12 @@ run for it.
 
 ### Words used here
 
-- Owner: a counted member of the run that may own variants. Under this
-  spec it is a method or a method chain. A capability or a capability
-  workflow of spec 0070 owns a variant only once a spec admits a class
-  list for its input kind under the rules here; until then it owns
-  none. A variant counts only when its owner counts in the same run
-  (spec 0064).
+- Owner: an admitted method, method chain, capability or capability
+  workflow whose feature is part of the same run. A capability or
+  capability workflow of spec 0070 owns a variant only once a spec admits
+  a class list for its input kind under the rules here; until then it owns
+  none. A variant can support feature qualification only when its owner
+  and every required owning-feature check pass under spec 0064.
 - Input class: an entry in the fixed class list of one input kind,
   naming one decision or code path that inputs of the class reach.
 - Class list: the frozen, reviewed list of input classes for one input
@@ -168,14 +174,15 @@ on every class batch and twin.
    each of its steps may own the same class, each by its own checks on
    its own output.
 
-### When a variant counts
+### When a variant supports release evidence
 
-A variant of owner m and class k counts in a release run when all of
-these hold:
+A variant of owner m and class k supports feature qualification in a
+release run only when all of these hold:
 
-1. m counts in the run, after spec 0067's removals ("Proving chains
-   differ", items 3 to 5). A chain removed there owns no variant, and
-   its variants never pass to the member it matched.
+1. m is admitted in the run after spec 0067's duplicate removals
+   ("Proving chains differ", items 3 to 5). A chain removed there owns
+   no supported variant, and its variants never pass to the member it
+   matched.
 2. k is admitted, not excluded, claimed by m, and applies to m.
 3. The class check: m ran on class k's batch in the qualified run, in
    the sealed runner jobs of spec 0064; its runner-signed output passed
@@ -247,30 +254,29 @@ these hold:
    no admitted, unexcluded class claimed by that owner is refused as a
    bad value.
 5. Variants sort by ordinal as a number, so all of one owner's variants
-   sit together, in class order. In a group, variant records sit after
-   capability workflow records (spec 0064). The fixture catalogue has
-   its own layout; with K = 1, `FX-V-n`'s owner is `FX-M-n`, as spec
-   0064's fixture table has it.
+   sit together in class order. Their evidence records join the owning
+   feature and variant matrix in spec 0064. Fixture identities use the
+   separate fixture catalogue and carry no release credit.
 
-### Counting by sorting
+### Qualifying by sorting
 
 1. `qualify` writes one record for each variant whose class check and
    neighbour check passed, holding its ordinal and the digests of its
-   class result and its twin result for every required target, to the
-   run's scratch space (spec 0064). It sorts them
-   on disk by ordinal and reads the list once, refusing two records with
-   one ordinal.
-2. It writes the bases of the run's counted members, after spec 0067's
-   removals, sorted by base. Because the variant list is in ordinal
-   order, it is also in base order, so one merged pass over the two
-   lists keeps exactly the variants whose owner counts.
-3. The variant total is the number of records kept, added with checked
-   unsigned 128-bit arithmetic. A replay rebuilds both lists from the
-   runner-signed results, sorts them again and refuses on any
-   difference (spec 0067, "Proving chains differ", item 6).
+   class result and twin result for every required target, to the run's
+   scratch space (spec 0064). It sorts on disk by ordinal and reads the
+   list once, refusing duplicate ordinals.
+2. It writes the bases of the run's admitted owners after spec 0067's
+   duplicate removals, sorted by base. Because the variant list is in
+   ordinal order, it is also in base order, so one merged pass retains
+   exactly the variants whose owners are admitted and whose owning
+   features pass.
+3. A replay rebuilds both lists from runner-signed results, sorts them
+   again and refuses on any difference (spec 0067, "Proving chains
+   differ", item 6). The output is a per-feature variant verdict, not a
+   numerical release quota.
 4. No product of member counts and class counts, estimate, sample or
-   formula supplies a count. A class list's length bounds the ids an
-   owner may have; it never says how many it has.
+   formula supplies variant evidence. A class list's length bounds the
+   ids an owner may declare; it never proves that any variant passed.
 
 ### The paper bound for spec 0069
 

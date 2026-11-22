@@ -23,19 +23,29 @@ taken".
   work list.
 - A Forgejo task is made only when an agent takes a fault on to fix
   it. The task links to the fault record, and the record links back.
-- Each fault has at most one Forgejo task. A claim, the end of a
-  claim, and the gate closing the fault each write an outbox row in the
-  same transaction, keyed by the fault id, the claim number and the
-  row's kind (claim, end or gate close). A worker in the autoissues
-  service handles one fault's rows strictly in order. The first claim
-  makes the task and writes the back-link; a later claim reopens it if
-  it is closed; the end of a claim without a fix (released, lease run
-  out, duplicate, won't fix or not reproducible) and the gate closing
-  the fault close it. A gate close for a fault nobody claimed makes no
-  task. A repeated row, the same key again, finds its work already
-  done. The worker retries with growing waits, each Forgejo call with a
-  time limit; a claim never waits on Forgejo, and a row stuck for a day
-  shows on the fault list and in the daily check (AGENTS.md section 10).
+- Each fault has at most one Forgejo task. A claim, the end of a claim
+  and gate closure commit their authoritative lifecycle transition and
+  source version with a versioned outbox row in the autoissues store.
+  Follow spec 0019's durable publication and recovery contract, in the
+  operations deployment. The key binds fault id, claim number and
+  event kind. Consume each fault's transitions in order. Reconciliation
+  runs in that same operations path. It needs no product data or
+  owner's PC service. The first claim makes the task and writes the back-link; a
+  later claim reopens it if it is closed; the end of a claim without a
+  fix (released, lease run out, duplicate, won't fix or not reproducible)
+  and the gate closing the fault close it. A gate close for a fault
+  nobody claimed makes no task. A repeated event, the same key again,
+  finds its work already done. Reserve one in-flight effect per
+  fault before sending. Use its stable fault marker for a bounded,
+  permission-checked Forgejo lookup and backlink reconciliation.
+  A lost create response holds that effect. A lack of search
+  results alone cannot justify a new create. Record the verified
+  receipt or escalate unknown. Calls have bounded waits and a
+  claim never waits on Forgejo.
+  Reconciliation compares lifecycle state, Forgejo receipts and
+  back-links and repairs missing derived effects idempotently. An
+  unreconciled event older than a day shows on the fault list and in the
+  daily check (AGENTS.md section 10).
 - Forgejo issues are copied to GitHub (AGENTS.md section 9.1), so the
   task holds only fixed fields: the fault's id, type, component,
   priority and rule as its title, and the link. Each field comes from
@@ -204,8 +214,11 @@ taken".
   run files a flaky test; a test slower than 5 seconds files a P3.
 - Speed: a hot path's count or time over its spec 0007 line files a P2
   with before and after figures and its profile.
-- Coverage below 100% files a P2 with the lines left; mutants left alive
-  file one P2 per function.
+- Coverage below the target assigned by ADR-0020 and the owning risk matrix
+  files a P2 with the uncovered lines. A surviving killable mutant above
+  that component's admitted mutation gate files one P2 per function; the
+  strict core admits none, and equivalent mutants need proof and independent
+  review.
 - Security scanners and dependency checks (for example Grype, gitleaks,
   `cargo-audit`, `cargo-deny` and `composer audit`): critical is P0,
   high P1, medium P2, low P3. A secret's value is never copied, only its
@@ -300,6 +313,10 @@ The owner set the quota amount on 30 October 2026: "10
   `autoissues next`."
 
 ## Tests
+
+- FI-AUTO-CREATE: lose the Forgejo response after commit. Reconcile
+  exactly one issue through the fault marker. With lookup incomplete
+  or unavailable, hold the effect and send no second create.
 
 Every case in the archive's acceptance pages is kept, rewritten for
 Rust: packaging (no autoissues path or dependency in any product

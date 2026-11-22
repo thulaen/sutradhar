@@ -1,5 +1,10 @@
 # 0068: Chain shapes for link ranking and graph relevance
 
+> ADR-0021 superseded this specification on 19 November 2026.
+> This page records the former design. See spec
+> [0057](0057-quality-judging.md) for release quality assessment and
+> spec [0079](0079-ranking-method-catalogue.md) for the ranking-method floor.
+
 This spec writes down the first chain shapes of spec 0067, for two
 scope areas of spec 0064: "Link ranking and protection" and
 "Knowledge and graph analysis". Both shapes run inside `shodhan.rank`,
@@ -131,17 +136,21 @@ as ranking.
   are worked out by the shipped step after the gate, as the gate is,
   never by a slot, and travel with each pair's evidence (spec 0027,
   "The relevance gate", item 2).
-- Logistic fusion and LambdaMART are two methods of spec 0027. Which
-  one the live service serves is job 45's setting; in a chain each is
-  its own step.
+- Logistic fusion and LambdaMART are two methods of spec 0027. Job 45 can
+  propose either as part of a candidate artefact, but spec 0077 alone
+  evaluates and promotes the complete live scoring model. The live service
+  uses only the method named by the current spec 0077 champion. In a chain
+  each is its own step.
 - Slot 4's step is spec 0049's graph relevance method as the live
   service runs it. The chains of the graph relevance shape below
   count as members of their own (spec 0064) and never feed a link
   ranking chain.
 - Slot 10 reads the columns its chain's table holds, with the weights
   job 45 trains for that set of columns (spec 0027, "The final score
-  and confidence"). Weights are settings, never steps. A chain whose
-  weights or calibration are not yet fitted gives no result and never
+  and confidence"). Weights are champion-owned configuration values,
+  never steps. Spec 0077 evaluates and activates a change; spec 0014 stores
+  only the exact activated values. A chain whose weights or calibration are
+  not yet fitted gives no result and never
   falls back to other weights.
 
 ### Shape: graph relevance
@@ -169,15 +178,17 @@ shape.
   lookups and slot 5 combines the columns already in the table; no
   graph maths runs in the service (spec 0049). For the link ranking
   shape's slot 4, the source is the thread the source phrase sits in.
-  Which of job 256's three scores the live method uses is a setting of
-  spec 0049.
+  Spec 0049 fixes the selected job 256 score in each versioned candidate;
+  spec 0077 alone evaluates and promotes a change, not a live-method
+  setting.
 - Slot 5's step adds the graph relevance column, so its chains end in a
   feature table and run on the same probe set as spec 0049's live
   graph relevance method. The chain whose steps are the live method's
   own parts behaves as that method and does not count (spec 0067,
   "Proving chains differ").
-- Slot 5's weights come from settings (spec 0049, "Relevance", item
-  2); changing them never makes a new chain.
+- Slot 5 reads the active champion's graph-combination weights (spec
+  0049, "Relevance", item 2). Spec 0077 owns a change; other weights do not
+  make a new chain identity, but they do make a different candidate manifest.
 
 ### Shape sheets
 
@@ -259,8 +270,9 @@ Rust tests in `sutradhar-methods` and `shodhan`, with made-up forums:
   graph relevance chain id into the same five.
 - A link ranking chain with other fusion weights is the same chain, and
   so is a graph relevance chain with other combination weights.
-- The ranking subtotal counts link ranking chains and not graph
-  relevance chains.
+- Link-ranking chains supply ranking evidence through their owning
+  features. Graph-relevance chains do not create a separate numerical
+  ranking subtotal.
 
 ## Changes from the source
 

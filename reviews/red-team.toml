@@ -1,9 +1,9 @@
 skill = "red-team"
-change = "sha256:a390528ad6f6f97eaca5e09583a82ead225c116ced48ff625b9f37540bbf2716"
+change = "sha256:e5903784ac2150fce301af6be53342d6b1336d5d8fcc5ecda4b68f12119d34a4"
 verdict = "pass"
-agent = "claude subagent"
-summary = "Red agents (break it, get round it, abuse it) attacked the spec 0016 loop guard section over two rounds; all five holes are fixed, the last checked on the diff. Refused or full records blocking the agent, and free-text keys, belong to #362."
+agent = "claude subagent round six"
+summary = "Round six attacked the simplified waiver rule and the whole change: splitting or renaming a check to reset the count, clock skew, a stale 5 percent boost default, id collisions, and the provenance of DR-159 and QR-253. All attacks failed or are recorded. No blocking finding. Minor notes left open: signed history is undefined; checks in gate speed and tools files are not covered by the carry rule; UT-BJ-23 lacks cases for the shown count and the carried count; BJ-29 clauses pending QR-253 are not all marked proposed; spec 0134 omits the new-signature route; a hard cap on further waivers is the open question in QR-253. Round six was read at fingerprint 144bb425. The only changes after that read are two link definitions re-wrapped for the line-length check, one catalogue row reworded, and fixed names and identifiers added to the spelling allow-list in _typos.toml. Later addition, reviewed in two further rounds: a planted test the_version_one_names_are_not_spelling_checked_as_english, the Organization and Dueling patterns narrowed to exact phrases and one dead pattern removed; the test fails without the allow-list and passes with it."
 
 [[finding]]
-what = "Records, tamper paragraph: named only the records folder, not the settings file or the path the guard is given."
+what = "Round five found the lineage key could not be computed and the rename rule contradicted keying on the check id. The rule was simplified to a per-check-id count."
 fixed = true

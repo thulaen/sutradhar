@@ -54,11 +54,14 @@ program that obeys the rules and tries to take everything:
 | Cron stampede | many same-minute schedules do not starve live work |
 | Queue flood | surplus is refused; memory stays bounded |
 
-- Throughout, a made-up live workload runs. Its slowest 1% of responses
-  must stay inside a band set by research. Surviving is not enough.
-- A longer soak run must show no kernel out-of-memory kill, and the
-  pressure steps firing in their written order. Its length is set by
-  research.
+- Throughout, a made-up live workload runs. The slowest-1% response band,
+  workload profile and measurement fixtures are readiness blockers owned by
+  the safe-running performance record. The attack-test gate cannot pass until
+  they are admitted; surviving without a latency verdict is not enough.
+- The soak length, pressure schedule and expected observations are readiness
+  blockers owned by the same record. Until admitted, the soak cannot qualify
+  a release; it must ultimately show no kernel out-of-memory kill and the
+  pressure steps firing in their written order.
 
 ### The promise check
 
@@ -75,12 +78,35 @@ it asks whether there is room.
    not enough memory"). It is never failed and never counted as an
    attempt.
 4. A job's memory promise is its cap. Asking for more is refused.
-5. A job whose outcome is unknown after a crash stays charged until a
-   person resolves it, so a ghost cannot free room by accident.
+5. A job whose outcome is unknown after a crash stays charged once
+   under the exact original attempt, fence and resource scope. An
+   expired lease, apparent spare capacity or another attempt's
+   receipt cannot release the charge. Restart or restore cannot
+   refund or duplicate it. The current authorised human recovery
+   and exact release proof must match the original record. If the
+   actor, action or proof is unproved, hold the charge and work
+   that depends on its release. Use 0078 SUT-4610. QR-081 binds the
+   recovery authority and proof for the affected profile.
+   For a fenced worker, verify release of the exact charged resource
+   scope through the admitted 0037 or 0104 stop evidence. An accepted
+   stop request, matching worker exit or partial process-tree check
+   cannot prove release of the whole original charge. Keep it held
+   when any charged part remains or its release is unverified. Use
+   the owning platform's fence checks. This creates no stop or
+   recovery action.
 6. Steps that free space (finish, cancel, retention sweeps) are never
    blocked by the check.
 7. Recovery after a restart never grants a promise the job did not have.
 8. On Dell, the same record and check wrap each gate check.
+
+For crash reconciliation, count one charge for each original
+attempt, fence and resource scope until the authorised release is
+proved committed under 0019. Recovery reads that disposition. It
+does not add capacity from the same receipt twice. A stop proof
+or approved release that has yet to commit leaves the charge in
+the admission total. Keep a later attempt's promise separate
+even if its resource request is identical. An unreadable or
+unreconciled restored state supplies no free capacity.
 
 The promise check has no off switch.
 
@@ -103,22 +129,25 @@ at 90% and resumes below 75%. Those figures stand. Added:
    an hour is held aside (quarantined).
 5. Victim choice, when a whole part is short of memory: the lowest lane
    first, then the largest promise. A `live` job stops only if over its
-   own cap. The exact rule is set by research and tested.
+   own cap. The complete deterministic tie-break and starvation rules are
+   readiness blockers owned by the memory-pressure research record. The
+   victim-selection behaviour cannot build until the record and its adverse
+   tests are admitted; the written lane order still takes precedence.
 
 Inside one worker several jobs share a process, so stopping one job is
 cooperative. Only a hung job costs a whole worker restart.
 
-`karya.shed_order` holds exactly this list, in this order. Step 1 goes
-first; each later step only if pressure stays high.
+Any separate forced-stop profile proposed by spec 0078 needs
+the trigger and affected scope qualified under QR-249. Keep the
+ordinary cooperative stop and the hung-worker restart under
+their existing conditions.
 
-| Step | Paused or unloaded |
-| --- | --- |
-| 1 | `test_room` jobs (spec 0039) |
-| 2 | `chart_filter` and `chart_script` jobs (spec 0043) |
-| 3 | `maintenance` jobs |
-| 4 | `backfill` jobs |
-| 5 | idle caches and models unloaded |
-| never | `live` jobs: never shed; stopped only if over their own cap |
+`karya.shed_order` holds the shed list. The list and its order are
+written once, in spec 0078 (memory budget and turn-taking), so that no
+second copy can drift: crawls pause first, then training, then the test
+room, chart jobs, maintenance and backfill, then idle models and caches.
+`live` jobs are never shed; they stop only if over their own cap. Step 1
+goes first; each later step only if pressure stays high.
 
 ### Job waits for job
 
@@ -130,6 +159,11 @@ existing rules.
   succeeded.
 - If an awaited job goes dead or is cancelled, the waiting job is held
   with the reason, and a person releases or dismisses it.
+  If the owning site later confirms a committed effect, reconcile
+  its exact receipt under 0019 and 0021. This keeps the cancelled
+  job's final state. A receipt alone cannot qualify the held
+  dependent or give it a new attempt. Existing person and
+  dependency checks still apply.
 - Loops are refused when the wait is made. The job and its waits are
   walked; a wait that leads back to itself, or a job waiting on itself,
   is refused with a plain error and nothing is queued.
@@ -144,32 +178,53 @@ existing rules.
 
 ### Low-disk notices
 
-The gate's jobs on Dell keep 150 GB free. An installed Sutradhar keeps a
-researched share of its own disk. Both are protected floors, not caches.
+The gate's jobs on Dell keep 150 GB free. An installed Sutradhar's protected
+disk-floor share is a readiness blocker owned by the disk-safety research
+record; new promises stop until an admitted value is available. Both floors
+are protected, not caches.
 
 1. A disk is unsafe when promises already made plus the floor exceed
    free space. It is judged on figures already read, never on a guess.
 2. One notice when it becomes unsafe, one when it recovers. Not daily.
    A disk sitting at 82% for a month sends nothing new.
-3. Recovery needs a clearly safe reading held for a researched time. A
-   late or tied reading never announces recovery; unsafe wins a tie.
-4. One delivery per recipient per spell. A full outbox refuses new
-   spells rather than drop a warning.
+3. Recovery needs a clearly safe reading held for `disk.recover_hold_minutes`.
+   That duration is blocked until the disk-safety research record admits it;
+   no recovery is announced without it. A late or tied reading never announces
+   recovery; unsafe wins a tie.
+4. One delivery per recipient per spell. The authoritative notice-spell and
+   recipient-delivery records commit with the disk-state transition and spec
+   0019 outbox event. Keep one notice effect per recipient and spell.
+   Reconcile an unknown delivery before retrying. If the durable notice
+   journal or event reconciliation is unavailable, new promises stop and the
+   unsafe state stays visible; no warning is discarded or marked delivered.
 5. Quiet hours: the unsafe notice is a fault and gets through. The
    recovery notice waits.
-6. No automatic deletion. The notice only tells. The nightly retention
-   and the owner-directed emergency order (caches, debug logs, old
-   images) stand unchanged.
-7. A third failed retention run in a row raises one "clean-up is
-   failing" notice. A clean run resets the count.
+6. A low-disk notice cannot delete anything. Retention and each step in
+   the owner-directed emergency order for caches, debug logs and old
+   images use their own authority. The [Dell legacy sweep][dell-sweep]
+   has its separate current-rule check.
+7. The [record-retention job in 0018][record-retention] raises one
+   "clean-up is failing" notice on its third consecutive failed run.
+   Further failures in that streak give no new notice. A successful
+   run resets the count for later notices under 0018. Existing alerts
+   keep their resolution route under 0032.
+   Any optional override or threshold for another cleanup route needs
+   its own admission. This notice gives no trigger or cleanup authority
+   for Dell's legacy timer.
 8. While unsafe, new promises are refused and `backfill` pauses first.
-9. Dashboard bands by category show; they do not alert. Their values
-   are set by research.
+9. Dashboard bands by category show only after the disk-safety research
+   record admits their values and fixtures. Until then each affected band
+   shows "not measured" and does not alert; no guessed band is displayed.
+
+[record-retention]:
+  0018-platform-additions.md#c-stored-records-new-versions-only
+[dell-sweep]: 0059-pankti.md#legacy-nightly-sweep-and-current-permission
 
 ### Job record
 
-- In the product, `job` and `job_run` gain what was promised (memory
-  and disk), the cap used and why the job stopped.
+- In the product, spec 0019's execution-ledger record holds what was
+  promised (memory and disk), the admitted cap and why the attempt
+  stopped. It is an audit and recovery record, not a PostgreSQL queue.
 - On Dell, each gate check's result gains the same, beside the readings
   the heavy-job queue already records.
 - A job's original deadline is fixed at first start, with a cap. A
@@ -216,19 +271,22 @@ One state, two parts.
 
 ### Settings
 
-Values marked "by research" are measured before the build.
+Every value marked "blocked" is a readiness blocker owned by the safe-running
+research record. It must supply the measured value, safe bounds, adverse
+fixtures and approval before the dependent behaviour can build or run. A
+missing disk, stop, wait or deadline safety value fails closed.
 
 | Setting | Default | Allowed range |
 | --- | --- | --- |
 | `harness.disk_floor_gb` | 150 (Dell only) | not below 150, safe top |
-| `install.disk_floor_share` | by research | safe bottom and top |
+| `install.disk_floor_share` | blocked: no admitted value | safe bottom and top |
 | `karya.shed_order` | the shed table | `live` never listed |
-| `karya.job.cap_bytes` per kind | by research | above zero, safe top |
-| `karya.stop.safe_point_secs` | by research | safe bottom and top |
-| `karya.wait.max_per_job`, `max_depth` | by research | 1 up, safe top |
-| `disk.recover_hold_minutes` | by research | safe bottom and top |
-| `disk.cleanup_fail_runs` | by research | 2 up, safe top |
-| `job.deadline_cap_days` | by research | above zero, safe top |
+| `karya.job.cap_bytes` per kind | blocked: no admitted value | above zero, safe top |
+| `karya.stop.safe_point_secs` | blocked: no admitted value | safe bottom and top |
+| `karya.wait.max_per_job`, `max_depth` | blocked: no admitted value | 1 up, safe top |
+| `disk.recover_hold_minutes` | blocked: no admitted value | safe bottom and top |
+| `disk.cleanup_fail_runs` | blocked: no admitted optional override or threshold for another route | 2 up, safe top, only after admission. The fixed 0018 notice uses its owning rule |
+| `job.deadline_cap_days` | blocked: no admitted value | above zero, safe top |
 | `undo.keep_days` | 180 | safe bottom, safe top |
 | `trash.keep_days` | 90, for all | fixed at 90 |
 | `safe.exit_check` | on | cannot be switched off |
@@ -270,8 +328,8 @@ built here; a later page may ask the owner again:
 - Memory: room is judged against each part's budget and the memory
   limits in AGENTS.md section 5.6, with 15% headroom and no swap. Part
   budgets stay as set until measured.
-- Disk: 150 GB free on Dell for gate jobs; a researched share on an
-  installed PC.
+- Disk: 150 GB free on Dell for gate jobs; an installed PC uses only the
+  admitted `install.disk_floor_share`, which remains blocked as stated above.
 - Undo history 180 days (may be raised); trash 90 days, fixed.
 - Waits per job and chain depth have safe tops.
 - The promise check, the bans and the exit check have no off switch.
@@ -280,6 +338,30 @@ built here; a later page may ask the owner again:
 
 This part adds nothing to public pages. Safe mode only switches
 visitor-facing additions off.
+
+## Promise accounting trace
+
+| Identity | Existing contract |
+|---|---|
+| `REQ-0033-PROMISE-ACCOUNTING` | The promise check keeps one charge for the original attempt, fence and resource scope until its authorised release is proved. |
+| `DES-0033-PROMISE-CHECK` | The promise check owns charge accounting. Use the existing 0019 scheduler and execution disposition and 0078 memory and Jobs presentation under their own contracts. |
+| `VAR-0033-INTERRUPTED-PROMISE` | An admitted product worker can lose its outcome across crash, restart or isolated restore. Apply the same accounting on each supported host and resource profile. The original attempt and its later replacement keep distinct promises. |
+
+TASK-0033-SAFE-RECOVERY derives the accounting case from these
+identities. SR03 proves hold and preservation of the original
+charge. FI-MB observes the dependent admission and its reason.
+IT-0019-SCHEDULER-RESTART covers the owning durable result on
+both sides of the release commit. Use PL-0037-WORKER-STOP where
+the admitted profile needs process-scope proof. The existing
+protected gate still needs exact runner and profile evidence.
+
+QR-081 qualifies the existing authorised recovery action and
+Cedar scope, original attempt and fence, resource identity,
+release evidence and audited outcome. QR-029 owns any required
+worker fence evidence. Where the recovery action or proof
+cannot be established, keep the charge held. A positive
+clearance task needs an admitted route and the spec 0076
+readiness record.
 
 ## How it is tested
 
@@ -290,6 +372,29 @@ Rust tests, unless named otherwise:
 - SR02: each attack test ends with no kernel out-of-memory kill and
   live responses in band; the soak shows pressure steps in order.
 - SR03: no room means waiting with a reason and no attempt counted.
+  Compare the measured-fit but currently occupied case in
+  BDD-0019-RESOURCE-REFUSAL. A current admitted promise makes
+  the otherwise eligible job wait. Verify the reason and no
+  started attempt.
+  A later verified release affects only the capacity check.
+  The scheduler still checks eligibility and the fair turn.
+  Crash an attempt with an unresolved promise. Restart at lease
+  expiry, give a fresh reading that appears to leave room and a
+  receipt for a different attempt. Hold a candidate that fits only
+  if the original charge is removed. Keep one original charge,
+  show SUT-4610 and count no new attempt. Repeat after old-state
+  restore and with missing or refused recovery authority. Preserve
+  independently eligible work under its existing admission rules.
+  In a separate fenced-worker case, keep the original attempt,
+  fence, resource identity and synthetic recovery authority exact.
+  Supply a valid observation that the worker's parent exited, while
+  the admitted process scope still contains one synthetic fixture
+  member or its closure cannot be proved. A fresh reading appears to
+  have room. Keep the charge once with SUT-4610, and count no new
+  attempt for dependent work. Compare with complete scope release
+  evidence. That evidence clears only the resource proof check.
+  Current recovery authority and audited reconciliation still apply
+  under QR-081. The fixture grants no real reconciliation.
 - SR04: one overspending job stops; its neighbours finish.
 - SR05: a slow job reaching safe points is not stopped; a hung one is.
 - SR06: the shed order is read from settings; `live` cannot be listed.
@@ -298,7 +403,15 @@ Rust tests, unless named otherwise:
 - SR08: a failed awaited job holds the waiter; a person decides.
 - SR09: one unsafe notice and one recovery notice per spell; none daily.
 - SR10: a tied or late reading never announces recovery.
-- SR11: low disk deletes nothing; freeing steps still run.
+- SR11: low disk deletes nothing. Eligible freeing steps still run
+  under their own authority. In a separate synthetic 0018 retention
+  part, two consecutive failed runs give no notice, the third gives
+  one and the fourth gives no new notice. A successful run resets the
+  count with the prior alert and audit revision unchanged.
+  The third failure in the next streak gives one new notice.
+  An unadmitted threshold for another route supplies no alternate
+  notice and no evidence for the 0018 streak. No timer or service is
+  started or changed and the fixture deletes nothing.
 - SR12: undo spares a later human edit and says so; the undo is
   recorded.
 - SR13: entries older than `undo.keep_days` expire; audit is untouched.
@@ -317,7 +430,7 @@ Rust tests, unless named otherwise:
 - The deciding logic (room, victims, wait loops, notices, undo) is
   rewritten as Rust, proved with Kani, Verus or Creusot.
 - Thresholds, hysteresis and band maths are worked out in ganit.
-- Admin screens are the Dioxus app built from SDS components.
+- Admin screens are the desktop app built from SDS components.
 - Bans are gate catalogue entries with planted-fault tests, not rules
   of the old checker.
 - "Restart its container or worker" becomes restart its worker.

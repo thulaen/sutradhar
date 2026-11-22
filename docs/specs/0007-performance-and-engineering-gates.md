@@ -6,6 +6,10 @@ rule of [AGENTS.md section 6](../../AGENTS.md#6-code-standards) rule 8.
 It is roadmap Phase 2 item 7 (the benchmark runner, its baselines and
 the slowdown check) and item 9 (the checks that guard the project).
 
+[Spec 0134](0134-ci-latency-load-gate.md) defines the separate CI
+load-test gate approved in DR-121. These hot-path checks retain
+their own thresholds and tiers.
+
 ## What it does
 
 ### Speed check results
@@ -200,7 +204,7 @@ section says how they are measured. Words used here:
    Any mismatch fails the check, whatever the speed.
 7. Rust benchmarks use criterion with the harness. PHP uses the
    admitted PHP benchmark harness.
-8. Time inside model inference (the pure-Rust models) is measured and
+8. Time inside model inference (the admitted local models) is measured and
    reported apart from application code.
 
 ### The 20x goal
@@ -427,7 +431,7 @@ Rust tests in aegis, each with a planted fault:
 - Measurement and profiling use Rust and PHP tools, plus Valgrind's
   cachegrind and the pinned reference libraries (AGENTS.md section 6
   rule 8).
-- Model inference is pure-Rust models, measured apart.
+- Model inference is admitted local models, measured apart.
 - The heavy-job limits follow AGENTS.md section 11, not the old 3.5 GB
   and two-compile limit.
 - The `TDD:` line follows the commit form of AGENTS.md section 9.

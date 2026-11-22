@@ -1,616 +1,501 @@
 # 0019: Events, jobs and durable recovery
 
-Most of Sutradhar's work runs in the background: reading a new post,
-rebuilding an index, nightly checks, the weekly cache sweep. This part
-says how that work is queued, shared between workers, saved as it goes
-and picked up again after a crash, without being lost or repeated.
-It is the events and jobs starters of Sutradhar Boot: sanchar
-("communication") for events and karya ("work") for the queue. It is
-roadmap Phase 3 item 6.
+## Purpose and ownership
 
-Example: a worker is reading post 41,200 of 120,000 when the service is
-killed. Within a minute a worker takes the job again, starts from the
-restart point saved at post 41,000, and the progress bar says "resumed
-from checkpoint at 41,000; about 200 posts repeated". No post enters
-the index twice, because each write is keyed by the post and its
-version.
+This specification owns platform event delivery, the product job queue,
+leases, checkpoints, scheduling, retries, backpressure, replay and
+reconciliation. It is roadmap Phase 3 item 6.
 
-## What it does
+ADR-0021 selects a PostgreSQL queue and transactional product outbox,
+driven by the Rust scheduler on Axum and Tokio. Spec 0110 owns the shared
+primitives. This spec owns product use and one path per job class.
+Specialist workers use their owner's admitted typed interfaces.
 
-### Words used here
+Spec 0021 owns the separate site-side change feed `xf_sutradhar_outbox`.
 
-- **Event**: a short record that something happened, such as "post 123
-  was saved". It carries ids and counts, never post text.
-- **Job**: one unit of queued work. A **handler** is the code for one
-  kind of job.
-- **Lane**: a queue with its own share of workers: `live` (new and
-  edited content, always first), `backfill` (the old catalogue, lowest
-  priority) and `maintenance` (scheduled jobs and sweeps).
-- **Lease**: a worker's time-limited claim on a job, renewed by a
-  heartbeat. If the heartbeat stops, the lease runs out and another
-  worker may take the job.
-- **Fence**: a number that changes at each claim. A worker whose lease
-  ran out holds an old fence, and its writes are refused.
-- **Checkpoint**: a restart point, saved in the same transaction as the
-  work it covers.
-- **Dead letter**: a job put aside after a failure that retrying will
-  not fix. It waits for a person.
+## Definitions
 
-### Scope
+- **Event:** an immutable, versioned fact naming ids, versions and counts,
+  never unrestricted post text.
+- **Job:** one admitted execution of a registered job class against an
+  immutable input manifest.
+- **Workflow:** the versioned dependency graph for a job class.
+- **Lane:** a priority and resource class: `live`, `maintenance` or
+  `backfill`.
+- **Attempt:** one worker execution of a job, with a unique attempt id and
+  fencing token.
+- **Fence:** a monotonically increasing token checked at every durable or
+  external side effect so an expired worker cannot commit.
+- **Checkpoint:** a cursor and progress snapshot committed atomically with
+  the business work it describes.
+- **Dead letter:** an input or attempt quarantined with its error and
+  evidence after retry exhaustion or a permanent failure.
+- **Reconciliation:** comparison of authoritative inputs, execution
+  receipts and externally visible effects, followed by a defined repair.
 
-In scope: events, the queue, leases, checkpoints, retries, dead
-letters, schedules, batch work, lanes and yielding, the memory
-watchdog, graceful shutdown, the trigger for ganit's batch jobs, their
-management API routes, the `sutra karya` and `sutra sanchar` commands
-and their tables. Out of scope: the progress handle and its views (the
-progress part, which this feeds); what each job does; how forum changes
-become events (the site link part); ganit's own engines, parameter
-registry, numerical guards and the shadow test and activation of its
-outputs.
+## Job-class registry
 
-### Shape
+Every background job class has exactly one entry in the versioned job
+registry. A class without an entry cannot run. The entry contains:
 
-1. One queue serves everything. An event is delivered by turning it into
-   one job per subscriber, in the same transaction that saves the event.
-   Scheduled work is a job made by the scheduler. Batch work is a job
-   that checkpoints. So leases, retries, dead letters, progress and
-   recovery are written once.
-2. sanchar depends on the module registry; karya depends on sanchar and
-   the registry; the extension broker depends on karya. Neither knows
-   any feature.
-3. Traits, each with a test fake:
-   - `EventStore` and `JobStore`: PostgreSQL through sqlx; in-memory
-     fakes with failure injection (lost connection, slow statement,
-     deadlock).
-   - `JobHandler`: one per job kind, registered in the composition
-     root. `spec()` gives the kind's name (prefixed by its module),
-     lane, role, capability id, whether it can be cancelled, its time
-     limit, its retry rule and its needs; `run(cx)` does the work.
-   - `Clock`: real or moved by hand, for leases, backoff and schedules.
-   - `MemoryGauge`: reads the slice's memory use and limit.
-   - `YieldSignal`: whether background work should step aside, and
-     why; built from the live lane's age, pressure readings and the
-     forum database load reported by the site link.
-   - `GanitBatch`: exports a job's snapshot, starts the run, follows it
-     and collects its versioned output; the fake is a scripted ganit.
-4. A handler's `JobContext` holds: the payload; its settings snapshot,
-   taken at claim and kept to the end; its progress handle, restored
-   from the checkpoint; the last cursor; `commit`, the only way to save
-   work; the cancellation token; the current chunk size, which the
-   watchdog may shrink; and its fence.
-5. Roles: `worker` runs live, backfill and maintenance jobs that need no
-   models; `inference` runs jobs that need models (only it loads
-   models; others send it work); `scheduler` makes scheduled jobs,
-   re-queues expired leases and runs nothing heavy; `serve` publishes
-   events and makes jobs but runs none. The desktop app runs no jobs.
+| Field | Required contract |
+|---|---|
+| Identity | Stable dotted kind, schema version, owning specification and module |
+| Orchestration | One versioned Rust workflow and typed job contract |
+| Lane and tenant | `live`, `maintenance` or `backfill`; tenant-key and RLS rules |
+| Inputs | Immutable payload schema, maximum bytes, source and manifest digests |
+| Idempotency | Key derivation, duplicate result and conflicting-key behaviour |
+| Ordering | Site-qualified ordering key and cross-key parallelism |
+| Execution | Worker language, admission profile, concurrency group, timeout and cancellation safe points |
+| Retry | Error classes, maximum attempts, base/max backoff and seeded jitter |
+| Side effects | Business writes, files, model activation and site calls, each with its fence/idempotency check |
+| Checkpoint | Cursor type, commit boundary and maximum repeated work |
+| Failure | Dead-letter schema, quarantine, alert and authorised replay procedure |
+| Retention | Event, checkpoint, result and audit retention classes |
+| Verification | Unit, BDD, integration, chaos, replay and reconciliation test IDs |
 
-### Events (sanchar)
+The platform job inventory is:
 
-1. An event has: `id` (UUID version 7, ordered by time), `kind` (an
-   English dotted name such as `content.post_saved`), `schema_version`,
-   `key` (such as `post:123`), `occurred_at`, `source` (`forum` or
-   `service`), the trace context, and a JSON payload of ids, versions
-   and counts, at most 4 KiB.
-2. `publish(tx, event)` writes the event and one job for each switched-on
-   subscriber, inside the caller's transaction. A subscriber whose
-   module is waiting or faulty still gets its job, which waits
-   unclaimed, so nothing is lost.
-3. Events are hints; the database is the truth. A handler always reads
-   the current state of what the event names before acting. So repeats
-   and out-of-order events are harmless: a "post saved" handled after
-   the post was deleted finds it deleted and acts on that.
-4. Inside one role, a Tokio broadcast channel passes events to
-   listeners such as the progress stream. It is a convenience, never
-   the record. Other roles read the `event` table by id.
-5. Modules declare event kinds with their schema version. A newer
-   schema than a handler knows makes its job wait as "needs upgrade",
-   never fail.
+| Job class | Lane | Owning execution contract |
+|---|---|---|
+| New/edit/delete/erasure ingestion and visibility reconciliation | `live` | Specs 0021 and 0022 |
+| Suggestion generation, moderator-approved apply and undo | `live` | Specs 0027 to 0029 |
+| Index rebuild and historical backfill | `backfill` | Spec 0022 |
+| Model/BGE/spaCy feature rebuild | `backfill` | Specs 0024 and 0026 |
+| Search, analytics and connector refresh | `maintenance` | Specs 0034, 0038, 0040 and 0044 to 0048 |
+| Retention, backup, restore and destructive deletion | `maintenance`, priority escalation where required | Specs 0030, 0032 and 0033 |
+| Research and numerical batch work | `maintenance` | Specs 0012, 0013, 0055 and 0056 |
+| Feedback preparation and training | `maintenance` | Specs 0053 and 0077 |
+| Batch link-value preview | `maintenance` | Spec 0027 SIM-01 to SIM-05. One fixed-site advisory lease. Typed preview-only output. No ranking or native effect. |
+| Ranking study, evaluation, promotion and rollback | `maintenance` | Spec 0077 registers the ranking job kinds. Spec 0057 owns protected evaluation evidence. |
+| Nightly, weekly and monthly integrity work | `maintenance` | Specs 0057, 0064 and 0077 |
 
-### Claiming and leases
+A feature adds a job class through its one registered workflow and owner.
 
-1. Each worker role runs `karya.worker.slots` slots (default 4), of
-   which `karya.worker.live_slots` (default 1) take only live jobs, so
-   a long backfill never holds every slot.
-2. A free slot claims in one short transaction: the oldest claimable
-   job of the best lane it may take (live, then maintenance, then
-   backfill), by priority then id, with `FOR UPDATE SKIP LOCKED` so
-   workers never wait for each other. It sets state `claimed`, the
-   lease owner, a new fence and a lease expiry 30 seconds ahead.
-3. Slots wake on PostgreSQL `NOTIFY`, sent in the transaction that makes
-   a job, and otherwise poll every second, so a lost notice delays work
-   by at most a second.
-4. A job is claimable only if its `not_before` has passed, its module is
-   runnable, no other job with the same key is claimed, its role
-   matches, and the safe-running promise and wait checks pass.
-5. A heartbeat every 10 seconds extends the lease. A heartbeat refused
-   because the fence moved means the lease is lost: the job is
-   cancelled at once and writes nothing more.
-6. If a worker cannot renew for 20 seconds, it cancels the job itself
-   before the lease runs out.
-7. The scheduler re-queues expired leases every 5 seconds. That counts
-   an interruption, not a failed attempt: infrastructure trouble never
-   leads to a dead letter.
-8. Each worker has a stable name and a boot number. On start it frees at
-   once any lease held by an earlier boot of the same name.
+For 3C, record the owner-selected class under
+[QR-252](../registers/questions.md) before deriving the affected job task.
+Bind its full registry entry, authorised trigger and exact producer,
+class version, tenant and logical effect key to `TASK-0019-DURABLE-PLATFORM`.
+Use IT-0019-SCHEDULER-RESTART and IT-0019-DELIVERY-DUPLICATE for its
+fenced restart and duplicate-delivery evidence. Where the first outbox
+event triggers this class, bind the typed 0110 producer and consumer,
+committed event, ordered key and original job effect. Record the owning
+trigger and its fixture separately when the event and job are independent.
+QR-081 owns the scheduler qualification.
 
-### Saving work
+## Event contract
 
-1. `cx.commit(|tx| async { ...; Ok(cursor) })` is the only way to save
-   work. In one transaction karya runs the handler's writes; writes the
-   checkpoint (cursor, chunk number, progress snapshot); checks the
-   fence still matches (`UPDATE job ... WHERE id = ? AND fence = ?`),
-   rolling everything back and stopping the job if not; and commits.
-2. So a checkpoint is never ahead of its work, and a worker that lost
-   its lease never overwrites the new owner's work.
-3. Work outside the database is idempotent and keyed: index files are
-   written by item id, content version and model key; calls to a site
-   add-on carry an idempotency key of job id and chunk number, which the
-   add-on records.
+Every event envelope contains:
 
-### Retries and dead letters
+```text
+schema_version, event_id, event_type, occurred_at, producer, tenant_id,
+ordering_key, source_version, trace_id, idempotency_key, payload_digest,
+payload
+```
 
-1. Handlers return one of three error kinds, each with an SUT code:
-   - **Transient** (time-out, lost connection, provider rate limit):
-     retried with backoff from 1 second, doubling, with jitter, capped
-     at 10 minutes, for as long as it takes. Never a dead letter. A
-     provider's own wait time is used as the delay.
-   - **Permanent** (bad input that will not change): retried at most
-     `max_attempts` times (default 5) with backoff, then dead-lettered.
-   - **Defect** (an internal error that should never happen):
-     dead-lettered at once, with a fault record written to the held
-     faults file (0018, item G).
-2. A dead job keeps its payload, attempts, last error and trace.
-   `replay` makes a new queued job with the same payload and key,
-   marked `replay_of`. Since handlers are idempotent and read current
-   state first, replaying twice is safe. Replays go through the action
-   layer and are audited.
-3. A job that keeps killing its worker never reaches a failed attempt.
-   After 5 such crashes within one hour it is held with SUT-240, a fault
-   record is written, and an administrator may release it. Safe-running
-   stops count towards this.
+Payloads carry ids, versions, counts and bounded typed values required by
+the schema. They do not carry secrets, credentials or unrestricted post
+text. The producer and consumer register the schema and maximum size.
+Authenticate site before persisting. Reject wrong-site or unauthenticated
+input and record only scrubbed rejection evidence. An authorised invalid
+envelope is quarantined without executing its payload.
 
-### Bounded chunks and recovery
+Serialise the monotone source sequence per site-qualified key in the business
+transaction. Strict keys use spec 0110's relay order. Cross-key work may run
+in parallel. A timestamp from another host cannot order changes.
 
-1. Batch handlers work in chunks and commit after each. karya sizes
-   chunks from measured throughput to take about 10 seconds
-   (`karya.chunk.target`) and never more than 30 (`karya.chunk.max`).
-   After any crash, at most one chunk per worker is repeated, inside the
-   one-minute limit.
-2. Batches over a changing table page by id cursor, never by offset; the
-   cursor is the checkpoint.
-3. After a kill, a restarted worker frees its old leases at once;
-   otherwise the scheduler re-queues them within 35 seconds. Every job
-   resumes within 60 seconds, with nothing lost and nothing repeated.
-4. A resumed job's progress says how many items will be repeated.
+Save the business write and product-outbox row in the same PostgreSQL
+transaction. Delivery is at least once. Spec 0110 owns relay claims,
+ordering locks and consumer inbox deduplication. Commit a consumer's
+inbox acknowledgement with its own local effects. If a consumer starts a
+durable job, insert the job in that transaction using its logical key.
+No claim or acknowledgement can expose an uncommitted change.
+Settings activation and role status use spec 0014's strict keys.
+Their inbox receipts record delivery only. A role's effective
+snapshot follows that spec's separate process-instance check.
 
-### Scheduled work
+## Product scheduler
 
-1. The scheduler wakes at each schedule's time. A module declares a
-   schedule: name, cron expression, time zone, lane, overlap rule and
-   catch-up rule; settings may change it within its declared limits.
-2. On waking it inserts the fire into `schedule_fire`, keyed by schedule
-   and due minute in UTC. Only the first insert succeeds, so two
-   schedulers (as during an upgrade) fire once between them.
-3. If the previous run has not finished, the fire is recorded as
-   "skipped: previous run still running" (SUT-241).
-4. Fires missed while the scheduler was down give at most one catch-up
-   run on start; a schedule may declare "skip" instead.
-5. Schedules use UTC unless they name the owner's time zone
-   (`karya.time_zone`, for quiet hours). A local time that does not
-   exist when clocks go forward fires at the first minute after it; a
-   local time that happens twice fires once, at the first.
+Use spec 0110's database clock, typed schedule, execution limits and
+`schedule_runs` record. Insert the scheduled fire and its queued job
+atomically. A fire key binds site, schedule ID, version and canonical planned
+occurrence. A mapped time gap can share a physical instant with another
+occurrence without merging the keys. Replaced versions admit no new fires and
+reconcile their queued work. Reject a changed digest. Authorised manual runs
+use their own explicit request ID.
 
-### Yielding to live work
+A registered product schedule describes its owning class, dependency
+versions, time zone, concurrency group, retry and stop limits, inputs,
+artefacts, recovery and evidence. Validate its graph before admission.
+A non-overlapping group admits only one active run. A scheduler restart
+must rediscover queued jobs and resume according to their durable state.
 
-1. Backfill and maintenance executors check `YieldSignal` between chunks
-   and pause, with a plain reason on their progress, while any of these
-   holds: a live job has waited more than 2 seconds; CPU, memory or
-   input-output pressure is over its setting (read from the slice's
-   control group); the site link reports the forum database slow; an
-   administrator paused the backlog (`karya.backfill.paused`, a live
-   setting).
-2. They resume when the signal has been clear for 60 seconds. Pausing
-   only at chunk boundaries never leaves half-saved work.
+Product schedules catch up at most once unless the class declares skip.
+Use UTC unless the class needs local quiet hours. A missing wall-clock
+instant moves to the first valid instant after the gap. A repeated instant
+fires once at its first occurrence. Spec 0110 supplies the framework's
+timing and misfire mechanism.
 
-### The memory watchdog
+When the admitted database clock is unavailable or unproved, hold the
+affected schedule and lease decisions. Jobs reports “Waiting:
+scheduler time could not be verified.” Keep the existing database
+error when its cause is proved. Retain the durable occurrence,
+original deadlines, attempts and fences. Do not fire, skip or retry
+an occurrence, expire a slot or reclaim a lease based on the workstation
+clock. A worker that cannot renew stops before its next effect. The
+independent stop and safe-point rules in 0033 and 0110 still apply.
+When authoritative time returns, reconcile the original records and
+apply the same occurrence, catch-up and admission rules.
 
-1. Every second each role reads its memory use against its own budget:
-   its row in the memory table of spec 0024. These steps are for one
-   role. The service slice as a whole has its own soft line and steps,
-   also in spec 0024, and both apply.
-2. At 80%, chunk sizes halve, and halve again at each further 5%, down
-   to one item.
-3. At 90%, the role claims no new work in any lane; running jobs finish
-   their chunk; progress and health say "paused: memory at 91% of
-   budget" (SUT-237).
-4. Below 75%, it resumes; the gap stops it flapping.
-5. The watchdog follows the one shed and stop-one-job order in the
-   safe-running part.
-6. A watchdog cannot prove graceful behaviour alone, so tests also kill
-   the service at its hard limit and check recovery.
+## Worker claims, leases and fences
 
-### Graceful shutdown
+Claim eligible PostgreSQL jobs in a short transaction under the site's
+scope. Skip rows already claimed by another worker. Acquire the registered
+concurrency slot and write the attempt, input digest, lease expiry and
+higher fence in the same transaction as the claim. A claim never spans a
+network call. The execution ledger preserves all attempts.
 
-On SIGTERM the root cancellation token is cancelled: slots stop
-claiming; running jobs see it at their next safe point, commit or roll
-back the current chunk and hand the job back as queued with no attempt
-counted; the task tracker waits for them. karya aims to stop within 20
-seconds, inside a 30-second systemd stop timeout. A job that cannot stop
-safely finishes its chunk.
+Queued work can become running or held. A hold records a reason and can
+be released to the queue. A running attempt completes, fails, cancels
+at a safe point or becomes interrupted. Expiry uses the database clock.
+Before the recorded expiry a lease is still current for its time check.
+At equality it has expired and the old worker can no longer renew or
+act on it. Reclaim atomically checks current database time and the old
+lease and fence. Once the earlier attempt is reconciled, it releases
+its slot and admits one eligible replacement fence under the original
+deadline. Terminal jobs cannot be re-claimed. Replay uses the dead-letter
+rules. Spec 0099 reads these states.
 
-### Ganit's batch jobs
+The worker renews its lease at the registered heartbeat interval. A new
+attempt obtains a higher fence. Every business commit, file rename,
+artefact-pointer update and site request checks the current fence and
+idempotency key. A stale attempt cannot commit, publish a success receipt
+or activate an artefact.
 
-1. ganit never schedules itself. Every ganit batch job is a karya job of
-   kind `ganit.<job>` in the maintenance lane, declared in ganit's job
-   registry with its inputs, schedule, consumer and capability id, and
-   run one at a time (a concurrency group of one).
-2. Batch runs happen only in the nightly window. At its start karya
-   pauses backfill and rebuilds, shrinks the inference worker for the
-   night and starts ganit's batch runner; at its end, or when no
-   `ganit.*` jobs are left, karya stops the runner and resumes the
-   paused work. A job due outside the window waits for the next one; one
-   still running when the window closes pauses at its checkpoint and
-   resumes the next night.
-3. Each job runs in steps:
-   1. **Export**: write the job's snapshot to the shared data folder in
-      streamed batches of at most 8 MiB. Snapshots hold ids, numbers and
-      word counts only, never post text.
-   2. **Start**: ask the runner through its versioned interface, naming
-      the job, snapshot, settings version and a run id, with the trace
-      context.
-   3. **Follow**: poll its status, feed its progress into the job's
-      progress handle, and pass on pause and resume when `YieldSignal`
-      says live work needs room. The job heartbeats its own lease;
-      ganit keeps its own checkpoints, so a resumed run continues.
-   4. **Collect**: ganit writes its versioned output (parameters,
-      models, scores or forecasts, with its reproducibility stamp) to
-      the folder; it never writes Sutradhar's database. karya checks it
-      against its schema and the numerical guards (no NaN, infinity or
-      out-of-range value), then hands it to the consumer, a job of the
-      consuming module, which records it, shadow-tests it, and
-      activates it or keeps it in shadow. Activations and rollbacks are
-      audited.
-   5. **Fail**: a time-out, failed run, or schema or guard failure is a
-      transient or permanent error with SUT-242. Consumers keep the last
-      good output; an overdue job writes a fault record. Live
-      suggestions never wait for a batch run.
-4. ganit's live calls (such as settings what-ifs) are not karya jobs.
+If heartbeat renewal fails, the worker stops before its next side effect.
+The scheduler or recovery reconciler marks the attempt interrupted
+when authoritative database time reaches the lease expiry. Reclaim
+still requires reconciliation and 0033 and 0078 admission before
+any replacement attempt.
+An unresolved resource promise remains charged under 0033.
+Lease release and resource release are separate checks. Reconcile the
+exact original attempt, fence and resource scope against its durable
+release disposition and existing action outcome. For the admitted
+QR-081 recovery route, commit the charge disposition and scoped result
+as one owning execution update. Another claim can count that capacity
+only after verifying the commit. If the disposition is missing or
+uncertain, keep the charge and hold work that depends on its release.
+Replay of a committed release returns its earlier result only under
+current result rights and cannot release another promise.
+An infrastructure interruption is not counted as a product test
+failure, but its full attempt history is retained.
 
-### Data
+## Idempotent side effects and checkpoints
 
-In Sutradhar's own PostgreSQL, never the forum's database: schemas
-`sanchar` and `karya`, English names, times as `timestamptz` in UTC,
-JSON as `jsonb`, short fixed sets as checked `text`. Every statement
-has `statement_timeout` and `lock_timeout`. Every row carries its site.
+A checkpoint commits in the same PostgreSQL transaction as the business
+rows and execution-ledger update it covers. It includes job, attempt,
+fence, cursor, chunk number, source high-water version, progress and
+committed time. The cursor uses a stable key, never a mutable row offset.
 
-- `event`: `id`, `kind`, `schema_version`, `event_key`, `source`,
-  `occurred_at`, `traceparent`, `payload` (at most 4 KiB, checked).
-  Indexes on (`kind`, `id`) and (`event_key`, `id`).
-- `job`: `id` (identity); `kind`; `module`; `lane`; `role`;
-  `concurrency_group` (null, or a name allowing one running job);
-  `priority` (0 first; deletion and erasure use 0); `job_key`; `state`
-  (`queued`, `claimed`, `succeeded`, `cancelled`, `dead`, `held`);
-  `held_reason`; `payload` (at most 64 KiB); `event_id`; `replay_of`;
-  `attempts`, `max_attempts`, `interruptions`; `not_before`;
-  `lease_owner`, `lease_boot`, `fence`, `lease_expires_at`,
-  `heartbeat_at`; `settings_version_id`; `capability_id`;
-  `error_code`, `error_class`; `created_at`, `claimed_at`,
-  `finished_at`; `traceparent`; plus the safe-running waits and
-  promises.
-- A partial unique index on `job_key` where `state = 'queued'`. A
-  second queued job for the same key updates the first one's payload
-  (`ON CONFLICT ... DO UPDATE`, keeping the newest version), so a storm
-  about one post makes one job. Claim indexes: (`state`, `lane`,
-  `role`, `priority`, `id`) and (`job_key`, `state`).
-- `job_checkpoint`: `job_id`, `chunk`, `cursor`, `progress`,
-  `committed_at`; key (`job_id`, `chunk`). Older rows are removed in the
-  same transaction, keeping one per job.
-- `job_run`: one row per finished job: `job_id`, `kind`, final state,
-  attempts, interruptions, durations, settings version, error code and,
-  for ganit jobs, the output version. Kept 30 days and at least 200 runs
-  per kind.
-- `schedule`: `name`, `cron`, `time_zone`, `lane`, `overlap` (`skip`),
-  `catch_up` (`once` or `skip`), `enabled`, `last_due_at`.
-  `schedule_fire`: `name`, `due_at`, `job_id`, `outcome` (`queued`,
-  `skipped_overlap`, `skipped_disabled`); key (`name`, `due_at`).
-- `worker_boot`: `worker_name`, `boot`, `started_at`, `seen_at`.
-- Retention settings: finished jobs move to `job_run` and are deleted
-  after 7 days; events are deleted 7 days after every job made from
-  them finishes; dead and held jobs stay until a person replays,
-  releases or dismisses them; fires are kept 90 days.
+Stage immutable content-addressed files and verify hash and durability. Their
+visibility pointer changes with the current fence check in one database
+transaction. Stale staging cannot publish a file. Index identities include
+tenant, item, source version, feature/model version and generation. A repeated
+write of identical bytes returns the original receipt; different bytes under
+one idempotency key are quarantined.
 
-### Row-level security
+Use spec 0021's signed stable request ID for each site effect and bind the
+approved target version. Duplicates use the original site receipt. A timeout
+after sending is an unknown outcome: the worker reconciles before retrying and
+never assumes the site did not apply the change. Keep the logical effect held
+until its outcome is reconciled. A later attempt cannot issue a different
+request for that effect while the outcome is unknown. After the site receipt
+window expires, refuse blind retry and escalate the unknown result for
+reconciliation.
 
-Every table has RLS on and forced, queue and outbox included. Each role
-is a database login that owns no table.
+Model and champion transitions use the atomic manifest and
+compare-and-set contract in spec 0077. No generic worker can activate a
+model outside that controller.
 
-- `event`: serve, worker, inference and scheduler may insert and read;
-  none may update; only the scheduler may delete, and only rows past
-  retention.
-- `job`: every role may insert and read; worker and inference may update
-  only rows of their own role; the scheduler may update expired leases
-  and retention fields; serve may only cancel, replay, dismiss or
-  release, as checked by the action layer.
-- `job_checkpoint`: insert, read and delete by the role holding the job.
-- `job_run`, `schedule_fire`: append-only.
-- `schedule`: the scheduler; `worker_boot`: each worker for its name.
+## Retry, unknown outcomes and dead letters
 
-Migrations are forward-only numbered SQL files, tested by upgrading
-every earlier released schema with queued, claimed and dead jobs
-present. An upgrade never loses a queued job: migrations run while the
-workers are stopped, and a change to `job` keeps every queued row.
+Errors are classified as:
 
-### Management API and commands
+1. **Transient:** lost connection, timeout or rate limit. Retry with
+   bounded exponential backoff and seeded jitter up to the class's attempt
+   and elapsed-time limits. Respect a provider's longer explicit retry
+   window without exceeding the authorised job deadline.
+2. **Permanent:** malformed input, unsupported schema, permission refusal
+   or digest mismatch. Do not retry execution; dead-letter or quarantine.
+3. **Unknown outcome:** a side effect may have succeeded but its receipt
+   was lost. Reconcile first; retry only through the idempotent recovery
+   path.
+4. **Defect:** invariant violation or unexpected internal failure. Stop
+   the affected work, dead-letter immediately and file a fault record.
+5. **Resource refusal:** admission or hard budget failure. Stop at a safe
+   point and retain evidence; never reduce mandatory evaluation or test
+   scope to obtain a pass.
 
-Routes on the management API, Cedar-checked, through the action layer,
-every write audited:
+A dead letter retains the original immutable input, all attempts, error code,
+trace and last valid checkpoint. Replay creates a new attempt under the same
+key and digest only after reconciling effects. A corrected payload needs a
+linked job with a fresh key after reconciliation. Replay, release, dismissal
+and cancellation require Cedar permission and an audit record.
 
-- list jobs by state, lane and kind with an id cursor, flagging stalled
-  ones (no heartbeat for 60 seconds);
-- show one job with its checkpoint position, progress link and last
-  error in plain English;
-- cancel a job;
-- list, replay (by ids, or by kind and error code) and dismiss dead
-  jobs;
-- list and release held jobs;
-- list schedules and run one now (recorded as a fire);
-- show which running jobs wait on which;
-- list events after an id, for the app to catch up after a reconnect.
+## Priority, yielding and resource admission
 
-Pausing the backlog is the `karya.backfill.paused` setting. Jobs started
-by hand use their own feature's routes. `sutra karya`: `list`, `show`,
-`cancel`, `dead`, `replay <ids>|--kind <k> --code <c>`, `held`,
-`release`, `schedules`, `run <schedule>`, `backfill pause|resume`.
-`sutra sanchar`: `tail [--kind]`, `show`. Both are API clients.
+Live ingestion, moderation-driven apply/undo and erasure take precedence
+over maintenance and backfill. Use admitted lane limits and spec 0078
+turn-taking so backfill cannot occupy every worker. A ready lane that fits
+must receive its admitted fair share. Priority does not reorder one key.
 
-Events published here: `job.dead_lettered`, `job.held`,
-`job.lease_lost`, `schedule.skipped`, `backfill.paused`,
-`backfill.resumed`. Job completion goes through progress.
+Backfill and maintenance workers yield at checkpoint boundaries when live
+work exceeds its registered queue-age threshold, site load is unsafe, or
+CPU/memory/I/O pressure crosses the admitted resource profile. They resume
+only after the registered stable interval. Yielding never abandons a
+half-committed chunk.
 
-### Error codes
+For a backfill with an existing committed `backfill.paused` record,
+bind a resume to that exact pause and the current scoped run,
+checkpoint and effect fence. Resolve the pause identity through
+the ordered source event and the owning job state. Hold when
+those records cannot prove the current pause. A checkpoint can
+stay identical across two different pauses. Current pressure
+recovery and a permitted Resume request compete at the existing
+fenced resumption. Only one may advance that pause. Replays of a
+committed Resume can show its original result under current
+result rights. An unperformed request for a superseded pause
+holds. Neither a stale request nor a repeated recovery signal
+can clear a later pause or terminal cancellation.
 
-SUT-200 to SUT-229 for sanchar, SUT-230 to SUT-299 for karya:
+Resource admission measures the scheduler, PostgreSQL, Rust services and
+admitted workers and model processes together. Training
+and promotion evaluation do not overlap production serving unless the
+combined profile passes. Apply spec 0078 and Dell's job limits. Work that
+does not fit waits or refuses without reducing mandatory evidence.
+
+## Graceful shutdown
+
+Shutdown stops new claims globally. A cancellation stops only the target. At
+the next safe point, commit or roll back the chunk and record interruption or
+cancellation with atomic lease release. Hold any unresolved external effect
+for reconciliation. A forced kill leaves the fence and checkpoint for
+recovery. The registered stop timeout and maximum repeated chunk are measured
+in chaos tests.
+
+When cancellation commits after an authorised native send, keep
+the cancellation and the site effect outcome separate. A late
+worker response cannot commit success after lease loss. If the
+original link-edit receipt needs recovery, use the existing
+authorised 0021 ReadLinkEffect route. A verified committed
+receipt settles that effect once under its owner. It does not
+change the cancelled job into a completed job, run a successor or
+undo the site edit. Missing current receipt proof leaves the
+effect unresolved. No case releases a new send by age, pause,
+memory clearance or expiry alone.
+
+## Replay and reconciliation
+
+Recovery has four ordered stages:
+
+1. **Freeze inputs:** identify the exact business versions, event
+   checkpoints, manifests and policy digests.
+2. **Reconstruct in isolation:** replay from the approved checkpoint into
+   quarantined derived state without external writes.
+3. **Reconcile:** compare authoritative business state, event log,
+   execution receipts, file/artefact identities and site idempotency
+   records. List missing, duplicate and conflicting effects.
+4. **Repair and resume:** apply only the registered idempotent repair,
+   verify it and then resume live consumption from a recorded position.
+
+Coordinated restore includes the PostgreSQL business, outbox, queue,
+inbox, scheduler and execution records, artefact stores and registry
+history. Check all generations before writing and replay only from a
+reconciled point. Retention cannot stand in for backup.
+
+## Version changes and migration
+
+A fresh installation creates one PostgreSQL path. Inventory earlier
+layouts and map producers, consumers, schedules, keys, jobs and effects
+to registered contracts. Prove compatibility by isolated replay. A
+shadow cannot perform side effects.
+
+Drain or park the class, record its high-water mark and fence old
+workers. Migrate with checksums and one restore manifest. Switch one
+admission path atomically. Reconcile all job dispositions before
+reopening. A gap blocks that class. Retain evidence.
+
+Rollback uses compatible backup and reconciled keys, with exactly one
+live path. After retirement, use forward recovery under the same rules.
+ADR-0021 supersedes the earlier broker migration.
+
+## Management API and commands
+
+The local owner-only API, through Cedar-checked actions, provides:
+
+- list classes, workflows, runs, attempts, progress and last error;
+- show queue age and relay lag by admitted scope without private content;
+- cancel, pause, resume and resource-admit a class;
+- list, reconcile, replay and dismiss dead letters;
+- list schedules and request an audited manual run;
+- show event and attempt lineage by id and input digest; and
+- show migration wave, drain, cutover and reconciliation evidence.
+
+`sutra karya` and `sutra sanchar` remain API clients; their command names
+access the same queue and event contracts. Write operations use typed action
+requests, live permission checks and audit. No command accepts shell text.
+
+Existing event names such as `job.dead_lettered`, `job.held`,
+`job.lease_lost`, `schedule.skipped`, `backfill.paused` and
+`backfill.resumed` use versioned product schemas. Progress uses the
+shared progress contract rather than a second status store.
+
+## Error contract
+
+Existing codes retain their meanings where applicable:
 
 | Code | Meaning |
-| --- | --- |
-| SUT-201 | Event payload over 4 KiB or not ids and counts only |
-| SUT-202 | Event kind not declared |
-| SUT-203 | Handler needs a newer event schema; job held |
-| SUT-231 | Job payload failed its schema (permanent) |
-| SUT-232 | Lease lost; job stopped and wrote nothing |
-| SUT-233 | Fence check failed at commit; chunk rolled back |
-| SUT-234 | Job time limit passed (transient) |
-| SUT-235 | Database unreachable (transient) |
-| SUT-236 | Statement passed its time limit (transient) |
-| SUT-237 | No new work: memory at or over 90% of budget |
-| SUT-238 | Backfill paused, with the reason |
-| SUT-239 | Handler reported a defect; dead-lettered |
-| SUT-240 | Job held after repeated interruptions |
-| SUT-241 | Fire skipped; previous run still running |
-| SUT-242 | Ganit batch job failed, timed out or gave bad output |
-| SUT-243 | Cancel asked for a job that cannot stop safely |
-| SUT-244 | Job's module is faulty or waiting; job waits |
+|---|---|
+| `SUT-201` | Event payload violates its schema, size or content restrictions |
+| `SUT-202` | Event kind is not registered |
+| `SUT-203` | Consumer requires a newer schema; work waits or dead-letters under its compatibility rule |
+| `SUT-231` | Job payload failed its schema |
+| `SUT-232` | Lease lost; attempt stopped before another side effect |
+| `SUT-233` | Fence check failed; chunk or activation rolled back |
+| `SUT-234` | Job time limit passed |
+| `SUT-235` | PostgreSQL unreachable |
+| `SUT-236` | Database statement exceeded its limit |
+| `SUT-237` | Resource admission refused new work |
+| `SUT-238` | Backfill paused with its reason |
+| `SUT-239` | Handler defect; dead-lettered |
+| `SUT-240` | Work held after repeated interruptions |
+| `SUT-241` | Scheduled fire skipped because the previous non-overlapping run is active |
+| `SUT-242` | Numerical or data batch failed, timed out or produced invalid output |
+| `SUT-243` | Cancellation cannot yet stop safely |
+| `SUT-244` | Owning module or worker is unavailable |
+| `SUT-245` | Retired broker-specific error; never emitted by product jobs |
+| `SUT-246` | Retired orchestrator-specific error; never emitted by product jobs |
+| `SUT-247` | Reconciliation gap; affected derived work blocks |
+| `SUT-248` | Duplicate idempotency key carries a different payload; quarantine |
+| `SUT-249` | Migration drain, cutover or rollback reconciliation failed; dual live execution remains forbidden |
 
-### When parts fail
+## Security and privacy
 
-- Database unreachable: claiming stops; running jobs keep their lease
-  while they can and cancel before it runs out; forum events stay in
-  the add-on's outbox until it returns; nothing is dropped.
-- Pool full: callers wait up to their time limit, then get a transient
-  error. All pools together stay under `max_connections`; the installer
-  checks the sum and health shows it.
-- Deadlock or lock wait time-out: retried as transient.
-- Disk full: writes fail as transient; the disk watchdog alerts;
-  backfill pauses first.
+Each workflow, relay and worker has a named identity and least privilege.
+Derive site scope from the authenticated contract, never free payload.
+Use forced RLS and a non-owner role under spec 0108 on every queue,
+outbox, inbox, schedule and execution transaction. Ordinary workers
+cannot read signing keys, release policy or owner credentials.
 
-### Security and privacy
+Payloads, checkpoints and logs exclude post text, member names, anchors
+and secrets unless a specific specification expressly requires bounded
+content in a protected artefact. Audit actors are pseudonymous.
+Destructive replay, restore, deletion, scheduler fairness and memory
+caps belong to the strict core. The scheduler needs a Quint model.
 
-- Payloads, events, checkpoints and logs carry ids, versions, counts and
-  codes only, never post text, names or anchors.
-- Deletion and erasure jobs run in the live lane at priority 0.
-- Replay, dismiss, release and cancel are permission-checked and
-  audited, with pseudonymous actors.
-- The batch runner gets only snapshots of ids, numbers and word counts,
-  has no database login and writes only its outputs.
-- RLS keeps each role to its own jobs.
+## Observability
 
-### Edge cases
+Metrics include relay backlog and lag, queued and running time, workflow
+outcomes, worker attempts, retries,
+interruptions, fence refusal, checkpoint age, dead letters,
+reconciliation differences, migration dispositions and resource high-water
+marks. Labels use registered lane, class, state, outcome and reason, never
+raw tenant or content identifiers.
 
-- An event for a post that is gone: treated as deleted.
-- Events during an index rebuild: queued; the index parts decide which
-  generation they update.
-- A handler that partly succeeds then crashes: its chunk rolls back, or
-  outside work is repeated harmlessly by key.
-- Clock difference with the forum host: ordering uses ids and versions,
-  never the other host's times.
-- The other side upgraded first: a newer schema holds the job (SUT-203);
-  nothing is lost.
-- A job running for days heartbeats and checkpoints throughout; its
-  settings version stays fixed.
-- Many failures at once: one alert per dead-letter kind and code.
-- A module switched off: its jobs stay queued and run if it is switched
-  on again; uninstall removes them.
-- A million backfill jobs take disk, not memory; claiming stays fast
-  through the lane, priority and id index.
+Traces link producer event, schedule or workflow run, job and attempt,
+checkpoint and external idempotency receipt. Logs exclude payload content.
+Alerts fire for live lag beyond its service objective, any new dead
+letter, repeated lease loss, schema/digest failure, missed schedule,
+resource pressure and unreconciled migration or replay.
 
-### Observability
+## Requirement, design and task traceability
 
-Labels: `lane`, `state`, `kind` (about 100, fixed by code), `class`,
-`outcome`, `reason`; never ids. Metrics:
-`sutradhar_job_queue_depth{lane,state}`,
-`sutradhar_job_queue_age_seconds{lane}`,
-`sutradhar_job_duration_seconds{kind,outcome}`,
-`sutradhar_job_last_success_timestamp_seconds{kind}`,
-`sutradhar_job_retries_total{kind,class}`,
-`sutradhar_job_dead_total{kind}`,
-`sutradhar_job_interruptions_total{kind}`,
-`sutradhar_job_lease_lost_total{kind}`,
-`sutradhar_job_chunk_items{kind}`,
-`sutradhar_schedule_fires_total{outcome}`,
-`sutradhar_event_published_total{kind}`,
-`sutradhar_event_coalesced_total{kind}`,
-`sutradhar_memory_used_ratio`, `sutradhar_backfill_paused{reason}`,
-and Tokio runtime figures with an alert on scheduling delay.
+These identities group the normative contracts above. They do not show
+execution state or admit an implementation task. Derived tasks still
+follow spec 0076's readiness gate.
 
-Traces: one per job run, span `karya.job` (`job.kind`, `job.id`,
-`job.lane`, `job.attempt`, `error.code`) linked to the publishing
-trace; child spans `karya.commit` per chunk; `sanchar.publish` per
-event. Logs: `job_claimed`, `job_succeeded`, `job_failed`, `job_dead`,
-`job_held`, `lease_lost`, `backfill_paused`, `backfill_resumed`,
-`memory_watchdog`, `schedule_skipped`.
+| Requirement | Normative obligation | Design and derived task | Unit evidence | BDD evidence |
+|---|---|---|---|---|
+| `REQ-0019-DURABLE-EXECUTION` | Registered event and job schemas, per-key ordering, fences, idempotent effects, bounded retries, schedules, dead-letter replay and live priority preserve one logical effect | `DES-0019-DURABLE-PLATFORM`; `TASK-0019-DURABLE-PLATFORM` | `UT-0019-REGISTRY-UNIQUE`, `UT-0019-EVENT-SCHEMA`, `UT-0019-PER-KEY-ORDER`, `UT-0019-FENCE-COMMIT`, `UT-0019-IDEMPOTENT-FILE`, `UT-0019-SITE-UNKNOWN`, `UT-0019-RETRY-BOUND`, `UT-0019-DST`, `UT-0019-DEAD-LETTER-REPLAY`, `IT-0019-OUTBOX-ATOMIC`, `IT-0019-DELIVERY-DUPLICATE`, `IT-0019-SCHEDULER-RESTART`, `PRP-0019-NO-DOUBLE-COMMIT` | `BDD-0019-LIVE-PRIORITY` |
+| `REQ-0019-RESOURCE-ADMISSION` | Combined admission and fair turn-taking protect live work, avoid starvation of fitting work and refuse excess without reducing evidence | `DES-0019-DURABLE-PLATFORM`; `TASK-0019-DURABLE-PLATFORM` | `UT-0019-RESOURCE-BUDGET` | `BDD-0019-RESOURCE-REFUSAL` |
+| `REQ-0019-COORDINATED-RECOVERY` | Migration, replay, reconciliation and coordinated restore preserve immutable evidence, fences, idempotency and compatible recovery points | `DES-0019-DURABLE-PLATFORM`; `TASK-0019-DURABLE-PLATFORM` | `UT-0019-RESTORE-COMPATIBILITY` | `BDD-0019-RESTORE` |
 
-Alerts: live queue age over 5 s for 2 minutes (which also tells backfill
-to yield); any new dead letter; a scheduled job's last success older
-than twice its interval; more than 10 lost leases in an hour; the
-watchdog at 90% for over 5 minutes.
+| Design | Owning contract | Requirements and derived task |
+|---|---|---|
+| `DES-0019-DURABLE-PLATFORM` | The job-class registry through the migration, recovery and observability contracts above | `REQ-0019-DURABLE-EXECUTION`, `REQ-0019-RESOURCE-ADMISSION`, `REQ-0019-COORDINATED-RECOVERY`; `TASK-0019-DURABLE-PLATFORM` |
 
-## Limits
+| Derived task | Implementation boundary | Upstream identities |
+|---|---|---|
+| `TASK-0019-DURABLE-PLATFORM` | Implement the Rust scheduler, one PostgreSQL queue and transactional product outbox with registered typed worker boundaries | `DES-0019-DURABLE-PLATFORM`; `REQ-0019-DURABLE-EXECUTION`, `REQ-0019-RESOURCE-ADMISSION`, `REQ-0019-COORDINATED-RECOVERY` |
 
-- Speed targets, measured on Dell with database time included:
-  - forum event read to live job claimed: at most 1 s (p99), with the
-    backfill lane full;
-  - live lane's oldest job waits at most 2 s (p99) during a backlog
-    sweep;
-  - claim, heartbeat and finish of an empty job: at most 5 ms (p99),
-    with RLS on; at least 500 empty jobs a second through one worker
-    role with 4 slots;
-  - a commit with a 1 KiB cursor and progress: at most 10 ms (p99);
-  - after a kill, jobs run again within 45 s (p99), repeating at most
-    one chunk (30 s of work);
-  - graceful stop within 20 s;
-  - 100,000 events in 60 s all kept and coalesced, with an unrelated
-    live job claimed within 5 s (p99);
-  - a fire queued within 2 s of its due time.
-- Memory per role at most 16 MiB: slots under 1 MiB (4 payloads of at
-  most 64 KiB); broadcast channel 4 MiB (4,096 events of at most 1 KiB;
-  a slow listener catches up from the table); buffers and watchdog
-  under 2 MiB; scheduler under 8 MiB. The queue lives in PostgreSQL.
-  Snapshot exports stream in batches of at most 8 MiB.
-- All of this, ganit's batch runner (in spec 0024's heavy job slot) and
-  PostgreSQL sit inside the service slice, within the memory limits in
-  AGENTS.md section 5.6.
-- Payloads: events 4 KiB, jobs 64 KiB.
-- Chunks: about 10 s, never over 30 s. Backoff never over 10 minutes.
+For the shared unresolved promise variant, use
+[VAR-0033-INTERRUPTED-PROMISE][promise-accounting].
+REQ-0019-RESOURCE-ADMISSION and REQ-0019-COORDINATED-RECOVERY
+reuse DES-0019-DURABLE-PLATFORM and TASK-0019-DURABLE-PLATFORM
+for the owning execution commit, exact replay and restored
+disposition. IT-0019-SCHEDULER-RESTART uses the SR03 and FI-MB
+charge and admission observations. Spec 0033 owns the accounting
+and spec 0078 consumes the verified total. QR-081 qualifies the
+recovery action, current Cedar scope and complete evidence.
 
-## Footprint budget
+[promise-accounting]: 0033-safe-running.md#promise-accounting-trace
 
-This part adds nothing to public pages. Calls to the add-ons are
-keyed so a repeat changes nothing.
+## Verification design
 
-## How it is tested
+These are test designs, not execution claims. The earlier backend fixtures
+`IT-0019-CDC-GAP`, `IT-0019-KAFKA-DUPLICATE` and
+`IT-0019-AIRFLOW-RESTART` are retired. Their successors are
+`IT-0019-OUTBOX-ATOMIC`, `IT-0019-DELIVERY-DUPLICATE` and
+`IT-0019-SCHEDULER-RESTART` respectively.
 
-Rust tests in the sanchar and karya crates, with load and failure
-tests in the workspace tests; SQL tests for policies. Coverage is 100%
-of lines, branches and MC/DC; the claim, commit and retry code needs
-every mutant killed.
+| Test | Requirement | Case | Required result |
+|---|---|---|---|
+| `UT-0019-REGISTRY-UNIQUE` | `REQ-0019-DURABLE-EXECUTION` | Two workflows claim one job class | Registry validation refuses both execution and admission |
+| `UT-0019-EVENT-SCHEMA` | `REQ-0019-DURABLE-EXECUTION` | Valid event, unrestricted text, oversize, unknown schema and wrong site | Accept only the valid event; reject wrong site before persistence and quarantine authorised invalid input |
+| `UT-0019-PER-KEY-ORDER` | `REQ-0019-DURABLE-EXECUTION` | Interleaved sites, stalled producer, concurrent commits and repeated versions | Preserve order per key, permit cross-key parallelism and never order by foreign timestamps |
+| `UT-0019-FENCE-COMMIT` | `REQ-0019-DURABLE-EXECUTION` | Old and new attempts commit the same chunk or staged-file pointer concurrently | Only the current fence commits; the other receives `SUT-233` |
+| `UT-0019-IDEMPOTENT-FILE` | `REQ-0019-DURABLE-EXECUTION` | Same file write repeated and same key with different bytes | First returns original receipt; second quarantines with `SUT-248` |
+| `UT-0019-SITE-UNKNOWN` | `REQ-0019-DURABLE-EXECUTION` | Site applies change, response is lost and a later retry exceeds receipt retention | Return the original result while provable; hold after expiry without blind retry. In the cancellation branch, commit the native save, lose its reply, commit local cancellation and expire its worker fence. Give the current reconciler a valid same-effect result through ReadLinkEffect before the receipt window ends. Reconcile one original effect, keep the job cancelled and the dependent held, and issue no retry or undo. Without current receipt proof, keep the effect unresolved. An independent fitting job can claim its own turn after legitimate resource admission. |
+| `UT-0019-RETRY-BOUND` | `REQ-0019-DURABLE-EXECUTION` | Transient failures exceed class attempts and elapsed limit | Dead-letter with complete attempts; no infinite retry |
+| `UT-0019-DST` | `REQ-0019-DURABLE-EXECUTION` | Two schedules share version and instant; local gap and fold; several missed occurrences and replay | Keep distinct keys; map gaps, use the first fold occurrence and catch up at most once |
+| `UT-0019-DEAD-LETTER-REPLAY` | `REQ-0019-DURABLE-EXECUTION` | Retry identical input, then correct a permanent bad payload | Preserve original evidence; replay its same digest or admit a reconciled linked job with a new key |
+| `UT-0019-RESOURCE-BUDGET` | `REQ-0019-RESOURCE-ADMISSION` | Combined serving and training measurements exceed the admitted service-memory ceiling | Refuse training before execution, retain serving and mandatory evaluation scope, and emit `SUT-237` |
+| `UT-0019-RESTORE-COMPATIBILITY` | `REQ-0019-COORDINATED-RECOVERY` | One compatible coordinated manifest set and one set mixing incompatible business, artefact and scheduler or queue generations | Accept only the compatible set; reject the mixed set before any write and name the incompatible components |
+| `IT-0019-OUTBOX-ATOMIC` | `REQ-0019-DURABLE-EXECUTION` | Roll back a business write, then crash after a committed write and before relay | Rollback leaves no event; relay recovers the committed row once logically |
+| `IT-0019-DELIVERY-DUPLICATE` | `REQ-0019-DURABLE-EXECUTION` | Relay delivers the same committed event three times around worker crash | One inbox effect, one logical job and one externally visible effect |
+| `IT-0019-SCHEDULER-RESTART` | `REQ-0019-DURABLE-EXECUTION` | Kill scheduler before its transaction, worker before commit, and result producer after commit. Separately make database time unavailable at restart with a durable fire and lease. Move the workstation wall clock past the next due instant and old lease expiry. Restore verified database time just before expiry, then at equality with the original job deadline still open and previous effects reconciled. | Resume each case from checked evidence without duplicate effects. Without verified time, keep the fire, lease, fence and deadline and issue no time-dependent transition. Do not reclaim before expiry. At equality refuse the old worker and admit at most one eligible replacement for the original job. |
+| `IT-0019-MIGRATION-DRAIN` | `REQ-0019-COORDINATED-RECOVERY` | Old queued, claimed, dead and held jobs exist during class cutover | Each receives one reconciled disposition; no old and new executor runs live together |
+| `IT-0019-MIGRATION-ROLLBACK` | `REQ-0019-COORDINATED-RECOVERY` | Cutover finds an unexplained old item | Restore old admission at the high-water mark, fence new workers and verify no duplicate effect |
+| `BDD-0019-LIVE-PRIORITY` | `REQ-0019-DURABLE-EXECUTION` | Full backfill and a new erasure event | Backfill yields at a checkpoint; live work meets its objective and fitting work gets its admitted fair share |
+| `BDD-0019-RESOURCE-REFUSAL` | `REQ-0019-RESOURCE-ADMISSION` | On one pinned host vary the measured required combined profile and committed resource promises in separate runs. The first profile exceeds the current ceiling even without competing background promises. In the control the measured profile fits, but an eligible worker still holds a current promise. Join UT-0019-RESOURCE-BUDGET, 0033 SR03 and 0078 MB-07/MB-09 for TASK-0078-CORE-RESOURCE-PROOF. | Refuse the first before any training attempt starts with `SUT-237`. The fitting control waits with the current resource reason and starts no attempt while its room is unavailable. After the other promise is released, check current scope, ceiling and fair turn before admission. Serving and mandatory evaluation scope stay intact in both cases. |
+| `BDD-0019-RESTORE` | `REQ-0019-COORDINATED-RECOVERY` | Restore coordinated business, artefact, queue, relay and schedule backups | Components resume at one compatible reconciled point |
+| `PRP-0019-NO-DOUBLE-COMMIT` | `REQ-0019-DURABLE-EXECUTION` | Generate leases, retries, crashes and concurrent attempts | At most one fence commits each logical side effect |
 
-1. Publish in a rolled-back transaction leaves no event and no job;
-   committed, one event and two jobs for two subscribers.
-2. A payload with a text field is refused with SUT-201.
-3. Property: streams of events about a few keys leave at most one
-   queued job per key per subscriber, holding the newest version.
-4. A slot takes a live job before a backfill job; the live slot takes
-   no backfill job.
-5. Stress: 100,000 jobs, eight workers of four slots on the test
-   database; each job finishes once and no two with one key overlap.
-6. Model check with loom of heartbeat, commit and re-queuer races:
-   either the commit has the current fence or the chunk rolls back;
-   never both owners commit.
-7. A worker whose lease was taken gets SUT-233; the new owner's
-   checkpoint stands.
-8. Writes failing after the checkpoint row save neither.
-9. 50 transient errors retry 50 times, delays capped at 10 minutes,
-   never dead-lettered.
-10. Five permanent errors dead-letter with the code; a defect
-    dead-letters at once and writes one fault record.
-11. Replaying a dead job twice has the effect of one run.
-12. A batch over a table with rows added and removed handles every
-    steady row once; the cursor only moves forward.
-13. Items slowing tenfold never give a chunk over 30 s; chunks shrink.
-14. A job claimed on settings version 41 finishes on 41 after 42 is
-    activated, and its record says 41.
-15. A faulty module's jobs stay queued and run when it runs again.
-16. "Post deleted" before an older "post saved": the saved job reads
-    the post as deleted and indexes nothing.
-17. Two schedulers record one fire and queue one job.
-18. A still-running hourly job makes the next fire skip with SUT-241.
-19. Property: owner time-zone schedules across several years of clock
-    changes: missing times fire once just after, repeated times fire
-    once, no day fires twice or not at all.
-20. Six missed fires of a `catch_up = once` schedule queue one run.
-21. A live job waiting 3 s pauses backfill after its chunk, with "live
-    work waiting"; it resumes 60 s after the signal clears.
-22. Memory at 82%, 92%, then 70%: chunks halve, then SUT-237 stops
-    claims, then claims resume.
-23. SIGTERM with three jobs, one not cancellable: two commit or roll
-    back and go queued with no attempt counted, the third finishes its
-    chunk, and the role exits within 20 s.
-24. A restarted worker frees its earlier boot's leases at once.
-25. Failure test (nightly): 50,000 made-up posts; the service killed
-    mid-chunk in turn; every job resumes within 60 s, at most one chunk
-    repeated per worker, each post in the index once.
-26. Failure test (nightly): driven to the hard memory limit until the
-    kernel kills it; jobs resume from checkpoints, nothing lost.
-27. Failure test (nightly): PostgreSQL stopped for 90 s; jobs cancel
-    before their leases run out, none dead-lettered, all resume.
-28. Load (at most 2 minutes at the push tier): full backfill and 20
-    live events a second; live oldest wait at most 2 s (p99).
-29. Load (nightly full size, 2-minute version at the push tier):
-    100,000 events about 20,000 keys in 60 s; none lost, coalesced,
-    a new live job claimed within 5 s (p99).
-30. Every event and job schema has no free-text field; captured logs
-    and spans hold no post text.
-31. Upgrades from each earlier schema keep every job in its state;
-    claimed ones become queued.
-32. `sutra karya list` and `sutra karya dead` match stored snapshots.
-33. Scripted ganit: a `ganit.<job>` job exports, starts, follows,
-    collects, checks and hands over; a NaN output is refused with
-    SUT-242 and the last good output kept; two due jobs run one at a
-    time.
-34. Every snapshot schema holds only ids, numbers and word counts.
-35. Kani proof: for any attempt count, throughput and settings in
-    bounds, backoff never exceeds 10 minutes and a chunk never exceeds
-    30 s of work.
-36. SQL test: the worker cannot claim an inference job and serve cannot
-    update a lease; every table has RLS on and forced.
-37. The fifth crash within an hour holds a job with SUT-240 and one
-    fault record; it is never claimed again until released, then runs
-    once more; four crashes in an hour, or five over more than an hour,
-    never hold it.
-38. Property: over simulated years of sweeps, dead and held jobs stay
-    until a person acts, and each action is audited.
-39. A `ganit.*` job due at noon runs in the nightly window; one still
-    running at the window's end pauses and resumes the next night.
-40. Benchmarks `bench_claim_finish` and `bench_commit`, and the load
-    tests above, hold their targets and the 5% median rule.
-41. Attack tests from the safe-running part join this list.
+The IT-0019-SCHEDULER-RESTART resource branch also covers
+REQ-0019-RESOURCE-ADMISSION and REQ-0019-COORDINATED-RECOVERY.
+Use 0033 SR03 for the original charge and 0078 FI-MB for both
+sides of the authorised release commit and old-state restore.
+A current claim sees either the one original charge or its
+verified release. A replay cannot change a later attempt's
+promise even when its amount is identical.
 
-Facts to check while building: `SKIP LOCKED` with RLS on the pinned
-PostgreSQL; the partial unique index coalescing under concurrent
-inserts; the cron library's time-zone handling (else due times come
-from a time-zone library and the cron library only wakes); the slice's
-control-group files are readable by the service; the system-reading
-library reads the slice limit (else read the file); UUID version 7
-ordering within one millisecond; time-outs on the claim statement are
-classed as transient; `NOTIFY` in a transaction arrives only at commit
-and the listener reconnects; snapshot files read by the batch runner
-without conversion.
+In IT-0019-SCHEDULER-RESTART, race a permitted Resume with
+current pressure recovery for one committed backfill pause.
+Test both commit orders. Check at most one resume and one
+eligible worker. In the manual-first case lose its reply, then
+pause again before publishing new checkpoint progress. Keep the
+checkpoint bytes identical. Replay the first action. Return
+only its permitted history and preserve the newer pause. In
+the pressure-first case delay the unperformed request past
+the newer pause and separately past terminal cancellation.
+Refuse before any new attempt. In every
+branch, verify one queue identity and that a separate fitting
+job receives its turn under the same 0078 policy.
 
-## Changes from the source
+Load and soak tests measure event-to-claim latency, live queue age,
+checkpoint commit time, recovery time, graceful stop and throughput under
+full backfill. The performance specification sets the numerical budgets;
+no target is claimed from the architecture alone.
 
-- Roles run as parts of the one systemd service, not as separate
-  containers; memory and pressure come from the service's slice.
-- The 30-second stop grace is the systemd stop timeout.
-- Routes are on the management API over the local socket, Cedar-checked.
-- The desktop app replaces the old live layer; it runs no jobs.
-- ganit's batch runner is Rust and runs inside the service slice,
-  started by karya, not a container started by a host helper.
-- Defects and overdue batch jobs write held fault records (0018 item G)
-  instead of filing issues by themselves.
-- Every event and job row carries its site, as AGENTS.md 5.2 requires.
-- Speed follows the 5% median rule and the 20x goal is kept (0007); old per
-  container memory estimates are replaced by the service slice.
-
-Source: `docs/specifications/platform/jobs.md`, `platform/jobs-2.md`,
-`platform/jobs-3.md`, `platform/jobs-4.md` and `platform/jobs-5.md` in
-the archive `archive-2026-11-08-old-repo`.
+This part adds nothing to public pages. Site calls are idempotent and
+site footprint remains governed by each feature specification.

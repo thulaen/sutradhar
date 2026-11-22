@@ -46,9 +46,47 @@ deploy/chaukidar/install.sh WATCH_DIR HEADER_FILE
 ```
 
 `WATCH_DIR` is a private folder holding the watch list. `HEADER_FILE`
-holds Forgejo's sign-in header. The script records fresh fingerprints,
-so run it again after every other install, or the watchman will flag
-that install.
+holds Forgejo's sign-in header. The bootstrap script records
+fingerprints from the watch list it reads and clears local alarm
+state. That step supplies a local observation.
+
+### Accepting a replacement baseline
+
+For protected acceptance, require the reviewed watch inventory and
+its scope under the [protected drift case][protected-drift-case].
+Verify any protected tool installation under
+[0008](0008-trust-boundaries.md#protected-policy-and-installed-tools).
+[0062](0062-forgejo-server.md#settings) supplies the Forgejo settings.
+Compare the exact watch definition for each label, including its
+kind and private target or command, as well as its fingerprint.
+Require independent read-back of the same accepted installation,
+policy and watch inventory. Repeat the identity check at acceptance.
+An old approved result or a definition changed since review leaves
+the replacement unqualified, even when every label and target
+fingerprint matches.
+
+Install, recovery and timer checks can overlap. Accept a clean or
+changed result for the current baseline only when its checked
+inventory and installation still match before each external alarm
+dispatch and before changing local alarm state. Check both sinks
+independently. A delayed result cannot use one accepted dispatch as
+authority for another. Preserve prior accepted baselines, unresolved
+drift and exact verified sink receipts on a hold.
+Apply the existing reconciliation to the matching drift episode.
+The clock, timer state and a successful local fingerprint write do
+not prove that the watched source is back to its expected state.
+An alert that goes quiet remains unresolved until independent
+read-back confirms the exact watched source under the current
+accepted definition.
+
+Use existing admitted evidence and authority. If the available
+fingerprint proof cannot establish an exact definition or current
+installation, hold protected acceptance. Private watch definitions
+stay on Dell. External alarms use only their existing public labels
+and safe findings.
+
+[protected-drift-case]:
+  ../planning/test-and-traceability.md#task-0062-protected-checksum
 
 ## Settings
 
@@ -63,3 +101,15 @@ header) and `CHAUKIDAR_GITHUB` (the GitHub repository, as
 and commands, every kind of change, the alarm in both places (and when
 one place fails), the command itself, and that `raise` refuses an empty
 or many-line text.
+
+The [protected drift case][protected-drift-case] compares a reviewed
+replacement with a stale accepted installation, a retargeted label
+whose fingerprint stays equal, quiet drift with the source still
+changed, and a delayed clean or changed result from the preceding
+installation. In a separate synthetic case commit a result on the
+first sink. Replace the approved installation before dispatch to the
+second. Retain the first sink receipt and refuse a new dispatch or
+alarm state write for the old result. Only the exact current
+observation can clear its own finding. Keep the fixture synthetic
+and the private watch definitions
+out of the expected alarm output.

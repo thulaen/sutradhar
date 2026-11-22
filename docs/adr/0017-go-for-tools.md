@@ -1,9 +1,12 @@
 # ADR-0017: Go for operations and developer tools; no shell
 
-Replaced in part by [ADR-0019](0019-rust-for-tools.md) on 17 November
-2026: its Go decision no longer holds, and tools are written in Rust.
-Its ban on hand-written shell stays. The rest of this record is kept
-as history.
+Superseded in full by [ADR-0019](0019-rust-for-tools.md) and
+[ADR-0020](0020-version-1-documentation-and-architecture-baseline.md).
+The former Go-for-tools choice and the no-shell rule no longer hold.
+First-party Go remains banned. Rust remains the default, bounded
+operational shell is allowed, and the packaged-Python library boundary is
+defined there. This record is retained only as dated history and has no
+normative force.
 
 Decided by the owner on 10 November 2026 ("ban shell, use golang" and
 "make golang for all Go for operations and developer tools"), with

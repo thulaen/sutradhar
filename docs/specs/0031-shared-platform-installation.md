@@ -8,16 +8,161 @@ and work apart. Removing one site's connection leaves the others
 running, with the shared models they still need. It is roadmap Phase 5
 item 1, with the site contracts of Phase 4 items 3 and 4.
 
+## Verified native add-on handoff
+
+This boundary applies before archive extraction, registration or
+activation. Bind the exact manifest part and immutable ZIP bytes
+to the selected site, native account and currently authorised
+action. Either use the same verified upload stream end to end or
+prove the private staged upload independently at the consumer.
+An ordinary file chooser, filename or post-install check provides
+no byte binding. Use the existing native screens and rights. On a
+hosting profile with no qualified verification-to-use handoff,
+keep installation through this route unavailable. The add-on
+cannot verify its own trust after its installer starts.
+
+### Exact native ZIP acceptance
+
+Run `IT-0031-ZIP-EXACT-UPLOAD` under the [0005 detached delivery
+profile](0005-release-coordination.md#platform-acceptance-design).
+Start without Sutradhar's add-on or plugin installed on each
+applicable shared-hosting fixture. Run XenForo 2.3 and both
+supported WordPress majors separately, using each declared host
+profile and its exact native installer and permission contract.
+An update or a preinstalled add-on cannot prove first installation.
+
+Provide both supported WordPress profiles from this fixture inventory
+for [0003 WordPress Plugin Check][wp-check]. Use fresh sealed test
+instances. The first WordPress source candidate needs an admitted
+profile and the complete exact plugin projection. The same profile
+identities govern the release ZIP check. The checker result is a
+separate receipt. It supplies no native install, update, permission
+or live-footprint proof.
+
+[wp-check]: 0003-toolchain-and-check-runner.md#wordpress-plugin-check
+
+Use an unchanged synthetic release ZIP and its detached manifest.
+Bind the owner verification to the current site, host, release,
+archive length and digest. Independently check the signed-in native
+administrator's approval for that exact site and action. Before
+extraction, the native consumer either receives the same immutable
+verified stream or independently matches the private staged upload
+against that release binding, with identity preserved through use.
+Expect one native receipt bound to the exact upload, actor and action.
+After a lost response, reconcile the original result before a retry.
+Use the current native read rights for that site and receipt.
+
+In a separate lost-response case, commit the original native
+installation and receipt, then remove the actor's native management
+access to that site's receipt. Keep the release, package and native
+effect fixed. Refuse to disclose the receipt on the old actor's
+read-back. Keep the native files and original receipt, with no
+repeat extraction, registration or activation. Public release help
+retains its ordinary read scope. The separate control keeps the
+original actor's exact native read rights and recovers only the
+one committed receipt under the existing route.
+
+Keep the selected release and requested operation fixed. Separately
+substitute a staged upload, switch the site or actor, revoke the
+native approval, withhold the host handoff proof, and offer an
+ambiguous archive. Refuse before extraction, scripts, registration
+or activation. For archive ambiguity, sign a separate synthetic ZIP
+with two members at the same decoded path. Match the verified
+length and digest so only the archive check can refuse it. A
+picker or ordinary native upload with no immutable
+handoff proof, or verification first attempted from inside an
+unpacked archive, supplies no proof. Check that the refused action
+leaves the native files and installation state untouched. Record
+only authorised evidence under 0005. In separate synthetic cases,
+keep the exact verified upload, approved native administrator and
+selected host. Offer an additional outside recipient for the ZIP
+or its proof. Refuse the altered route before either reaches the
+recipient or the native consumer starts extraction, registration or
+activation. Retain the exact approved owner-to-host binding. In the
+control assert that only the approved native host consumes the
+handoff and its receipt matches the original actor and upload.
+Use a synthetic recipient, with no outside request or disclosure.
+
+In a separate WordPress update branch, keep the selected site,
+release, WordPress ZIP, actor and verified upload fixed. Change
+the native site database version after the earlier check. Provide
+no compatible current host profile for that database. The valid
+ZIP leaves the update held before extraction, scripts, native
+file changes, database writes or activation. Keep the previous
+plugin files and native action records. Report the WordPress
+compatibility reason separately from ZIP verification. A control
+with the exact compatible current profile may use the already
+approved update route after its remaining checks pass. This
+branch supplies no first-install proof.
+
+In a separate shared-hosting update case, verify the exact WordPress
+ZIP and immutable handoff under the current native approval. Keep
+the selected WordPress site, host, artefacts and actor unchanged.
+At native preflight substitute only the compatibility result with a
+genuine XenForo result for a native update of the same release. Hold
+the WordPress action before extraction, migration or activation.
+Report the missing exact WordPress compatibility proof and keep the
+current plugin files, native state and prior action receipts. Emit
+no new native success or rollback receipt. A separate control with
+the exact current WordPress result can proceed under the existing
+checks. Keep the XenForo result scoped to its own tuple. The
+compatibility check supplies no per-site fallback proof for IP-26.
+
+For the separate WordPress topology branch of IP-08, start with a
+qualified single-site native ZIP fixture and its verified lifecycle
+result. Keep the exact signed ZIP, WordPress core and PHP build bytes
+and package proof. Use a second synthetic target in multisite mode
+without its own exact lifecycle and isolation result. Supply current
+native authority and exact-action approval in the fixture. Offer the
+genuine single-site result for that target. Hold the unqualified mode
+before extraction, scripts, registration or activation, and label the
+reason. Keep the single-site result scoped to its original tuple.
+It yields no native success or pairing for the other target. The
+exact original single-site control retains its own eligible handoff.
+
+IP-08 still needs the rest of the lifecycle and compatibility tuple.
+
+### Native ZIP handoff trace
+
+`DES-0031-NATIVE-ZIP-HANDOFF` owns verification at native use.
+0005 retains the release-verifier and recipient boundary. Every
+branch uses `IT-0031-ZIP-EXACT-UPLOAD` on its admitted host under
+`TASK-0031-SITE-FIXTURES`. The Phase 4 demonstration consumes its
+native result only for that exact host and action.
+
+| Owning requirement | Exact clause and case within the owning design |
+| --- | --- |
+| `REQ-0031-ZIP-NATIVE-AUTHORITY` | Match the exact selected site, scoped actor and current native permission for the action independently of owner release proof. Refuse site or actor swap and revoked native approval. |
+| `REQ-0031-ZIP-EXACT-USE` | Use the same immutable upload stream or the independently verified private stage before extraction, registration or activation. Refuse substituted or ambiguous archive bytes. |
+| `REQ-0031-ZIP-UNPROVED-HANDOFF` | An unproved picker, stock upload or verifier invoked after extraction cannot establish the handoff. Hold with no archive or native side effect. |
+| `REQ-0031-ZIP-NATIVE-RECEIPT` | One exact approved upload, actor and action give one native receipt. Reconcile a lost reply only to that exact effect before retry. |
+
+Use `REQ-0005-ZIP-RECIPIENT` for the separate no-extra-recipient
+case in the same fixture. Current website rights and the release
+proof both remain required.
+
+| Variant identity | Applicability and exact evidence |
+| --- | --- |
+| `VAR-0031-XENFORO-NATIVE-ZIP` | XenForo 2.3 and its admitted native host/installer and administrator contract. Run the clean first-install and all refusals for this exact profile. |
+| `VAR-0031-WORDPRESS-NATIVE-ZIP` | The WordPress native plugin host and admitted installer and capability contract. Check both supported majors independently on their exact host profiles. The major version identifies a fixture cell. |
+| `VAR-0031-NATIVE-ZIP-STREAM` | The admitted native consumer retains the same immutable verified upload stream through use. Verify stream identity and the exact native effect. |
+| `VAR-0031-NATIVE-ZIP-PRIVATE-STAGE` | The admitted native consumer independently matches the private staged upload before effects. Verify exact length, digest and identity through use. |
+
+Apply only the verification path proven for the host and operation.
+A named variant supplies no hosting qualification or new route.
+
 ## What it does
 
 ### Shape of an installation
 
-1. The owner installs one signed `.deb` on the Ubuntu 26.04 PC, which
-   is the home: the one place that holds authoritative state. The
-   Dioxus desktop app (the window) is the only owner screen. It drives
-   the service over the owner-only local socket.
+1. The owner's PC keeps authoritative state. Spec 0030 owns the
+   signed Linux package and Windows first trust check. The native
+   supervisor controls the engine. The Tauri and Angular window uses
+   spec 0020's protected Unix socket or named pipe.
 2. Each site gets a thin signed add-on (XenForo) or plugin (WordPress).
-   The app hands the owner the signed zips to install through the
+   The app hands the owner the ZIPs verified under the
+   [release profile](0005-release-coordination.md#detached-delivery-profile)
+   to install through the
    site's own admin pages.
 3. Helpers may process public chunks of work only. One PC can be both
    window and helper; the helper role never gains the window's private
@@ -37,6 +182,135 @@ item 1, with the site contracts of Phase 4 items 3 and 4.
    or give a site administrator installation authority. Public
    visibility, native permissions and independent approvals always
    apply. XenForo OAuth and outside connector OAuth are kept.
+
+The [Phase 5 helper evidence][phase-five-helper]
+needs its exact job, recipient and mailbox profile under QR-242.
+Keep cloud dispatch unavailable until that contract qualifies. An eligible
+helper can open only its approved public projection and return a
+typed result for local validation. The mailbox operator has no
+plaintext role. Use existing owner-only egress controls, the admitted
+engine package, scheduler and measured resource bounds. Verify and
+reconcile work on the owner's PC, including pause, revoked approval,
+late or unknown delivery and cleanup. Preserve the existing limits
+on outside services, remote management and multi-machine crawling.
+A 0038 storage receipt proves only the object operation it names.
+
+[phase-five-helper]:
+  ../planning/implementation-catalogue.md#phase-5-exit-evidence
+
+#### Proposed cloud helper base preview
+
+For review under QR-242, consider only the base PageRank calculation
+from the [0027 batch link-value preview][cloud-base-preview].
+It reuses the 0066 Jaal job 251 calculation through the existing
+0019 advisory class. It has no route to the candidate publisher.
+The current 0027 contract keeps the preview local. An owner-approved
+exception to its no-external-request boundary and an independently
+qualified helper profile would be required before any cloud send.
+The local preview stays available under its own unchanged contract.
+
+If adopted, register the site-scoped Boolean
+`cloud_helper.base_preview` as `owner_only` and `route_out` in 0014.
+Default it off. Show **Allow cloud help for link-value previews**
+in Engine Room. Off keeps the ordinary action local. On allows
+preparing one exact job for the verified helper and mailbox. The
+desktop owner confirms the public projection, destination, time
+limit and maximum charge for that job. Recheck both approvals
+at send and result release. Off fences pending sends and late
+output. Scripts and MCP can see safe setting help and cannot
+change or approve the route. There is no automatic paid fallback.
+Export only
+the frozen complete graph of already public links with opaque
+job-local node labels, directed edges and admitted public-derived
+numeric weights. Verify the QR-153 numerical profile and send only
+its admitted non-sensitive fields. Keep URLs,
+native identities, revisions and their map, permission records, site
+analytics, drafts and all proposed edit and scenario inputs on the
+PC. An opaque label does not make topology anonymous. Require
+explicit release of the whole proposed graph to that helper and
+independent evidence that every edge, weight and teleport input
+comes from permitted public material. Withhold the projection on
+unknown coverage or private derivation. Use no truncated graph,
+perturbed weights or replacement model.
+
+Use the 0118 recipient and key-epoch rules. Require a separately
+admitted bounded mailbox encoding under QR-242. The signed site
+and local worker profiles give no mailbox authority. Bind these
+records before a send or before opening a reply.
+
+| Record | Required payload under the proposed profile |
+| --- | --- |
+| Local plan | Site, actor and current grant generations, native graph and rights digest, graph-to-label map, exact approved projected digest, model, recipient and mailbox proof refs, job and attempt IDs, current fence, deadline, quote and reserved budget. Keep this record on the PC. |
+| Sealed work | Exact route and protection profile, opaque job and attempt IDs, fence, expiry, sender and recipient key epochs, digest of the projected bytes, model profile, ordered node labels and directed edges with exact approved weight data. Include no native identity or scenario. |
+| Sealed result | Same job and attempt, fence, original expiry, work digest and model profile, worker identity, allowed numeric evidence, ordered base mass and resource receipt. Exactly one row per node in order. Bind the reply to the receiving PC. |
+
+Check current provider account, mailbox namespace and helper key
+epoch before sealing or uploading. The compute worker takes no
+site credentials or network access and runs no scripts. The
+mailbox operator can move sealed records and sees no plaintext.
+Return only the approved numeric result and bounded evidence.
+The PC verifies the receipt and current context, and independently
+checks vector shape, finite nonnegative mass and total. Recompute
+the outward 0027 residual against the exact pinned base graph
+and model before using the vector. Compute every scenario and
+publish the existing advisory view on the PC under current rights.
+The result gives no ranking, training, crawl or native write authority.
+
+Use the admitted 0027 SIM profile, including its existing bounds for
+one run, under the 0019 lease and 0078 resource checks. Qualify the
+actual helper build and host. Count its base work, local scenarios,
+mailbox time, protected scratch and result transport in one run.
+The split cannot renew the deadline or add a second allowance.
+Keep a dated maximum in one approved currency for the whole attempt,
+including helper compute, mailbox operations, transfer and cleanup.
+A storage quote alone covers no compute. Before dispatch atomically
+reserve the exact approved amount under the admitted account cap.
+Hold on unknown cost, expired approval or insufficient budget.
+On unknown delivery retain the
+original attempt and charge reservation. Release them only on
+exact settlement or proof of no send after fencing the old sender.
+On pause, expiry, cancellation, lost scope or erasure, fence the
+pending result and track every owned copy under 0030/0032. A late
+receipt can reconcile only the original effect. It cannot admit
+late output, show that remote work never started or allow another
+send. Report uncertain delivery, cost and deletion separately
+until each is verified.
+
+| Outcome | Owner message |
+| --- | --- |
+| Off or profile unavailable | “Cloud help is unavailable. Run this preview on your PC.” |
+| Maximum unproved and no send | “We can’t verify the maximum charge. This request was not sent.” |
+| Delivery uncertain | “We can’t verify delivery. The approved amount is reserved.” |
+| Billing uncertain | “We can’t verify the charge. The approved amount is reserved.” |
+| Result proof fails | “We couldn’t verify the helper’s result. You can start a local preview.” |
+
+A new local preview uses its own ordinary authority and neither
+settles nor reopens the original paid attempt.
+
+**Synthetic qualification.** Use SIM-01 with a local mailbox stand-in,
+no network and no paid service. For the three-node cycle require
+base mass `1/3` at each node within the proved bounds. Calculate the
+removal scenario locally with mass `4/17`, `6/17` and `7/17` within
+its proved bounds. Check that the delta intervals include `-5/51`,
+`1/51` and `4/51`, respectively. Require loss, gain and gain
+with intervals excluding zero. Compare the local-only and split
+runs and record combined resource results under the test profile. Separately
+plant a private or wrong-site input, an unproved profile, a wrong
+recipient, a valid reply with another input digest, a wrong vector,
+and a result after revocation. Each affected case withholds output.
+Set the remaining admitted budget to the approved maximum, then
+one smallest approved currency unit below it in a separate run.
+Allow one reservation at equality and hold the lower-budget run
+before dispatch. Change the account or key after preview in another
+run and prove no send. Lose a send reply, cancel and restart. Retain the
+original charge hold and reject a late result. Reconcile the exact
+transport receipt once. Verify scratch cleanup and prove no
+scenario inputs leave the PC. No site
+write, release or ranking effect follows. This fixture cannot approve
+a provider, recipient, live route or product adoption.
+
+[cloud-base-preview]:
+  0027-candidates-ranking.md#batch-link-value-simulator-feature-1
 
 ### Site identity and isolation
 
@@ -132,6 +406,9 @@ Validation (a separate Rust HTML and block validator):
    real pinned block editor and plugins, with their stored-markup
    checks, are tested too.
 
+[paired-outbox]:
+  0021-forum-contracts-ingestion.md#noticing-changes-the-outbox
+
 Events and pause:
 
 1. Save, update, delete and status or visibility events carry the site,
@@ -141,6 +418,10 @@ Events and pause:
    de-duplication, bounded retry and a dead-letter list. Out-of-order
    events never bring back deleted or newly private content. Lost
    events are found by checkpointed reconciliation with native state.
+   Use [spec 0021's outbox rules][paired-outbox] for a present saved
+   event the reader cannot interpret. Keep the
+   affected acknowledgement at its proved boundary. The missing-event
+   timer cannot drop a present unsupported event or admit its reply.
 3. Capture is qualified across crashes before and after the native save
    and the acknowledgement. Human saves are never lost while the
    service is away. A possible capture gap holds affected work.
@@ -179,7 +460,12 @@ Conditional save:
    reconciles the native receipt; the same operation never applies two
    links, and a reused ID with a different body is refused. An
    uncertain outcome reports "reconciliation needed", never success and
-   never a blind retry.
+   never a blind retry. The admitted protocol must prove the link
+   effect and receipt together. Use the signed bounded lookup of
+   spec 0021. Prove both outcomes before enabling apply or undo:
+   one exact committed effect, and a verified pre-save refusal.
+   An unknown outcome holds. The WordPress receipt lifetime is
+   part of the same privacy and recovery admission.
 
 Selective undo:
 
@@ -198,9 +484,23 @@ Selective undo:
    The result is validated and saved under the same conditional
    protocol.
 4. WordPress revisions help recovery but never prove selective undo. An
-   old whole revision is never restored over later edits. A lost
-   journal or expired evidence blocks undo. Retention follows the
-   privacy policy, not a copy of XenForo's receipt expiry.
+   old whole revision is never restored over later edits. If a person
+   later recreates identical markup, the exact committed undo receipt
+   still belongs to its original native revision. Replay retrieves the
+   eligible historical receipt without saving again. Read current link
+   presence separately. A lost journal or expired evidence blocks
+   undo. Retention follows the privacy policy, not a copy of XenForo's
+   receipt expiry.
+
+For an eligible cross-site undo, apply the same WordPress source
+checks and native save contract. Use only the source receipt and
+current source edit permission under
+[0119's existing undo route][cross-site-undo]. IT-0119-UNDO checks
+an unreachable target after pair revocation and a separate source
+permission refusal. The result covers the source effect only.
+
+[cross-site-undo]:
+  0119-cross-site-link-suggestions.md#applying-revoking-and-undoing
 
 ### sampark: the shared adapter interface
 
@@ -255,7 +555,10 @@ erases platform differences or treats a missing fact as public.
 2. Site pages stay useful when the service is unreachable: they show
    the last known state and keep pause working. For example, a site
    administrator pausing their WordPress site changes nothing on the
-   XenForo forum and gives no right to update the installation.
+   XenForo forum and gives no right to update the installation. For
+   XenForo, show last signed contact separately from the heartbeat
+   condition in spec 0021's heartbeat contract.
+   A current contact can accompany the existing SUT-340 notice.
 3. Screens use SDS components. Site pages keep the platform's own
    navigation and permission checks.
 
@@ -368,6 +671,10 @@ erases platform differences or treats a missing fact as public.
 4. No origin-address fallback, challenge solving, identity rotation,
    TLS bypass, global allowlist or turning off a security plugin.
 
+For cross-site suggestions, both adapters admit the distinct spec
+0119 typed source operation only with an atomic native epoch, edit
+and receipt fence. An unsupported adapter holds that operation.
+
 ### Instruction-only edits
 
 1. A write request holds platform, installation and site, object ID,
@@ -451,11 +758,10 @@ erases platform differences or treats a missing fact as public.
    replaced, nested or recreated. SEO plugins keep their structured
    data, canonical and language tags; Sutradhar never duplicates or
    overrides them.
-7. Links join only source and target in the same content language,
-   from WPML or Polylang facts checked again at apply. Browser locale
-   or URL shape is not enough. Unknown or changed language holds the
-   operation. A monolingual profile may declare its language. No
-   translation edits and no cross-site fallback.
+7. Both platforms apply spec 0018's British-English eligibility
+   rule and verify its current facts at apply (spec 0021).
+   A native language plugin may supply qualifying evidence under
+   the same rule. This guard adds no translation or cross-site path.
 8. The counting asset: cached HTML holds only the script reference and
    non-sensitive page identity. The page's script fetches a fresh
    page-bound darshak token from a narrow uncached route that grants no
@@ -483,15 +789,21 @@ erases platform differences or treats a missing fact as public.
 2. The installer's steps are checkpointed and safe to restart:
    1. Establish release trust independently; verify bootstrap material
       before running it, or stop with a trust set-up action.
-   2. Check OS and architecture, systemd, PostgreSQL, disk, memory
-      actually free, outgoing connectivity and enforceable slice limits.
+   2. Check OS, architecture, admitted process controls, PostgreSQL,
+      disk, available memory, outgoing connectivity and protected link.
    3. Confirm the plan still matches the PC and the approved authority.
-   4. Create only the approved service account, storage and slice.
-      Leave every other service and application alone.
+   4. Create approved owner-private storage, ledger and process
+      budgets without altering other services or applications.
    5. Fetch exact models and data, check their rights and verify each.
-   6. Start only registered Sutradhar parts in the budget. Create
+   6. Start only registered Sutradhar parts in the budget. Use 0030
+      Installation step 6 to check current memory and enforced process
+      limits before starting PostgreSQL. Recheck current capacity and
+      verify the existing migration reservation before any migration
+      SQL. Do both under the verified native setup intent. Create
       PostgreSQL roles and forced RLS through forward-only migrations,
-      with separate schema-owner and app roles.
+      with separate schema-owner and app roles. Use only the verified
+      installation checkpoint scope of specs 0030 and 0108 before
+      pairing. A later site check needs its own exact site authority.
    7. Pair each site through the two-party confirmation.
    8. Run real connection, permission, write-boundary, pause, recovery
       and made-up-data checks. No real content is written as a test.
@@ -536,32 +848,65 @@ erases platform differences or treats a missing fact as public.
    and show a stalled-publisher issue.
 6. Update checks send no site URL, content, member data, installation
    ID, token or site count. The app explains that the release server
-   still sees the PC's public address. An outage or expired metadata
-   blocks new installs and updates, never the running service.
-7. Notices start on; automatic install starts off. A setting filters
-   notices to security releases or all releases. Installing needs the
-   owner's approval of the exact plan; unattended install would need a
-   new approval.
+   still sees the PC's public address. Loss of a source required by
+   the chosen route or expiry of required metadata blocks that install
+   or update. The current service can keep running. An independently
+   verified offline bundle uses its own admitted proof and expiry.
+7. Notices start on and automatic install starts off. A setting filters
+   notices to security releases or all releases. Under DR-149 only the
+   installation owner can approve the exact app update plan. The same
+   confirmation applies to a downloaded bundle. Unattended install
+   would need a new approval.
 8. The notice shows what changed, each site's compatibility, the
    expected interruption, resource and disk needs and the recovery
    plan. The plan pins sites, releases, schema and state versions,
    artefacts, backup evidence and permissions; any change voids it.
 9. Applying: take the durable operation lease, fence stale actors,
-   verify the whole release, check sites, resources and backups, pause
-   affected writes and checkpoint. A failed check keeps the old state
-   or a clearly reported paused state, never partial success.
+   verify the whole release and check sites, resources and backups.
+   Use the exact per-volume workspace admission in spec 0030 and
+   0033's disk rules before pausing affected writes. Checkpoint the
+   pause. Recheck disk proof before a space-consuming stage or
+   fallback. A failed check keeps the old state or a clearly recorded
+   paused state. Unproved journal state holds continuation.
 10. Old and new run together only if their measured combined peak fits;
     otherwise the owner is offered a maintenance window. Limits are
     never lifted for an update.
 11. Schema changes are forward-only expansion, then self-tests of
-    content, permission, queue, observability and recovery. Only a full
-    pass resumes writes; approvals and changed content are rechecked.
+    content, permission, queue, observability and recovery. After a full
+    pass, recheck current approvals and changed content. Verify the
+    0030 per-volume reservation and durable journal at the final switch
+    and write resume. Hold the affected step on an unproved check.
     Contraction needs its own compatibility window and evidence.
-12. An older app restarts automatically only when current schema,
-    state, journal and every site are proven compatible; the
-    three-minute return target applies only then. Otherwise the service
-    pauses and asks. Migrations never run backwards, and an old backup
-    is never restored automatically. The owner-only backup-check
+12. Under the current operation lease, check the exact fallback payload
+    against current trust, schema, persisted state formats, journal and
+    every site's compatibility. Immediately before launching the
+    previous app, recheck that each registered site's exact native
+    compatibility and pairing proof is current under the same lease.
+    An earlier checkpoint or unchanged version label supplies no
+    current proof. Verify the exact persisted effect-journal and receipt
+    formats against the previous payload's admitted reader profile.
+    An unsupported journal remains held before launch. Retain its bytes
+    and original receipt. A compatible reader reconciles a verified
+    terminal effect under 0021 without issuing it again. After
+    encryption cutover the build and store must pass spec 0118.
+    Under the same lease, verify the current protected retirement
+    and erasure checkpoints from 0030 and 0032 outside the fallback
+    data. Prove that the exact previous payload and its admitted
+    read route can enforce the current history for each registered
+    site. Bind the required stored history format and checkpoints
+    to the reader proof. Recheck before starting the previous
+    payload and before admitting protected work or resuming writes.
+    Hold a missing or incompatible required history format before
+    launch. A verified previous-app start records its own effect only.
+    Before write resume and a verified return, match the current
+    database schema and state formats to the exact fallback plan and
+    previous app again. Keep any later incompatibility on the same
+    paused update. An older app restarts automatically only with all that
+    proof. The three-minute return target applies only then.
+    Otherwise keep writes paused, send no native effect from the
+    paused update and show the failed or unproved check. Migrations
+    never run backwards, and an old backup is never
+    restored automatically. The owner-only backup-check
     override stays, with reason and audit, but never overrides release
     trust, required checks, limits, data safety or compatibility.
 13. The lifecycle part updates as its own verified artefact: staged,
@@ -569,8 +914,13 @@ erases platform differences or treats a missing fact as public.
     Only one copy holds authority. Every interruption leaves either a
     working lifecycle part or a verified recovery route. Metadata
     versions are recorded to refuse rollback, freeze, mix-and-match and
-    substitution. A bad clock blocks updates; the installer never
-    changes system time.
+    substitution. A verified staged-file effect supplies no proof of
+    the current lifecycle holder. Before either copy can act after
+    interruption, reconcile the original hand-over under the current
+    lease and admitted native profile. Keep an unproved holder on
+    the existing verified recovery route without starting either
+    copy with authority. A bad clock blocks updates; the installer
+    never changes system time.
 14. Signing-root recovery and site-pairing recovery are separate. An old
     backup never brings back revoked keys or older trust.
 
@@ -626,6 +976,45 @@ erases platform differences or treats a missing fact as public.
 4. Restore goes into an isolated target, checks integrity, site
    separation, RLS, compatibility and app checks, then proposes a
    switch. Later work is never lost by an automatic restore.
+5. Report restart compatibility and restore compatibility separately.
+   A previous app proved against the current state under item 12
+   supplies only restart evidence. For restore, match the selected
+   backup's manifest, archive format, site and recovery authority to
+   its admitted reader and exact isolated target. Apply the current
+   protected history of spec 0030, minimum key epoch of spec 0118,
+   and exact storage proof of spec 0038 where applicable. A missing
+   or incompatible reader, authority or proof holds the affected
+   restore before activation. Keep eligible live state and later work.
+   Name the failed check on Restore. Let the owner select an eligible
+   backup or use an existing separately authorised isolation route
+   when one is available. If restart is held on schema compatibility,
+   a separate restore must still pass its own plan, lease and checks.
+   Reconcile the held update before taking a restore lease. Keep its
+   compatibility outcome. An isolated restore supplies evidence for
+   that restore only and cannot reopen live writes or certify rollback.
+6. For an already admitted live switch, audit the proposed exact
+   effect before publication. The audit records pending work and
+   cannot prove live success. If the audit write fails, refuse with
+   SUT-848 and keep the live pointer and existing holds. After a
+   successful audit, still compare current history under 0030's
+   guarded publication. A newly advanced history fence holds that
+   stage. At the switch effect, prove that the native route still
+   targets the backing object checked in the exact isolated restore.
+   Use its matching volume and managed ledger evidence under 0038
+   and the exact owner-approved switch plan and current lease.
+   Qualify the at-use root identity in the admitted platform profile
+   under QR-202. Reopening a path after the final check needs the
+   same proof. A readable substitute, even on the same volume,
+   cannot inherit the isolated result or pending audit. Hold such a
+   switch. Keep the live pointer, later work and isolated evidence.
+   A verified effect receipt must bind the exact object switched,
+   independently of the pending audit and isolated result. After
+   interruption, reconcile that original effect under current read
+   authority. Recheck the exact backing object and native volume
+   before opening the restored data. If either is unavailable or
+   differs, hold affected access and keep the recorded placement
+   and receipt. A historical receipt cannot admit a substitute
+   or authorise another switch.
 
 ### Removal
 
@@ -642,8 +1031,11 @@ erases platform differences or treats a missing fact as public.
    shared models stay while another site uses them.
 4. Removing an integration never silently removes the service. Whole
    removal needs installation authority and each affected site's
-   confirmation; the lifecycle part goes last and keeps its journal
-   until the final receipt is durable. Interruptions stay resumable.
+   confirmation. The lifecycle part stays with its journal while
+   a required deletion or stop is unproved. It goes last after the
+   verified completion result is durable. Choosing no final receipt
+   file still leaves the journal available during any hold.
+   Interruptions stay resumable under the exact removal plan.
 5. Approved links stay unless undo is asked for and can keep later
    edits. Shared system parts, hosting files, other applications and
    protected storage are never removed. Retained backups, audit and
@@ -664,18 +1056,22 @@ erases platform differences or treats a missing fact as public.
 
 ### Compatibility register, manuals and assistance packs
 
-1. Each register row pins OS and architecture, kernel and cgroup mode,
-   systemd, PostgreSQL, hosting and PHP, the add-on, platform, site
-   database, service release and digests, models and topology. Evidence
-   names the exact tuple, data, limits, tool and rule versions and
-   results. No vendor name or nearby version stands in; a missing field
-   blocks rather than meaning "all versions".
-2. Rows: the Ubuntu 26.04 x86-64 PC; XenForo and WordPress together
-   (memory and tenancy to qualify); separate installations (extra cost
-   to measure and approve); WordPress multisite, custom types and
-   plugin modes (each qualified on its own); untrusted sites on one
-   hostname (cannot qualify); separate hostnames with isolated accounts
-   (needed). ARM needs its own approval.
+1. Each row pins OS, architecture, native process controller and
+   limits, local transport and key custody, PostgreSQL, hosting, PHP,
+   add-on, site database, release digests, models and topology. For an
+   update or rollback, bind those rows to the exact schema and state
+   format versions in the plan. Evidence names the exact tuple, data,
+   limits, tool and rule versions and results. A vendor name or nearby
+   version gives no evidence. A missing field blocks qualification.
+   For first setup or an approved update, name the qualified
+   installation database profile and its checkpoint and refusal cases.
+   After enrolment, bind the current exact owner approval to any update
+   using this scope. Site and connector work use their own authority.
+2. Rows cover Ubuntu 26.04, Debian 13 and Windows 11 on x86-64,
+   with XenForo 2.3 and both supported WordPress majors. Qualify
+   shared and separate installs, custom types, multisite and plugin
+   modes independently. Untrusted sites need separate hostnames and
+   isolated accounts. ARM needs separate approval.
 3. The manual has usable guides for: requirements, hosting and resource
    use, shared versus separate installs, rights and notices; installing
    and pairing from both admin panels; daily admin, review permissions,
@@ -711,15 +1107,10 @@ erases platform differences or treats a missing fact as public.
 
 ## Limits
 
-- Memory: Sutradhar stays within the memory limits in AGENTS.md section
-  5.6: the service slice (service, engine, lifecycle part, models,
-  ganit, MCP server, PostgreSQL, workers, backups and overlapping
-  updates) and the desktop window. No swap. The 15% headroom applies
-  to the service slice: the soft line is 85% of it, 3,825,000,000 bytes
-  of 4.5 GB on a PC under 16 GB and 5,950,000,000 bytes of 7 GB on a
-  larger one (spec 0024), using decimal bytes. The desktop window keeps
-  its own cap of 0.5 GB or 1 GB. Native
-  allocation peaks and restore and rebuild work are measured.
+- Memory: use spec 0078's measured process and window budgets and
+  headroom. Count the service, lifecycle, models, ganit, MCP, database,
+  workers, backups and overlapping updates. Measure native allocation
+  peaks, restore and rebuild. Swap cannot extend a supported budget.
 - The agency edition adds a measured per-client allowance,
   `agency.memory_per_client`.
 - WordPress: at most 8,388,608 bytes (8 MiB) extra peak memory per
@@ -746,9 +1137,12 @@ erases platform differences or treats a missing fact as public.
   background work is queued.
 - Extra memory per request: 8 MiB for WordPress, 8 MB for XenForo,
   measured against the same site with the add-on off.
-- Extra time per page: the owner's target is a few milliseconds. The
-  exact statistic, ceiling, load profile and noise tolerance, and the
-  extra queries and bytes per page, are set when the feature is built.
+- Extra time per page: the owner's target is a few milliseconds. The exact
+  statistic, ceiling, load profile, noise tolerance, extra queries and
+  bytes per page are readiness blockers owned by the add-on footprint
+  research record. Until that record supplies measured values, fixtures
+  and approval, the affected add-on cannot be admitted for implementation
+  or release; "a few milliseconds" is not an acceptance threshold.
 - Cached public HTML carries only the counting script reference and
   non-sensitive page identity; the token comes from one uncached
   request.
@@ -771,16 +1165,25 @@ measured outcome.
   fact and the next step; the add-on runs no shell; no false success.
 - IP-02: swapping account, path, package, route or release in an
   approved plan fails before any effect; only registered resources made.
-- IP-03: power, process or network loss at each checkpoint, then
-  resume: no duplicate resources, no lost receipts.
+- IP-03: power, process or network loss at each checkpoint, then resume
+  only the exact verified intent. For the 0030 pre-site checkpoint,
+  try a foreign installation, stale register or partial migration
+  receipt. Refuse site rows and connector work while only installation
+  scope is present. No duplicate resources, site effects or lost receipts.
 - IP-04: untrusted bootstrap, wrong root, forged signature, swapped
   digest or incomplete offline bundle stops before anything runs.
 - IP-05: existing applications, services and site files are unchanged
   through install and its failures, apart from approved route changes.
-- IP-06: hosting that cannot run the add-on, or slice limits that
-  cannot be enforced, stay unsupported; vendor claims never pass.
-- IP-07: a busy PC with too little free memory waits or refuses safely,
-  even when Sutradhar's own caps fit.
+- IP-06: unproved hosting, process budgets or local protection hold
+  that profile. A vendor claim alone cannot qualify it.
+- IP-07: reuse 0030 tests 2, 3 and 5. After passing preflight with
+  a budget within the ceiling, separately hold on lost or insufficient
+  memory evidence before PostgreSQL launch and before migration SQL.
+  SUT-830 names the current check. Keep SUT-837 for the separate
+  proved cap excess. With the same verified instance and launch
+  receipt, restore current memory proof and continue the exact
+  migration after the hold without starting another process.
+  Reconcile a lost migration reply to the original receipt.
 - IP-08: only an exact passing tuple, run through the whole lifecycle,
   becomes qualified in the register.
 
@@ -801,7 +1204,12 @@ measured outcome.
 - IP-14: a shared PHP account that reads several sites' keys is refused
   as unqualified.
 - IP-15: native sign-in, role loss, cross-site grant and CSRF: only
-  current scoped authority reaches the right site's review.
+  current scoped authority reaches the right site's review. Join
+  the 0028 IT-REVIEW-EFFECT open-view branch on both native profiles.
+  Recheck the current review grant at server release. After the
+  open view observes a denial through the existing refresh, an
+  earlier released response or a restored browser view cannot
+  show details or enable an action.
 - IP-16: a paused site refuses writes after restarts and old approvals
   until a fresh authorised resume.
 - IP-17: XenForo's oracle, approved-write, original-text and undo cases
@@ -823,32 +1231,314 @@ measured outcome.
 
 - IP-22: stale or expired metadata, rollback, mix-and-match, swaps,
   wrong keys or a bad clock refuse the update; the service keeps running.
-- IP-23: notice filters never install without the exact-plan action;
-  update requests carry no site, member, content or installation IDs;
-  the app explains address visibility.
+- IP-23: notice filters never install without the exact-plan action.
+  For the channel and a downloaded bundle, try one valid plan as a site
+  administrator, as a non-owner with the old app update permission and
+  as the installation owner. Both non-owners get SUT-801 and start no
+  update or write pause. Change one pinned site or
+  payload identity after the owner's preview. SUT-803 requires another
+  preview and approval. A matching approval enters the remaining
+  update checks. Remote update requests carry no site, member, content
+  or installation IDs. The app explains address visibility. IP-25 uses
+  this exact owner check after a committed update step.
 - IP-24: an incompatible site, too few resources or a failed backup
   check stops the update; the backup override is kept and audited.
+  Use 0030 test 29 for the exact-volume workspace, later unsafe disk
+  and unproved fallback cases. Include loss of space after a passing
+  self-test and before the final switch. Separately substitute the
+  approved backing root on the same volume with enough space. Test
+  29 owns that root check and refusal. A backup override gives no
+  disk exception. Only verified recovery proof supplies a rollback
+  result.
 - IP-25: kill or fail each update checkpoint under load: stale actors
   fenced, no lost or doubled work, only a compatible app returns.
-- IP-26: incompatible schema with later work refuses automatic
-  fallback and old-backup restore, keeps evidence and pauses.
+  Use an exact owner-approved offline update with a verified package
+  and one committed forward migration. Before activation withdraw
+  only the installation owner's current update authority. Preserve
+  package, backup, pairing and compatibility proof. Restart and replay
+  the old approval. Keep the schema and exact migration receipt, show
+  the 0030 owner-approval hold and keep writes paused. No new payload start,
+  switch, fallback or repeated migration follows. Where the existing
+  route offers current owner confirmation, bind the unchanged update
+  intent and remaining work to that committed checkpoint. With all
+  current checks passing, continue only those remaining effects.
+  Use 0030 test 29 with IP-24 to separate an unsafe disk before switch
+  from unsafe disk after a committed switch with a lost reply. The
+  first holds before switch. In the second, verify and return only the
+  original permitted effect. Recheck the disk, current lease and plan
+  before any unperformed step. Reconciliation creates no second switch.
+  In the compatible timed case, use spec 0030's release fixture clock
+  across product process restarts. If an interruption breaks the
+  qualified observer clock, verify the functional outcome and record
+  the timing as unavailable.
+- IP-26: hold current committed work constant. In the local effect
+  journal fixture, commit one authorised native apply and its exact
+  receipt under spec 0021. Then make a later human edit. Prepare two
+  disposable fallback states for the same effect, one with a journal
+  format the previous payload can read and one with a well-formed newer
+  format it cannot read. Verify the format against the previous
+  payload’s admitted reader proof. Keep the native receipt, post, schema,
+  pairing and all other proof fixed. Fail the candidate self-test in
+  both cases. The supported reader reconciles one terminal effect and
+  retains the later edit. Replay adds no native write. The unsupported
+  format holds before the previous app starts, keeps writes paused and
+  preserves the journal, receipt and post. It cannot treat the effect
+  as absent or retry it. Report the paused outcome without a verified
+  rollback receipt, SUT-835 or timing pass. These fixture encodings add
+  no product format or migration.
+  On each admitted Linux and Windows IP-26 profile, keep the
+  verified previous payload, committed forward migration, current
+  owner plan, lease and matching version and checksum history.
+  Pass the earlier compatibility preflight. At the previous app's
+  database starter, use synthetic database metadata with RLS
+  enabled but no longer forced on `_sqlx_migrations`. Keep the role
+  and other policies eligible. The current 0108 guard reports
+  SUT-971. Keep writes paused and show the failed database check.
+  The previous app never becomes ready or takes the active pointer.
+  Preserve committed history, current work and the original
+  migration receipt. Ordinary app work never reads protected
+  migration-history rows. Record no automatic restore, down
+  migration, verified rollback, SUT-835 or timing success. The
+  matching forced-RLS control can continue only under all existing
+  current compatibility checks.
+  Independently vary the fallback schema, persisted state format,
+  journal, one registered site's
+  compatibility and the build or store's encryption floor after cutover.
+  A mismatch or missing proof keeps writes paused before the older app
+  starts. Preserve later work and recovery evidence. No automatic
+  backup restore, downgrade or verified rollback receipt. Include a
+  passing exact compatible fallback as in spec 0030 test 9.
+  In the interrupted fallback fixture, verify both synthetic paired
+  sites and checkpoint before launching the previous app. Change the
+  installed native add-on version for one site so it is incompatible.
+  In a separate case keep that version fixed and revoke the native
+  pairing used by its compatibility proof. In a third case keep that
+  site's installed version, current keys and pairing generation.
+  Present a restored copy of its receiver replay store without proof
+  of current continuity under 0021 signing test 3. The old checkpoint
+  does not qualify current pairing proof in that case. Keep the other
+  site's proof, schema, state, journal and previous payload fixed.
+  Resume with the earlier proof still in the checkpoint. Each case
+  holds before the previous app starts. Preserve all later work and
+  original receipts. Keep writes paused and emit the paused outcome,
+  with no protected request, cursor advance, native effect, automatic
+  restore, verified rollback receipt, SUT-835 or timing pass. In the
+  continuity control, independently prove the current store for the
+  same exact pairing. Fallback may continue only under all existing
+  checks. The separate 0021 receiver test still refuses an accepted
+  request repeated before nonce expiry. Use only synthetic proof on
+  the admitted XenForo and WordPress fixtures, with no live site query.
+  In a separate interrupted fallback, verify the retained previous
+  payload under an admitted QR-202 profile. Keep its exact bytes,
+  recorded manifest, earlier trust result, current plan and lease
+  fixed. Keep schema, state, journals, pairing, erasure and the
+  0118 key floor eligible. Before the previous app starts, use a
+  current verified release policy that excludes its version from
+  native use under the applicable 0005 acceptance floor. Resume
+  the original update from its checkpoint. The earlier trust result
+  remains evidence for its original context. Hold this fallback
+  before launch, keep writes paused and show the release-trust check
+  in Update paused. Preserve the current data and receipts. Record
+  no resumed work, automatic restore, verified rollback, SUT-835
+  or timing success. In the control the exact previous release
+  remains eligible under the current verified trust profile.
+  Join 0118 E2E-0118-MOVE for the separate key-floor restart case.
+  Keep the previous package and encrypted store fixed. Require the
+  current independent floor alongside the other fallback checks.
+  Stale or unavailable proof shows Update paused with SUT-3700. An
+  exact verified floor with no compatible protected key path shows
+  SUT-3701. Resume and Rollback stay unavailable on each hold.
+  Preserve the current data and work. Record no SUT-835, verified
+  rollback or timing pass. No earlier archive supplies the floor.
+  In a separate E2E-0118-MOVE branch, hold the minimum key epoch,
+  encrypted store, schema, effect journal, pairing, owner-approved
+  update and lease fixed. Use the current 0030/0032 history with one
+  committed erasure. Supply authentic current history in a
+  synthetic format outside the exact previous payload's admitted
+  reader profile. In a second run give the same incompatibility
+  together with an earlier readable checkpoint that predates the
+  erasure. Neither proves the current fallback read route. Keep
+  the previous payload stopped and show Update paused with the
+  unsupported history check. Keep current work, erasure history
+  and receipts. No protected data, prepared export, resumed writes,
+  automatic restore or rollback success follows. The supported
+  control uses the same current erasure, verifies one protected
+  return and leaves that subject's erased derived data unavailable.
+  In the post-start branch, let the exact previous payload start with
+  current compatible proof and keep its verified startup checkpoint.
+  Before allowing protected work or recording a verified return, present
+  a current database schema revision outside that payload's admitted
+  compatibility. Keep current data, committed migration and receipts.
+  Use Update paused with the database compatibility reason. Assert no
+  resumed writes, protected work, repeat launch or migration, automatic
+  restore, rollback receipt, SUT-835 or timing pass. The control retains
+  the compatible current revision and verifies one return under the
+  original eligible plan and lease. Use synthetic revision evidence on
+  admitted Linux and Windows profiles. These fixtures add no schema or
+  stored format.
 - IP-27: racing update, repair, restore and removal never share
   authority; a crashed holder needs reconciliation.
 - IP-28: interrupting a lifecycle-part update at each hand-over, with
   engine and window down, never gives two holders and always leaves a
   route; an unknown journal never launches the old program.
+  On each admitted Linux and Windows profile, commit the verified
+  staged-file effect for the new lifecycle part and lose its reply
+  before the holder hand-over can be proved. Keep both exact
+  verified copies, the original plan and lease, the staged-file
+  result and the earlier holder proof. Restart with the current
+  holder proof missing. The earlier proof names the holder before
+  the interrupted step only. Reconcile the staged-file result once
+  under current read authority and preserve both copies and existing
+  data. Use the existing verified recovery route. Grant no new
+  authority, repeat no file effect, and make no fallback launch,
+  write resume or successful rollback receipt. In the control,
+  prove one exact current holder under the same lease. Only that
+  holder may carry out remaining approved work after its other
+  checks. Keep the engine and window down throughout this fixture.
 - IP-29: transient failure recovery stops at its bounds, keeps work and
   shows repeated failure instead of looping.
 - IP-30: corrupt backups, missing keys or missing storage never report
   success; an isolated restore checks data, roles, forced RLS and app
   state before a switch; later work is never erased.
+  In a separate matching fixture, prove the previous app can restart
+  on the current schema, state, journal and paired sites. Keep that
+  proof and later work fixed. Offer in turn a correctly checksummed
+  older backup with an archive format without a current admitted
+  reader, and a supported backup with a recovery key below the
+  signed minimum epoch. Each restore is held for its own reason.
+  The permitted restart still succeeds. The restored generation
+  stays inactive, no restore success or switch follows, and
+  current records and later work stay intact.
+  In the current history format branch, pass isolated restore with
+  a supported archive, current key epoch and exact reader admitted
+  under the current release policy. Before live publication, advance
+  the authoritative history to a verified checkpoint whose format
+  the selected reader cannot enforce. It contains a committed
+  erasure fence with one outside target still waiting. Offer the
+  earlier readable checkpoint. Hold the prepared stage and report
+  the current history check before any new staged data lookup or
+  live effect. Keep the live pointer, later work, backup and waiting
+  receipt. Issue no switch, restore success or erasure completion.
+  In the control, use a separate eligible plan with its exact reader
+  for that current history. Apply the fence in isolation and check
+  current owner approval and lease before any live switch. A changed
+  scope still needs a new preview and confirmation. The waiting target
+  needs its own result. This fixture adds no format, minimum release
+  version or recovery route.
+  In the inverse case keep the exact verified previous payload and an
+  eligible encrypted backup. Make only the current schema incompatible
+  with the previous payload. It never starts. Restart with the same
+  paused update record and refuse restore while its lease is
+  unreconciled. After exact reconciliation, confirm a separate
+  isolated restore whose reader, key epoch, history and row-level
+  security pass. Require its own test result. The live pointer,
+  current and later work, and paused compatibility outcome remain.
+  No verified rollback receipt or automatic restore switch follows.
+  In a separate fixture for an admitted portable restore, keep the
+  exact selected portable plan and lease, package, archive, isolated
+  result, volume and protection proofs fixed. Withhold the current
+  portable activation evidence. Offer an authentic normal-install
+  restore and launch result under its own profile for matching
+  package and archive bytes. Hold before portable activation or
+  resuming writes. Preserve the isolated evidence, current pointer
+  and later work. Do not switch to a normal install or register a
+  start-up entry. Record no live restore or rollback receipt. In
+  the exact portable control, verify its own current at-use
+  profile and all existing checks. Only that route can switch.
+  This fixture admits no new restore or mixed-mode archive route.
+  For an already admitted synthetic switch, pass the isolated restore
+  and retain its verified test result. Give the switch its own exact
+  approved plan and current lease. Verify [0030's protected restore
+  history][restore-history] and
+  [0118's minimum key epoch][restore-key-floor], and retain current
+  reader, manifest, authority and applicable storage proof. Fail
+  only the required audit write under
+  [Diagnostics and audit](#diagnostics-and-audit) item 2 before
+  live activation. Refuse the switch with SUT-848. Preserve the live
+  pointer, current records and later work. The isolated target stays
+  inactive, with its test result limited to that target. Keep existing
+  write and access holds. Emit no live restore success, switch or
+  rollback receipt. After interruption reconcile the original plan
+  and recorded lease. Any unperformed retry requires current exact
+  authority and a current lease. This fixture admits no switch route.
+  In a separate synthetic Windows 11 restore variant, verify the
+  isolated target on native volume A. Keep the exact approved switch
+  plan and lease, verified backup, and 0030 history and audit proof.
+  At the final publication check substitute a different writable
+  volume B with the same drive letter and label. Apply the current
+  volume and ledger identity check in 0038. Show that the selected
+  restore destination could not be verified. The isolated result
+  still describes A only. Keep the live pointer and later work, give
+  no live success or rollback receipt, and do no write, activation,
+  relink or cleanup on B or any substitute. The existing pending
+  audit stays distinct from an effect receipt. In the control keep
+  the exact eligible volume A, ledger, isolated result, current
+  approval and lease. The fixture records one switch to A only
+  after all current publication checks pass.
+  In another run pass the final check against backing root A. Then
+  at effect hand-off supply backing root B on the same volume and
+  path, with matching visible ledger markers and restored bytes.
+  The isolated result and pending audit remain evidence for A.
+  Hold on changed or unproved at-use identity and show the existing
+  destination verification reason. Keep the live pointer and later
+  work. Refuse any write, relink, cleanup or activation on B and
+  any live success or rollback receipt. The control keeps the exact
+  checked object through publication and verifies only its own
+  committed switch. No live target is used.
+  In a separate admitted synthetic portable restore, commit the exact
+  switch to volume A with the matching backing root and verified
+  effect receipt, then lose the reply. On restart present volume B
+  at the same path with the same label and restored byte hashes. Keep
+  the original receipt and the pointer to A. Under current read
+  authority recover only the historical switch outcome. Hold current
+  access with the destination verification reason. Do no read of
+  restored data, write, cleanup, relink or launch on B. There is no
+  new switch or rollback receipt. When exact A and its backing root
+  return in the control, recheck current access under the existing
+  profile. Any permitted work uses A and the switch count stays one.
 - IP-31: lost signing or pairing keys, stale trust or a hardware key on
   another machine follow only the defined recovery path.
+  Use synthetic receipts from the existing release-root and site-pairing
+  recovery routes. After an eligible isolated restore on another machine,
+  the saved site's fingerprint is present and the old hardware-bound
+  private key is unavailable. Offer a genuine current release-root
+  recovery receipt as pairing proof. The restored site stays disconnected.
+  It sends no protected request, reactivates no key or grant, and resumes
+  no pending site effect. Current release evidence is still eligible
+  for its own package checks only. In the fresh pairing control, obtain
+  the existing local owner and native administrator approvals and prove
+  both peers' signing and encryption possession for the exact site,
+  installation and current pairing generation under specs 0021 and
+  0118. Only that link becomes eligible. Independently withhold current
+  release-root proof and offer this genuine site pairing receipt to
+  the release check. Refuse package use with no launch or install effect.
+  Neither refusal changes the original proofs or restores old authority.
+  In the same-installation restore branch, reuse 0021 signing test
+  10 for an exact recorded native effect after link key rotation.
+  Verify current pairing and replay-store continuity first. A
+  retained local journal or old reply supplies no current proof.
+  A fresh exact read reconciles the original receipt only. An
+  unavailable native record stays unknown without another write.
+
+[restore-history]: 0030-install-upgrade-removal.md#the-site-register
+[restore-key-floor]:
+  0118-end-to-end-encryption-gate.md#rotation-legacy-upgrade-and-deletion
 
 ### Removal, reporting and resources
 
 - IP-32: one site disconnecting or removing its integration leaves the
-  other's data, keys, models and queues intact.
+  other's data, keys, models and queues intact. In a synthetic WordPress
+  case complete the scoped disconnect with the plugin still installed.
+  Old pairing keys can no longer act. Give no removal or erasure proof
+  for the plugin or its records. In a separate integration removal
+  case select the registered native cleanup and lose its result after
+  local access is revoked. Keep that cleanup unresolved and preserve
+  the verified local result until IP-34 reconciles the original effect.
+  Restore a site fixture from before removal with the old pairing key.
+  It stays revoked under the current 0021 and 0118 trust records.
+  No native effect or renewed access follows. The backup supplies
+  no cleanup proof.
+  Approved links in the site’s posts and the other site stay intact.
 - IP-33: only selected, authorised resources are deleted; failed
   export, protected storage, unknown ownership or another site's use
   prevents deletion; defaults keep data.
@@ -956,7 +1646,7 @@ campaign (archive `installation-platforms/non-invasive.md`).
   guide without changing other plugins; updates void old evidence.
 - CO-09: builder items, dynamic links and SEO output are skipped or
   left untouched.
-- CO-10: a language change before apply lets only same-language targets
+- CO-10: a language change before apply lets only eligible English targets
   pass.
 - CO-11: with zero visits the runner progresses within bounds; killed
   runners, duplicate callbacks, pause and revoke cause no doubled write.
@@ -1000,16 +1690,10 @@ Speed is checked by the 5% median rule on Dell baselines.
 
 ## Changes from the source
 
-- The service runs on the owner's Ubuntu 26.04 PC from a signed `.deb`
-  under systemd, not in containers beside the website on a hosting
-  server.
-- Host preparation by an agent with server access, Docker, rootless
-  limits and hosting-panel recipes are replaced by the `.deb` installer
-  and the systemd slice.
-- Shared hosting is supported for the add-ons, as AGENTS.md 5.4 requires.
-- The first test target is Ubuntu 26.04, replacing the earlier 24.04.
-- The live review and settings screens become the Dioxus app built from
-  SDS; moderators review in the site's admin pages.
+- The owner app starts and controls its engine on the supported
+  Linux and Windows profiles. Spec 0030 owns package trust.
+- The owner's Tauri window uses Angular and SDS. Shared-host add-ons
+  deliver native moderator review and status under their own grants.
 - The one-use handoff into a live screen is kept as a one-use review
   grant issued after native sign-in; live-socket rules are dropped.
 - Install, update, backup, repair and removal move from site admin

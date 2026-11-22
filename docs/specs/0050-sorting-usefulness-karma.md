@@ -200,10 +200,10 @@ recorded". Nothing is silently counted then dropped.
 ### ganit jobs used
 
 ganit receives vote and reaction counts by item, member and forum id,
-never text or names. Every result is shadow-tested, activated, can be
-rolled back, and the last good version stays if a job is late. A result
-that is negative where it must not be, or NaN, is refused and the active
-value stays.
+never text or names. Every result is inert candidate evidence; spec 0077
+alone evaluates, promotes, activates and rolls it back. A late or failed
+candidate leaves the verified champion unchanged. A result that is negative
+where it must not be, or NaN, is refused and never reaches a consumer.
 
 - Job 104 reactor reliability (karma and Best); job 105 Best reply
   priors per forum; job 106 karma as a Bayesian average; job 113 Rising
@@ -266,11 +266,14 @@ scores; items with millions of votes; a member's own votes on their
 posts (excluded); merged or split threads moving votes; deleted members
 whose votes remain (kept, anonymous); clock changes.
 
-### Facts to check when built
+### Build-blocking provenance and platform evidence
 
-The Hot, Best and Controversial formulas against Reddit's archived
-public source, with its licence and date; XenForo 2.3's reaction score
-fields and events.
+The sorting provenance record must pin the Hot, Best and Controversial formula
+sources, licences and dates, and establish the required provenance before any
+reimplementation. The platform record must establish XenForo 2.3's reaction
+score fields and events. Each dependent implementation remains blocked until
+its evidence and isolated fixtures are admitted; archived public source is not
+automatically permission to copy.
 
 ## Limits
 
@@ -290,8 +293,11 @@ fields and events.
   time, measured on the test forum.
 - The add-on adds no measurable memory per request, well under its
   8 MB per request limit.
-- The usefulness buttons and karma display add a small block of markup;
-  their byte budget is set when the feature is built.
+- The usefulness buttons and karma display add a small block of markup.
+  Their exact compressed byte budget and measurement fixtures are readiness
+  blockers owned by the public-page footprint research record. Those display
+  components cannot be admitted for implementation or release until the
+  record supplies a measured bound; "small" is not an acceptance threshold.
 - No cookie is set for guests who only read.
 
 ## How it is tested
@@ -348,17 +354,20 @@ headless-browser test:
   page.
 - Benchmark: one score update within 50 microseconds, under the 5%
   median rule.
-- Depth: 100% line and branch coverage. The vote mapping, the
-  non-public rule, the flags-never-change rule, karma clawback, the guest
-  checks and incremental-equals-rebuild have no surviving mutants and
-  have property tests. Kani proves the mapping returns down for Sad and
-  Angry whatever the administrator's score, and that integer counters
-  never go below zero after any sequence of add and remove events.
+- Depth follows ADR-0020. Only admitted strict-core components require
+  100% line, branch and MC/DC coverage and zero surviving killable mutants,
+  with equivalent mutants proved and independently reviewed; other code
+  follows the owning risk matrix. The vote mapping, non-public rule,
+  flags-never-change rule, karma clawback, guest checks and
+  incremental-equals-rebuild retain their assigned mutation gates and
+  property tests. Kani proves the mapping returns down for Sad and Angry
+  whatever the administrator's score, and that integer counters never go
+  below zero after any sequence of add and remove events.
 
 ## Changes from the source
 
 - The maths jobs run in ganit, the Rust numerical engine.
-- Moderator pages are Dioxus app screens built from SDS components.
+- Moderator pages are desktop app screens built from SDS components.
 - Speed follows the 5% median rule; the 20x goal is kept (spec 0007).
 - Browser-side tests are Rust tests driving a headless browser.
 

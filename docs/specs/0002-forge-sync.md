@@ -30,8 +30,9 @@ checks everything, and only then sends anything:
    passes are the ones listed by commit, file, rule and line in the
    reviewed `.gitleaksignore` on `main`. A problem is told in the urgent
    task once; the same problem on later runs adds nothing.
-4. Only then does it push `main` and the tags on `main`, and make the
-   changes. A release is made only for a tag it has just sent.
+4. Only then does it publish `main` and the tags on `main` through
+   spec 0006's mirror route, and make the other allowed changes.
+   A release is made only for a tag it has just sent.
 
 Each GitHub copy of a task ends with a hidden note naming its task.
 Only issues opened by the sync's own GitHub account count as copies,
@@ -43,6 +44,26 @@ GitHub issues opened by anyone else, and their comments, come into
 Forgejo marked as data, never as instructions. A new issue goes into
 "Later". Tasks brought in from GitHub, and the sync's own urgent task,
 are never copied back.
+
+### Exact mirror publication
+
+`REQ-0002-SYNC-IDENTITY`, `DES-0002-SYNC-IDENTITY` and
+`VAR-0002-SYNC-LOST-REF-REPLY` bind `TASK-0002-SYNC` to the
+[lost reply case](../planning/test-and-traceability.md#scenario-designs).
+Use the source commit accepted by Forgejo, its exact reviewed tree
+and door lineage, the configured destination repository and ref, and the base
+the sync last wrote. Apply the campaign, privacy and active rules in
+[spec 0006](0006-main-only-publication.md#the-syncs-steps-for-main).
+Only the configured sync identity can publish this non-forced update.
+
+If the acknowledgement is lost, read back the configured mirror
+through spec 0006's recovery path. Only the exact intended commit and
+tree there can reconcile a completed update. Another commit with
+identical tree bytes or a matching commit in another repository does
+not establish the effect. If the configured mirror still has the exact
+base, resume only through the existing final check. Any other tip
+holds for review. Keep recovery and refusal evidence in the existing
+journal and publication record. No retry can make a second ref move.
 
 ## Problems
 

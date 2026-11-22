@@ -1,5 +1,13 @@
 skill = "architecture"
-change = "sha256:a390528ad6f6f97eaca5e09583a82ead225c116ced48ff625b9f37540bbf2716"
+change = "sha256:e5903784ac2150fce301af6be53342d6b1336d5d8fcc5ecda4b68f12119d34a4"
 verdict = "pass"
-agent = "claude subagent"
-summary = "Re-read the revised loop guard section of spec 0016 against #361, #339, #357 and AGENTS.md 4, 5.2, 6: separate dev-tool crate, hooks reach it only via judging, two typed settings, per-task record with lock, atomic save, byte limits; nothing unused, no loops."
+agent = "claude subagent round six"
+summary = "Round six read of the staged documentation change (203 files) for module walls, events and data flow: ownership of settings, events and failure-code blocks across specs 0134 to 0154, and the simplified waiver rule against the protected-file rule and the door and gate roles in specs 0001, 0003 and 0005. No blocking finding. Minor notes left open, not blocking: define what signed history means in BJ-29; the signed-record format for the carried waiver count is not yet specified and is covered by QR-253; spec 0134 should point to BJ-29 instead of paraphrasing it. Round six was read at fingerprint 144bb425. The only changes after that read are two link definitions re-wrapped for the line-length check, one catalogue row reworded, and fixed names and identifiers added to the spelling allow-list in _typos.toml. Later addition, reviewed in two further rounds: a planted test the_version_one_names_are_not_spelling_checked_as_english, the Organization and Dueling patterns narrowed to exact phrases and one dead pattern removed; the test fails without the allow-list and passes with it."
+
+[[finding]]
+what = "Round three found event naming, unregistered 0148 and 0151 events, an unaccepted Alekh projection, an undeclared darshak referrer change and missing module names. Fixed in the text or recorded with owner and closing condition in the known-gaps table."
+fixed = true
+
+[[finding]]
+what = "Round one found that spec 0147 depends on edits to specs 0048 and 0044 that were not made. The four additions are now listed in the spec, DR-140 and a catalogue task."
+fixed = true

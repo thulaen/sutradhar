@@ -21,6 +21,9 @@ alert: "A member asked about routers you know well. Can you help?"
 
 ### Scope
 
+[Spec 0120](0120-opt-in-referral-backlink-discovery.md) owns feature
+106. A moderation hint cannot read its leads or referral paths.
+
 In scope: hint signals, scoring, the review queue and decisions;
 coordinated-voting hints from spec 0050; expert candidates, member
 preferences, invitations and limits. Out of scope: any automatic action;
@@ -60,7 +63,7 @@ used, and no hint input type has an email field.
 
 ### The review queue
 
-The queue also carries SpamGuard's content hints. Spec 0072 sets their
+The queue also carries Rakshak's content hints. Spec 0072 sets their
 evidence, permission and closing rule; items 1 to 4 below are for
 account hints and item 5 is for content hints.
 
@@ -117,12 +120,31 @@ on without it is refused.
 6. A thread answered while an invitation waits has the invitation
    withdrawn.
 
+#### Wave 1 expert invitation binding
+
+F-0026 · REQ-0051-W1-EXPERT-ROUTING · DES-0051-W1-EXPERT-APPROVAL.
+Use this section's optional routing, current topic skill and opt-in,
+pending question, and member, thread and forum caps. Recheck these and the
+moderator's approval before the native XenForo invitation. WordPress
+requires an independently admitted native forum notification adapter.
+
+FX-0051-W1-EXPERT-ROUTING · IT-0051-W1-EXPERT-ROUTING. Reuse the routing,
+eligibility, moderator-approval, job 25 and cap cases below. Give two
+eligible opted-in candidates on separate waiting threads, an over-limit
+expert and an unrelated member. Approve one, and answer the other thread
+before delivery. Revoke opt-in on an otherwise eligible pending attempt.
+Require one native alert for the still-approved, eligible XenForo case.
+Require no second alert on receipt replay, and no invitation for answered,
+opted-out, over-limit or unrelated cases. With no admitted WordPress
+adapter, require no delivery or email fallback.
+
 ### ganit jobs used
 
 ganit receives member, thread and topic ids with counts and times, never
-post text, names or IP addresses. Writing style is compared in the
-service only. Results are shadow-tested and the last good version stays
-if a job is late.
+post text, names or IP addresses. Writing style is compared in the service
+only. Every result is inert candidate evidence; spec 0077 alone evaluates,
+promotes, activates and rolls it back. A late or failed candidate leaves the
+verified champion unchanged.
 
 - Job 67 question detector (from ids and the service's features, not
   text).
@@ -185,11 +207,13 @@ Shared addresses; households with two honest members; banned accounts
 later unbanned; members writing in two languages; a candidate expert who
 is staff; threads answered while an invitation waits.
 
-### Facts to check when built
+### Build-blocking platform evidence
 
-XenForo 2.3's IP record table and its retention setting; the alert
-handler an add-on uses for custom alerts; which permission lets a
-moderator view IPs.
+The moderation integration record must establish XenForo 2.3's IP record table
+and retention setting, the add-on alert handler for custom alerts, and the
+permission that lets a moderator view IPs. Each dependent integration remains
+blocked until official-version evidence, privacy review and isolated fixtures
+are admitted; missing evidence never permits a schema or permission guess.
 
 ## Limits
 
@@ -233,17 +257,40 @@ Rust tests in `panchayat` and `uttar`:
   highest skill scores within the limits are offered.
 - Two accounts sharing only an email address or domain raise no hint.
 - Benchmark: a style comparison within 20 ms, under the 5% median rule.
-- Depth: 100% line and branch coverage. The two-family rule, the
-  no-action guard, the IP-view permission check, retention deletion,
-  opt-in and mute checks and the invitation limits have no surviving
-  mutants and have property tests. Kani proves a hint is never raised
-  with fewer than two families, and that no sequence of requests sends
-  a member more than the weekly limit.
+- Depth follows ADR-0020. Only admitted strict-core components require
+  100% line, branch and MC/DC coverage and zero surviving killable mutants,
+  with equivalent mutants proved and independently reviewed; other code
+  follows the owning risk matrix. The two-family rule, no-action guard,
+  IP-view permission check, retention deletion, opt-in and mute checks and
+  invitation limits retain their assigned mutation gates and property
+  tests. Kani proves a hint is never raised with fewer than two families,
+  and that no sequence of requests sends a member more than the weekly
+  limit.
+
+## Wave 1 member and staff evidence bindings
+
+Keep the exact site, actor, view permission, current source and
+native profile. Separate browser-local advice, staff review and a
+native notification. Feature 106 remains under 0120, including its
+separate privacy review, owner grant and visitor consent. These
+features have no access to its leads or referring paths.
+
+| Feature and owning design | Exact planned fixture and boundary |
+|---|---|
+| F-0101 · REQ-0051-W1-DUPLICATE-TITLE · DES-0051-W1-LOCAL-EDITOR | FX-0051-W1-DUPLICATE-TITLE, BDD-0051-W1-DUPLICATE-TITLE. Compare a current admitted map with an answered public match, withdrawn visibility, a stale map and paste. Match only current eligible public material in the approved local 0029 editor profile. A stale or unproved map reveals no old title. Reuse the zero-typing-request proof; typing or paste makes no request, captures no draft and creates no merge or publication. |
+| F-0102 · REQ-0051-W1-TITLE-ADVICE · DES-0051-W1-LOCAL-EDITOR | FX-0051-W1-TITLE-ADVICE, BDD-0051-W1-TITLE-ADVICE. Compare vague and clear local title inputs, disabled settings and an absent map. Require the exact admitted local wording and member privacy profile. Show gentle advice only for the qualifying case. No service call, capture or automatic title replacement. The separate 0117 desktop fan-out route supplies no member-editor authority. |
+| F-0103 · REQ-0051-W1-SOLVED-REMINDER · DES-0051-W1-EXACT-NATIVE-NOTICE | FX-0051-W1-SOLVED-REMINDER, IT-0051-W1-SOLVED-REMINDER. Use an answered thread with a current pending solved mark, the eligible asker and explicit current approval. Replay an eligible effect; in separate cases mark the thread solved, revoke approval or withhold the WordPress adapter. Only an admitted native platform route may deliver one reminder. Recheck before delivery and reconcile an uncertain receipt without a second send. The expert invitation route and other channels grant no fallback or actor substitution. |
+| F-0104 · REQ-0051-W1-SECTION-SCORECARD · DES-0051-W1-STAFF-EVIDENCE | FX-0051-W1-SECTION-SCORECARD, IT-0051-W1-SECTION-SCORECARD. Compare permitted and forbidden sections, a justified fix and missing evidence or an unresolved tie. Use current native section authority, the 0048 priority rule and separately admitted protected aggregates if used. Return only eligible section evidence and one supported fix. Apply the existing disclosure guard to counts and complements. No hidden section exposure or effect. |
+| F-0105 · REQ-0051-W1-STAFF-LESSON · DES-0051-W1-STAFF-EVIDENCE | FX-0051-W1-STAFF-LESSON, BDD-0051-W1-STAFF-LESSON. Open each eligible suggestion type with approved 0041 evidence, a missing lesson and a changed rule version. Show concise dated source-linked guidance under its actual action and current grant. Missing guidance is unavailable. No automatic approval, apply, actor impersonation or new inference route. |
+
+The existing editor, analytics and native notification checks keep
+their owners. QR-108 retains exact profile and fixture admission.
+The cases describe planned evidence only.
 
 ## Changes from the source
 
 - The maths jobs run in ganit, the Rust numerical engine.
-- Moderator pages are Dioxus app screens built from SDS components.
+- Moderator pages are desktop app screens built from SDS components.
 - Speed follows the 5% median rule; the 20x goal is kept (spec 0007).
 
 Source: `docs/specifications/signals/moderation.md` in the archive

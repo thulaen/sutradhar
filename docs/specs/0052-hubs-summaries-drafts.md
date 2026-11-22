@@ -62,9 +62,13 @@ approved.
    route hands the agent a clean evidence pack and accepts a draft back.
 4. For AI drafting of articles and resources (and for the Editorial
    Coach), wording may also come from the admin's ordered list (own
-   agent, local pure-Rust model, paid service by key and cap), shown on
-   screen (spec 0042). AI drafts carry an AI label, a near-copy warning
-   and a daily limit on AI drafts started.
+   agent, admitted packaged local generative-model application, paid
+   service by key and cap), shown on screen (spec 0042). The local route
+   remains unavailable until its exact package, model artefact,
+   dependency hashes, quality evidence and resource profile pass spec
+   0024 admission; BGE retrieval models cannot fill this role. AI drafts
+   carry an AI label, a near-copy warning and a daily limit on AI drafts
+   started.
 
 ### The drafting route (shared by summaries, hubs and tag texts)
 
@@ -84,17 +88,29 @@ approved.
    exact version being approved. A version goes to staff approval only
    after a completed check finds no match; a match, a missing policy or
    a check that fails or times out keeps it back.
-4. Staff edit, approve or reject it in the app. A rejected draft goes to
-   the trash bin, restorable for 90 days, then removed for ever. An
-   erasure request removes it at once.
+4. Staff edit, approve or reject it in the app. A rejection puts the
+   draft in the bin. Use its committed decision time in UTC and a
+   90-day duration of 7,776,000 seconds. The deadline belongs to that
+   rejection. An exact replay leaves it in place. At or after the
+   deadline, refuse any read of the draft body or restore, including
+   while managed cleanup is pending under 0032. An earlier erasure
+   request fences access and triggers its existing cleanup. Before
+   expiry, restore to review only with current staff permission and
+   eligible exact source grants under 0020. Earlier approval does
+   not carry forward.
 5. Every step is audited with the agent's and the approver's ids.
 
 ### Hubs
 
-1. Topic candidates are ganit job 278's topics (the single topic
-   definition shared with the knowledge graph) with at least 10
-   guest-visible threads, favouring job 255's core knowledge threads.
-   They also gain the reader-pattern edge of spec 0042.
+1. Topic candidates use the current eligible result of ganit job 278
+   through spec 0049's versioned result reader. A topic needs at least
+   10 guest-visible threads, favouring job 255's core knowledge threads.
+   It also gains the reader-pattern edge of spec 0042 where admitted.
+   Bind the exact site, topic id, job 278 result identity and source
+   snapshot digest when forming a proposal. Use the same eligible topic
+   generation as the knowledge graph for that site. A newer unactivated
+   result has no effect. A missing, incompatible or ineligible result
+   allows no new topic proposal.
 2. A hub draft holds a title, an introduction (drafting route), up to
    five suggested links, and extracts from accepted answers, plus likely
    solutions in unsolved threads (job 68) marked for staff to confirm.
@@ -114,7 +130,18 @@ approved.
    by the usefulness share and Best's score, and no hub topic is
    offered.
 6. Each link is approved individually. The five-link default applies, as
-   a setting shared with setu's limit.
+   a setting shared with setu's limit. Recheck the bound topic data and
+   current guest visibility at preview, approval and before any new
+   native effect, including a retry that could still send it. A changed
+   or ineligible result holds the pending effect. If this viewer can
+   open an eligible replacement, say “The topic changed. Review the
+   current proposal.” Staff review and approve it again. Otherwise
+   say “Current topic results are unavailable. This proposal is on
+   hold.” For an already committed
+   effect, reconcile and return its existing verified receipt only
+   through the existing checks and current read authority. A topic
+   change itself sends no native write and leaves published hubs under
+   their existing safety rules.
 7. Extracts quote at most 50 words of a solved answer, counted as words
    with icu_segmenter, never cut mid-sentence: a longer answer is quoted
    up to the last sentence end within 50 words, or linked without a
@@ -169,8 +196,9 @@ approved.
 ### ganit jobs used
 
 ganit receives thread, topic and member ids with counts, never post text
-or drafts. The novelty check stays in the service. Results are
-shadow-tested and the last good version stays if a job is late.
+or drafts. The novelty check stays in the service. Every result is inert
+candidate evidence; spec 0077 alone evaluates, promotes, activates and rolls
+it back. A late or failed candidate leaves the verified champion unchanged.
 
 - Job 23 best threads per topic for each hub; job 24 one primary hub per
   thread; job 27 long threads most in need of a summary.
@@ -186,7 +214,10 @@ shadow-tested and the last good version stays if a job is late.
   state.
 - `content_draft`: id, request id, agent id, text, evidence ids, checks,
   state, approver, decided at.
-- `hub`: id, topic, page id, state.
+- `hub`: id, topic, page id, state. The pending proposal keeps the site,
+  topic id, exact job 278 result identity and source snapshot digest
+  bound to its preview and approval. A pending proposal without that
+  binding must be previewed again before any effect.
 - `hub_link`: hub id, thread id, approved by, state.
 - `thread_summary`: thread id, draft id, first and last post id, covered
   hash, visible, hidden reason.
@@ -238,12 +269,15 @@ another waits; very long threads streamed; drafts in another language;
 an agent submitting twice; a publishing account banned; a hub whose
 topic splits in two; accepted answers later unmarked.
 
-### Facts to check when built
+### Build-blocking platform evidence
 
-How an add-on creates a thread or resource as a chosen user with XenForo
-2.3's services; whether page nodes can be created by an add-on; XenForo's
-events for post edits, moves and visibility changes that safety hiding
-needs.
+The XenForo integration research record must establish how an add-on creates
+a thread or resource as a chosen user with XenForo 2.3's services, whether
+page nodes can be created by an add-on, and which events report post edits,
+moves and visibility changes for safety hiding. Each affected integration
+is a readiness blocker until official-version evidence and an isolated test
+receipt admit the contract; an absent page-node or event capability blocks
+that feature rather than permitting a guessed substitute.
 
 ## Limits
 
@@ -260,7 +294,10 @@ needs.
 ## Footprint budget
 
 Hubs are new XenForo page nodes and summaries add a block at the top of a
-thread. Set when the feature is built.
+thread. Their exact markup bytes, added queries and response-time budgets
+are readiness blockers owned by the content footprint research record. The
+affected public-page component cannot be admitted for implementation or
+release until measured bounds and fixtures exist.
 
 ## How it is tested
 
@@ -296,8 +333,22 @@ Rust tests in `content`:
 - A draft repeating a thread's paragraph reports the overlap share and
   the thread.
 - For any draft, no path edits an existing post's text.
-- A Dioxus screen test: a draft containing `<script>` shows as text in the
+- A Angular screen test: a draft containing `<script>` shows as text in the
   preview.
+- Contract: use a synthetic site with two job 278 results whose input
+  snapshots and topic membership differ while all threads remain
+  guest-visible. An unactivated second result leaves the first eligible
+  proposal usable. Activate the second result before approval, after
+  approval but before native dispatch, and before an admitted retry
+  that could send the effect. Each race holds the old proposal and
+  sends no native write. A missing or wrong-site result also holds.
+  With current review permission show the review message for an
+  eligible replacement, or the hold message without one. Refuse a
+  pending proposal without a bound result. Re-preview and
+  obtain fresh staff approval under the eligible second result before
+  any new effect. After commit, show the same receipt to an authorised
+  reader under the existing replay rules and observe no repeat write.
+  Leave the previously published hub under its existing safety rules.
 - Contract: job 23's result naming a thread since made private never
   offers it; with no active result, threads are ordered by the usefulness
   share and Best's score, and no hub topic is offered.
@@ -306,22 +357,45 @@ Rust tests in `content`:
   the post.
 - A hub link under the acceptance threshold, or breaking a link-equity
   rule, is never offered for approval.
-- A rejected draft is in the trash bin and restorable for 90 days; at 91
-  days it is gone for ever.
+- A rejected draft remains in the trash bin for the existing 90-day
+  window. One microsecond before its exact deadline, with
+  current staff access and exact source grants, restore to review.
+  For the same unprocessed rejection at the exact deadline and
+  one microsecond after, refuse a read or restore. Later approval
+  of an eligible restored draft needs the
+  current checks on that draft. In separate cases at the same
+  eligible age, expire the restoring staff member’s review access
+  or the original source grant. Apply 0020’s current disclosure
+  and source checks. Refuse the former reviewer with the safe
+  access result. For an otherwise eligible reviewer, show the
+  source hold without revealing the affected draft or preview.
+  Both expiry cases leave the draft in the bin. Restoration cannot
+  revive an old approval or start a hand-off or native action.
+  Repeating the rejection receipt does not extend its deadline.
+  Race an exact restore with current erasure in both orders. An
+  erasure committed first refuses restore. If restore commits
+  first, retain its permitted history and apply erasure next.
+  A later read, replay or older backup cannot recover the
+  erased draft while managed cleanup follows 0032.
 - Benchmark: the novelty check for 2,000 words within 2 seconds, under the
   5% median rule.
-- Depth: 100% line and branch coverage. The evidence-pack guard, the
-  no-rewrite rule, the five-link cap, approval before anything is public
-  and summary safety hiding have no surviving mutants and have property
-  tests. Kani proves no publish call is reachable without an approval
-  record, and a hub never holds more approved links than its cap.
+- Depth follows ADR-0020. Only code it explicitly assigns to the strict
+  core requires 100% line, branch and MC/DC coverage and no unexplained
+  surviving killable mutant; equivalent mutants require proof and
+  independent review. The evidence-pack guard, no-rewrite rule,
+  five-link cap, approval before publication and summary safety hiding
+  have property tests. Kani proves no publish call is reachable without
+  an approval record, and a hub never holds more approved links than its
+  cap. These tests do not silently designate additional strict-core code.
 
 ## Changes from the source
 
 - The maths jobs run in ganit, the Rust numerical engine.
-- Staff pages are Dioxus app screens built from SDS components.
+- Staff pages are desktop app screens built from SDS components.
 - Speed follows the 5% median rule; the 20x goal is kept (spec 0007).
-- A local model in the drafting list is a pure-Rust model.
+- A local model in the drafting list is an admitted packaged
+  generative-model application behind typed Rust integration, not a
+  bespoke Sutradhar model runtime.
 
 Source: `docs/specifications/signals/content.md` and
 `docs/specifications/signals/content-2.md` in the archive

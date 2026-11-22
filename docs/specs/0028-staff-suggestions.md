@@ -87,7 +87,18 @@ This part adds the review states.
 6. Presence shows "Asha is reviewing this" on a card another moderator has
    open. It is advice only; the version check decides who wins.
 7. New suggestions and other moderators' decisions appear without a
-   reload. If live updates fail, the page polls.
+   reload. If live updates fail, the page polls. Before releasing
+   a protected update or result, the server rechecks the current
+   0031 grant and item access. A response released while eligible
+   belongs to that earlier authorised send. Bind pending view work
+   to its existing site, review session and grant authority version.
+   When an existing live update, poll or view recheck reports
+   revoked or unverified access, clear affected source text,
+   previews and result details and disable the affected actions.
+   Invalidate pending results for that view. A delayed earlier
+   delivery or restored browser view cannot show those details
+   after that denial. Require a fresh eligible read. The authorised
+   connection view and separate 0032 audit read keep their scopes.
 8. Accessibility is WCAG 2.2 AA, checked on every state.
 
 ### Approval
@@ -124,9 +135,14 @@ one transaction the service:
      the ranker uses, with day and week caps, anchor variety, section
      spread and reciprocity counted again now; owner reject rules
      (spec 0029) are checked here too.
-5. Records the decision, moves the suggestion to `approving`, and writes
-   the apply job to the outbox in the same transaction, so a crash can
-   never lose an approval or apply one twice.
+5. Record the decision, move to `approving` and publish
+   `suggestion.approved` in one site transaction (spec 0019).
+   The consumer verifies the exact approval and versions, and commits
+   one live `suggestion.apply` job with its inbox receipt. The job key
+   binds the site, suggestion, decision version and action. Recheck
+   current authority on claim and before sending to the site. The
+   signed request ID remains fixed across retries. The event cannot
+   approve another suggestion or bypass the add-on checks.
 
 A failed re-check refuses the approval with its plain-English reason and
 code and moves the suggestion to the matching state. Nothing is written to
@@ -143,22 +159,41 @@ judged on content, visibility and the rules alone.
 - A moderator may tick several suggestions, each with its chosen
   destination visible, and approve them together.
 - Each goes through the same action and checks, one at a time, in the
-  order ticked, so caps count the earlier ones. The page reports each
-  outcome separately.
+  order ticked, so caps count the earlier ones. Bind the batch plan to
+  one site and the original ordered suggestion IDs, versions and
+  chosen destinations. Keep each item's original plan and action
+  identity, and record its outcome separately. Check current authority
+  for each approval. Keep the ordinary claim and send checks for
+  each native effect.
+  The page reports each outcome separately within current read scope.
+- After loss of the batch reply, recheck current action and result
+  authority before recovering the original batch and the exact item
+  identities under spec 0020. Preserve their order. Keep a committed
+  item and its original decision, job and native receipt where present.
+  Return only its permitted result without reapplying it. An unknown
+  item outcome needs reconciliation before any repeat. An item proved
+  unperformed can proceed only through its existing checks, with an
+  unexpired exact plan and current permission. An earlier success or
+  the batch receipt grants no permission for a later item or result.
 - At most 50 per batch. That is a top that research may lower (spec 0029);
   raising it needs the owner.
 
+Cross-site cards use [spec 0119](0119-cross-site-link-suggestions.md)
+and the native approval and save rules here. They cannot enter the
+batch action or ordinary apply route.
+
 ### Placing the link: the apply job
 
-A durable job takes the outbox entry:
+The authorised spec 0019 apply job reads the committed approval:
 
 1. Read the post's current stored message and check the content version
    again.
 2. Call shodhan's `insert_link` with the recorded anchor offsets, the
    message hash and the destination's short address. A refusal ends the
    attempt with its code.
-3. Send the add-on a signed request: post id, old hash, new message, new
-   hash, idempotency key.
+3. Send spec 0021's signed `ApplyLinkEdit` with the exact anchor
+   range, target, versions and expected result fingerprint. It
+   carries the stable effect request ID and no replacement body.
 4. The add-on, in one database transaction, compares the stored message's
    hash with the old hash and stops if they differ; saves through the
    site's post editor as a silent edit by the system user (formatting off,
@@ -167,18 +202,27 @@ A durable job takes the outbox entry:
    any difference (SUT-416).
 5. Edit history is kept, so the site's history shows the version before
    our link.
-6. On success the service stores the insertion record, moves the
-   suggestion to `applied` and sends `suggestion.applied`.
+6. On verified success, commit the insertion record, `applied`
+   state, execution receipt and `suggestion.applied` outbox row
+   together. A stale attempt cannot complete the local effect.
 
 - A link placed here never carries a `nofollow`, `sponsored` or `ugc`
   mark, and no setting changes that.
 - A post the site's save would rewrite (an unclosed or tangled tag) is
   never edited. The card says "Skipped: the site would rewrite this post"
   (SUT-424).
-- If the destination was merged after approval but before apply, the job
-  links the canonical thread's short address only if it is still a
-  different thread.
-- An approval that arrives before a re-score's replacement wins.
+- A changed canonical destination after approval makes the job
+  stale. Require a new human approval and effect identity. An
+  existing request never changes its target or payload.
+- Approval and a re-score replacement use the same version-guarded
+  transition on the original suggestion. The first committed transition
+  wins. When approval commits first, the re-score cannot replace the
+  approved suggestion or change the exact target or apply job. That
+  job retains its ordinary native checks. When replacement commits
+  first, the old approval plan is stale. Show the current state and
+  use the 0020 stale-preview response (SUT-803) for the changed plan.
+  The old plan creates no approval or apply job for either target.
+  Review of the replacement requires its own current approval.
 
 ### WordPress
 
@@ -192,15 +236,16 @@ A durable job takes the outbox entry:
 
 ### Recovery
 
-- Site unreachable or slow: the job retries with backoff and is never
-  dead-lettered for an outage. The card says "waiting for the site".
-- Crash after the add-on saved but before the service recorded it: on
-  restart the job reads the post. If its hash equals the new hash, it
-  records `applied`. If it equals the old hash, it tries again. Otherwise
-  it records `apply_failed` with "the post changed during the edit" and
-  sends the case to review.
-- The add-on keeps each idempotency key with its result for 7 days, so a
-  repeated request returns the first answer and never edits twice.
+- Site unreachable or slow: use spec 0019's bounded retry and
+  park policy. The card says "waiting for the site". Recheck the
+  current approval before resuming a parked request.
+- A crash or timeout after send leaves an unknown effect. Reconcile with
+  `ReadLinkEffect` under specs 0019 and 0021 before any retry. Only matching
+  proof completes the attempt. A changed post or expired receipt window
+  needs review. Never send a new request ID for that same effect, even if
+  the old hash still matches.
+- The add-on retains the effect record for the owning platform's
+  receipt window (spec 0021 or 0031). A retry uses the exact intent.
 - Disabling stops waiting apply jobs at a safe point, visibly, and they
   resume when enabled. No half-applied edit is possible.
 
@@ -247,8 +292,21 @@ No suggestion is ever just deleted for age.
   - a restored suggestion is recalculated first, so the relevance gate
     and equity rules apply, and then returns to the queue or is retired
     again with its reason;
-  - restoring a rejection withdraws it, lifts its connection block, and
-    withdraws its learning label (spec 0053);
+  - restoring a rejection binds the exact same-site trash item,
+    decision version and the block occurrence and any learning
+    label that rejection made. Recheck current review authority
+    and the 90-day limit. Withdraw only that rejection and its
+    own block and label under the existing restore and 0053 event
+    rules. An already inactive block has no lift to apply. Bind
+    its verified state at preview and recheck that state with the
+    exact plan before an unperformed restore. A newer rejection
+    gives SUT-803. A purged item retains SUT-580. After reply
+    loss, reconcile the exact original plan and idempotency key
+    under 0020 before any retry. A committed result returns
+    only its authorised history. It cannot lift a later block,
+    withdraw the later label or enqueue a second recalculation.
+    Keep the restore result and its typed outbox evidence together
+    in the owning transaction;
   - restoring an undone link returns it as a suggestion waiting for a new
     approval, never as a placed link, and lifts its suppression;
   - restoring a reset puts the suppression or block back.
@@ -264,7 +322,12 @@ No suggestion is ever just deleted for age.
 
 ### Undo
 
-The action `setu.suggestion.undo` on an applied link:
+For `setu.suggestion.undo`, the approved action records `undoing`
+and queues one `suggestion.undo` job in the same site transaction.
+The key binds the site, insertion and decision version. Reconcile
+unknown effects with the same signed-request rule as apply.
+
+The authorised job on an applied link:
 
 1. Read the current message and call shodhan's `plan_undo` with the
    insertion record.
@@ -277,6 +340,17 @@ The action `setu.suggestion.undo` on an applied link:
    "needs a person" list with the current text beside the original, for a
    moderator to resolve by hand or to keep the link (SUT-417). It is never
    resolved automatically.
+5. Recheck the decision and native authority on claim and send.
+   Use the signed undo intent and reconcile any unknown result.
+   Commit the verified terminal state, suppression where applicable,
+   effect receipt and notification in one fenced site transaction.
+   A historical result does not override later visibility or edits.
+   If a person later re-adds the same markup, replay may recover only
+   the original eligible undo result. It cannot remove that later link,
+   repeat suppression or change the original terminal state. Its
+   receipt says only what happened on the original revision. A current
+   eligible read owns the display of current link presence.
+   A stale attempt cannot issue a different effect or post a result.
 
 ### Links removed outside Sutradhar
 
@@ -296,8 +370,19 @@ The action `setu.suggestion.undo` on an applied link:
   source sentence holding the anchor changed, or the destination's title
   or first post changed.
 - Reset (`setu.connection.reset`) lifts a suppression or rejection block,
-  with a reason, recorded in the audit log. The next analysis may suggest
-  the pair again.
+  with a reason, recorded in the audit log. Bind the exact 0020 plan to
+  the current site, canonical source and destination threads and the
+  identity of the active block. The same pair, kind and fingerprints
+  can have a later block with a different identity. After checking the
+  caller's current action and result authority, reconcile a retry by
+  its exact original idempotency key and plan before checking for a
+  fresh reset. A proved committed result returns only its currently
+  permitted history and makes no new change. Hold any unproved earlier
+  outcome until it is reconciled. Apply an unperformed reset only if the
+  plan, current authority and active block still match. A changed block
+  gives SUT-803. Commit the lift, reset history, existing audit and
+  event records and result once under the owning local transaction.
+  The next analysis may suggest the pair again if it is still eligible.
 - Approve and reject racing: the first commit wins; the other sees
   SUT-570.
 
@@ -329,20 +414,77 @@ query forgets its filter.
 - `review_decision_private`: actor ref to site user id; erasable.
 - `insertion`: the insertion record, post id, old and new hash, applied
   time, the add-on's result id.
-- `connection_block`: canonical source and destination threads, kind
-  (suppressed or rejected), fingerprints of both sides when made, made at,
-  reset at and by.
-- `apply_outbox`: job id, suggestion, kind (apply or undo), idempotency
-  key, attempts, next try, lease with heartbeat.
+- `connection_block`: site, canonical source and destination threads,
+  active occurrence identity, kind (suppressed or rejected), fingerprints
+  of both sides when made, made at, reset at and by. Each activation has
+  a new occurrence identity, including when a previous block is reinstated.
+- Apply and undo execution records live in spec 0019's execution and
+  reconciliation ledger: job and attempt ids, suggestion, kind,
+  idempotency key, attempt, fence, checkpoint and result. Workers discover
+  work only from spec 0019's queue. The effect ledger is for
+  reconciliation. Unique decision and insertion identities prevent a
+  repeated logical apply or undo.
 - `needs_person`: case id, kind (undo conflict, or apply failed after the
   save), opened, resolved.
-- The add-on keeps `xf_sutradhar_apply_log` (idempotency key, post id, old
-  hash, new hash, outcome, time; 7 days). It holds hashes and ids, never
-  message text.
+- Spec 0021 owns XenForo's effect receipt store. Spec 0031 owns the
+  WordPress journal. The service ledger needs no message text.
 - The audit trail (lekha) keeps one minimal, append-only event per action,
   refusals and failures included: suggestion id, action, outcome code,
   time and a pseudonymous actor ref. Identities live apart and can be
   erased without rewriting the sequence.
+
+### Post-launch review evidence
+
+Spec 0057 owns the release criterion and cohort. For each exact
+native platform and profile admitted for it, add two nullable fields
+to the same-site `review_decision` record:
+
+| Field | Contract |
+| --- | --- |
+| `review_origin` | A typed value, `native_human_review` for a verified human action from the native staff review page, or `other_verified` for an authenticated origin known to be outside that route. Null means the origin proof is unavailable. |
+| `review_audit_ref` | Positive PostgreSQL bigint referring to that decision's committed 0032 audit sequence in the exact same site. Null means no qualified reference. |
+
+Set them with the original decision when the native handler and paired
+service prove the site, registered review action, authenticated human
+and required review permission at the original commit. Derive the
+origin from the verified native handler context. A client field,
+referrer, general management API call or a current actor lookup cannot
+supply native review proof. Record `other_verified` only if the
+server-side dispatch proves a specific authenticated non-review
+origin. Client fields and referrers provide no such evidence.
+Use the existing paired route. Store the provenance and audit
+reference together once with the action decision. If either proof
+is absent, leave both fields null. Do not infer them
+for older rows. Outside the qualified evidence profile leave these
+fields unset. Neither field authorises an action or changes native
+review, apply or undo rights. Extra evidence being unavailable does not
+change the owning action's result or its mandatory audit checks.
+
+Qualify the 0032 sequence for this use. The eligible decision and its
+exact same-site audit entry commit together. The audit entry's object
+references bind the stable decision ID and version. Qualify the 0032
+append path to lock the same-site audit chain head before assigning
+its sequence and keep the lock through commit. Verify that sequences
+reflect that committed order, that replay keeps the same reference and
+that no earlier required evidence can appear after a verified cut.
+A sequence number, hash chain, wall clock or outbox order alone gives
+no such proof. Keep the existing review locks in order and qualify
+their ordering with the audit lock under concurrent decisions and
+terminal effects. The commit does no release-window scan and holds
+no audit lock for a site call or evidence hand-off. A measured
+profile must still meet the existing review speed, resource and
+public-page footprint limits below.
+
+For a completed Undo, keep the human intent and its origin reference.
+Use the existing worker-owned terminal effect record and the 0032
+entry committed with its fenced result. The terminal audit object
+references bind the exact originating decision, insertion and signed
+removal receipt. Only verified `removed` supplies the terminal sequence
+for spec 0057. The worker does not write `review_decision` for this
+projection and gains no new credentials or grants. A retry of the
+same terminal outcome keeps the same eligible decision and order key.
+Pending, unknown, already gone, conflicted and outside-review edits
+provide no eligible terminal result.
 
 ### Actions, events and endpoints
 
@@ -362,9 +504,8 @@ query forgets its filter.
   `.applied`, `.apply_failed`, `.rejected`, `.recalculated`, `.parked`,
   `.retired`, `.trashed`, `.restored`, `.purged`, `.stale`, `.removed`,
   `.gone`, `.undo_conflict`, and `connection.reset`.
-- The add-on's `apply` and `undo` endpoints are called only by the
-  service. They take post id, old hash, new message, new hash and
-  idempotency key, and answer with the outcome and the saved hash.
+- The service calls the signed apply and undo intent routes of spec
+  0021. The add-on returns the bound outcome and result fingerprint.
 
 ### Failure codes
 
@@ -403,35 +544,41 @@ No failure leaves a post half edited.
 ### Observability
 
 - Metrics: decisions by action and outcome; click-to-live time; apply
-  retries; outbox depth and oldest age; recalculations by outcome; parked
-  and trash-bin sizes; purges; retirements by reason; undo outcomes; links
+  retries; relay lag and oldest unreconciled apply or undo;
+  queue and attempt state; recalculations by outcome; parked and
+  trash-bin sizes; purges; retirements by reason; undo outcomes; links
   gone; review workload (queue age, time to review).
-- One trace runs from the click through the service, the job and the
-  add-on.
-- Alerts: outbox older than 10 minutes; apply failures above 1% in an
-  hour; any "needs a person" case older than 7 days.
+- One trace runs from the click through the service, the spec 0019 job
+  and the add-on.
+- Alerts: an apply/undo event unreconciled for 10 minutes; apply failures
+  above 1% in an hour; any "needs a person" case older than 7 days.
 
 ### Ganit outputs used
 
-All nightly; the service shadow-tests and activates each, and keeps the
-last good one when a job is late. Review-queue order (4); "my share", a
-fair split across moderators that never hides suggestions except the
-opt-in hold-back test (26); contested cases (31); review time per
-suggestion (50); often-rejected targets, which rank lower and appear on an
-admin list for one-click suppression, never suppressed automatically (97);
-changepoints in daily decisions for a workload alert (168); queue size
-forecast (206); moderator availability by hour (217); mini neighbourhood
-graphs (271); how acceptance fades with age (309); time to decision per
-queue (321).
+All nightly outputs are inert candidate evidence until spec 0077 names
+them in a complete active champion manifest. Spec 0077 alone shadow-tests,
+promotes and rolls back that champion; a late or failed candidate leaves
+the verified champion unchanged. The candidate outputs are review-queue
+order (4); "my share", a fair split across moderators that never hides
+suggestions except the opt-in hold-back test (26); contested cases (31);
+review time per suggestion (50); often-rejected targets, which rank lower
+and appear on an admin list for one-click suppression, never suppressed
+automatically (97); changepoints in daily decisions for a workload alert
+(168); queue size forecast (206); moderator availability by hour (217);
+mini neighbourhood graphs (271); how acceptance fades with age (309);
+time to decision per queue (321).
 
 ## Limits
 
-- Batch approval: at most 50 per batch, or the lower researched top.
+- Batch approval: at most 50 per batch, or a lower top admitted through the
+  batch-evaluation record and ordinary confirmed settings route.
 - Recalculation interval: 7 to 90 days. Trash bin: 90 days, fixed.
 - Memory, inside the service slice, within the memory limits in AGENTS.md
   section 5.6 (no models): sujhav adds at most 32 MB to the API; the jobs
-  (apply, undo, sweeps) use at most 64 MB, holding one post's message at a time,
-  with at most 4 jobs at once. Estimates to be measured.
+  (apply, undo, sweeps) use at most 64 MB, holding one post's message at a
+  time, with at most 4 jobs at once. These are admission ceilings, not
+  measured results; the affected profile cannot run until its measured
+  resource receipt passes.
 - The add-on adds at most 8 MB of peak memory per request.
 - Signed messages older than 5 minutes, dated in the future or with a
   single-use number seen in the last 5 minutes are refused.
@@ -442,8 +589,8 @@ queue (321).
     100,000 waiting within 300 ms at the API;
   - another moderator's approval appears within 1 s at the 95th
     percentile;
-  - the approval check (locks, re-checks, outbox) at most 150 ms at the
-    95th percentile;
+  - the approval check (locks, re-checks and authoritative commit) takes
+    at most 150 ms at the 95th percentile;
   - the daily sweep and the trash purge, each over 1,000,000 suggestions,
     within 60 s, yielding to live work; one recalculation costs one
     backfill match;
@@ -456,7 +603,88 @@ queue (321).
 
 This part adds nothing to public pages.
 
+### Portfolio summary read
+
+Return the number of `complete` suggestions in the main staff review
+queue. Use its eligibility and site scope. Exclude the parked list,
+shadow rows, trash and work already being applied. Update for every
+state or eligibility change, including restore from the trash.
+
+Expose one bounded, site-scoped summary read under spec 0102. Its
+source and failure cases run in IT-SS-06 with the owning module.
+
 ## How it is tested
+
+- IT-REVIEW-EFFECT: repeat approval and replay its event after an
+  inbox crash. Check one job. Lose the reply after a site save.
+  Reconcile the verified effect without a second edit. Expire
+  the receipt and refuse a blind retry. Run the same cases for
+  undo and revoke authority before send and after a native save.
+  In separate apply and undo cases, save the native effect and its
+  receipt, lose the reply and then commit a later human edit before
+  recovery. After apply, the human removes the link. After undo, the
+  human changes nearby text and adds an unrelated link. Recover the
+  matching original receipt and show the original save as history.
+  Derive any current link status from a separate eligible read of
+  the current post. Without that read, withhold the current status
+  and post text. Check that every byte from the later edit survives
+  and recovery makes no second native write. Repeat an undo event
+  and check that suppression and terminal state commit only once.
+  Separately, confirm the native undo and its service receipt, then
+  let a moderator reinsert the identical link in a later revision.
+  Use matching pre-undo body bytes and hash but a different current
+  native revision. Restart and replay the exact original undo. Return
+  its historical result under current rights, with the original job,
+  native receipt and suppression unchanged. Make no native write.
+  Without a current eligible read, the card withholds link status.
+  With that read, it may show the link now present while retaining
+  the true original undo history. Run on both admitted native adapters.
+  Revoke the site pairing before a queued save is sent. Check zero
+  native sends. In a separate apply or undo case, send the signed
+  intent, lose the reply, revoke the pairing and cancel through the
+  existing authorised job action. At the safe point, the job stops
+  and releases its lease. The site result stays unknown. A late
+  reply under the revoked pairing supplies no proof, the stopped
+  job sends no receipt read or retry, and recovery makes no second
+  native write. With current access in a separate case, a verified
+  terminal refusal ends its exact request without retry.
+  Open the staff result for an exact action with a retained native
+  receipt. Withdraw only that moderator’s native review permission.
+  Keep the site pairing and receipt valid. Reopen the result and
+  release a pending refresh. Both refuse action details and post
+  text. First prepare a response while review access is valid, then
+  withdraw access before server release. The server withholds it.
+  In a separate run, let the server release the response while
+  eligible but delay its arrival at the open view. Withdraw access
+  and let the existing poll report the refusal. Clear the affected
+  details and actions. Deliver the earlier response and restore
+  the old browser view in separate cases. Neither can redisplay
+  details after the observed refusal. Keep the earlier server
+  release evidence separate from the later display decision.
+  Verify no new approval, save or undo. A fresh eligible read can
+  show its current allowed projection. A separate viewer with
+  current 0032 audit permission can still see the retained minimal
+  event for that action.
+  In a separate case, lose the native reply and let its recovery
+  receipt expire before verifying the result. Keep the original
+  approval audit entry visible to its permitted viewer. A recovery
+  attempt presented with that entry alone leaves the effect unknown
+  and makes no second native write or retry.
+- **IT-0028-FIELD-EVIDENCE.** Approve and reject separate cards
+  concurrently through the native staff review page. Prove the
+  committed decision and audit-reference joins and ordering. Replay
+  each action and attempt to supply false origin through the API.
+  An unqualified profile and an older record cannot prove provenance.
+  Complete a native review undo after a later approve. Only the
+  verified terminal audit sequence orders the undo. Repeat the
+  receipt and check one terminal result. Wrong-site or stale effects
+  and pending, already gone or conflicted outcomes cannot supply
+  terminal proof. Run concurrent approved and rejected cards plus
+  terminal undo commits while the local window is read. Measure the
+  exact evidence profile against the existing approval, effect and
+  review throughput checks. No extra public-page work. Review
+  decisions and native effects keep their existing permission and
+  state checks in all cases.
 
 Rust tests live in `crates/sujhav/tests/` unless stated. All use synthetic
 posts, fakes (`SuggestionRepo`, `ForumReader`, `VisibilityOracle`,
@@ -467,7 +695,20 @@ posts, fakes (`SuggestionRepo`, `ForumReader`, `VisibilityOracle`,
 2. Approval races: two approvals within 10 ms record exactly one; the other
    sees SUT-570 (`approve_race.rs`, and a stress test on the test
    PostgreSQL). One approval sent twice with one key gives one decision and
-   one job (`approve_idempotent.rs`).
+   one job (`approve_idempotent.rs`). Join `approve_race.rs` and
+   `recalculate.rs` for one suggestion with previewed target A and a
+   staged re-score proposing B. Both targets remain visible and native
+   content and grants stay unchanged. Commit approval first in one
+   run. The delayed replacement loses its version guard, and exactly
+   one decision and apply job keep A. Restart the worker with a newer
+   scoring epoch and unchanged current approval and hard-rule proof.
+   Keep the original apply job and target. The signed native intent
+   still needs its normal checks. Reverse the order in a separate run.
+   The old A plan receives the current-state stale-preview result
+   (SUT-803). B appears as its own unapproved suggestion. Check there
+   is no decision, approval event, apply job or native send for the
+   losing approval. Replay each losing attempt and preserve the
+   winning state without adding another result or effect.
 3. Allowance: eight approvals racing for a thread's last place under loom
    give exactly one success, SUT-574 for the rest and no deadlock
    (`loom_allowance.rs`). A thread with four content links, one quote link
@@ -489,7 +730,20 @@ posts, fakes (`SuggestionRepo`, `ForumReader`, `VisibilityOracle`,
    stays (`acceptance/cap_038_undo.rs`, plus a property test over
    generated later edits); a changed link text opens a SUT-417 case
    (`undo_conflict.rs`); a removed pair is not suggested until a reset
-   (`acceptance/cap_039_reset.rs`).
+   (`acceptance/cap_039_reset.rs`). In that reset fixture, preview B1
+   with the existing authorised actor. Revoke reset permission before
+   an unperformed commit in one branch and leave B1 active. Separately
+   commit the reset and lose the reply. Use the existing analysis and a
+   new authorised rejection to make B2 with the same site, canonical
+   pair, kind and both fingerprints. The active identities differ.
+   Retry the exact committed reset with current rights. Recover only
+   B1's authorised history and keep B2 active. Repeat after revoking
+   action and result rights. Refuse without exposing the prior result.
+   In a separate run, keep the first plan unperformed. Use another
+   authorised reset and a new rejection to replace B1 with B2. Apply
+   the unperformed B1 plan. Expect SUT-803 and a fresh preview. Check
+   the committed replay kept one successful reset and event, with zero
+   added native effects and the current block distinct from history.
 7. Reject: the pair never returns unless the anchor sentence, the
    destination's title or first post changes (`reject_return.rs`).
 8. Recalculation (`recalculate.rs`): at 29 and 31 days only the older is
@@ -501,8 +755,22 @@ posts, fakes (`SuggestionRepo`, `ForumReader`, `VisibilityOracle`,
    SUT-581. Three recalculations park (`parking.rs`). Interval 14 is
    accepted; 5 and 120 are refused (`recalculate_setting.rs`).
 9. Trash bin: restore after 40 days withdraws the rejection, lifts the
-   block and the label (`acceptance/cap_trash_restore.rs`). At 89 and 90
-   days only the 90-day item is purged and a restore answers SUT-580
+   block and the label (`acceptance/cap_trash_restore.rs`). In that
+   fixture, commit the restore of rejection B1 and lose the reply.
+   Let the eligible recalculation return the card. Reject through
+   a new authorised action to make B2 with the same canonical
+   pair and fingerprints. Its block and learning label are
+   different. Retry the original plan and idempotency key under
+   current result rights. Recover only B1's permitted history.
+   The card remains rejected, B2's block and label stay active,
+   and B1's withdrawal is recorded once. No second recalculation,
+   withdrawal event or native edit follows. Repeat with lost
+   result access and withhold the historical result. In a
+   separate run keep the first plan unperformed. Complete a
+   separately authorised B1 restore and then reject again as B2.
+   Submit the unperformed old plan. SUT-803 asks for fresh review
+   and both B2 records stay in place. At 89 and 90 days only the 90-day
+   item is purged and a restore answers SUT-580
    (`purge.rs`, plus a property test over ages and clocks). A purge killed
    half-way purges every due item once and nothing else (`chaos_purge.rs`).
    Undone links and resets land in the bin and restore as stated
@@ -530,7 +798,18 @@ posts, fakes (`SuggestionRepo`, `ForumReader`, `VisibilityOracle`,
 13. Signing: a reused single-use number, an old time or a changed body is
     refused with SUT-577 and nothing is saved (`sign.rs` and a PHP test).
 14. Batch: 20 ticked, three stale, gives 17 applied and three reported
-    (`acceptance/cap_037_batch.rs`).
+    (`acceptance/cap_037_batch.rs`). Separately order three eligible
+    same-site items. Commit the first decision and native effect with
+    its exact receipt. Interrupt before the second approval and lose
+    the batch reply. Revoke the caller's approval and result rights.
+    Keep the first decision and receipt. Do not approve, enqueue or
+    send either remaining item, or disclose protected results on replay.
+    In the current authorised control, use the original ordered plan
+    and item identities. Reconcile the first result once. A previously
+    unperformed item proceeds only if its current individual checks
+    pass. Vary permission or the exact selected version on one such
+    item and verify refusal. Refuse a reordered or substituted plan.
+    The first receipt and the batch result produce no second native edit.
 15. Load and speed: another's approval shows within 1 s; 100,000 waiting,
     paged for 2 minutes, answer within 300 ms at the 95th percentile
     (`load_review.rs`); click to live at most 3 s at the 95th percentile on
@@ -540,11 +819,14 @@ posts, fakes (`SuggestionRepo`, `ForumReader`, `VisibilityOracle`,
     site's or private rows when a query omits its filter (`rls.rs`, SQL
     test against the test PostgreSQL).
 17. Rule-critical code (re-checks, allowance, connection rules, state
-    machine, hash checks, purge): 100% lines, branches and MC/DC, every
-    mutant killed, property tests, and Kani proofs: `applied` is never
-    reached without `approving`; the allowance never passes its limit; an
-    approved link is never nested and never repeats a connection; the purge
-    never deletes an item less than 90 days in the bin.
+    machine, hash checks and purge) follows ADR-0020. Code admitted to its
+    strict core requires 100% line, branch and MC/DC coverage and every
+    killable mutant killed; equivalent mutants require proof and independent
+    review. Other code retains risk-appropriate coverage and these property
+    tests and Kani proofs: `applied` is never reached without `approving`;
+    the allowance never passes its limit; an approved link is never nested
+    and never repeats a connection; the purge never deletes an item less
+    than 90 days in the bin.
 18. Each fixed bug gets a regression test that fails on the parent commit.
 
 ## Changes from the source
@@ -562,7 +844,8 @@ posts, fakes (`SuggestionRepo`, `ForumReader`, `VisibilityOracle`,
 - Speed goals follow the 5% median rule; the old speed-multiple goals are
   dropped.
 - Ganit is the Rust numerical engine inside the service.
-- Coverage adds MC/DC and kills every mutant, as AGENTS.md section 6 sets.
+- Coverage and mutation requirements follow ADR-0020; its strict-core
+  targets are not universal.
 
 Source: `docs/specifications/linking/suggestions.md`,
 `linking/suggestions-2.md`, `linking/suggestions-3.md`,

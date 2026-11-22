@@ -33,9 +33,9 @@ Phase 7 item 2 (the public manual on GitHub Pages).
 
 ### Generated parts
 
-1. Settings pages come from Sutradhar Boot's typed settings. Command
+1. Settings pages come from Behemoth Boot's typed settings. Command
    pages come from the `sutra` command's structure. Error pages come
-   from one central catalogue of `SUT-NNN` codes.
+   from one central catalogue of numeric `SUT-` codes.
 2. Each generated item says when a user needs it, its default or
    expected result, and what to do.
 3. Every error message on screen carries its code and a link to its
@@ -52,8 +52,9 @@ Phase 7 item 2 (the public manual on GitHub Pages).
 
 ### Screenshots
 
-1. Screenshots are taken from the real Dioxus app, using made-up fixture
-   data, in light and dark themes.
+1. Capture the real Tauri app with Angular and SDS on the admitted
+   desktop profiles, with made-up data and both themes. Where setup or
+   a screen differs by platform, show the exact labelled variant.
 2. Private data is never opened to make a screenshot.
 3. Before a screen exists, the build reports the missing screen. It
    never puts in a mock-up shown as a capture.
@@ -70,9 +71,12 @@ Phase 7 item 2 (the public manual on GitHub Pages).
 ### Builds and previews
 
 1. The manual is built with mdBook, pinned in `gate/tools.toml`.
-2. At the push tier, Dell builds the candidate's manual in an isolated
-   workspace that holds only the approved made-up fixtures and the
-   admitted metrics export, and runs every check below.
+2. At push, Dell builds the manual in an isolated workspace with
+   approved synthetic fixtures and the admitted metrics export.
+   Admitted platform runners make desktop captures. Dell verifies
+   signed evidence for the exact
+   candidate, build, profile, fixture and theme. Missing or foreign
+   evidence fails. QR-099 owns Windows runner admission.
 3. The built site is stored as a new, unchangeable snapshot named after
    the candidate tree. The owner can see its pages or screenshots on
    request. Previews never go to GitHub Pages, so nothing needs removing
@@ -91,6 +95,13 @@ Phase 7 item 2 (the public manual on GitHub Pages).
    3. writes the version switcher data, pointing `latest` at the newest
       qualified release, or stating that no stable release exists yet;
    4. uploads the whole site and deploys it to Pages.
+
+   Before upload, verify that `dev` has the generated references,
+   required captures and any admitted metrics input for its exact
+   synced commit. Use only public inputs admitted by this workflow.
+   If any required input is missing or belongs to another build,
+   hold the deploy and keep the published site.
+
 3. Each full version, patch numbers included, keeps a frozen manual.
    Frozen manuals are never rebuilt. Each release attaches its built
    manual as a release asset whose hash is recorded on Dell. The
@@ -103,6 +114,22 @@ Phase 7 item 2 (the public manual on GitHub Pages).
 5. Older frozen manuals and the version switcher are kept. Before the
    first release, the site states plainly that no stable release
    exists, rather than showing a false `latest`.
+
+   Bind the served version subtree to its exact verified frozen
+   asset through the admitted deployed-file manifest. A matching
+   archive digest cannot stand in for served file verification.
+   A label, redirect or mirror asset alone supplies no result.
+
+   For an exact release read-back under 0005, verify the versioned
+   Pages URL against the signed release identity and its frozen asset
+   digest through the authorised deployment evidence. Use the
+   observed deployment for this read. Keep the original verified
+   publication receipt as history. A newer release on `latest`
+   leaves the older exact version check eligible. Check `latest`
+   independently against the current qualified switcher. Missing or
+   mismatched read-back gives no new success and preserves verified
+   history. A read never moves `latest`, changes a frozen edition,
+   starts a deployment or repeats a release effect.
 6. The workflow file is a protected file under
    [AGENTS.md section 9.3](../../AGENTS.md#93-github-ci). It uses only
    official actions pinned by commit hash. It has no private data, no
@@ -110,10 +137,45 @@ Phase 7 item 2 (the public manual on GitHub Pages).
    source. No Pages step depends on the owner's editing computer being
    awake.
 
+#### Frozen asset arrives after the synced main run
+
+A main-triggered run can finish before the final release and its frozen
+asset reach the mirror. A later asset or mirror receipt does not prove
+a Pages deployment. A hold before dispatch leaves the published site,
+frozen editions and `latest` in place. After an authorised dispatch
+with an uncertain result, keep the last verified publication receipt
+and show the deployment as unverified until exact read-back. The held
+receipt grants no repeat or rollback.
+
+QR-245 owns the protected trigger or rerun for this case. With an
+admitted route, match the exact synced commit, verified release and
+frozen asset digest. Bind the current authorised Pages deployment
+and the complete proposed version map before dispatch. Preserve
+current `dev`, the newest qualified `latest` and every frozen
+edition. A late run may add a missing verified edition under the
+admitted route. Hold a stale bundle if the current deployment or
+required inputs change before the protected dispatch step. Rebuild
+only from the current authorised complete plan. If the route cannot
+prove it preserves newer publication, hold. Reconcile an uncertain
+deploy against its exact recorded attempt and owning read-back.
+A missing listing or elapsed deadline cannot prove no deploy. Retry
+only under the admitted route after proving the original did not
+perform the effect, fencing the old attempt and checking current
+authority and expected deployment. If the original
+completed, return its verified read-back without deploying again.
+An already verified tag or release keeps its own receipt under 0005.
+
 ### The manual in the app
 
-The same manual is built into the desktop app, so the owner can read it
-without a network.
+Package the manual in the app. Keep same-release recovery help and
+stable local error links in the verified installer bundle. Open them
+without launching its installer, app or engine. Spec 0030's separate
+trust check applies before treating the bundle as genuine. For a paused
+update, match the guide's signed release and recovery step to the
+original recorded update under specs 0030 and 0031. A prior release's
+verified guide cannot substitute for that plan's help. If the match
+is unproved, keep **Update paused** with Resume and Rollback held.
+Opening the guide cannot launch the app or change the installation.
 
 ### Checks
 
@@ -183,21 +245,98 @@ site:
   tree identity and never published.
 - A frozen manual asset whose hash differs from the recorded one stops
   deployment.
+- Under a separately admitted QR-245 late route, prepare a full site
+  bundle against the current authorised Pages deployment A. Keep the
+  verified release, mirrored asset and complete proposed version map
+  fixed. Before dispatch let another authorised run commit deployment
+  B with the same served files and visible version map as A. The pending
+  bundle's expected deployment is still A. Hold without upload or
+  deploy until a fresh authorised complete plan binds B. Keep the
+  existing site and release and mirror receipts. The exact control
+  adds the missing verified edition under the complete plan bound
+  to B and preserves `dev`, qualified `latest` and all frozen editions.
+  Use synthetic deploy effects only.
 - A `main` update publishes `dev` without touching any frozen version
-  or `latest`.
+  or `latest`. Offer a missing required input or a capture from another
+  commit. The workflow holds before upload and preserves the prior site.
 - `latest` moves only when the release step has published a qualified
   release with its manual asset.
-- Release 1.0.1 leaves the 1.0.0 manual unchanged.
+- Release 1.0.1 leaves the 1.0.0 manual unchanged. After the
+  qualified 1.0.1 update to `latest`, read back the exact 1.0.0
+  versioned URL and deployed frozen bytes. Use the observed current
+  deployment with the original signed asset binding. The 1.0.0 read
+  passes and the separate `latest` read returns 1.0.1. Offer 1.0.1
+  bytes at the 1.0.0 URL, a missing version route and a candidate
+  preview in separate trials. Also offer a plausible version subtree
+  with the wrong frozen asset or deployment binding. Each case
+  withholds new success and retains
+  verified publication history. The check changes no pointer,
+  deployment, tag, signature or release.
+  In a separate read-only case keep the 1.0.0 versioned URL,
+  observed deployment and all served files exact. Public access
+  still works. Offer only the original verified deployment
+  receipt after it no longer meets the admitted current proof
+  requirements. Keep that receipt as history. Withhold a fresh
+  verified read-back or closure result. The exact current proof
+  under the admitted reader clears only this check. The public
+  read and the proof check change no release or deployment state.
 - The workflow cannot write repository contents, make branches or read
   anything private.
 - Before the first release, the site states that no stable release
   exists.
 - Both themes pass the contrast and accessibility checks, driven by a
   headless browser, and every page works by keyboard alone.
-- Once the product exists, the whole Getting started path is followed
-  word for word on a clean test machine and ends in the first accepted
-  link. Until it can be, the manual reports the missing capability and
-  does not claim full acceptance.
+- MAN-PLATFORM: follow Getting started on clean Ubuntu 26.04,
+  Debian 13 and Windows 11. Reach the first accepted link on XenForo
+  2.3 and each supported WordPress major. Exercise native grant
+  refusal under spec 0031 IP-15 and spec 0030's Windows pre-launch
+  trust check with a changed installer. On Ubuntu and Debian,
+  reuse IT-0030-VERIFIED-STAGE from spec 0005. Follow the manual
+  through the graphical verifier and native installer. Plant a
+  changed package after verification and separately remove proof
+  of the same staged copy at handoff. The owning 0030 check gives
+  SUT-832 before any install effect. Follow the same-release help
+  to repeat verification, with no effect until the check passes.
+  Check both themes, keyboard, screen-reader use and exact
+  candidate screenshots.
+- MAN-OFFLINE: disconnect the network. Find local help for install,
+  pairing, backup, restore, removal and an error code. Repeat
+  recovery with no installed app or engine, using verified media.
+  Join 0030 test 16 and 0031 IP-40 for a paused update. Stop the app
+  and engine after the data format changes. Offer verified guides
+  for both the previous release and the recorded update. Open only
+  the guide that matches the recorded held step. In separate cases
+  give only the earlier guide or withhold the original update record.
+  Show the safe hold with no Resume or Rollback. Keep current files
+  and data. Opening help launches neither payload. Hold the
+  walkthrough if platform proof is missing.
+  In a separate offline case keep the paused update on release B.
+  Offer the verified B guide and a later independently verified
+  release C bundle and guide on local media. Both guides list the
+  same error code. With the app and engine stopped, follow the
+  recorded error link to B's exact held step. Withhold the B guide
+  in a separate run. Keep the safe hold even though C is genuine.
+  Both runs keep the current data and launch neither installer,
+  app nor engine. Reading B grants no Resume or Rollback.
+  On each admitted Linux and Windows offline recovery profile, keep
+  the exact recorded hold, independently verified current guide and
+  current package fixture. Provide valid manifest M and release
+  record R. Offer a genuine earlier fixture verifier qualified
+  only for the manifest check, under 0065's existing test route.
+  This verifier has no admitted reader for the required record R.
+  Allow the verified guide to open for read-only help. Hold native
+  package use, recovery launch and Resume or Rollback. Preserve
+  current data. The exact current admitted verifier is the control
+  for package proof and supplies no automatic recovery action.
+  In the IP-26 current-data-format branch, retain the independently
+  verified previous payload A and recorded update B's verified local
+  guide. The current data format is incompatible with A. Offer a
+  genuine page from B for an interrupted download as the held
+  rollback step's help. It cannot match this recorded step. Keep
+  Update paused, data and receipts intact. The correct B page opens
+  read-only and gives the current data format reason from 0030.
+  Neither branch starts A, resumes writes, offers Resume or Rollback,
+  or reports a verified return or SUT-835.
 
 ## Changes from the source
 
@@ -205,8 +344,8 @@ site:
   `llms.txt` index is kept, made by our own build step.
 - Settings, command and error pages come from Rust types and the `sutra`
   command, not from the old model and command libraries.
-- Screenshots come from the Dioxus app, captured with a headless
-  browser.
+- Desktop screenshots come from the real Tauri window. The
+  publication checks use a browser for the built manual.
 - Runnable examples are Rust and shell examples run as tests.
 - Previews per pull request and the `gh-pages` branch are gone, since
   only `main` exists.

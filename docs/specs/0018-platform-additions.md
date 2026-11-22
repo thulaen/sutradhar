@@ -14,7 +14,7 @@ history, not a name.
 
 ## What it does
 
-Every idea here goes through GanitEvolve research before it is built
+Every idea here goes through Ganit Vikas research before it is built
 (see "Research questions" below).
 
 ### A. Extensions: eleven rules
@@ -58,7 +58,8 @@ metrics and audited approval. The changes:
    keeps data unless deletion is chosen.
 7. **Reasons.** Detail shows grants per site and who approved them. If
    clean-up cannot finish, the screen says why, with a new error code
-   (SUT-810 to SUT-819 are all used; a number is still to be given).
+   (SUT-810 to SUT-819 are defined by spec 0037; the code for this
+   case is taken from that range).
 8. **Check command.** `sutra extension check FILE` runs Add's own
    manifest checks offline, from the same code, with no copy of the
    rules. Broker contract tests ship with `namaste`. Its sample reads
@@ -167,8 +168,12 @@ people's posts stand. The changes:
 4. The label is the same for every removed member and shows no initial,
    count or joining date.
 
-To research: whether a kept hidden reference is still personal data
-where law applies (not legal advice).
+Whether a kept hidden reference remains personal data in each supported
+jurisdiction is a readiness blocker owned by the privacy research record.
+Qualified legal review must assess the reference, its linkability and the
+erasure threat model before that reference may ship. Until then erasure
+removes the hidden reference as well as the name mapping; no legal
+conclusion or weaker retention behaviour is inferred (not legal advice).
 
 ### E. Feature owner map, checked by the gate
 
@@ -230,29 +235,39 @@ where law applies (not legal advice).
 1. Every backup is encrypted by the service before it is written
    anywhere off the computer: bucket, NAS or download. The local copy is
    the same encrypted file, so there is one format.
-2. The owner holds the key. A public-key kind is preferred (to
-   research), so the service keeps only the half that encrypts and
-   cannot decrypt. The other half is shown once for the owner to save.
-   It is never kept on the computer and never enters a support bundle.
+2. The owner holds the key. A public-key scheme is preferred so the
+   service keeps only the half that encrypts and cannot decrypt. The
+   other half is shown once for the owner to save. It is never kept on
+   the computer and never enters a support bundle. Whether an admitted
+   public-key scheme meets the backup threat model is a readiness
+   blocker; until the security evidence admits one, off-computer backup
+   is unavailable rather than silently using another key scheme.
 3. No key, no off-computer backup, and the screen says why. There is no
    fallback to plain text. `backup.encrypt_off_server` is always on.
-4. The encryption library must pass the dependency licence and
-   admission checks. Which one is to research.
+4. The exact encryption library and version are readiness blockers.
+   The owning security research record must supply its immutable
+   dependency identity, licence, cryptographic design review,
+   vulnerability evidence and interoperability test vectors. Without
+   that admission, the backup implementation cannot build or run.
 5. Restore needs the owner's key, goes to an isolated target, and
    applies the erasure list after decrypting and before use.
 6. The Backups screen says in plain words: lose the key and the backups
    cannot be read. It names the recovery material to keep.
 7. The upgrade backup check accepts a backup that is encrypted, whose
-   checksum holds and whose last owner-run restore drill passed within
-   a researched time. Restores are tested by these drills plus checksum
-   checks.
+   checksum holds and whose last owner-run restore drill passed within the
+   admitted maximum drill age. That age is a readiness blocker owned by the
+   backup-recovery research record; upgrade cannot proceed without it or
+   without a passing drill. Restores are tested by drills plus checksum checks.
 
 ### I. Upgrade from a package file, with no internet
 
 1. A second way in: the owner loads one package file on the Upgrade
-   screen or with a `sutra` command (name to be given). It holds the
-   signed release manifest, every image by digest, notices and any
-   listed model.
+   screen. A `sutra` package-upgrade route is also required, but its exact
+   command name, arguments and output contract are readiness blockers
+   owned by the offline-upgrade research record. The CLI route cannot be
+   implemented or exposed until that record admits them; the screen route
+   does not imply an undocumented command. The package holds the signed
+   release manifest, every image by digest, notices and any listed model.
 2. Everything after is the same as an online upgrade: approval, pause
    at once, backup check, check of every digest, migrations, smoke
    test, rollback. An unsigned package is refused, as online.
@@ -266,7 +281,23 @@ where law applies (not legal advice).
 5. The extension hold (A2) applies to a package upgrade too.
 6. Self-updating by pulling from anywhere is not included.
 
-### J. Languages after English
+### J. Language support
+
+Version 1 supports British English (DR-081). Known unsupported or
+unknown language holds the operation with its own reason. For each
+item use a current, admitted native British-English content claim,
+or an owner-approved British-English single-language site profile
+with no contradictory item evidence. Generic `en`, spelling, URL and
+browser locale give no British-English claim by themselves. Explicit
+unsupported content evidence or a conflicting claim holds. A short
+item may inherit current thread evidence under spec 0026 if it agrees
+with the same site authority and has no contrary evidence. Keep the
+site, content revision and language-authority revision with the
+decision. Recheck both ends at recommendation and apply on XenForo
+and WordPress. A changed revision invalidates a prior decision.
+Version 1 has no candidate, setting or optimiser input for the
+deferred locale methods in spec 0079. Restored settings cannot
+enable them. The expansion design below applies after version 1.
 
 1. After English, in the owner's order: French, German, Spanish,
    Chinese, Japanese, Korean, Italian, Shona, Zulu, Ndebele, Swahili,
@@ -290,20 +321,24 @@ where law applies (not legal advice).
 
 ### Settings
 
-Every setting ships on, with a researched value, a safe bottom and a
-safe top.
+A fixed safety switch ships as shown. Every value marked "blocked" is a
+readiness blocker owned by this specification's research card and
+Ganit Vikas evidence record. The affected feature cannot build or run
+until that record supplies the value, safe bottom and top, supporting
+evidence and approval. There is no implicit default; unrelated admitted
+features remain available.
 
 | Setting | Default | Range |
 | --- | --- | --- |
 | `extensions.contract_hold` | on, no off switch | fixed |
-| `layouts.max_per_admin`, `max_bytes` | to research | safe bottom, top |
-| `records.max_versions`, `max_bytes` | to research | safe bottom, top |
-| `records.keep_days` | to research | not below `undo.keep_days` |
-| `faults.hold_max_bytes`, `max_entries` | to research | safe bottom, top |
-| `faults.hold_keep_days` | to research | safe bottom, top |
+| `layouts.max_per_admin`, `max_bytes` | blocked: no admitted values | safe bottom, top |
+| `records.max_versions`, `max_bytes` | blocked: no admitted values | safe bottom, top |
+| `records.keep_days` | blocked: no admitted value | not below `undo.keep_days` |
+| `faults.hold_max_bytes`, `max_entries` | blocked: no admitted values | safe bottom, top |
+| `faults.hold_keep_days` | blocked: no admitted value | safe bottom, top |
 | `backup.encrypt_off_server` | on, no off switch | fixed |
-| `upgrade.package_max_bytes` | to research | safe bottom, top |
-| `text.languages.order` | owner's list | supported flag per language |
+| `upgrade.package_max_bytes` | blocked: no admitted value | safe bottom, top |
+| `text.languages.order` (after version 1) | owner's list | supported flag per language |
 
 ### Research questions
 
@@ -336,7 +371,7 @@ This part adds nothing to public pages.
 ## How it is tested
 
 Rust tests unless marked; SQL tests for database rules; screen tests
-on the Dioxus app with an accessibility check.
+on the desktop app with an accessibility check.
 
 - PA01: a manifest whose `contract` excludes the broker is refused,
   problem named (unit, extension manifest tests).
@@ -406,21 +441,31 @@ on the Dioxus app with an accessibility check.
 - PA44: a full upgrade runs with the network off, through the same
   steps, and rollback works.
 - PA45: an unsigned package is refused.
-- PA46: the order setting decides which language is next.
+- PA46 (after version 1): the order setting decides what comes next.
+  Version 1 exposes no language-order setting.
 - PA47: an unsupported language is skipped with the named reason, never
   as English.
-- PA48: no link is placed in unsupported text.
-- PA49: a language cannot be marked supported without its accuracy run
-  on record.
+- PA48: on both platforms, accept a current eligible profile and
+  refuse explicit unsupported language, bare `en` with no admitted
+  profile, contradictory claims and changed source or target
+  evidence. A restored old decision cannot approve an insertion.
+  Keep current same-site review access to an eligible retained
+  historical reason under 0027 and 0032 while its source language
+  authority is superseded. A new recommendation or apply using
+  that old evidence is refused. Withdraw the moderator’s current
+  read scope and repeat the history request. It gives no reason
+  or protected content.
+- PA49 (after version 1): new language support requires its accuracy
+  run. In version 1 an older restored setting grants no support.
 
 ## Changes from the source
 
 - Decision logic (contract range, upgrade hold, record checks, owner
   map, unfiled finding, fault bound, language state) is Rust, proved
   with Kani, Verus or Creusot.
-- Researched limits come from ganit and GanitEvolve, in Rust.
+- Researched limits come from ganit and Ganit Vikas, in Rust.
 - Layouts, labels, previews and the extension, backup and upgrade
-  screens are Dioxus app screens built from SDS components.
+  screens are desktop app screens built from SDS components.
 - "The browser may preview, never decide" becomes "the app may preview,
   never decide"; previews come from the service over the local socket.
 - Extensions add no screens of any kind; the old desktop-shell rule is

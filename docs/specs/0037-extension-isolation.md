@@ -221,8 +221,8 @@ a timeout and its own small pool.
 - An extension cannot raise its own grants.
 - The manifest's licence is shown; a missing licence gives a stronger
   warning.
-- The extension SDK and the broker's contract are also offered under a
-  permissive licence, besides AGPL-3.0-or-later.
+- The extension SDK and the broker's contract are licensed under
+  Apache-2.0, like the app.
 
 ### Screens
 
@@ -314,7 +314,7 @@ Rust tests unless named:
 - EX-02 (property): generated manifests with unknown keys, unknown
   grants, missing limits or a tag instead of a digest are refused with
   SUT-810 naming the problem.
-- EX-03 (Dioxus app test): a "Not reviewed" package needs the tick, and
+- EX-03 (desktop app test): a "Not reviewed" package needs the tick, and
   approval is audited with the grants shown.
 - EX-04 (unit and property): every generated description has its own
   namespaces, no host folder, no socket but the broker's, no added
@@ -356,12 +356,14 @@ Rust tests unless named:
   database finds no route and no credential.
 - Tests also cover the contract range, a held upgrade, per-site
   approval, refusal after withdrawal and export before update.
-- Coverage is 100% of lines and branches; speed targets are held by the
-  5% median rule of AGENTS.md 6.8.
+- Coverage follows ADR-0020: only admitted strict-core components require
+  its 100% line, branch, MC/DC and killable-mutant targets, with equivalent
+  mutants proved and independently reviewed; other code follows the owning
+  risk matrix. Speed targets are held by the 5% median rule of AGENTS.md 6.8.
 
 ## Changes from the source
 
-- Screens are the Dioxus app built from SDS components, with Rust
+- Screens are the desktop app built from SDS components, with Rust
   screen tests.
 - Speed: the 5% median rule of AGENTS.md 6.8 replaces the old ratchet.
 - Extensions run on the owner's PC, where the service runs, sealed off

@@ -1,25 +1,30 @@
 # 0070: Capability workflows
 
+> ADR-0021 superseded this specification on 19 November 2026.
+> This page records the former design. See spec
+> [0057](0057-quality-judging.md) for release quality assessment and
+> spec [0079](0079-ranking-method-catalogue.md) for the ranking-method floor.
+
 A capability workflow runs separately shipped actions of spec 0020 one
 after another, each action reading the artefact the action before it
-wrote. Capabilities count "workflows and actions", by the owner's
-decision, towards the capability floor in [AGENTS.md
-section 3](../../AGENTS.md#3-the-goal-and-the-release-bar). A workflow
-counts once when it does something different from every other counted
-capability and passes its own end-to-end tests; a changed setting never
-makes a new capability. This spec says how workflows are written down,
-when one counts, how the `qualify` verifier (spec 0064) proves that no
-two counted capabilities behave the same, and how the live product runs
-a workflow when a person or an agent asks. It mirrors spec 0067, which
-does the same for methods, and is roadmap Phase 7 item 1.
+wrote. ADR-0020 removes the former capability floor. A workflow receives
+one stable identity only when it does something different from every
+other admitted capability and passes its own end-to-end tests; a changed
+setting never makes a new capability. This spec says how workflows are
+written down, admitted and checked for duplicate behaviour, and how the
+live product runs one when a person or an agent asks. Workflow evidence
+supports spec 0064's feature qualification but creates no independent
+release quota. It mirrors spec 0067 for methods and is roadmap Phase 7
+item 1.
 
 Example: an audit shape has four slots. Slot 1 crawls the site (a full
 crawl or a signed-in crawl), slot 2 runs one audit check (redirect chains or
 missing titles), slot 3 orders the findings (by traffic or by impact)
 and slot 4 turns them into Fix list tasks. That shape has 2 × 2 × 2 × 1
-= 8 workflows. Each counts only if all its actions are shipped with
-their own evidence, it ran end to end on the test sites in a qualified
-run and its output differs from that of every other counted capability.
+= 8 candidate workflows. Each receives admission only if all its actions
+are shipped with their own evidence, it ran end to end on the test sites
+in a qualified run and its output differs from that of every other
+admitted capability. These possibilities are not a release quota.
 
 ## What it does
 
@@ -198,14 +203,12 @@ all of these hold:
 
 Each single capability's runner-signed result whose action writes an
 artefact kind of `catalogue/artefacts/` carries the same two digests,
-worked out the same way, so both sides of every comparison are signed
-(spec 0064); a single capability whose action writes no such kind is
-never compared with a workflow. A workflow's review is as spec 0064
-sets for a capability workflow. A workflow takes its primary scope from
-its shape's signed `W-` row in spec 0064's scope register, and counts
-in that area's share. Workflows count in the capability total and the
-capability in-scope total; they never count in the method total or the
-ranking subtotal.
+worked out the same way, so both sides of every comparison are signed;
+a single capability whose action writes no such kind is never compared
+with a workflow. A workflow's independent review binds the workflow
+shape and exact candidate evidence. Its result supports the owning
+feature's scope area under spec 0064. It creates no capability total,
+in-scope share, method total or ranking subtotal.
 
 ### Proving workflows differ
 
@@ -634,8 +637,8 @@ sites:
   confirmation; `--yes` and MCP never confirm it.
 - A failure in slot 2 leaves slot 1's artefact as a draft and applies
   nothing.
-- The capability share counts a workflow in its shape's scope row, and
-  no workflow reaches the method total or the ranking subtotal.
+- A workflow supports its owning feature's qualification evidence. It
+  creates no capability share, method total or ranking subtotal.
 - A run whose lists would pass the scratch-space limit, or whose cost
   would pass the execution time limit, is refused before it starts;
   so is a manifest range that starts at 0, starts above its end, runs

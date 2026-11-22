@@ -42,7 +42,7 @@ the difference and its size the next morning.
 
 Out of scope: live spending caps and every deletion (the consuming
 modules); statistics, forecasts and cost models (ganit); screens (the
-Dioxus app); metrics, traces and alerts (observability); search
+desktop app); metrics, traces and alerts (observability); search
 signals (spec 0044).
 
 The catalogue holds 6 programs, 40 jobs (H1 to H40) and 61 platform
@@ -277,7 +277,8 @@ add-ons' own logs and notes; screens; daily mission reports.
 
 - SUT-860 input refused before the run (hash, totals or schema).
 - SUT-861 program failed, or ended without its trailers.
-- SUT-862 output refused by validation; the last good one is kept.
+- SUT-862 output refused by validation; the verified champion remains
+  unchanged and no consumer activates the rejected candidate.
 - SUT-863 a guard refused a decision; nothing was deleted for it.
 - SUT-864 reconciliation break, shown with its size and age.
 - SUT-865 job overdue beyond its lookahead; an AutoIssue is filed.
@@ -431,7 +432,7 @@ Also:
   are dropped.
 - The signing key is held by tijori.
 - Memory follows the limits in AGENTS.md section 5.6, not the old 5.6 GB.
-- Screens are the Dioxus app.
+- Screens are the desktop app.
 - The recommended answer to each open question is taken: the six
   names, next-night receipts, the typed bill total, hisaab after ganit,
   the rounding rules, the S01 to S18 moves and the backup rule.

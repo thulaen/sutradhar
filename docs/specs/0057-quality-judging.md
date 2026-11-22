@@ -1,586 +1,613 @@
 # 0057: Quality judging and release assessment
 
-Before a release, two judges each read at least 1,000 of Sutradhar's
-link suggestions and say, for each, whether it is a good link and why.
-By default both judges are local pure-Rust graders, built on different
-methods, and nothing leaves Sutradhar. Only when the owner turns it on,
-an AI judge may take part: a model on AWS Bedrock, with the owner's own
-key, or an AI tool the owner connects through Sutradhar's MCP server.
-The judges first judge without seeing each other's answers. Where an AI
-judge disagrees it sees the other's reasoning, without knowing whose,
-and judges again; a third round makes a failure name the rule broken
-and a pass answer it. Cases never settled count as failures. Results count only
-if the lower end of the 95% confidence
-range is at least 95%, so a lucky sample cannot pass. Then every release
-rule is checked together, and the release goes ahead only if all pass;
-otherwise the screen says exactly which failed and why. Every release is
-also battle tested. It is roadmap Phase 7 item 1, the release gate of
-[AGENTS.md section 3](../../AGENTS.md#3-the-goal-and-the-release-bar).
+## Purpose and ownership
 
-Example, with an AI judge on: 500 fresh suggestions; the judges agree on 470 in
-round one and settle 22 more later; 8 stay contested and count as failures. Of
-the 500, 485 pass: the lower end of the range is about 95.1%, so this passes.
-With 484 it would be about 94.9% and fail, even though 96.8% passed.
+This specification owns relevance and usefulness labels, evaluation
+protocols, ranking and suitability metrics, statistical evidence and the
+release assessment. Spec 0077 owns optimisation and the four controller
+outcomes. Spec 0076 owns feature-design readiness. Spec 0064 owns complete
+Version 1 scope qualification. Spec 0019 owns the product queue
+and transactional outbox.
 
-## What it does
+nDCG@10 at least 0.95 is a mandatory release floor. It is not an
+aspirational target, a measured result or proof that 95% of proposed links
+are suitable. One is the theoretical maximum. The independent BM25 gate,
+link suitability, severe failures, safety, calibration and resource gates
+remain mandatory.
 
-### Words used here
+## Evaluation artefacts and trust
 
-- Judge: a grader that reads only what it is given and returns a
-  verdict. Local judges are pure-Rust graders and are the default. An
-  AI judge is a Bedrock model or an AI tool connected through the MCP
-  server, used only when the owner turns that route on, with no tools.
-- Judging pack: a batch of suggestions with their context, the rubric
-  (the written rules for a good link) and the verdict format.
-- Verdict: pass or fail, a reason code and one line of explanation, in a
-  strict JSON format.
-- Round: one pass of judging; up to three.
-- Lower 95% bound: the lowest true pass rate consistent with the
-  results, 95 times out of 100 (Clopper-Pearson intervals).
-- Release candidate: an exact tagged version being assessed.
-- Soak: 72 hours of supervised, uninterrupted running.
-- Protocol file: the frozen rules for sampling, intervals and subgroups,
-  fixed with its SHA-256 before any scoring.
+Every evaluation run freezes and hashes:
 
-The rubric's content is its own owner-approved file. How suggestions
-are made, the reconstruction protocol and the release tagging route
-belong to other specifications.
+- candidate and champion manifests;
+- source-content snapshots and complete-reading receipts;
+- source permissions and visibility at evaluation time;
+- query, candidate-pool and destination identities;
+- label rubric, labels, adjudications and label-policy version;
+- training, development, calibration, nightly-search and held-out split
+  membership;
+- BM25 implementation, tokenisation, fields, parameters and output rules;
+- metric protocol, thresholds, strata, seeds and statistical method;
+- runtime, models, spaCy pipelines, dependency locks and hardware profile;
+- every result, exclusion, error and controller or release receipt.
 
-### Crates and traits
+The evaluation-label and threshold store is strict-core under ADR-0020.
+Only authorised, independent label reviewers and adjudicators can write
+it. Packaged Python workers and Optuna receive typed read-only views
+through the admitted Rust bridge and cannot change labels, thresholds,
+split membership, source permissions or the release policy. No first-party
+Python production adapter is permitted. A changed protocol creates a new
+evaluation identity; results cannot be moved across identities.
 
-- `eval`, a crate under `tools/`, never shipped in the add-ons: packs,
-  judges, rounds, caching, verdict records and the Arrow export of
-  verdicts (ids, verdicts, reason codes and rounds; never post text). A
-  karya job on Dell runs it. Its records live in PostgreSQL in their own
-  schema, with RLS forced.
-- ganit, which karya triggers after judging: Mulyankan job 126
-  (pass-rate intervals and pass marks), 127 (recall and anchor-agreement
-  intervals), 128 (paired comparisons on the same posts, for "no worse
-  than the last release") and 133 (sampling that matches the site's
-  mix); Satya, ganit's engine for truth, job 150 (judge agreement), 152
-  (judge bias and deference) and 156 (clusters of disagreement that
-  point to an unclear rubric). Each output carries its reproducibility
-  stamp (code version, snapshot, seed) and passes the numerical guards.
-  Job 151 (a combined best estimate of truth) is a report only, because
-  the counting rule below is fixed.
-- Results are read in the Dioxus app's screens and in Rust lab runs with
-  recorded inputs and outputs, through the versioned API and the Arrow
-  exports.
-- `publisher::assess` reads every criterion's evidence and gives the
-  release decision.
+Model scores are not labels or factual evidence. Agent judges may assist
+with usefulness labels but do not replace the release adjudication
+process or judge their own candidate model.
 
-```rust
-pub trait Judge: Send + Sync {
-    fn id(&self) -> JudgeId;
-    async fn judge(&self, pack: &Pack, round: Round)
-        -> Result<RawVerdicts, JudgeError>;
-}
-pub trait VerdictCache: Send + Sync {
-    async fn get(&self, key: &CacheKey) -> Result<Option<Verdict>>;
-    async fn put(&self, key: &CacheKey, v: &Verdict) -> Result<()>;
-}
-pub trait Criterion: Send + Sync {
-    fn id(&self) -> &'static str;
-    async fn assess(&self, rc: &Candidate) -> Assessment;
-}
+## Relevance and usefulness rubric
+
+Each query names a source passage or thread task, an anchor where
+applicable, an eligible judged destination pool and the intended reader
+task. Every returned destination receives an integer grade from 0 to 4:
+
+| Grade | Meaning |
+|---:|---|
+| 0 | Irrelevant, misleading, contradictory, stale for the task or otherwise unsuitable |
+| 1 | Weak topical overlap but no useful reason to follow the link |
+| 2 | Relevant and potentially useful; counts as relevant for MRR and Recall@40 |
+| 3 | Relevant, contextually appropriate and useful; counts as a good link for Precision@6 |
+| 4 | Direct, highly useful and evidence-rich destination with excellent contextual and entity/version fit |
+
+Labels consider topical relevance, anchor fit, answer usefulness, intent,
+evidence quality, entity/version fit, information gain and editorial
+suitability. These correspond to the eight prediction heads in spec 0077,
+but head outputs never supply the labels.
+
+Two independent qualified reviewers label each promotion item without
+seeing model scores or each other's answers. Disagreement of more than one
+grade, any disagreement across the grade-2 or grade-3 boundary, and every
+severe-failure flag require a third senior adjudicator. The adjudication
+record names the rubric criterion and evidence. An unresolved item blocks
+data quality; it is not assigned zero to make evaluation convenient.
+
+Usefulness is also assessed independently by agent judges as a 0–4 score
+using the same evidence pack. Agent-judged usefulness is reported
+separately from human-adjudicated relevance. Judge agreement, invalid
+answers, systematic bias and drift are measured. Any disagreement across
+the good-link boundary requires human adjudication before release use.
+Agent judges are version-pinned, blind to candidate identity and never the
+embedding, reranker or neural ranker being evaluated.
+
+Outside AI routes for product data remain off unless the owner enables
+them. Their packs
+are bounded and redacted, site text is untrusted data, no tools are
+available and credentials are isolated. Local judging does not require an
+outside route.
+
+Project push and release use ADR-0021's synthetic fleet. Freeze
+three XenForo and three WordPress sites before judging. The fleet
+covers tech and PC repair, personal finance and legal basics,
+health and fitness, and hobbies. Each site and declared stratum
+contributes eligible judgments.
+
+Use three independent pinned AI makers. Apply two blind judgments
+per selected item. The third maker resolves ties. Assign real work
+across all three. Bind actual maker, model version and rubric
+receipts to the frozen allocation and candidate. Judges see only
+made-up packs and have no tools or credentials. Missing evidence or
+unresolved grades block. Human adjudication and the relevance
+rubric still apply. This does not change product-data consent.
+
+## Dataset splits and held-out governance
+
+Thread and time separation prevents a source thread, its later posts or
+near-duplicate destination versions from crossing training, development,
+calibration and held-out splits. Split assignment uses immutable content
+and thread identities, not outcome-dependent selection.
+
+Optuna, early stopping and calibration never read weekly promotion labels
+or per-query hidden answers. Weekly evaluation returns only authorised
+aggregate receipts and the controller outcome. A new held-out rotation is
+created under the label policy before repeated candidate selection could
+adapt to the previous set. Rotation never removes a difficult forum or
+stratum from the eligible population.
+
+The tiers are:
+
+| Tier | Threads | Queries | Purpose |
+|---|---:|---:|---|
+| Local | 16 | 32 | Development diagnosis only |
+| Push | 48 | 96 | Required six-site and three-maker proof. Diagnostic scores give no promotion authority |
+| Extended integration | 256 | 512 | Challenger screening |
+| Nightly Optuna | 512 | 1,024 | Search and pruning |
+| Weekly promotion | 2,000 | 4,000 | Mandatory promotion evidence |
+| Monthly integrity | All eligible threads | Separate reconciliation | Source, permission, label and result integrity |
+
+Samples are stratified across forums, languages, source types,
+publication periods and thread lengths. The protocol declares strata and
+allocation before seeing candidate scores. A missing required stratum is
+`BLOCK_FOR_DATA_QUALITY`; no post-hoc reweighting or exclusion is allowed.
+
+## Ranking metric definitions
+
+### Common rules
+
+Metrics use the adjudicated labels from the frozen judged pool. Query
+macro averages give each eligible query equal weight. Forum results give
+each eligible query in that forum equal weight. Per-forum and stratum
+results accompany the overall result.
+
+Duplicate destination identities occupy no additional credit. The first
+returned occurrence keeps its rank; later occurrences have zero gain and
+are recorded as output defects. A returned item with no eligible label,
+an unauthorised or stale source, a changed source version or an
+incomplete-reading receipt causes `BLOCK_FOR_DATA_QUALITY`; it is never
+silently treated as grade zero.
+
+An unfilled rank has zero gain and zero good-link credit. Abstention does
+not reduce a metric denominator. Coverage and abstention are reported
+separately, and the product's 3–6 suitable-destination contract still
+applies.
+
+### nDCG@10
+
+For relevance grade `rel_i` at one-based rank `i`:
+
+```text
+DCG@10 = sum over i = 1..10 of (2^rel_i - 1) / log2(i + 1)
+IDCG@10 = DCG@10 for grades sorted descending from the eligible judged pool
+nDCG@10 = DCG@10 / IDCG@10
 ```
 
-- `RuleJudge` checks each suggestion against the rubric's written rules
-  over the parsed text (0026); `ModelJudge` grades it with its own
-  thresholds and a pinned pure-Rust grading model (role `judge` in 0024)
-  that plays no part in making suggestions: never the embedder, the
-  reranker or the first pass that chose them, so a judge never marks the
-  ranking's own work. They share no code beyond the pack reader, so each
-  judges independently, as the owner's two independent judges (R061)
-  require; the packs follow R062: each pack holds only the anchor
-  sentence with a little context around it, the target title and a short
-  excerpt, with names and other identifying details removed, and each
-  judge answers in a fixed format.
-- `BedrockJudge` sends a pack through the provider client of 0025 with
-  the owner's key; `McpJudge` offers a pack to the owner's connected AI
-  tool as a read-only MCP resource and takes its verdicts back as a
-  draft. Both exist only while the owner has turned their route on.
-- `FakeJudge` in tests returns scripted verdicts, malformed and hostile
-  ones included.
-- Each release rule is one `Criterion`; adding one touches nothing else.
-  A missing or stale piece of evidence is a fail, never a pass.
-- Redaction uses the shared scrubber with a judging profile. Every
-  interval comes from job 126 or 127, never a second copy; the service
-  only checks each output's stamp, guards and golden tests.
-- Packs are files, verdicts are JSON lines, and the release decision is
-  the logical AND of the criteria.
+Only the first ten eligible judged-pool destinations contribute to the
+ideal ranking. Missing returned ranks have grade zero for DCG. A query
+whose judged pool has no destination with grade above zero has IDCG zero:
+report it separately and exclude it from the nDCG macro average. If no
+eligible query has positive IDCG, the evaluation is
+`BLOCK_FOR_DATA_QUALITY`.
 
-### Samples and the protocol
+The release and promotion floor is:
 
-1. Two samples, assessed separately: at least 500 fixed suggestions,
-   kept from release to release, and at least 500 fresh ones made by
-   this candidate on unseen final-assessment data.
-2. Unseen data is split by thread and by time, so no thread or later
-   post used in tuning appears in the assessment.
-3. Subgroups: thread type, post length, destination popularity, site
-   section, and reply versus thread target. Each is reported, and a
-   subgroup worse with 95% confidence fails.
-4. The protocol file fixes the sample sizes, seeds, interval method,
-   subgroups and every threshold before scoring. A changed protocol
-   starts a fresh assessment. Samples are never redrawn to get a pass,
-   and difficult cases are never dropped.
+```text
+macro nDCG@10 >= 0.95
+```
 
-### Packs
+The point estimate must pass. A confidence interval cannot waive a failed
+point estimate.
 
-- Batches of 25 suggestions. Each holds the anchor sentence with bounded
-  surrounding context, the target's title and a bounded excerpt of the
-  target; a reply target includes its real reply context.
-- Bounds are whole sentences up to about 300 characters, never cut
-  mid-word.
-- Identifying data is removed: emails, phone numbers, member names and
-  the site's name and addresses.
-- Post text is untrusted data: it sits in clearly marked fields, and the
-  rubric tells the judge to ignore instructions inside it.
-- The verdict schema is strict: pass or fail, a reason code from the
-  rubric's list and one line of at most 200 characters.
+### MRR
 
-### Judging, rounds and reliability
+A destination is relevant for MRR when its grade is at least 2. For each
+query, reciprocal rank is `1/r` for the first relevant destination in the
+returned ranking, or zero when none is returned. MRR is the macro average.
+An unjudged returned destination blocks the run rather than being skipped
+while searching for a later relevant item.
 
-- Local judges run in the `eval` job with no network, reading only the
-  pack folder. They are deterministic: the same pack gives the same
-  verdicts.
-- AI judges run only on the owner's PC, where the owner's Bedrock key
-  and MCP connections live, and only while the owner has turned the
-  route on (AGENTS.md section 5.5). Packs for them are built there by
-  the same pack code; only verdicts, reason codes and pack ids return
-  to the release evidence. A Bedrock judge goes only through the
-  provider client; an MCP session sees one site's packs and nothing
-  else, under the Cedar rules. No prompt transcripts are kept.
-- Round 1 is blind. Round 2, for disagreements where an AI judge takes
-  part, shows each AI judge the other's verdict and reason without
-  naming its source. Round 3, for those still split, requires a fail
-  to cite rubric criteria and a pass to answer them. Local judges do
-  not change their answers, so a split between two local judges is
-  contested at once. Unresolved cases count as failures and are listed
-  as contested.
-- One repair of an invalid verdict is allowed; the first invalid answer
-  still counts in that judge's and round's invalid rate. More than 2%
-  invalid blocks the release.
-- First-round agreement below 95% blocks the release until an approved
-  rubric or judge correction and a fresh assessment.
-- Flip rates per judge and round are recorded. Suspicious deference is
-  flagged for the owner: a judge whose round-2 changes towards the other
-  are more than twice the other's, with 20 or more changes (job 152).
-- The judges also find coverage opportunities, independently and blind
-  to Sutradhar's output.
-- Later moderator decisions feed learning, never a finished gate result.
+### Recall@40
 
-### Caching and resuming
+For each query:
 
-- Judging starts only on an exact release-candidate tag.
-- Cache key: the content hash of the pack item, the judge's model,
-  rubric, prompt, schema and redaction versions, the round, and the hash
-  of the opposing reasoning. Any change misses the cache.
-- An AI provider's usage limit pauses the job with its reason; it resumes
-  when the window reopens and never repeats judged items.
+```text
+Recall@40 = unique returned destinations in the top 40 with grade >= 2
+            / all unique eligible judged-pool destinations with grade >= 2
+```
 
-### Nightly work and the soak
+A query with no grade-2-or-higher destination is reported and excluded
+from the Recall@40 macro average. No eligible recall queries blocks data
+quality. Duplicate destinations count once. Unjudged returned candidates
+block the run.
 
-- Nightly: non-judge checks only (hard rules, reconstruction, anchor
-  agreement, coverage on the fixed set, subgroup drift of scores).
-- An optional warning when merges have changed 50 suggestions' scores
-  uses the local judges; AI judges join only within a budget, zero by
-  default, and only when the owner has turned them on.
-- A warning when the last 200 decisions' lower bound falls 10 points
-  below the release's judged pass rate.
-- Drift sampling by AI judges runs only when the owner has turned them
-  on; the local judges may run it at any time.
-- The soak: 72 hours of the candidate's `prod` profile, ganit's nightly
-  jobs included, with production limits, supervised, with durable
-  progress. It survives the editing computer switching off. Any crash,
-  lost or duplicated work, memory over budget or service-level breach
-  fails it and restarts the clock. Elapsed time uses a monotonic clock.
+### Precision@6 and link suitability
 
-### The release assessment
+A destination is a good link when its grade is at least 3. For each query:
 
-`publisher::assess` checks every criterion for the exact candidate;
-each must pass with current evidence:
+```text
+Precision@6 = good-link destinations in the top 6 / 6
+```
 
-1. Hard safety rules at 100%, every starred hard case included.
-2. Each required quality result, on each sample, with a lower 95% bound
-   of at least 95%, and no subgroup worse with 95% confidence.
-3. Coverage of independently identified valid linking opportunities at
-   95%, with the same bound.
-4. Reconstruction recall and anchor agreement no worse than the last
-   release.
-5. Judge reliability: invalid verdicts at most 2%; first-round agreement
-   at least 95%.
-6. The 72-hour soak passed.
-7. The method, capability and checked-variant floors, both scope
-   shares and the ranking subtotal in AGENTS.md section 3. The latest
-   signed release ledger of spec 0064's `qualify` verifier for this
-   candidate, passing spec 0064's reader check, proves each count; no
-   other run kind is accepted.
-8. Every gate check of the candidate passed at 100%, the slowdown rule
-   and the release-tier memory test included; 100% line, branch and
-   MC/DC coverage, zero surviving mutants, property tests and the Kani
-   proofs of the hard rules.
-9. No open P0 in AutoIssues (the automatic issue tracker), and the
-   release gate's tracker rules met.
-10. All agreed release scope present.
-11. The licence duties met: the release's source archive and third-party
-    notices (cargo-about and ganit's licence check) are published with
-    it, and every dependency is allowed and AGPL-compatible.
-12. Every ganit output used as evidence carries a stamp matching this
-    candidate and the frozen protocol; a stale one is missing evidence
-    (SUT-855).
-13. Battle tested: every check below passed for this candidate, the
-    add-ons included, with current evidence.
-14. The release artefacts are signed, all the required reviews pass and
-    the owner approves.
+The denominator remains six when fewer than six are returned. Empty slots
+and duplicate later occurrences earn no credit. Link suitability is also
+reported as the share of all proposed links judged grade 3 or 4, with its
+own numerator, denominator, severe-failure count and abstention coverage;
+it is not inferred from nDCG@10.
 
-The Assessment screen and `sutra release assess` show each criterion
-with its result, its evidence and, for a failure, why in plain English.
-Release notes list capabilities added, changed and retired.
+### Agent-judged usefulness
 
-### Battle testing every release
+Normalise each adjudicated usefulness score to `score / 4` and macro
+average over returned proposals. Report agreement, invalid rate and
+coverage. The metric cannot substitute for human-adjudicated relevance or
+Precision@6. A missing usefulness judgement on a returned proposal blocks
+the affected assessment.
 
-The owner's rule: every release candidate, the add-ons included, gets
-fault injection, performance improvements, full defect checking,
-security checking, resource management, storage compression, memory
-management, profiling improvements, chaos testing, QA and load testing,
-so each release is battle tested not to break, bend, fold or run out of
-memory.
+### Calibration and abstention
 
-- Never breaks: no crash, lost or duplicated work, or corrupted data
-  under any injected fault; every fault ends in recovery or a plain
-  error with its code.
-- Never bends: under the full load test, 99% of new posts get a first
-  suggestion within 30 seconds, the app's targets hold, and an add-on
-  uses at most 8 MB per request.
-- Never folds: at twice the expected peak, Sutradhar slows, sheds
-  background work and refuses new work with an explanation; it never
-  collapses, and site pages are never affected.
-- Never runs out of memory: zero out-of-memory kills in the soak, load and chaos
-  runs; every part under its budget; the combined peak within the limits of
-  [AGENTS.md section 5.6](../../AGENTS.md#56-limits-on-the-owners-pc).
+Calibration uses a separate frozen split and the probability that a
+proposal is grade 3 or 4. Expected calibration error uses ten equal-width
+confidence bins `[0, 0.1), …, [0.9, 1.0]`, weighting each non-empty bin's
+absolute confidence/accuracy difference by its item count. The final bin
+includes confidence exactly 1. Temperature fitting never reads promotion
+labels.
 
-The eleven checks, each with evidence stored under the candidate's tag.
-A missing, stale or skipped result fails criterion 13. Every failure
-becomes an AutoIssue.
+Abstention threshold is an operating parameter, not an evaluation
+threshold. The evaluation reports coverage, suitability among returned
+items, severe failures and all fixed-denominator metrics. A candidate
+cannot improve its release result by silently reducing the required
+number of destinations.
 
-1. Fault injection: a fault matrix for every dependency and boundary,
-   service and add-ons: PostgreSQL and the site's database down, slow
-   or refusing; the site's API erroring or timing out; disk full; the
-   event stream cut; ganit down (degraded mode); a model file damaged;
-   malformed and replayed signed requests; the service unreachable from
-   an add-on (site pages unaffected, the add-on within 8 MB). Injected
-   through wiremock and test doubles in unit and integration tests, and
-   through process and control-group controls.
-2. Performance: the slowdown rule passes, and the release report lists
-   each hot path's improvement work this release, or the stop rule's
-   reason.
-3. Full defect checking: every test kind, 100% coverage, zero surviving
-   mutants and Kani proofs on rule-critical code, fuzzing at its
-   nightly length, static analysis in every allowed language (clippy,
-   PHPStan at its strictest, Psalm taint), and no open P0 or P1 for a
-   shipped component.
-4. Security checking: cargo-deny, cargo-audit, composer audit, gitleaks,
-   trivy on every release image, fuzzing of the management API from its
-   OpenAPI document, and the signature and replay tests.
-5. Resource management: under the full load test every part stays
-   within its CPU, process and memory limits; database pools add up
-   below the connection limit; no file handle or task leak over the
-   soak.
-6. Storage compression: stored text, snapshots and backups are
-   compressed (zstd) and verified; disk used per 1,000 posts and the
-   compression ratio may not get more than 5% worse than the last
-   release.
-7. Memory management: each part's peak against its budget in the soak,
-   load and chaos runs; no upward trend in memory over the soak
-   (ganit's job 165 finds change points); the inference watchdog's 80%
-   and 90% steps proven by test.
-8. Profiling: flame graphs, heap profiles and model operator profiles of
-   the pure-Rust models for the candidate, compared with the last
-   release's; any regression is an AutoIssue and blocks until fixed or
-   explained.
-9. Chaos testing: each part killed mid-work recovers within 60 seconds
-   with no lost or duplicated work; the noisy-neighbour test holds the
-   service levels.
-10. QA: the full acceptance suite, every app screen with visual
-    regression and accessibility checks, and each add-on installed,
-    used, upgraded and removed on its test site by a written checklist.
-11. Load testing: the 2-minute quick load test in the gate, and the full
-    load test at twice the expected peak on the 50,000-thread tier,
-    with the million-post workload projected from measured scaling. It
-    must meet "never bends" and "never folds".
+### Severe relevance failures
 
-### Data model
+A severe relevance failure is a top-ranked grade-0 destination, a
+deceptive or contextually harmful link, or an entity/version mismatch
+that could mislead a reader. A permission, privacy or source-integrity
+violation is additionally a safety failure and is never tolerated.
 
-In the `eval` schema of PostgreSQL on Dell, every table with RLS forced:
+Promotion permits no new severe irrelevant top-ranked result and no
+safety failure. Release reports absolute counts by forum and stratum and
+passes only its predefined severe-failure and safety gates. A high average
+score cannot hide one of these failures.
 
-- `protocols`: id, SHA-256, frozen at, contents.
-- `packs`: id, candidate tag, sample, items, redaction version.
-- `verdicts`: pack item, judge, round, verdict, reason code, valid,
-  repaired, cache key.
-- `results`: candidate, measure, sample, subgroup, passes, total, lower
-  bound, passed.
-- `soaks`: candidate, start, checkpoints, events, result.
-- `assessments`: candidate, criterion, result, evidence id, time.
+## Locked BM25 baseline and independent relative gate
 
-### Failure handling
+The baseline is BM25 over the locked title and post-body fields using the
+frozen tokenisation, parameters and top-six output contract. Its manifest
+binds implementation, dependency, tokenizer, field definitions, `k1`, `b`,
+field weights, judged dataset and result digests. Optuna cannot change the
+locked baseline. A separately tuned challenger BM25 configuration is not
+the baseline.
 
-- SUT-850: judge unavailable; paused.
-- SUT-851: invalid verdict after repair.
-- SUT-852: invalid rate over 2%.
-- SUT-853: first-round agreement under 95%.
-- SUT-854: protocol changed after scoring began; the run stops.
-- SUT-855: evidence missing or stale for a criterion.
-- SUT-856: soak interrupted; restarted.
-- SUT-857: provider terms not verified; judging refused.
-- SUT-858: candidate not an exact tag.
-- SUT-859: a credential visible to the wrong judge; the run stops.
+On every eligible test forum:
 
-Edge cases:
+```text
+challenger macro Precision@6 >= 1.20 * locked BM25 macro Precision@6
+```
 
-- A suggestion whose target is hidden between pack building and judging
-  is dropped from both samples and replaced by the protocol's next item,
-  recorded, never silently.
-- An AI judge's model retired by its provider mid-run: the run stops; a new
-  model needs a rubric check and a fresh assessment.
-- Both judges fail the same case for different reasons: a failure, with
-  both reasons kept.
-- A fresh sample smaller than 500 because the site is small: the
-  assessment fails; the sample is not padded.
+Both use identical judged destinations and output rules. Comparisons use
+exact rational counts or cross-products, not rounded displayed
+percentages. A zero BM25 denominator on an eligible forum makes the
+relative gate unevaluable and produces `BLOCK_FOR_DATA_QUALITY`, not an
+automatic pass.
 
-### Security and privacy
+This gate and nDCG@10 at least 0.95 are independent. Neither waives the
+other. No forum may be excluded after seeing its result.
 
-- By default nothing leaves Sutradhar: local judges grade in place.
-  Bounded, redacted packs leave the owner's PC only through Bedrock or
-  an MCP tool, and only while the owner has turned that route on. For
-  Bedrock, account terms, training controls, service locations,
-  no-tools enforcement and credential isolation are verified and dated
-  before any use (SUT-857 otherwise).
-- Packs and verdicts stay on Dell; only reviewed anonymous aggregates
-  may be public.
-- Each AI judge sees only its own credential; no judge sees the
-  other's identity.
+## Statistical comparison and power
 
-### Screens, capabilities and accessibility
+Champion and challenger are evaluated on identical frozen queries,
+sources, labels, hardware profile and request order. The primary paired
+comparison uses 10,000 query-level bootstrap resamples with replacement,
+seeded from the evaluation manifest. The same resampled query identities
+are used for both systems. The report retains the point difference, 95%
+paired interval and per-forum results.
 
-- Judging screen, `sutra judge <tag>`: CAP-162, "Get a release
-  candidate's links judged by two judges", with a switch, off by
-  default, for each AI route.
-- Assessment screen, `sutra release assess`: CAP-153, "Release a
-  version, or see exactly why it was refused".
-- Capability counts on the assessment: CAP-155; the release number:
-  CAP-156; release notes: CAP-154.
-- Soak screen, `sutra soak <tag>`: NEW-036-A, "Run and watch a 72-hour
-  supervised soak of a release candidate".
-- Contested cases list: NEW-036-B, "Review the cases the two judges
-  never agreed on".
-- The screens are Dioxus app screens from SDS components, WCAG 2.2 AA.
-  Results are a table with the measure, passes, total and the bound in
-  words ("485 of 500 passed; at least 95.1% with 95% confidence").
-  Contested cases are a list with each judge's reason. Charts have text
-  equivalents.
+Challenger improvement requires positive nDCG@10 point improvement and a
+one-sided 95% paired-bootstrap lower bound above zero. Absolute floors
+still use their point estimates. MRR and Recall@40 may not regress by more
+than 0.005 absolute at push diagnostic level; at promotion they obey the
+protected comparison in spec 0077. No tolerance waives nDCG, BM25, safety,
+suitability or severe-failure gates.
 
-### Observability
+Before promotion evaluation, the protocol estimates per-forum power from
+locked baseline variance and the paired design. Each forum must have at
+least 80% power at one-sided 5% significance to detect the required 20%
+Precision@6 relative effect. If the fixed weekly allocation cannot supply
+that evidence, the outcome is `BLOCK_FOR_DATA_QUALITY`; the release cannot
+claim the gate from an underpowered sample. The power method, inputs and
+calculation receipt are frozen before challenger scores are unblinded.
 
-`sutradhar_eval_items_total{judge,round,outcome}`,
-`sutradhar_eval_invalid_ratio{judge,round}`,
-`sutradhar_eval_agreement_ratio{round}`,
-`sutradhar_eval_flip_ratio{judge,round}`,
-`sutradhar_soak_elapsed_seconds` and `sutradhar_assess_criterion{id}`
-(1 pass, 0 fail). Judging pauses and resumes are logged with reasons. A
-failed nightly check files an AutoIssue.
+Local and push tiers cannot establish promotion. A small sample cannot
+prove tiny differences or the absolute release floor.
 
-## Limits
+## Controller and release decisions
 
-- Building packs: at least 1,000 suggestions a minute.
-- Scoring a full assessment: under 60 seconds.
-- The release assessment: under 2 minutes, excluding the soak.
-- Resuming after a usage window reopens: within 60 seconds.
-- An AI judge's own time belongs to its provider and is reported, not
-  gated. Each target follows the slowdown rule of AGENTS.md section 6
-  item 8.
-- On Dell, judging runs as a heavy job through the heavy-job queue
-  (spec 0059), `pankti run -- CMD`, in one place of 4 GB and 8 CPU
-  threads (AGENTS.md section 11): the `eval` orchestrator about
-  128 MiB and the two local judges about 512 MiB each while judging,
-  the models loaded once; then ganit, about 1 to 1.5 GB, for the
-  statistics, never at the same time as the judges (estimates).
-- On the owner's PC, AI judging runs in the service as one job in the
-  heavy job slot of 0024, within the memory limits in AGENTS.md
-  section 5.6.
-- The soak and the full load test run on pinned test machines that
-  match both sizes of owner's PC, at the `prod` limits of AGENTS.md
-  section 5.6.
-- The released product is not changed by this part.
+Spec 0077 maps evaluation to exactly `PROMOTE`, `KEEP_CHAMPION`,
+`ROLL_BACK` and `BLOCK_FOR_DATA_QUALITY`. Data-quality failure takes
+precedence. `KEEP_CHAMPION` preserves operations only; it is not a release
+waiver when the champion is below 0.95 or fails another release gate.
 
-## Footprint budget
+A release requires all of the following for the exact candidate:
 
-This part adds nothing to public pages. Battle testing checks that site
-pages load as without the add-ons when the service fails.
+1. Every feature and declared supported variant has complete spec 0076
+   readiness and acceptance evidence, and spec 0064 scope qualification
+   passes.
+2. Weekly promotion-tier nDCG@10 is at least 0.95.
+3. Every eligible forum passes the 1.20-times-BM25 Precision@6 gate.
+4. MRR, Recall@40, link suitability, agent-judged usefulness,
+   calibration, diversity and severe-failure gates pass with no protected
+   regression.
+5. Every source is authorised, current and completely read; monthly
+   integrity reconciliation passes.
+6. The 3–6 suitable internal-destination gate and all moderator approval,
+   public-write and undo controls pass.
+7. Every required check passes, strict-core assurance passes and all
+   required independent reviews pass.
+8. The 72-hour supervised production-profile soak, full load, overload,
+   memory, recovery and chaos tests pass on the declared target profiles.
+9. No open critical or high-severity shipped-component defect or security
+   finding remains, and every release fault has a disposition under the
+   tracker rules.
+10. Dependency, licence, notice, provenance and applicable legal gates
+    pass. Engineering research is not represented as patent clearance.
+11. The exact candidate meets spec 0079's per-family ranking-method
+    floor, and spec 0114's long lane passes.
+12. Obtain the spec 0005 approval after the preceding checks. The
+    protected release step signs the exact artefacts.
 
-## How it is tested
+A missing, stale, contradictory or unverifiable artefact fails its
+criterion. The assessment screen and `sutra release assess` name each
+criterion, result, evidence identity and plain-English failure reason.
 
-Paths are under `tools/eval/` unless they say otherwise.
+IT-0057-SYNTHETIC-JUDGES checks all six site identities and all three
+maker identities on push and release. Try a missing site, shared
+maker, withheld tie decision and production text. Each fails the
+required judge proof. A valid push cannot promote or release a model.
 
-- QJ-01: packs from fixture suggestions hold 25 items each, with anchor
-  sentence, bounded context, target title and excerpt, reply context for
-  replies, and whole sentences only. `tests/packs.rs`, unit and
-  property.
-- QJ-02: seeded emails, phones, member names and the site's name appear
-  in no pack. `tests/redact_props.rs`, property.
-- QJ-03: round 1 packs contain no other verdict. `tests/rounds.rs`,
-  unit.
-- QJ-04: in round 2 each judge sees the other verdict and reason with no
-  judge name or model. `tests/rounds.rs`, unit.
-- QJ-05: a case still split after round 3 is a failure and is listed as
-  contested. `tests/score.rs`, unit.
-- QJ-06: a malformed verdict repaired once is used and still counts in
-  the invalid rate; a malformed repair stays invalid. `tests/repair.rs`,
-  unit.
-- QJ-07: 2.1% invalid verdicts, or 94.9% first-round agreement, fail the
-  assessment with SUT-852 or SUT-853. `publisher/tests/assess.rs`, unit.
-- QJ-08: 485 of 500 passes; 484 of 500 fails, under the protocol's
-  method. A ganit unit test of job 126 with golden output;
-  `tests/interval_props.rs`, property (the stamp and guard checks).
-- QJ-09: a protocol file changed after scoring begins stops the run with
-  SUT-854. `tests/protocol.rs`, unit.
-- QJ-10: changing any cache key part misses the cache; changing none
-  hits and the judge is not called. `tests/cache_props.rs`, property.
-- QJ-11: a judge's usage-limit answer pauses the job with the reason;
-  it later resumes with no item judged twice. `tests/resume.rs`, unit;
-  `tests/chaos/eval_kill.rs`, chaos.
-- QJ-12: a fake judge's scripted obedience to instructions in posts is
-  caught by the schema check, and the real judges' results on the
-  adversarial fixture are reported. `tests/injection.rs`, unit.
-- QJ-13: with AI judging off, no pack leaves Sutradhar and no AI judge
-  is built; with it on, a Bedrock judge uses only the provider client
-  and the owner's key, and an MCP session sees only its one site's
-  packs. Local judges run with no network. `tests/routes.rs`, unit.
-- QJ-23: the two local judges give the same verdicts for the same pack
-  and share no grading code. `tests/local_judges.rs`, unit and
-  property.
-- QJ-24: `ModelJudge` loads only the `judge` model; asked to load the
-  embedder, the reranker or the first-pass model, it refuses.
-  `tests/local_judges.rs`, unit.
-- QJ-14: a branch name or untagged commit is refused with SUT-858.
-  `tests/candidate.rs`, unit.
-- QJ-15: with each criterion failing or missing in turn, the release is
-  refused and the criterion named. `publisher/tests/assess.rs`, unit;
-  `tests/acceptance/cap_153_release.rs`.
-- QJ-16: a process killed during a soak fails it, records why and
-  restarts its clock. `tests/chaos/soak_kill.rs`, chaos.
-- QJ-17: with a warning budget of zero, the nightly calls no judge.
-  `tests/nightly.rs`, unit.
-- QJ-18: every screen and state passes accessibility checks (axe through
-  a headless browser) and matches its screenshots. Visual and
-  accessibility tests of the Dioxus app.
-- QJ-19: scripted verdicts with known agreement, and one judge deferring
-  three times as often: jobs 150 and 152 match the golden value within
-  tolerance and flag the deferring judge. ganit unit tests with golden
-  output.
-- QJ-20: a ganit output whose stamp names another candidate or protocol
-  fails criterion 12 with SUT-855. `publisher/tests/assess.rs`, unit.
-- QJ-21: for any combination of criterion results, the decision is
-  release only if all passed with current evidence.
-  `publisher/proofs/decide.rs`, Kani proof; mutation testing of
-  `publisher`.
-- QJ-22: the verdict export's Arrow schema holds ids, verdicts, reason
-  codes and rounds only. `tests/arrow_export.rs`, unit.
+### Post-launch review acceptance
 
-Battle-testing scenarios:
+DR-152 defines the field criterion required by 0005. Launch is the
+first verified final public product release under 0005's release
+record. Candidate tags, previews, staging and synthetic runs do not
+establish launch. Only a verified pre-launch state makes this
+criterion inapplicable. Unknown launch state or a missing required
+field receipt holds the release. The synthetic, safety and resource
+criteria remain independently required.
 
-- BT-01: evidence for ten of the eleven checks fails criterion 13,
-  naming the missing one. `publisher/tests/battle.rs`, unit.
-- BT-02: each fault in the matrix, injected in turn, ends in recovery or
-  a plain error with its code, with no lost or duplicated work.
-  `tests/chaos/fault_matrix.rs`, chaos.
-- BT-03: with the service unreachable, slow or answering wrongly, site
-  pages with each add-on load as without it, and its peak stays within
-  8 MB. PHPUnit tests on each test site.
-- BT-04: at the expected peak, 99% of new posts get a first suggestion
-  within 30 seconds and the app meets its targets. Full load test.
-- BT-05: at twice the expected peak, background work pauses, new work is
-  refused with an explanation where needed, and site pages are
-  unaffected. Overload test.
-- BT-06: across the soak, load and chaos runs, no out-of-memory kills,
-  every part under budget, and the peak within the section 5.6 limits.
-  `tests/chaos/memory_budget.rs`, chaos.
-- BT-07: over the 72-hour soak, job 165 finds no upward change point in
-  any part's memory. ganit golden test; `publisher/tests/battle.rs`.
-- BT-08: a candidate 6% worse in disk use per 1,000 posts fails check 6.
-- BT-09: a flame graph showing a hot path 10% slower files an AutoIssue
-  and the release waits.
-- BT-10: a dependency with a known advisory, or a release image with a
-  high-severity finding, refuses the release (check 4).
-- BT-11: a benchmark failing the slowdown rule against its
-  fingerprint-matched baseline, or a release report with no hot-path
-  work and no stop-rule reason, fails check 2. Criterion benchmarks.
-- BT-12: one surviving mutant in rule-critical code, coverage below
-  100%, a static-analysis finding in any language, or an open P1 for a
-  shipped component each fail check 3 by name.
-- BT-13: a planted secret, a Psalm taint path in an add-on, or an API
-  request from the OpenAPI fuzzer that crashes a route each fail check 4
-  by name. Plus a fuzz target for the API.
-- BT-14: under the full load test, CPU, processes, file handles and
-  database connections read every second stay within limits, pools stay
-  below the connection limit and nothing grows without bound.
-- BT-15: each part killed mid-work recovers within 60 seconds with no
-  lost or duplicated work, and the noisy-neighbour run keeps the
-  service levels. `tests/chaos/kill_each.rs`, chaos.
-- BT-16: on each test site the written checklist (install, use, upgrade
-  and remove the add-on) and every screen's screenshots and
-  accessibility checks pass, with a record naming the candidate.
+The receipt measures the deployed review workflow, not the new
+candidate's future acceptance. Use one fixed, owner-approved production
+review cohort from one site, declared before observing its reference
+decisions. Lock the site's local identity, native platform and profile,
+review-page routes, workflow and eligibility policy. Preserve those
+values and required rights for both windows. Record the exact deployed
+producer, release and review or champion profile for each. Different
+producer builds must have verified equivalent decision and display
+semantics under the locked cohort policy. Hold a changed or unproved
+cohort. Scope or policy replacement uses the existing protected owner
+route and carries no automatic or weaker reference.
 
-BT-08 to BT-13 are unit tests in `publisher/tests/battle.rs`.
+Read only locally committed human review decisions from 0028 through
+the qualified 0053 projection. Order only by a verified 0032 audit
+sequence bound to the committed 0028 review record. An asynchronous
+job or audit-delivery order alone cannot prove that ordering. Count
+each distinct committed approve and reject once, regardless of the
+reject reason or later link application.
+Count a human review-page undo once only when the exact removal has a
+verified `removed` terminal effect. A stale, failed, `gone` or
+`undo_conflict` outcome cannot qualify. Approval counts positive. Reject and
+eligible undo count only in the denominator. An undo does not rewrite
+the recorded approval. Failed actions, batch wrappers, repeat delivery,
+automatic work, shadow or test records and native edits outside the
+review page contribute nothing. A pending undo has no terminal choice
+in the cohort until its effect is verified at the fixed cut. Its
+terminal commit sequence fixes its order. The intent and later audit
+delivery do not set that position.
 
-Rule-critical code: the release decision, the cache key, redaction and
-the round rules. They need zero surviving mutants, property tests, and
-Kani proofs where tractable, for example "the decision is release only
-if every criterion passed with current evidence" and "an unresolved
-case is never counted as a pass". ganit's jobs follow its own gate:
-unit and property tests, numerical edge cases (empty data, one
-observation, all passes, ties) and golden outputs with stated
-tolerances.
+Before the first field assessment, freeze the first 200 eligible
+post-launch decisions of the declared cohort as its reference.
+Independently attest the whole selection from the first allowed
+sequence, including the filtered evidence and the ending checkpoint.
+Hold if older actions could be eligible but lack the required proof.
+A zero-approval reference cannot admit release. Do not skip past it to
+find a better sample. Later assessments freeze their current audit
+checkpoint and take the latest 200 eligible decisions of the same
+cohort. All 200 must follow the reference end. In both windows,
+verify the enclosing audit range and the join to committed decisions,
+including decisions filtered out. Inclusion alone cannot prove
+completeness. Missing contributors, conflicting duplicates, withdrawn
+rights or unverifiable sequence coverage hold the window. Do not
+backfill an older decision to replace a selected one that loses proof.
 
-Test-first order: the protocol file, the verdict export and the ganit
-jobs with golden outputs (QJ-09, QJ-22, QJ-08, QJ-19); packs and
-redaction (QJ-01, QJ-02); rounds with `FakeJudge` (QJ-03 to QJ-06);
-cache, resume and candidate check (QJ-10, QJ-11, QJ-14); local judges
-and AI routes on synthetic packs (QJ-12, QJ-13, QJ-23); criteria
-and the assessment with the proof and mutants (QJ-07, QJ-15, QJ-20,
-QJ-21); nightly, soak and screens (QJ-16 to QJ-18). Then battle testing:
-criterion 13 (BT-01); checks 2, 3, 4, 6 and 8 (BT-08 to BT-13); the
-fault matrix (BT-02, BT-03); load, overload and resources (BT-04,
-BT-05, BT-14); chaos and QA (BT-15, BT-16); memory and leaks over the
-soak (BT-06, BT-07).
+With exactly 200 decisions in each window, compare integer approval
+counts. Pass when the current count meets or exceeds the reference
+count. Compare before percentage rounding. Equality passes the field
+criterion only. A smaller verified count fails release under
+`ERR-0057-RELEASE-GATE`. A missing, incomplete, stale or ineligible
+window returns SUT-855. Report the criterion through the assessment
+screen and `sutra release assess` with its permitted evidence reference.
+Say “Review acceptance was below the reference” or “The latest review
+decisions could not be verified”, as applicable. If launch proof is
+unknown, say “The public release history could not be verified”.
+This comparison reports
+observed health. It grants no candidate deployment or ranking authority.
 
-## Changes from the source
+#### Field evidence and custody
 
-- The release counts follow AGENTS.md section 3. Signed artefacts, the
-  required reviews and the owner's approval join as criterion 14.
-- ganit's statistics jobs and their tests are rewritten as Rust.
-- Results are read through Rust lab runs with recorded inputs and
-  outputs, not the old notebooks.
-- Screens are Dioxus app screens from SDS components; their visual and
-  accessibility tests are Rust tests.
-- Commands are `sutra judge`, `sutra soak` and `sutra release assess`,
-  built with Cargo.
-- Memory follows the limits in AGENTS.md section 5.6, not the old
-  5.6 GB with headroom.
-- Local pure-Rust judges are the default, in place of two outside AI
-  command-line judges in containers. They stay independent of the
-  ranking, as R061's two providers were: neither uses a model that
-  makes suggestions. AI judges come only through
-  Bedrock or an MCP-connected tool, when the owner turns that on.
-- The soak and full load test run on the pinned test machine, not on
-  Dell with borrowed room.
-- The 5% ratchet becomes the 5% median rule; the 20x goal is kept (0007).
-- Static analysis and audit tools are those of the allowed languages.
-- Battle testing covers the WordPress plugin as well as the XenForo
-  add-on.
-- Model operator profiles are those of the pure-Rust models.
+On the owner's PC, keep decision IDs, audit sequences, exclusion
+details, actor and site metadata, and raw records in their owning
+protected stores. The gate receives only an admitted offline aggregate
+for its exact release attempt. Use digests and counts, with no site
+address, site ID, actor, content or raw action event.
 
-Source: `docs/specifications/operations/judging.md`,
-`docs/specifications/operations/judging-2.md` and
-`docs/specifications/operations/judging-3.md` in the archive
-`archive-2026-11-08-old-repo`.
+| Evidence field | Exact meaning |
+| --- | --- |
+| `schema_version` | Integer 1 for this projection |
+| `policy_digest`, `cohort_commitment` | SHA-256 of the admitted rule and a protected opaque cohort identity |
+| `launch_record_digest`, `candidate_digest`, `release_run_id` | Verified first-final record, exact proposed candidate and protected release run identity |
+| `reference`, `current` | Each has an integer `decisions` equal to 200 and integer `approvals` from 0 to 200. Reference approvals must be positive. Each includes its exact deployed release and profile digests, verified window commitment, decision-selection proof digest and current authority proof digest |
+| `reference_receipt_digest`, `recipient_key_id` | Exact frozen signed reference and independently admitted Dell verifier recipient |
+| `issued_at`, `expires_at` | Unsigned UTC seconds for exact source issue and expiry. The deadline cannot exceed either the release run or the owner export approval expiry |
+
+The receipt and its two window commitments must bind this exact schema,
+cohort and decision rule. A copy of 200 signed leaves, a diagnostic
+dashboard count or an owner-entered value cannot supply selection proof.
+Use the 0005 release hand-off after its own recipient, producer,
+completeness and privacy qualification. Each transfer needs the owner's
+approval of the exact safe projection and recipient. Verify current
+rights and erasure state at local freeze, transfer and release approval.
+Recheck before signing and again before publication if separate.
+Revalidation binds the same frozen reference identity. A lost proof
+or unadmitted hand-off holds the criterion. An exact current receipt
+may reconcile to the same result once. A new candidate, changed evidence,
+revocation or recipient change needs fresh qualified evidence.
+
+## Scheduled execution and evidence recovery
+
+Spec 0077 owns the ranked workflows under spec 0019. Its shared job
+records carry opaque evaluation references. Labels, work positions
+and per-query results stay inside the evaluator's protected scope.
+Only signed permitted aggregates and the controller outcome leave
+that scope. Sealed release checks return only the evidence allowed
+by AGENTS.md. The signed task grants access to the release
+evaluation. Publication needs spec 0005's approval receipt.
+
+Each item and result has an idempotency key and exact input digest.
+Replay checks the current authorised allocation and its use record.
+Repeated delivery of one completed judgement returns its receipt
+without charging again or creating another label.
+
+A crashed run resumes from immutable packs and signed intermediate
+receipts. A provider usage limit pauses only the affected external judge;
+it does not redraw the sample. Protocol or model changes invalidate the
+cache and require a fresh assessment. Dead-letter, quarantine and replay
+are permission-checked and audited.
+
+In IT-0057-REPLAY-IDEMPOTENT, start weekly scoring, then activate a
+separately admitted synthetic protocol revision before the evaluator
+accepts completion. Keep model bytes, query IDs, grades, thresholds
+and measured latency equal. Stop the old evaluation with SUT-854.
+Its current-format checkpoint or a matching score cannot resume work
+under the new identity. A fresh evaluation uses its own authorised
+allocation under 0077. In the separate BDD-0057-RELEASE-EVIDENCE case,
+offer an authentic completed pass from the former protocol for the
+current criterion. Keep the current candidate and other qualifying
+proofs valid. Return SUT-855 for the stale criterion evidence and
+hold release. The old proof keeps its original scope. A fresh passing
+result for the exact current identity clears only that criterion.
+Use synthetic allocations and leave thresholds and signing unchanged.
+
+Labels, verdicts and results live in the RLS-protected evaluation schema.
+Packs contain only the required source and destination evidence. Exports
+contain identifiers, grades, reason codes, rounds and aggregates, never
+credentials or unrestricted post text.
+
+## Battle-testing evidence
+
+Every release candidate, add-ons included, retains evidence for:
+
+1. **Fault injection:** PostgreSQL, queue claims, relay, protected
+   evaluator, site APIs, storage, artefacts and judge routes fail
+   at declared boundaries. Inspect queue records after replay for
+   protected data and refuse a weekly job offered as a release. Every
+   case recovers or returns its typed error without duplicate public
+   effects.
+2. **Performance:** hot-path and end-to-end budgets pass with measured
+   baselines and load.
+3. **Defect checking:** every required test, static analysis, fuzz,
+   property, mutation and scoped formal obligation passes for the
+   candidate's risk class.
+4. **Security:** dependency and image audits, secret scanning, signature
+   and replay tests, tenant isolation, permission and API fuzzing pass.
+5. **Resource management:** CPU, memory, processes, connections, file
+   handles, queues and tasks remain within measured admission budgets.
+6. **Storage:** compression, integrity and restore checks pass; disk use
+   per 1,000 posts and compression ratio do not regress beyond the
+   approved performance contract.
+7. **Memory management:** soak, load and chaos high-water marks pass with
+   no out-of-memory kill or unexplained growth.
+8. **Profiling:** CPU, heap and admitted model-runtime profiles identify
+   regressions; a regression blocks until corrected or formally
+   dispositioned under the performance policy.
+9. **Chaos recovery:** each component killed mid-work resumes within its
+   recovery objective without lost or duplicated externally visible work.
+10. **Quality assurance:** the complete acceptance suite, accessibility,
+    visual regression and add-on install/use/upgrade/removal procedures
+    pass on both platforms.
+11. **Load and overload:** expected peak meets service objectives; twice
+    expected peak sheds background work and refuses excess safely without
+    affecting public pages.
+
+A missing check fails release. Evidence binds the candidate, hardware,
+resource profile and immutable workloads.
+
+## Error contract
+
+| Code | Meaning and outcome |
+|---|---|
+| `SUT-850` | Judge unavailable; pause the affected job and retain frozen inputs |
+| `SUT-851` | Invalid verdict after the permitted repair; block the affected assessment |
+| `SUT-852` | Invalid verdict rate above the frozen rubric limit; block data quality |
+| `SUT-853` | Reviewer or judge agreement below the rubric requirement; adjudicate or block, never average away |
+| `SUT-854` | Protocol, label, threshold or split changed after scoring began; stop and create a new authorised evaluation identity |
+| `SUT-855` | Required evidence missing, stale, contradictory or bound to another candidate; fail the criterion |
+| `SUT-856` | Soak or required resource run interrupted; restart the affected clock and preserve failure evidence |
+| `SUT-857` | Outside judge terms, privacy or credential checks fail; refuse that route |
+| `SUT-858` | Candidate is not the exact immutable release candidate; refuse assessment |
+| `SUT-859` | Credential or unauthorised content exposed to a judge; stop, quarantine and raise a security defect |
+| `ERR-0057-UNJUDGED-CANDIDATE` | Returned candidate is unjudged, unauthorised, stale or incompletely read; `BLOCK_FOR_DATA_QUALITY` |
+| `ERR-0057-EVALUATION-POPULATION` | No eligible nDCG or Recall queries, a required stratum is absent, or BM25 baseline is zero; `BLOCK_FOR_DATA_QUALITY` |
+| `ERR-0057-INSUFFICIENT-POWER` | Weekly allocation lacks the required statistical power or paired measurement is unstable; block promotion |
+| `ERR-0057-RELEASE-GATE` | nDCG, BM25, suitability, calibration, severe-failure or resource gate failed; no promotion or release |
+| `ERR-0057-MALFORMED-RANKING` | Duplicate destination, malformed ranking or denominator contract violated; record output defect and block affected evaluation |
+
+## Requirement, design and task traceability
+
+These identities group the normative contracts above. They do not show
+execution state or admit an implementation task. Derived tasks still
+follow spec 0076's readiness gate.
+
+| Requirement | Normative obligation | Design and derived task | Unit evidence | BDD evidence |
+|---|---|---|---|---|
+| `REQ-0057-METRIC-ARITHMETIC` | Adjudicated labels, exact ranking formulas, fixed denominators, unique-destination credit and explicit abstention coverage produce reproducible metrics; malformed or unjudged rankings block rather than being silently repaired | `DES-0057-EVALUATION-PLATFORM`; `TASK-0057-EVALUATION-PLATFORM` | `UT-0057-NDCG-FORMULA`, `UT-0057-NDCG-EMPTY-RANKS`, `UT-0057-ZERO-IDCG`, `UT-0057-UNJUDGED-NOT-ZERO`, `UT-0057-DUPLICATE-DESTINATION`, `UT-0057-MRR-THRESHOLD`, `UT-0057-RECALL-DENOMINATOR`, `UT-0057-PRECISION-SIX`, `UT-0057-ABSTENTION` | `BDD-0057-MALFORMED-RANKING` |
+| `REQ-0057-PROTECTED-RELEASE-GATES` | The nDCG and per-forum BM25 floors, severe-failure and complete release-evidence gates apply independently; `KEEP_CHAMPION` cannot waive release failure and no result-dependent exclusion is allowed. Apply the separate DR-152 post-launch criterion under its exact field evidence | `DES-0057-EVALUATION-PLATFORM`; `TASK-0057-EVALUATION-PLATFORM` | `UT-0057-BM25-BOUNDARY`, `UT-0057-BM25-ZERO`, `UT-0057-GATES-INDEPENDENT`, `UT-0057-SEVERE-FAILURE`, `UT-0057-FIELD-ACCEPTANCE` | `BDD-0057-KEEP-NOT-RELEASE`, `BDD-0057-NO-POSTHOC-EXCLUSION`, `BDD-0057-RELEASE-EVIDENCE`, `BDD-0057-FIELD-ACCEPTANCE` |
+| `REQ-0057-STATISTICAL-EVIDENCE` | Frozen paired queries, seeded bootstrap, preregistered power and governed held-out rotations establish comparable promotion evidence without adaptive exclusion | `DES-0057-EVALUATION-PLATFORM`; `TASK-0057-EVALUATION-PLATFORM` | `UT-0057-POWER-INSUFFICIENT`, `UT-0057-BOOTSTRAP-PAIRED` | `BDD-0057-HELDOUT-ROTATION` |
+| `REQ-0057-EVIDENCE-JUDGE-GOVERNANCE` | Read-only label and threshold views, frozen calibration, disabled-by-default outside judges and idempotent replay protect judgement provenance and prevent duplicate outcomes | `DES-0057-EVALUATION-PLATFORM`; `TASK-0057-EVALUATION-PLATFORM` | `UT-0057-CALIBRATION-BINS` | `BDD-0057-OUTSIDE-JUDGE-OFF` |
+
+| Design | Owning contract | Requirements and derived task |
+|---|---|---|
+| `DES-0057-EVALUATION-PLATFORM` | The evaluation artefacts, rubric, metric, statistical, controller, scheduler, recovery and release contracts above | `REQ-0057-METRIC-ARITHMETIC`, `REQ-0057-PROTECTED-RELEASE-GATES`, `REQ-0057-STATISTICAL-EVIDENCE`, `REQ-0057-EVIDENCE-JUDGE-GOVERNANCE`; `TASK-0057-EVALUATION-PLATFORM` |
+
+| Derived task | Implementation boundary | Upstream identities |
+|---|---|---|
+| `TASK-0057-EVALUATION-PLATFORM` | Implement the evaluation, immutable evidence and admitted package boundaries without first-party Python production code or a second metric or release-control path | `DES-0057-EVALUATION-PLATFORM`; `REQ-0057-METRIC-ARITHMETIC`, `REQ-0057-PROTECTED-RELEASE-GATES`, `REQ-0057-STATISTICAL-EVIDENCE`, `REQ-0057-EVIDENCE-JUDGE-GOVERNANCE` |
+
+## Verification design
+
+The following are required test designs, not claims that executable tests
+have run.
+
+| Test | Requirement | Case | Required result |
+|---|---|---|---|
+| `UT-0057-NDCG-FORMULA` | `REQ-0057-METRIC-ARITHMETIC` | Grades `[4,2,1,0]` and an ideal pool `[4,3,2,1]` | Compute gain as `2^rel-1`, logarithmic discount and ideal from the judged pool; compare exact rational result within the declared floating tolerance |
+| `UT-0057-NDCG-EMPTY-RANKS` | `REQ-0057-METRIC-ARITHMETIC` | Four returned results and six missing ranks | Missing ranks contribute zero and denominator remains IDCG@10 |
+| `UT-0057-ZERO-IDCG` | `REQ-0057-METRIC-ARITHMETIC` | One all-zero query, one positive-IDCG query, then only all-zero queries | First run reports and excludes only the zero-IDCG query; second returns `BLOCK_FOR_DATA_QUALITY` |
+| `UT-0057-UNJUDGED-NOT-ZERO` | `REQ-0057-METRIC-ARITHMETIC` | Grade-4 rank 1 and unjudged rank 2 | Block data quality; do not score rank 2 as zero or skip to rank 3 |
+| `UT-0057-DUPLICATE-DESTINATION` | `REQ-0057-METRIC-ARITHMETIC` | Same destination at ranks 2 and 5 | First keeps its rank; later receives no gain and emits the duplicate-output defect |
+| `UT-0057-MRR-THRESHOLD` | `REQ-0057-METRIC-ARITHMETIC` | Returned grades `[1,2,3]`, then `[1,1,0]` | Reciprocal rank is `1/2` in the first and zero in the second |
+| `UT-0057-RECALL-DENOMINATOR` | `REQ-0057-METRIC-ARITHMETIC` | Judged pool has four grade-2+ destinations and top 40 contains two unique relevant plus one duplicate | Recall@40 is `2/4`; duplicate adds nothing |
+| `UT-0057-PRECISION-SIX` | `REQ-0057-METRIC-ARITHMETIC` | Four returned grades `[4,3,2,1]` | Precision@6 is `2/6`, not `2/4`; grade 2 is relevant but not a good link |
+| `UT-0057-BM25-BOUNDARY` | `REQ-0057-PROTECTED-RELEASE-GATES` | Locked baseline exactly `0.25`, challenger exactly `0.30`, then `0.299` | First passes the 1.20 gate; second fails without display rounding |
+| `UT-0057-BM25-ZERO` | `REQ-0057-PROTECTED-RELEASE-GATES` | Baseline zero and challenger one | `BLOCK_FOR_DATA_QUALITY`, not an automatic relative pass |
+| `UT-0057-GATES-INDEPENDENT` | `REQ-0057-PROTECTED-RELEASE-GATES` | nDCG `0.99` with one forum below the BM25 margin, then BM25 passing with nDCG `0.949` | Both fail release for different named gates |
+| `UT-0057-ABSTENTION` | `REQ-0057-METRIC-ARITHMETIC` | Two good links returned and four abstentions | Precision@6 is `2/6`; coverage is reported separately |
+| `UT-0057-CALIBRATION-BINS` | `REQ-0057-EVIDENCE-JUDGE-GOVERNANCE` | Confidence 0.0, 0.1, 0.999 and 1.0 with known outcomes | Assign bins exactly at boundaries, ignore empty bins and include confidence 1.0 in the final bin |
+| `UT-0057-SEVERE-FAILURE` | `REQ-0057-PROTECTED-RELEASE-GATES` | High macro nDCG with a new top-ranked grade-0 link | Fail the severe-failure gate despite the average |
+| `UT-0057-POWER-INSUFFICIENT` | `REQ-0057-STATISTICAL-EVIDENCE` | Weekly forum sample below the frozen 80%-power calculation | Block promotion before unblinding challenger scores |
+| `UT-0057-BOOTSTRAP-PAIRED` | `REQ-0057-STATISTICAL-EVIDENCE` | Fixed queries, seed and unequal champion/challenger query sets | Paired run uses identical resampled identities; unequal inputs are refused |
+| `IT-0057-LABEL-IMMUTABILITY` | `REQ-0057-EVIDENCE-JUDGE-GOVERNANCE` | Optuna or a packaged Python runtime attempts a label/threshold write | RLS and release policy refuse it and emit the integrity audit event |
+| `IT-0057-REPLAY-IDEMPOTENT` | `REQ-0057-EVIDENCE-JUDGE-GOVERNANCE` | Duplicate evaluation request and crash after judgement before receipt | Original verdict is returned once, with no duplicate charge or label |
+| `BDD-0057-MALFORMED-RANKING` | `REQ-0057-METRIC-ARITHMETIC` | One returned ranking repeats a destination and another returns an unjudged destination | Each affected evaluation blocks under `ERR-0057-MALFORMED-RANKING` or `ERR-0057-UNJUDGED-CANDIDATE`; the later duplicate earns no credit, and no unjudged item is skipped or silently graded zero |
+| `BDD-0057-KEEP-NOT-RELEASE` | `REQ-0057-PROTECTED-RELEASE-GATES` | Champion and challenger are both below 0.95 and no challenger passes. In a separate synthetic branch retain the committed decision, restart the app and reopen its 0099 N-1430 outcome card. Keep the current Jobs read eligible. Withdraw the authority needed for the protected assessment detail previously seen. Offer the prior view and receipt on reconnect | Outcome is `KEEP_CHAMPION`; release remains refused. The eligible Jobs projection may show the historical decision of that exact run. Hold protected assessment fields and evidence references at the current read check. A saved view unlocks no details, retry or activation. The existing authorised assessment control still shows the failed criterion only within 0057 limits. No sealed rows or labels are exposed |
+| `BDD-0057-HELDOUT-ROTATION` | `REQ-0057-STATISTICAL-EVIDENCE` | Repeated weekly candidates have exhausted the permitted hidden-set use | A new governed rotation is required; difficult forums remain eligible |
+| `BDD-0057-NO-POSTHOC-EXCLUSION` | `REQ-0057-PROTECTED-RELEASE-GATES` | One difficult forum fails after scores are visible | It cannot be removed; release fails and records the forum |
+| `BDD-0057-OUTSIDE-JUDGE-OFF` | `REQ-0057-EVIDENCE-JUDGE-GOVERNANCE` | Outside judge route is disabled | No pack or credential leaves local processing and no outside judge is constructed |
+| `BDD-0057-RELEASE-EVIDENCE` | `REQ-0057-PROTECTED-RELEASE-GATES` | Any one release criterion is missing or stale. For the family-count cases, bind the synthetic protected policy profile that uses the 0079 floor. Keep quality and long-lane checks passing in three separate cases. An authorised reader opens the assessment screen and runs `sutra release assess` with a signed release-tier 0064 diagnostic ledger for the exact candidate and one 0079 family below its floor, then with a correctly signed release-tier 0064 ledger for another candidate. In the third case provide only 0055 catalogue-stage counts for the exact candidate, with no signed release ledger. | Release stays refused and names the affected criterion and the permitted evidence reference where available. Both surfaces report the ranking-method floor separately from the passing checks. Name the deficient family only for the verified shortfall. For the substituted ledger, give the candidate mismatch as the reason and expose no family outcome from that ledger. In the catalogue-only case, report missing signed evidence. Display no family result or qualified count from the catalogue figures. Use the existing access checks and redaction for all displayed evidence. |
+| `UT-0057-FIELD-ACCEPTANCE` | `REQ-0057-PROTECTED-RELEASE-GATES` | Reference has 150 approvals. Compare complete scopes with 149, 150 and 151 approvals, then a zero reference. Feed a duplicate committed approval, a rejected action with no reason, a pending undo that completes after the frozen cut, and a separate gone or conflict result. | The first three field results are fail, pass and pass. Zero cannot admit release. Count a committed choice once, exclude the pending undo at the original cut and count its later terminal removal once at the next eligible cut. Gone and conflict never count. |
+| `BDD-0057-FIELD-ACCEPTANCE` | `REQ-0057-PROTECTED-RELEASE-GATES` | Start with a staged result, then a verified final release. On a later candidate try 199 eligible decisions, an overlapping window, 200 valid but cherry-picked events, a changed site or workflow, a revoked right and an exact complete later receipt in separate scenarios. | Only verified final publication makes later field proof required. Each inconsistent or incomplete path returns SUT-855 with no pass. The exact later receipt verifies only this criterion. A failed synthetic check still refuses the release. |
+| `IT-0057-FIELD-CUSTODY` | `REQ-0057-PROTECTED-RELEASE-GATES` | Give the protected assessor an exact qualified offline aggregate, the same successful delivery again, and wrong-run, wrong-recipient, individual-event or no-longer-authorised variants. Revoke rights before signing and, in a separate case, after signing but before publication. | Match current proof and one result only. Refuse invalid evidence without production detail. Stop signing on earlier revocation and hold publication in both revocation cases. |
+
+Property tests cover ties, all-equal grades, empty pools, maximum pools,
+duplicate identities, grade boundaries, exact 0.95 and 1.20 thresholds,
+and every arithmetic edge. Formal or model-checked evidence covers the
+release-decision invariant that release occurs only when every required
+criterion has current passing evidence.
+
+## Research provenance
+
+The graded cumulative-gain metric follows Järvelin and Kekäläinen, DOI
+[10.1145/582415.582418](https://doi.org/10.1145/582415.582418). BM25,
+RRF and diversity candidates retain their citations in specs 0027 and
+0077. The Clopper–Pearson method, where used for a reported binomial
+interval, follows its original publication and is not substituted for the
+paired promotion comparison. Every statistical implementation has golden
+vectors and independent numerical review.
+
+These sources provide methods, not product thresholds or legal clearance.
+The 0.95 and 1.20 floors are owner decisions. Dataset and judge licences,
+consent, access and retention are recorded under spec 0076.

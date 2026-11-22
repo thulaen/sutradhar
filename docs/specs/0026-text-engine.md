@@ -3,33 +3,35 @@
 shodhan ("refining") is the Rust library that turns a post's stored
 BBCode into the words a reader sees, finds phrases that could become
 links, and places an accepted link by wrapping existing words without
-changing any other character. It also holds the clean-room language
-layer (tokens, word types, lemmas, noun phrases, later names, parsing,
-coreference and tone) and the content reports built on it. It serves
-the reading spec (0022), matching and anchors (0023) and staff
-suggestions (0028). It is roadmap Phase 4 item 3.
+changing any other character. It also owns the typed language-feature
+contract (tokens, word types, lemmas, noun phrases, names, parsing,
+coreference where supported and tone) and the content reports built on
+it. Approved spaCy packages provide the broad NLP implementations through
+the admitted Rust-owned bridge; no first-party Python production component
+is permitted. shodhan serves reading (0022), matching and anchors (0023)
+and staff suggestions (0028). It is roadmap Phase 4 item 3.
 
 ## What it does
 
 ### Where it runs
 
-1. The crate `sutradhar-shodhan` (Rust name `shodhan`) is a library of
-   pure functions: no network, no database, no clock, no globals and
-   no files except data its caller hands it. Time limits come from a
-   budget the caller passes, so the same code runs in the service and
-   in the Dioxus app's review preview.
-2. Parsing, readable text, the placement check, insertion and undo are
-   light and may run in any service job. Language detection, token
-   counting, the phrase index, the name model and the word-type tagger
-   hold large tables or weights, so only the service's inference jobs
-   build them. They sit behind Cargo features `lang`, `tokens`,
-   `phrases`, `names` and `tags`; the default set is empty, and the
-   preview build uses it.
-3. Long calls run on a rayon pool or through `spawn_blocking`, never on
-   Tokio's worker threads.
-4. shodhan holds no model weights. Model files are pinned in
-   `models.lock` under the models spec (0024) and passed in by the
-   caller. Models run in pure Rust (candle or tract).
+1. The crate `sutradhar-shodhan` (Rust name `shodhan`) owns deterministic
+   BBCode parsing, readable text, placement, insertion, undo and typed
+   feature orchestration. Its pure parsing core has no network, database,
+   clock, globals or files except caller-supplied data.
+2. Parsing, readable text, placement, insertion and undo are light and may
+   run in any admitted service job. spaCy pipelines and BGE tokenisation
+   run only in resource-admitted model jobs. The desktop preview uses the
+   pure parsing core and never loads model weights.
+3. Long Rust calls run on a rayon pool or through `spawn_blocking`, never
+   on Tokio's worker threads. Packaged Python calls run through the
+   admitted Rust bridge or packaged local service with bounded inputs,
+   outputs, time and memory.
+4. shodhan holds no model weights directly. Model, tokenizer and spaCy
+   artefacts are pinned in `models.lock` under spec 0024 and selected by
+   immutable compatibility keys. BGE and spaCy packages execute their own
+   algorithms; no pure-Rust model reimplementation or first-party Python
+   production adapter is allowed.
 5. shodhan adds no capability of its own; staff suggestions (0028) and
    the post X-ray screen register the ones it serves.
 6. Out of scope: reading order, piece storage, vectors and the index
@@ -42,6 +44,53 @@ suggestions (0028). It is roadmap Phase 4 item 3.
    main Rust validator and an independently written second Rust
    validator (prahari's veto). XenForo's own permission, visibility,
    pause, version and undo checks still apply.
+
+### spaCy language-feature contract
+
+`Parse(request_id, tenant_id, pipeline_key, language, source_digest, text)`
+returns a versioned `SpacyFeatureSet`. The caller supplies only complete,
+authorised readable text and its immutable source digest. The result
+contains the pipeline and knowledge-base digests, enabled packaged
+components, schema version and zero or more of:
+
+- tokens with exact UTF-8 source offsets, whitespace and sentence ids;
+- sentences with exact source offsets;
+- lemmas, parts of speech, morphological features and dependencies;
+- noun chunks where the declared pipeline supports them;
+- named entities, entity links and their confidence and knowledge-base
+  provenance;
+- text classifications and rule-based matches with their taxonomy version;
+- coreference, sentiment and relation outputs only where an admitted
+  packaged component and feature contract explicitly support them; and
+- component warnings and unsupported-capability outcomes.
+
+Offsets always refer to the immutable source bytes. Normalised or lemmatised
+text never replaces the original offsets used for anchor insertion. A
+pipeline or component-order change creates a new feature-schema identity
+and invalidates dependent features until rebuilt.
+
+The language matrix in `models.lock` declares admitted capabilities.
+A diagnostic language entry adds no product support. Under DR-081
+only British-English content can pass spec 0018 in version 1.
+For each language used by the pipeline the matrix names the
+tokeniser, trained pipeline, entity linker, knowledge base, classifier,
+packaged component, quality fixture and resource profile. Tokeniser support
+is not trained-model support. A missing trained capability returns
+`ERR-0026-UNSUPPORTED-LANGUAGE-CAPABILITY`; it never silently substitutes
+an English model or labels tokeniser-only output as NER, parsing or
+classification.
+
+Only spaCy's built-in or approved third-party packaged components are
+allowed. Custom-trained pipelines use declarative spaCy training
+configuration, immutable training data and the packaged training command.
+No first-party Python factory, callback, component or training loop is
+permitted. A required capability without an approved packaged route is
+blocked and explicitly unsupported.
+
+BGE tokenisation is a separate contract owned by specs 0022 and 0024. Its
+tokenizer digest, maximum input tokens, overflow strategy and chunking
+receipt travel with every embedding request. spaCy tokens are not assumed
+to equal BGE tokens.
 
 ### The forum profile
 
@@ -266,19 +315,21 @@ so no link is placed: the post is shown as skipped with SUT-424.
   high-accuracy mode if the measured memory fits, otherwise low
   accuracy with the accuracy change reported. Letters are counted by
   Unicode's alphabetic property.
-- A paragraph under `reading.language.min_letters` (20) does not vote
-  and takes the post's language. A paragraph the identifier cannot
-  name with confidence does not vote and holds no link.
+- A paragraph under `reading.language.min_letters` (20) does not vote.
+  It may inherit the post's current eligible language evidence if
+  it belongs to the same site and has no contrary evidence. An
+  uncertain paragraph has no vote or anchor.
 - The main language holds the most letters among voting paragraphs; a
-  tie goes to the earlier paragraph. With no voter, the thread's
-  language (from title and first post) applies; if that is unknown,
-  the post is "skipped: language unknown", never assumed English.
+  tie goes to the earlier paragraph. With no voter, use current
+  eligible thread evidence (from its title and first post) only
+  within the same site authority and without contrary item evidence.
+  Without a valid claim the post is skipped with its reason.
 - The result records the main language, each paragraph's language and
   letters, and the count of paragraphs in other languages.
 - No link goes in a paragraph whose language differs from the main
-  one, though the paragraph is still read for pieces. Version 1 reads
-  English posts; later languages follow the owner's order, forum posts
-  only.
+  one, though the paragraph may still be read for pieces. Apply
+  spec 0018 before indexing or linking. Detection of other languages
+  is a diagnostic, not support for those languages.
 - An identifier that cannot load or fails gives SUT-407 and the post
   waits.
 
@@ -374,8 +425,9 @@ which gives the same readable text, zones, links and pieces as
   sub-part is never offered alone ("Apple" in "Apple Pie Recipe"). A
   sentence-initial capital counts only if capitalised elsewhere in the
   post or a title phrase. Flagged `name_like`.
-- Noun phrases from the word-type tagger, without leading words such
-  as "the" or "my".
+- Noun phrases from the admitted packaged spaCy noun-chunk output where
+  supported, without leading words such as "the" or "my"; unsupported
+  noun chunks produce no improvised phrase source.
 - Title phrases: n-grams, keyphrases and name-like phrases of each
   destination's title (thread, resource, hub page), in its own
   language. Generic titles and stop-list phrases ("Help!", "Question")
@@ -383,26 +435,31 @@ which gives the same readable text, zones, links and pieces as
 
 ### Names
 
-Name recognition is mandatory and always on; no setting turns it off.
-The best candidate model by the selection rule below is kept.
+Name recognition is mandatory and always on for every declared Version 1
+language; no setting turns it off. The admitted packaged spaCy pipeline
+by the selection rule below is kept. A language without a passing route
+remains an explicit readiness blocker.
 
-- `NameFinder::find` takes sentences and wanted labels. The served
-  finder is our own entity model, designed, trained and run in pure
-  Rust (the candidates are under "Names: our own model" below), in
-  inference jobs only, behind `names`. No ready-made entity model is
-  shipped or needed. `FakeNameFinder` gives fixed labels in tests.
-- Input is readable text of main-language paragraphs, sentence by
-  sentence within the model's window; an over-long sentence splits at
-  word boundaries with whole-word overlap.
+- `NameFinder::find` is a typed view over `SpacyFeatureSet`, running in
+  admitted inference jobs behind `names`. It does not load or execute a
+  separate entity model. `FakeNameFinder` gives fixed labels in tests.
+- Input is complete, authorised readable text in the declared language.
+  Resource-bound splitting follows the spaCy pipeline's admitted request
+  contract and preserves exact source offsets; no part is discarded or
+  represented as a complete parse.
 - Allowed labels: person; organisation; product, brand or object;
   place; event. Refused labels: political party or movement; religion
   or religious group; nationality or ethnic group; film; music; book;
   other title of a work; language; law; date; time; money; percentage;
-  quantity; number.
-- A stretch counts only on word boundaries with score at least
-  `anchors.names.min_score` (0.5); it is never widened or trimmed. It
-  gives its label to a name-like phrase with the same span; an
-  unlabelled name-like phrase stays an ordinary phrase.
+  quantity; number. The pipeline-specific mapping must account for every
+  source label; an unmapped or unknown label is refused.
+- A stretch counts only on word boundaries with a calibrated score at
+  least `anchors.names.min_score` (0.5); it is never widened or trimmed.
+  Where the admitted pipeline exposes no comparable confidence, admission
+  must define and validate a separate abstention rule rather than pretend
+  a binary entity label has score 1.0. The stretch gives its label to a
+  name-like phrase with the same span; an unlabelled name-like phrase
+  stays an ordinary phrase.
 - A person goes to 0023's people safeguards: offered only when the
   destination's title or first post has the same name, never a
   member's user name, and marked "person".
@@ -411,21 +468,26 @@ The best candidate model by the selection rule below is kept.
   the same match key in the post is dropped; a destination title phrase
   with a refused label is left out of the index; 0023 sees only that a
   span was refused, by kind.
-- If the model cannot load or fails, SUT-425 and the post's candidates
-  wait; names are never offered unlabelled instead. Each result
-  records the model's `models.lock` entry, so a new file re-reads
-  names.
+- If the pipeline cannot load or fails, SUT-425 and the post's candidates
+  wait; names are never offered unlabelled instead. Each result records
+  the complete pipeline and component identities from `models.lock`, so a
+  new artefact re-reads names.
 
 ### Word types
 
-- Each main-language word gets a Universal Dependencies tag. No anchor
-  starts or ends on a pronoun, verb, auxiliary, determiner, adposition
-  or conjunction (`Upos::blocks_anchor_edge`), so "click here" never
-  links; the stop list and name-like rule may check types.
-- `WordTagger::tag` takes one sentence's tokens and returns 17 UD tags,
-  or SUT-426 (also for a wrong tag count); noun phrases come from
-  `chunk::noun_phrases` on the tags. `FakeWordTagger` serves tests.
-  Taggers whose models carry non-commercial licences stay out.
+- Each main-language word eligible for an anchor gets a Universal
+  Dependencies tag from the same `SpacyFeatureSet`. No anchor starts or
+  ends on a pronoun, verb, auxiliary, determiner, adposition or
+  conjunction (`Upos::blocks_anchor_edge`), so "click here" never links;
+  the stop list and name-like rule may check types.
+- `WordTagger::tag` returns the 17 UD tags for the requested source span,
+  or SUT-426 when tagging is unsupported, malformed or inconsistent with
+  the validated offsets. Noun phrases use packaged noun-chunk output only
+  where the pipeline declares it. `FakeWordTagger` serves tests.
+- Pipelines or components whose licences forbid the intended use stay
+  out. Missing trained support returns
+  `ERR-0026-UNSUPPORTED-LANGUAGE-CAPABILITY`; tokeniser-only output never
+  becomes an improvised tag or noun phrase.
 
 ### The phrase index and matching
 
@@ -666,179 +728,143 @@ types, `NameLabel`, `Name`, `Piece`, `Extra`, `Placement`, `Refusal`,
 `unwrap`, `expect`, `panic`, unchecked indexing and unchecked
 arithmetic are denied; overflow checks stay on in release.
 
-### The language layer, stage 1
+### Packaged spaCy language execution
 
-A clean-room Rust layer inside shodhan, in module `nlp`, in inference
-jobs only behind `tags`. It is the served `WordTagger`. Its key rules
-(such as "a token never crosses a line break") are proved with Kani,
-Verus or Creusot as well as tested. ganit trains, averages and scores;
-shodhan reads the exported model and computes no statistics.
+The `LanguageFeatureClient` Rust trait is the only production route to
+language features. Its admitted implementation calls `Parse` through the
+Rust-owned packaged-library bridge. `FixedLanguageFeatures` supplies
+fixed results in tests. shodhan does not implement a second tokeniser,
+tagger, lemmatiser, entity recogniser, parser or neural network.
 
-- `tokenise` splits readable text into UD v2 English tokens. Each token
-  is a code-point span with its gap: start, none, space, line or
-  paragraph. Per run of non-space characters:
-  - T1: a combining mark, zero-width joiner or non-joiner, variation
-    selector, skin-tone modifier or tag character stays with the
-    character before; no token starts on one except at a run start.
-  - T2 and T3: punctuation at the start or end splits off; a run of
-    one repeated mark ("...", "!!") is one token; a full stop ending a
-    listed abbreviation, an initial ("J.") or dotted form ("U.S.")
-    stays.
-  - T4: a web or e-mail address is one token.
-  - T5: inside a word a mark joins only for an apostrophe between
-    letters; a hyphen between letters or digits (unless
-    `split_hyphens`); a full stop between letters or digits; a comma,
-    colon or slash between digits; an ampersand or underscore between
-    letters or digits. "and/or" is three tokens, "1,000.50" one.
-  - T6: listed clitics split off: "n't", "'s", "'m", "'re", "'ve",
-    "'ll", "'d", either apostrophe ("don't" is "do n't", "can't" is
-    "ca n't").
-  - T7: listed words split: "cannot" to "can not", "gonna" to "gon
-    na", "gotta" and "wanna" likewise.
-  - Tokens never cross white space and never change the text. Every
-    token boundary is a word boundary of the segmentation above or a
-    T2 to T7 split.
-- `sentences`: a paragraph break always ends one; a line break ends one
-  when `line_break_ends` is on; a token of sentence marks (with full-
-  width and CJK forms) ends one after joined closing quotes or
-  brackets, unless the next token starts lower case (UAX #29 SB8).
-  Sentences cover every token once, in order.
-- Tagging: an averaged perceptron (Collins 2002) over Ratnaparkhi's
-  (1996) features, decoded with his bounded search keeping the best
-  `search_width` sequences and his tag dictionary (a listed word takes
-  only its listed tags). Ties go by tag order. `FixedTagger` serves
-  tests.
-- Lemmas: L1 the model's (form, tag) table; L2 the form itself for
-  proper nouns, numbers, symbols, punctuation and other; L3 lower case
-  for closed-class words; L4 for nouns, verbs and adjectives, regular
-  inflection candidates (Minnen, Carroll and Pearce 2001): "-ies" to
-  "-y", "-es" after sibilants, "-s", "-ves", "-ing" and "-ed" with
-  doubled consonant undone and final "e" restored, "-er", "-est"; the
-  first candidate the lexicon knows for the tag wins, else the first.
-  "making" gives "make"; "running" gives "run".
-- `noun_phrases`: in each sentence, every longest run of adjectives,
-  numbers, nouns and proper nouns ending in a noun or proper noun,
-  leading numbers dropped (Ramshaw and Marcus 1995). No determiner or
-  pronoun is inside.
-- `annotate` validates settings, checks model conventions (SUT-429),
-  tokenises, splits, tags, lemmatises and marks noun phrases.
-  `annotate_words` tags pre-split words, such as a CoNLL-U sentence.
-- `Annotation`: tokens (span, gap), `Upos` tags, lemmas, sentences
-  (first token, end token, span), noun phrases (first, end token).
-  Annotations of real posts are private: in memory or the site's own
+- The Rust adapter validates the response schema, pipeline and component
+  identities, package versions, artefact digests and language before it
+  accepts a `SpacyFeatureSet`. A mismatch is SUT-428 or SUT-429 as
+  applicable; malformed features are SUT-427.
+- spaCy token and sentence boundaries describe language features. The
+  deterministic word, sentence and paragraph boundaries above remain the
+  authority for anchor safety. The adapter converts exact UTF-8 offsets
+  to code-point spans and the stored-text position map, and rejects an
+  offset outside the source, inside a UTF-8 sequence or across an
+  excluded zone. It never changes source text to make offsets agree.
+- `Annotation` contains source spans, whitespace, sentence ids, UD part-
+  of-speech tags, lemmas, morphology, dependencies and noun chunks only
+  when the declared pipeline supplies them. Missing capabilities remain
+  absent and produce the unsupported-capability outcome; no English or
+  rule-based fallback silently fills them.
+- `NameFinder::find` and `WordTagger::tag` are typed views over the same
+  `SpacyFeatureSet`, not separately executing models. One parse supplies
+  all enabled features for a source digest. Repeated calls with the same
+  source and immutable compatibility key return the same features.
+- Annotations of real posts are private: in memory or the site's own
   store only, never in logs, errors, snapshots or the repository.
+- Long calls and resource admission follow "Where it runs". Cancellation
+  stops waiting for new output and discards late output whose request,
+  source or pipeline identity no longer matches.
 
-### CoNLL-U and the model file
+### CoNLL-U, evaluation and pipeline artefacts
 
-- CoNLL-U (ten tab-separated columns, `#` comments, blank line after
-  each sentence) is the exchange with ganit for sentences from the
-  usable data below only; annotations of real posts never reach ganit
-  as CoNLL-U, and the forum gold set reaches it only as ids and
-  positions (spec 0066). `conllu::read` keeps comments, multiword
-  ranges (`1-2`) and empty words (`1.1`), and refuses a word line
-  without ten columns or a numeric ID (SUT-431).
-  `conllu::retag` replaces LEMMA and UPOS, keeping everything else.
-  `conllu::from_annotation` writes `# sent_id`, `# text` and
-  `SpaceAfter=No`; HEAD and DEPREL stay `_` until stage 2.
-- One JSON model file per model, written by ganit, pinned by SHA-256;
-  every field required and unknown fields refused: `format`
-  `"shodhan-upos-perceptron"`; `version` 1; `tags` in the order ADJ,
-  ADP, ADV, AUX, CCONJ, DET, INTJ, NOUN, NUM, PART, PRON, PROPN, PUNCT,
-  SCONJ, SYM, VERB, X; `conventions` (`split_hyphens`, `clitics`,
-  `split_words`); `weights` (feature to 17 finite 32-bit floats);
-  `tag_dictionary`; `lemma_exceptions` ("form, tab, tag" to lemma);
-  `lemma_lexicon`. `Model::load` checks the digest first (SUT-428),
-  then shape, format, tag order, weight rows and dictionary (SUT-427).
-  The format and templates are a versioned contract of shodhan and
-  ganit.
-- Feature strings for word i, with n(w) lower case, `<num>` for digits
-  with only `. , : / -`, `<long>` over 30 characters: `bias`; `w=`;
-  `p1=` to `p3=` and `s1=` to `s4=` (first and last characters);
-  flags `cap`, `allcap` (two or more letters, all upper), `digit`,
-  `hyph`, `apos`, `first`, present only when true; `w-1=`, `w-2=`,
-  `w+1=`, `w+2=` (`<s>` or `</s>` past the edges); `w-1s3=`, `w+1s3=`;
-  then history `t-1=`, `t-2t-1=` (joined by `|`), `t-1w=`. A tag's
-  score sums its weights in 64-bit floating point, static then
-  history; missing features add nothing; equal scores go to the
-  sequence whose tags come first in tag order.
+- CoNLL-U (ten tab-separated columns, `#` comments and a blank line after
+  each sentence) is an interchange format for admitted training and
+  evaluation data, not a production model format. `conllu::read` keeps
+  comments, multiword ranges (`1-2`) and empty words (`1.1`), and refuses
+  a word line without ten columns or a numeric ID (SUT-431). Rust owns
+  validated conversion to and from the packaged training command's
+  declared input format.
+- Annotations of real posts never become training data. The forum gold
+  evaluation path exchanges only the ids, positions and labels permitted
+  by spec 0066; it does not send post text to an external evaluation or
+  training service.
+- A served pipeline is an immutable directory artefact with a manifest
+  covering every file, its SHA-256, the spaCy and component package
+  versions, language and capability declarations, feature-schema version,
+  source-data and declarative-configuration hashes, licences and resource
+  profile. `models.lock` pins the complete artefact digest and its
+  transitive package lock. Partial, unknown or mutable artefacts are
+  refused.
+- Packaged spaCy training commands produce custom-trained pipelines from
+  declarative configuration. Rust supplies validated paths, immutable
+  configuration and resource limits, and records the command receipt,
+  random seed where the package supports one, logs without private text,
+  output hashes and evaluation results. No first-party Python training
+  loop, factory, callback or component is generated or loaded.
+- Evaluation compares the packaged pipeline's frozen output with the
+  locked gold labels through the Rust adapter. Package-reported scores
+  are supporting evidence, not a substitute for Sutradhar's offset,
+  refusal, privacy, reconstruction and subgroup tests.
 
 ### Language-layer settings
 
-Each is governed (0014), has a staff tooltip, shows the old value with
-one-step undo, and has a minimum above zero and a maximum (lists a
-minimum and maximum size) set by research and measured on Dell;
-`validate` refuses anything else (SUT-430). No setting overrides the
-load governor.
+Each setting is governed (0014), has a staff tooltip, shows the old value
+with one-step undo and is validated with SUT-430 on failure. No setting
+overrides the load governor or source-integrity rules.
 
-- `text.nlp.tokens.split_hyphens` (off), `text.nlp.tokens.clitics`,
-  `text.nlp.tokens.split_words`: training conventions, shown read-only
-  with the model's values; changing one needs a new model.
-- `text.sentences.abbreviations`: the reviewed list, each ending in a
-  full stop, shared with sentence splitting above.
-- `text.nlp.sentences.line_break_ends`: on.
-- `text.nlp.tags.search_width` and `text.nlp.budget.max_tokens`: per
-  mode. The smallest token budget still fits any ordinary post.
-- Light, medium and ultra modes (`NlpSettings::for_mode`) set resource
-  settings only, never what a token, tag or lemma is, so one model
-  serves every mode. Stage 1's balanced and aggressive presets are the
-  same values. The layer is on wherever `tags` is built.
+- `text.nlp.pipeline` selects a language-compatible immutable key from
+  `models.lock`, not an arbitrary path, package name or URL. Changing it
+  creates a new serving generation and rebuilds dependent features.
+- `text.sentences.abbreviations` and
+  `text.nlp.sentences.line_break_ends` govern only deterministic anchor
+  segmentation. They do not alter a packaged pipeline or claim to retrain
+  its sentence component.
+- `text.nlp.budget.max_tokens` bounds work per mode. A request exceeding
+  the admitted bound waits or fails explicitly; it is never truncated and
+  treated as complete evidence.
+- Light, medium and ultra modes (`NlpSettings::for_mode`) change resource
+  admission only. Within one serving generation they use the same
+  pipeline and feature semantics. Balanced and aggressive presets cannot
+  weaken privacy, refusal or quality floors.
 
-### Stages 2 to 4
+### Capability admission and stages
 
-Each stage gets a research card (0013), a GanitEvolve run of size
-Prove, a lab run and an admission record (0055) before code. A stage is
-worked towards its gates (floor, parity, link reconstruction, budget,
-privacy) and then ships on by default with light, medium and ultra
-settings; a later stage never weakens an earlier one's tests. A failing
-candidate is not shipped: the next candidate or better data is tried
-against the same frozen protocol. An inconclusive run is an answer: the
-feature stays unavailable and labelled so, and "search exhausted" goes
-to the owner. A rights or patent block stops the method, goes to the
-owner, and the lab tries another. A small neural network is allowed
-only on CPU, within the job's memory budget, competing with a
-non-neural method, served with `safetensors` and `faer`; only the lab
-winner ships. Networks never produce member-text candidates. English
-first, one model per language. A combined method must beat the best
-single one by a margin set by research.
+Every capability needs feature-specific research, rights and provenance
+evidence, a lab run and an admission record under specs 0013 and 0055
+before implementation. Ordinary use of spaCy and approved packaged
+components follows package provenance and licence review. ADR-0020's
+strict researcher/implementer separation applies only when Sutradhar
+actually reimplements a method; using a package is not represented as a
+clean-room reimplementation.
 
-- Names: our own model. It comes first, before stages 2b to 4, because
-  name recognition is always on; until a candidate passes, SUT-425
-  applies and names wait. It is chosen by the model selection rule and
-  must leak no refused kinds beyond the rule's limit. Candidates:
-  an averaged-perceptron labeller with BILOU encoding and Ratinov and
-  Roth's (2009) features, reusing stage 1's decoder and tags; a
-  linear-chain CRF (Lafferty, McCallum and Pereira 2001) with Viterbi
-  inference; a small BiLSTM-CRF (Lample et al. 2016) only if those
-  fall short. Data: WikiNER, Few-NERD, GUM entities on admissible
-  genres; LitBank for evaluation. Measure: entity F1 by label, exact
-  span, on Few-NERD test and the forum gold set. The winner is on,
-  every passing rival stays selectable, only the chosen one loads, and
-  a rival that loses qualification returns the site to the winner with
-  a notice.
-- Stage 2b, dependency parsing (HEAD and DEPREL, UD v2 relations, in
-  CoNLL-U): arc-eager transitions (Nivre 2003, 2008) with an averaged
-  perceptron and dynamic oracle (Goldberg and Nivre 2012), with swap
-  (Nivre 2009) or pseudo-projective transform (Nivre and Nilsson 2005)
-  chosen in the lab; then a small feed-forward classifier (Chen and
-  Manning 2014); biaffine scoring (Dozat and Manning 2017) only if both
-  fail and it fits on CPU. Data: EWT train and development; measured
-  by LAS and UAS on EWT test and the forum gold set.
-- Stage 3a, coreference, only if the owner agrees, used only to count
-  an entity's mentions in report 1: a deterministic multi-pass sieve
-  (Raghunathan et al. 2010; Lee et al. 2013), then mention ranking if
-  it fails. Measured by CoNLL F1 on GUM test; ships only if counts
-  change report ordering beyond the bootstrap interval. Pronouns
-  resolved to a person are counted, never listed.
-- Stage 3b, tone, only if the owner agrees: a lexicon-and-rules scorer
-  from Hutto and Gilbert (2014) with its MIT lexicon, only what the
-  paper discloses. Aggregate per thread and section only, never per
-  member or reader. Earlier tone rulings stand; it feeds the content
-  reports only, unless the owner rules otherwise.
-  Evaluated on a staff-labelled forum set with agreement (kappa) in
-  the tooltip.
-- Order: stage 1 admission; our own name model; 2b; stage-1 reports,
-  then reports needing names and 2b; 3a; 3b. No step starts while an
-  earlier step has an open blocking issue.
+Each admission protocol freezes its datasets, label mapping, metrics,
+subgroups, resource budget and link-reconstruction tests before seeing
+results. Numerical floors are blockers until research supplies and
+independent review approves them; this specification does not invent
+them. An inconclusive or failing candidate stays unavailable. A patent
+or licence block stops the affected route and is recorded separately
+from experimental evidence.
+
+- Stage 1 supplies tokens, sentences, parts of speech, lemmas,
+  morphology and noun chunks from an admitted spaCy pipeline. Quality is
+  measured on the declared language's locked gold data and the forum
+  gold set, including exact offsets, unsupported languages and mixed
+  scripts. Tokeniser-only pipelines cannot satisfy trained-feature
+  admission.
+- Names use the same pipeline's packaged NER and, where separately
+  admitted, entity-linking output. The allowed/refused-label mapping is
+  versioned and complete: an unknown source label is refused rather than
+  guessed into an allowed class. Exact-span F1 by allowed label, refused-
+  label leakage, unknown-label behaviour and forum anchor recall are
+  measured together. Name recognition is mandatory for Version 1's
+  declared languages, so a language without a passing packaged NER route
+  is a readiness blocker, not a silently degraded release.
+- Stage 2b supplies dependency heads and relations from the same admitted
+  pipeline. LAS, UAS, relation-specific errors, offset integrity and the
+  effect on reports are measured on locked language and forum fixtures.
+  There is no bespoke arc-eager, perceptron or biaffine implementation.
+- Stage 3a coreference remains optional and report-only. It ships only
+  where an approved packaged spaCy component, its model and its licence
+  support the declared language and pass the frozen coreference and
+  privacy protocol. Otherwise it returns unsupported and report ordering
+  does not use it. Pronouns resolved to a person are counted, never
+  listed.
+- Stage 3b tone remains optional, aggregate-only and report-only. It
+  requires an approved packaged classifier or rule-based spaCy component
+  with a declarative, admitted configuration and a versioned taxonomy.
+  A route needing a first-party Python component is blocked. Evaluation
+  includes staff agreement and subgroup errors; tone never produces
+  member-text candidates or a per-member score.
+- Order: stage 1; names; stage 2b; reports that need only those features;
+  optional stage 3a; optional stage 3b. No stage hides an earlier open
+  blocker, and no optional capability becomes implied evidence when it is
+  unsupported.
 
 ### Content reports (stage 4)
 
@@ -852,6 +878,9 @@ Rules for every report:
 - Privacy: guest-visible content only; no member name, user name or
   `[USER=id]` target; people found as names are counted, never named;
   every cell under `analytics.min_count` shows "fewer than N".
+  DR-137 and [spec 0144](0144-site-corpus-and-text-mining.md) allow
+  a separate exact-span private owner view. It cannot be a report
+  source or share a name with any 0026 stage, graph or ranking.
 - Each site's summaries stay in its own store; no report joins sites;
   no figure leaves Dell without a privacy review.
 - Honest wording: fixed tooltip caveats ("a reading grade does not
@@ -893,8 +922,11 @@ Reports:
    "connected but not linked" pairs go to moderators as review items,
    never placed. One edge per thread pair, guest-visible links only.
 
-Report settings (balanced and aggressive values set by research;
-ranges shown; none opt-in; no preset or mode lowers privacy floors):
+Report settings use the ranges shown; none is opt-in and no preset or mode
+lowers privacy floors. Every balanced or aggressive value not explicitly
+listed here is a readiness blocker owned by the NLP-report evaluation record.
+The affected report and preset cannot build or activate until that record
+supplies the value, fixtures, privacy evidence and approval:
 `analytics.nlp.enabled` (on); `analytics.nlp.reports` (1 to 5, all by
 default); `analytics.nlp.sections` (at least one; private sections
 never); `analytics.nlp.person_names` (counts only); `analytics.min_count`
@@ -905,64 +937,60 @@ never); `analytics.nlp.person_names` (counts only); `analytics.min_count`
 `analytics.nlp.batch_posts` (50 to 20,000, per mode). Each report
 needs its own manual page.
 
-### Clean room, rights and data
+### Provenance, clean-room scope, rights and data
 
-- Every component is written from papers and open specifications (UD
-  guidelines, CoNLL-U, UAX #29) and this spec. No code is copied,
-  ported or translated, and no outside NLP toolkit's source,
-  documentation examples or models is opened by anyone writing the
-  layer. A paper's prose, tables and examples are not copied; tests
-  use made-up examples. Toolkit and dataset names appear only as
-  legal credits, never on screens.
-- Proof is a record a check can read, per component: sources and
-  sections read, who read them and when, an independent reviewer, the
-  version reviewed, and a similarity scan against a named toolkit list
-  (scan tool and list set by research).
-- Provenance sources: UD v2 tokenisation guidelines (T1 to T7), UD v2
-  POS tags (`Upos`), CoNLL-U format (`conllu`), UAX #29 SB4 and SB8
-  (`sentences`), Ratnaparkhi 1996 (features, tagger), Collins 2002
-  (averaged perceptron), Minnen, Carroll and Pearce 2001 (L4), Ramshaw
-  and Marcus 1995 (`chunk`), Efron and Tibshirani 1993 (paired
-  bootstrap). Later stages add their papers, plus Pradhan et al. 2014
-  for coreference scoring.
-- Patents: clean-room writing is not patent clearance. Building may go
-  ahead; release may not until the search is redone in full on
-  Espacenet and the USPTO (CPC G06F 40/20 to 40/30), statuses and
-  claims checked, and a patent professional has read the flagged
-  patents, lemma and sentence-boundary ones first: lemmatisation
-  US8473279B2, US8762130B1, US9672278B2, CN115244539A; sentence
-  boundaries US8131546B1; CRF use US9971763B2; tone US8463595B1,
-  WO2016085409A1, US10789430. Dependency-parsing queries must be re-run.
-  US 7,584,093 parks writing-quality scoring, which no report does.
-- Usable data, with attribution and share-alike kept: UD English-EWT,
-  PUD, Atis, CTeTex and Pronouns; GUM annotations on its CC BY or BY-SA
-  genres (academic, court, biographies, travel, news, interviews) from
-  the GUM repository; WikiNER, LitBank, Few-NERD, Open English WordNet
-  or Princeton WordNet 3.0, UniMorph English, VADER's lexicon.
-- Excluded: UD GUM as released and its other genres, ParTUT, LinES,
-  GENTLE; Penn Treebank, OntoNotes 5.0, CoNLL-2012, ARRAU, CoNLL-2003;
+- Packaged spaCy components and models are dependencies, not Sutradhar
+  clean-room implementations. Their admission records name the exact
+  package and model releases, distribution and artefact hashes, direct
+  and transitive dependency locks, licences, notices, upstream sources
+  and the reviewed compatibility evidence. Calling a package does not
+  remove these obligations.
+- The deterministic Rust BBCode, offset and placement implementations
+  cite the open specifications and research cards they actually use. A
+  strict clean-room record is required only for a component explicitly
+  designated for clean-room reimplementation by spec 0076. Such a record
+  identifies the permitted sources, separated researcher and implementer,
+  independent reviewer, reviewed versions and similarity evidence. No
+  document claims that separation for ordinary package use.
+- UD guidelines, CoNLL-U, UAX #29 and cited research papers are candidate
+  specification or evaluation sources, not evidence that every method in
+  a package has been cleared. Each feature-specific admission record
+  identifies the sources and versions actually reviewed; an unreviewed
+  citation does not satisfy implementation readiness.
+- Patent research and legal review are separate evidence gates. The old
+  patent numbers and CPC ranges in the source specification are
+  unverified search leads, not a completed search or legal opinion.
+  Before implementation, the affected feature needs a dated, reproducible
+  search with jurisdiction, claims and status analysis; before release,
+  flagged risks need the qualified professional review required by spec
+  0076. Clean-room authorship alone is not patent clearance.
+- Candidate datasets include UD English-EWT, PUD, Atis, CTeTex and
+  Pronouns; eligible GUM genres; WikiNER; LitBank; Few-NERD; Open English
+  WordNet or Princeton WordNet 3.0; UniMorph English; and VADER's
+  lexicon. Inclusion in this list is not admission. Each exact dataset,
+  genre and version remains blocked until its upstream licence, notices,
+  hash, intended-use compatibility and derivative-artefact obligations
+  are recorded and reviewed.
+- Excluded unless a later owner decision and rights review change the
+  entry: UD GUM as released and its other genres, ParTUT, LinES, GENTLE;
+  Penn Treebank, OntoNotes 5.0, CoNLL-2012, ARRAU, CoNLL-2003;
   MultiNERD, the NRC emotion lexicon, MPQA, the Stanford Sentiment
   Treebank, WikiANN, PreCo, the Bing Liu lexicon and SentiWordNet.
-- Share-alike sets are allowed; each model trained on them is
-  published apart from the code, under the same licence, with credits
-  (the owner, 6 November 2026, Q-SH12). Each dataset's licence,
-  version, hash and notice go in `models.lock`'s data section and the
-  public notices file.
-- Data-rights cautions: whether share-alike terms reach weights trained
-  on such data is legally unsettled. Creative Commons says its terms
-  apply only where copyright permission is needed, and an IViR study
-  (Szkalej and Senftleben, 2024) finds "adapted material" unclear.
-  Legal clearance needs a lawyer's view; it is never taken from
-  reading a licence or a paper. Before a dataset is downloaded, its
-  licence is checked again at its source.
-- Share-alike data may teach the language layer's models, under the
-  rights checks above (the owner, 10 November 2026: "Yes, for teaching
-  models"). Spec 0029's "published papers and the owner's own text"
-  covers the language layer's own rules and word lists.
-- No real post is training data. Staff may mark about 3,000 words of
-  guest-visible posts on Dell after a privacy review, for held-out
-  evaluation only, reported as aggregates. Moderator acceptance data
-  for the member-text option is separate and aggregate.
+- Share-alike sets may teach models only after their exact terms and
+  resulting artefact obligations are cleared. Each admitted pipeline
+  records its data lineage and required credits and is published apart
+  from code when its data terms require that treatment (owner,
+  6 November 2026, Q-SH12). `models.lock` and the public notices contain
+  the exact dataset versions, hashes, licences and notices.
+- Whether share-alike terms reach trained weights is not decided by this
+  specification or by reading a paper. Where the answer matters, written
+  legal review is a release blocker. Dataset licences are checked again
+  at their upstream source immediately before download and admission.
+- No real post is training data. Staff may mark guest-visible posts on
+  Dell only after privacy review, solely for held-out evaluation reported
+  as aggregates. The proposed roughly 3,000-word evaluation sample is not
+  a licence to train. Moderator acceptance data for the member-text
+  option is separate and aggregate.
 
 ## Limits
 
@@ -1029,9 +1057,11 @@ needs its own manual page.
   language identifier, the name model, the tagger and the language layer count
   in the inference jobs' budget, inside the service slice, within the memory
   limits in AGENTS.md section 5.6, with no swap and 15% headroom. Language-layer
-  memory budgets per mode are set by research; no mode, setting or preset may
-  pass the total. Only the chosen method loads; a switch that does not fit is
-  refused with the reason; over budget refuses start-up.
+  memory budgets per mode are readiness blockers owned by the language-resource
+  admission record. A mode without an admitted measured budget cannot build or
+  load. No mode, setting or preset may pass the total; only the chosen method
+  loads, a switch that does not fit is refused with the reason, and over budget
+  refuses start-up.
 - Fixed elsewhere and used here: pieces of the piece size, 1,024
   tokens by default and never fewer, with the overlap setting; extras
   read in full; parts of at most 16 MiB (0022); anchors of 3 to 80
@@ -1124,13 +1154,18 @@ whose footprint the staff suggestions spec (0028) owns.
 - Hard-rule code (zone classification and never-anchor marking, masks,
   the map and offsets, placement and `resave_form`, the address
   builder, insertion and its check, undo and its check, limits and
-  budgets) lives in `src/hard/`. Coverage is 100% of lines, branches
-  and MC/DC for the whole crate, and 100% of mutants are killed.
-  `dead_code` and `unused` lints are errors; unused dependencies are
-  refused.
+  budgets) lives in `src/hard/`. Only components entered in ADR-0020's
+  strict-core registry require 100% line, branch and MC/DC coverage and
+  100% killable-mutant detection; equivalent mutants need a written
+  equivalence proof and independent review. Other code follows the
+  ordinary feature test and coverage gates. `dead_code` and `unused`
+  lints are errors; unused dependencies are refused.
 - Critical hard-rule code is proved with Kani, Verus or Creusot where
-  it fits; for example, that a token is never split across a line
-  break is proved, not only tested.
+  the proof obligation and tool support are recorded; for example, an
+  accepted insertion never crosses an excluded zone or changes text
+  outside the inserted tags. Package internals are qualified through
+  their admitted artefacts and contract tests, not represented as proved
+  first-party Rust.
 
 ### Acceptance cases
 
@@ -1170,8 +1205,10 @@ Starred (★) cases block any release they touch.
   non-voting short paragraph may hold a link, an unnamed voting one
   may not.
 - Pieces: SH33 0022's piece cases pass with the fake counter and one
-  token over the piece size is SUT-409; SH34 (Dell) counts equal the pinned
-  Qwen3-Embedding-0.6B tokenizer's own.
+  token over the piece size is SUT-409; SH34 (Dell) counts, overflow and
+  chunk receipts equal the pinned `BAAI/bge-m3` tokenizer contract at
+  revision `5617a9f61b028005a4858fdac845db406aefb181`; spaCy token counts
+  are never substituted.
 - Links and matching: SH35 every address form gives the right kind and
   number, `/THREADS/1/` is unreadable; SH36 keyphrases equal the
   snapshot, at most 20; SH37 stemmed match keeps "power supplies" as
@@ -1183,13 +1220,15 @@ Starred (★) cases block any release they touch.
   an existing connection.
 - Names and types: SH66 fake finder labels route correctly, refused
   kinds never become candidates, word-cutting labels are dropped; SH67
-  (Dell) our own pinned entity model's labels and spans equal the
-  snapshot within memory budget; SH68 SUT-425 with no unlabelled names; SH75 no
-  setting disables recognition, "Labour", "Catholic", "Welsh" and work
-  titles give no candidate or title phrase, unlabelled repeats are
-  dropped, no anchor edged by a pronoun or verb, SUT-426 waits; SH78
-  "the new power supply" gives "new power supply" as a noun-phrase
-  source, and hard rules still apply.
+  (Dell) the pinned spaCy pipeline's mapped labels, confidences or
+  abstentions and exact spans equal the frozen snapshot within the
+  admitted memory budget, and every unknown source label is refused;
+  SH68 SUT-425 with no unlabelled names; SH75 no setting disables
+  recognition, "Labour", "Catholic", "Welsh" and work titles give no
+  candidate or title phrase, unlabelled repeats are dropped, no anchor is
+  edged by a pronoun or verb, and SUT-426 waits; SH78 "the new power
+  supply" gives "new power supply" only when the admitted packaged noun-
+  chunk route supports it, and hard rules still apply.
 - Placement and insertion: SH43 ★ half-in-bold refused, wholly-in-bold
   nested inside; SH44 ★ no link in a link, bare address or EMAIL; SH45
   block crossings refused, within one heading or item accepted; SH46 ★
@@ -1219,19 +1258,27 @@ Starred (★) cases block any release they touch.
 - Measure and models: SH71 (Dell) link reconstruction follows 0023's
   frozen protocol with no regression; SH79 (Dell) the first model
   choice names every candidate and its figures.
-- Language layer: SH81 tokens follow T1 to T7, including empty text,
-  limits and errors without input text; SH82 sentence rules; SH83 the
-  tagger sums weights, a wider search beats greedy where it should,
-  ties are stable, the dictionary restricts; SH84 feature strings are
-  exact; SH85 lemma rules L1 to L4; SH86 noun phrases stay in their
-  sentence; SH87 model checks, setting ranges refusing zero, empty and
-  too-high values, modes in bounds and in order, distinct codes; SH88
-  annotate writes CoNLL-U and failures make the post wait; SH89
-  CoNLL-U round-trips and bad lines name their number; SH90 tokens
-  cover every non-space character once, gaps agree, sentences
-  partition tokens; SH91 held-out floors met (ganit); SH92 ganit's
-  parity set reproduced within tolerance; SH93 speed and SH94 memory
-  targets; SH95 anchor recall not lowered.
+- Language layer: SH81 packaged token offsets round-trip to exact source
+  bytes and code-point spans, including empty text, Unicode and excluded
+  zones; SH82 packaged sentence ids preserve order and never redefine
+  deterministic anchor boundaries; SH83 UD tags, lemmas, morphology and
+  dependencies appear only from declared components; SH84 malformed,
+  stale or wrong-language responses fail closed without input text in
+  errors; SH85 missing trained capabilities return the explicit
+  unsupported outcome and never invoke an English fallback; SH86 noun
+  chunks remain within their declared sentence and absent support stays
+  absent; SH87 pipeline manifests, package locks, artefact hashes,
+  settings and mode resource bounds are validated with distinct error
+  codes; SH88 CoNLL-U conversion preserves admitted fields and conversion
+  or inference failure makes the post wait; SH89 CoNLL-U round-trips and
+  bad lines name their line number; SH90 a `SpacyFeatureSet` covers only
+  the declared source spans and duplicate, crossing or out-of-range
+  offsets are refused; SH91 frozen held-out quality floors are met by the
+  admitted packaged pipeline; SH92 a declaratively trained pipeline
+  reproduces its locked data, configuration, command and artefact hashes,
+  with no first-party Python production source; SH93 speed and SH94
+  memory targets include the bridge and packaged runtime; SH95 anchor
+  recall is not lowered.
 - Reports: SH96 no member or person name and no cell under
   `analytics.min_count`; SH97 no post a guest cannot see; SH98 no
   report changes a post, link, score or ranking; SH99 no report joins
@@ -1267,87 +1314,93 @@ Starred (★) cases block any release they touch.
   in a `wp_quote` zone; a stray closing tag is ignored, and an unclosed
   blockquote's zone runs to the end of the post.
 
-### Link reconstruction and model choice
+### Link reconstruction and pipeline choice
 
 - On Dell, 0023's frozen protocol hides at least 2,000 member-written
-  internal links, sampled with a fixed seed from the 50,000-thread
-  tier, keeping the words. shodhan's figure is anchor recall: the
-  share of hidden links whose words, or an overlapping span, are among
-  its candidates. The first frozen run sets the baseline; later
-  changes to phrase sources, stop list, fuzzy rule, name model or
-  tagger may not lower it beyond the protocol's interval.
-- First model choice: every admitted candidate on one frozen sample;
-  the highest anchor recall among those meeting conditions 2 to 5.
-  After that a challenger replaces the current model only if all hold:
+  internal links, sampled with a fixed seed from the 50,000-thread tier,
+  keeping the words. shodhan's figure is anchor recall: the share of
+  hidden links whose words, or an overlapping span, are among its
+  candidates. The first frozen run sets the baseline; later changes to
+  phrase sources, stop list, fuzzy rule, spaCy pipeline, label mapping or
+  feature adapter may not lower it beyond the protocol's interval.
+- Initial pipeline choice compares every admitted candidate on one frozen
+  sample and selects the highest anchor recall among those meeting all
+  feature-specific quality, safety and resource gates. A later challenger
+  is evaluated and promoted only through spec 0077's single controlled
+  route; this specification supplies feature gates, not a separate model
+  activation path. Those gates include:
   1. anchor recall gains 2 points or more at the low end of the paired
      95% interval (10,000 re-samples, fixed seed);
-  2. 0023's reconstruction recall and anchor agreement do not get
-     worse, each interval's low end no lower than −1 point;
-  3. no subgroup (thread type, post length, destination popularity,
+  2. 0023's reconstruction recall and anchor agreement do not get worse,
+     each interval's low end no lower than −1 point;
+  3. no subgroup (thread type, post length, destination popularity or
      section) is worse with 95% confidence;
-  4. no more refused names leak on the labelled refusal set;
-  5. memory and speed stay within budget on the reference machine.
+  4. no more refused names leak on the labelled refusal set and no
+     unknown source label is silently accepted; and
+  5. memory and speed, including the packaged runtime and bridge, stay
+     within budget on the reference machine.
 - The protocol file and its SHA-256 are fixed before any score. The
-  comparison re-runs on any change to a model, its file, the labels,
-  minimum score, phrase sources, stop list, fuzzy rule or rules
-  version, and for every release candidate. Each result goes to the
-  owner in plain English; the sample is never redrawn to get a pass.
-- Rust lab runs with recorded inputs and outputs: `shodhan-names-*`
-  (our own name-model candidates and the refusal set) and
-  `shodhan-tags-perceptron` (the tagger); stage 2 adds
-  `shodhan-parse-*`.
-- Language layer held-out measures, by ganit with paired bootstrap
-  intervals, floors set by research and frozen in a hashed protocol:
-  UPOS and lemma accuracy given tokens, token F1 and sentence F1 on
-  raw text, all on UD English-EWT test; UPOS accuracy and noun-phrase
-  F1 on the forum gold set. One proof standard: freeze and hash the
+  comparison re-runs on any change to a pipeline or package artefact,
+  label mapping, abstention rule, minimum score, phrase sources, stop
+  list, fuzzy rule or rules version, and for every release candidate.
+  Each result goes to the owner in plain English; the sample is never
+  redrawn to get a pass.
+- Rust-controlled lab runs record inputs and outputs:
+  `shodhan-spacy-names-*` (pipelines, label mappings and the refusal set),
+  `shodhan-spacy-tags-*` (token and tagging features) and
+  `shodhan-spacy-parse-*` (dependencies and related features). These are
+  evaluation names, not bespoke model implementations.
+- Held-out measures use paired bootstrap intervals and feature-specific
+  floors frozen in a hashed protocol: UPOS and lemma accuracy given
+  tokens, token F1 and sentence F1 on raw text, exact-span entity F1 and
+  refused-label leakage, LAS/UAS where supplied, noun-chunk F1 where
+  supported, and corresponding forum-gold measures. Freeze and hash the
   test first; qualify the evaluator by its six self-checks; split by
-  thread and time; statistics only in mulyankan; report a result kind,
-  not a bare pass; an independent challenger and reviewer; one signed
-  receipt. The test split never trains or tunes. A tagger meeting its
-  floors still ships only if anchor recall does not fall.
-- Training route: ganit trains on admitted CoNLL-U with a fixed seed,
-  recording data hashes and commit; exports the model and a parity
-  set (shodhan must pick the same tags on every sentence, scores within
-  a tolerance set by research); shodhan retags held-out data and ganit
-  scores it, reading the forum gold set only as token positions, gold
-  and predicted tag ids, spans as token ranges and arcs as head
-  positions with relation ids, never a word, lemma or sentence text
-  (spec 0066); the reconstruction comparison runs; the winner is pinned
-  in `models.lock`, and passing rivals stay selectable.
+  thread and time; keep statistics in mulyankan; report a result kind,
+  not a bare pass; require an independent challenger and reviewer; and
+  issue one signed receipt. The test split never trains or tunes.
+- Training, when required, invokes the pinned packaged spaCy training
+  command with declarative configuration and admitted data. Rust records
+  configuration and data hashes, package lock, command receipt and output
+  manifest. Evaluation reads the forum gold set only as the ids, spans,
+  positions and labels allowed by spec 0066, never as post text. The
+  reconstruction comparison runs before the winner is pinned in
+  `models.lock`. Passing rivals remain evaluation candidates but cannot
+  be activated outside spec 0077.
 
 ## Changes from the source
 
-- The browser build of the crate is replaced: the Dioxus app's review
-  preview links the same Rust crate with default features, and
-  preview parity is tested between the two builds.
-- Parity and timing tests run as Rust tests, not under an outside
-  runtime or browser driver.
-- The name model runs in pure Rust (candle or tract) at full
-  precision, not through a native model runtime and its wrapper crate.
-- The native-library tagger candidate is dropped, with its binding
-  crate, unsafe code and its lab run; word types come from the
-  pure-Rust averaged-perceptron tagger.
-- No unsafe code anywhere, including the preview binding.
-- The language layer (parts 11 to 16) is written in Rust with key rules
-  proved by Kani, Verus or Creusot, not in a separate checked language.
-- The independent second edit validator is Rust with proofs, not a
-  separate language.
-- Training and statistics run in ganit, the Rust numerical engine.
+- The browser build of the crate is replaced: the desktop app's review
+  preview links the same deterministic Rust parsing crate with default
+  features, and preview parity is tested between the two builds. The
+  preview does not load spaCy or BGE artefacts.
+- Parity and timing tests for first-party integration run as Rust tests.
+  Packaged commands are invoked only through their admitted interfaces;
+  no first-party Python production test double becomes a production path.
+- Bespoke Rust name, tagger, lemmatiser, dependency and neural-network
+  candidates are removed. Approved spaCy packages and pipelines supply
+  those algorithms through the single typed feature contract.
+- First-party Rust denies unsafe code, including the preview binding.
+  Native code inside admitted third-party packages remains a supply-chain
+  and contract-qualification concern and is not misrepresented as proved
+  first-party Rust.
+- The deterministic Rust hard rules retain recorded proof obligations.
+  The independent second edit validator remains Rust with proofs.
+- Packaged spaCy training replaces ganit's bespoke NLP training route.
+  mulyankan continues to own statistical evaluation; ganit does not train
+  a competing tagger or entity model.
 - The 5% best-result ratchet becomes the 5% median rule of AGENTS.md
   6.8; absolute speed targets stay; the 20x goal is kept (spec 0007).
-- Coverage is 100% of lines, branches and MC/DC for the whole crate and
-  100% of mutants killed, with no reviewed-reason exceptions.
+- ADR-0020's strict-core coverage, mutation and independent-review rules
+  replace universal whole-crate MC/DC and mutant requirements.
 - The old gate names and toolchain-only runs are replaced by the push
   tier and nightly runs.
-- The tagger's search-width setting key is renamed
-  `text.nlp.tags.search_width`.
-- Named outside NLP toolkits are not listed; the clean-room rule covers
-  every outside NLP toolkit.
-- Old role names (serve, worker, inference) become the service's jobs
-  and its inference jobs, inside the service slice.
-- The ready-made zero-shot name model is replaced by our own pure-Rust
-  entity model.
+- Ordinary packaged dependency provenance replaces the source document's
+  blanket prohibition on reading or naming outside NLP toolkits. Strict
+  clean-room separation applies only to components explicitly designated
+  for clean-room reimplementation.
+- Old role names (serve, worker, inference) become the service's admitted
+  Rust jobs and packaged model jobs inside the governed resource slice.
 
 Source: `docs/specifications/text/README.md`, `shodhan.md`,
 `shodhan-2.md`, `shodhan-3.md`, `shodhan-4.md`, `shodhan-5.md`,

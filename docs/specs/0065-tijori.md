@@ -10,9 +10,10 @@ section 5.4), so it can read the site-link key. The
 forum add-on's own key is not the core's: spec 0021 keeps it in the
 site's database.
 
-Roadmap Phase 2 item 8 builds the signing core before Sutradhar Boot
-exists, and Phase 3 item 8 moves it onto Boot. It is the one piece of
-product code allowed before the gate is complete
+Roadmap Phase 2 item 8 builds the signing core before Behemoth Boot
+exists. Phase 3C item 8 moves the product use onto qualified Boot.
+The signing core is the one piece of product code allowed before
+the gate is complete
 ([AGENTS.md section 7.3](../../AGENTS.md#73-bootstrap)). It is Rust,
 like the rest of the product.
 
@@ -22,7 +23,8 @@ Which roadmap item builds each part:
   the owner's instance, the relay's log and policy carrying, and the
   owner tool, for review records, waivers, signed runs, receipts, cache
   entries and the site link.
-- Phase 3 item 8: the move onto Sutradhar Boot.
+- Phase 3C item 8: move the product use onto qualified Behemoth Boot
+  after the signed 3B exit under 0139.
 - Phase 5 item 1: `sign_release` for the `release-manifest` purpose
   (spec 0030), built and tested with test release keys only. Until
   Phase 7 builds the ledger guard and the GitHub copy, `sign_release`
@@ -45,8 +47,8 @@ key (spec 0036).
 |---|---|---|
 | Review records and waivers | A review record's fingerprint, the required review it is for and its verdict; an owner waiver | AGENTS.md 7.1 and 7.2 |
 | The qualification verifier | Runner results, group records, run manifests, ledgers | 0064 |
-| Release coordination | Release records | 0005 |
-| GanitEvolve | Receipts | 0012, 0013 |
+| Release coordination | Release records and approval receipts | 0005 |
+| Ganit Vikas | Receipts | 0012, 0013 |
 | Agent products | Research-card acceptances | 0013 |
 | The gate | Cache entries; the signed full run and phase check | 0010 |
 | The runner supervisor (spec 0008's runner) | Evidence bundles; review results | 0003, 0008 |
@@ -93,7 +95,8 @@ key (spec 0036).
    `review-record`, `waiver`, `policy-change`, `head-confirmation`,
    `runner-result`, `evidence-bundle`, `review-result`, `group-record`,
    `run-manifest`, `release-ledger`, `pilot-ledger`, `fixture-ledger`,
-   `release-record`, `release-manifest`, `cache-entry`, `gate-run`,
+   `release-record`, `release-approval`, `release-manifest`,
+   `cache-entry`, `gate-run`,
    `receipt`, `log-head`, `policy-record-reset`,
    `site-key-record-reset`, `recovery`, `card-acceptance`,
    `site-key-change` or `site-message`. Each instance's protected policy
@@ -118,6 +121,14 @@ key (spec 0036).
 6. The policy sets the largest whole request and, for each purpose, the
    largest bytes it accepts. The request's length is read first; a
    larger request is refused before the rest of it is read.
+
+A `release-approval` uses spec 0005's exact framing and order.
+The owner key stays on the owner's own instance. Dell checks current
+signed policy and task lease before its approval service signs for
+an enrolled release principal. Validate exact candidate evidence
+first. Approval keys cannot sign waivers, policy or artefacts.
+The release step alone uses the artefact key, after verifying the
+receipt and current authority.
 
 ### Records this spec owns
 
@@ -176,7 +187,7 @@ counted.
    research-card acceptances it makes), the runner supervisor (spec
    0008's runner, which also signs `evidence-bundle` and `review-result`
    records), `qualify` (ledgers, run manifests and group records, spec
-   0064), GanitEvolve (receipts only), the gate (cache entries, and
+   0064), Ganit Vikas (receipts only), the gate (cache entries, and
    `gate-run` records for its spec 0008 verdicts and for a signed full
    run or phase check, whose encoding spec 0010 owns), the release step
    and the relay, whose own Dell account is used only by its connection.
@@ -204,15 +215,17 @@ counted.
    principal never counts as a reviewer. A `review-result` never stands
    in for a spec 0064 member review, which still needs the reviewer's
    own signature.
-3. Threat model: the account binding stops mistakes and ordinary
-   misuse. Anyone with root on Dell, which agents have, can read Dell's
-   keys and sign outside the core. That is why the owner's key and the
-   copy of Dell's log live on the owner's PC, so a forged waiver or a
-   rewritten log on Dell is caught there, and why every release-key
-   signature is copied to GitHub, where a release with no copied entry
-   stands out. The service can read the site-link key under its own
-   account, and so can sign site messages outside the core; spec
-   0021's changeover and revocation rules are the defence there.
+3. The account binding stops mistakes and ordinary misuse. Dell
+   agent account access follows
+   [AGENTS.md section 11](../../AGENTS.md#11-the-shared-computer-dell)
+   and [0008](0008-trust-boundaries.md#administrator-access-on-dell).
+   Anyone with root on Dell can read Dell's keys and sign outside the
+   core. The owner's key and the copy of Dell's log stay on the owner's
+   PC, where a forged waiver or a rewritten log on Dell can be detected.
+   Every release-key signature is copied to GitHub, where a release
+   with no copied entry stands out. The service can read the site-link
+   key under its own account and can sign site messages outside the
+   core. Spec 0021's changeover and revocation rules apply to that key.
 
 ### The signer registry
 
@@ -279,7 +292,7 @@ counted.
 
 ### Checking signatures
 
-1. Checking needs no private key. The gate, GanitEvolve, the relay and
+1. Checking needs no private key. The gate, Ganit Vikas, the relay and
    the fetcher check through the socket's `verify` call, which adds the
    answers only the log can give (item 6); every other caller checks in
    its own process with the check library. Where
@@ -442,6 +455,27 @@ the owner's approval screen. Everywhere else it signs bytes.
    release guard and the policy check run again, in the same step as
    the log write.
 
+### Release signing guard identities
+
+`DES-0065-RELEASE-SIGNER-GUARDS` owns the
+[release guards](#release-guards) and release signing repeat checks.
+TASK-0065-RELEASE-KEY covers custody and prohibited routes.
+TASK-0065-RELEASE-BINDING covers the exact signed release arguments.
+
+| Owning requirement | Exact clause and existing verification |
+| --- | --- |
+| `REQ-0065-RELEASE-KEY-ROUTE` | Dedicated release-step caller, key and allowed purposes in guard 1 and Signing. IT-0065-RELEASE-KEY-CUSTODY probes generic signing, wrong purpose and wrong caller. |
+| `REQ-0065-RELEASE-PAIR-BINDING` | Guard 1 matches typed fields and canonical M and R to the same release, candidate and ledger. IT-0065-EXACT-RELEASE-BINDING covers mismatched nested version, typed digest, purpose and the record's exact earlier manifest entry. |
+| `REQ-0065-RELEASE-LEDGER-CUSTODY` | Guard 2 uses the protected 0064 reader, the selected core's log and the required owner head and ledger ordering. IT-0065-EXACT-RELEASE-BINDING exercises unrelated, missing or unconfirmed exact ledger evidence. |
+| `REQ-0065-RELEASE-SIGNATURE-ONCE` | Guard 3 and Signing own monotone versions, one signature per purpose and exact replay. IT-0065-EXACT-RELEASE-BINDING reconciles a lost reply and refuses replacement ledger provenance. |
+| `REQ-0065-RELEASE-PENDING-WINDOW` | Guard 4 owns protected count and window, pending reuse and expiry. The release retry and window checks cover exact reuse, lapsed pending and count without duplicate signature. |
+| `REQ-0065-RELEASE-OWNER-HEAD` | Guard 5 owns exact instance, owner-confirmed head, pending coverage and mirror counter. IT-0065-EXACT-RELEASE-BINDING uses a matching head, wrong head and mirror counter substitution. |
+| `REQ-0065-RELEASE-WAIT-RECHECK` | Guard 6 serialises release requests and checks all guards and current policy in the log-write step after a wait. The revocation and queued-request checks and IT-0065-EXACT-RELEASE-BINDING exercise current authority and eligibility. |
+
+0005 owns the caller record forms and approval. 0064 owns production
+of the qualification ledger and verdict. The owner instance and
+mirror confirmation retain their existing authority in guard 5.
+
 ### Keys at rest
 
 1. Private keys are kept encrypted in files that only the instance's
@@ -510,7 +544,34 @@ the owner's approval screen. Everywhere else it signs bytes.
    within one write are merged into one entry.
 6. Four recovery steps, each a logged change signed by the owner:
    - index rebuild: rebuilds the indexes from the log after item 4
-     finds them missing or mismatched;
+     finds them missing or mismatched. Check the owner-signed
+     `recovery` step against the exact affected instance, original
+     head counter and hash, and the index stop still in force. Verify
+     the original head and stop again at the application boundary.
+     The normal signing path can use the rebuilt indexes only after
+     a durable change installs both indexes and records that exact
+     step in the log with the original head as its predecessor.
+     The durable boundary must keep an interrupted rebuild stopped
+     until its result can be verified. Keep rebuilt indexes staged
+     until publication or prove the existing stopped recovery state
+     remains durable across restart. Index bytes alone cannot supply
+     that state. Hold a profile that cannot prove this distinction.
+     On restart, the verified log
+     chain supplies the matching `recovery` entry and its predecessor.
+     The latest `signature` entry at or below the verified head
+     supplies the expected latest counter for both indexes and their
+     separate running hashes under item 4.
+     A log with no signature entries uses two present empty indexes
+     with latest counter zero and all-zero running hashes.
+     Either proof alone keeps signing stopped and the owner recovery
+     plan visible.
+     An index disagreement uses the existing `OutOfStep` reason.
+     If no recovery was committed, the step can be attempted only
+     with its original head and stop still current. After a commit,
+     verify its original record without applying it again or
+     restoring historic indexes over a later valid head. Further
+     recovery of an index that remains missing or mismatched follows
+     the existing owner approval and current-head rules;
    - clock-floor reset: resets the log-time floor after a clock that
      jumped forward has been corrected, naming the counters written
      while the clock was ahead so the owner's instance accepts those
@@ -624,6 +685,15 @@ the owner's approval screen. Everywhere else it signs bytes.
 6. A Rust trait, `KeySource`, the client for the socket: it asks for
    signatures and never holds a private key. Its test fake uses fixed
    test keys and never touches real ones (spec 0021).
+   Apply 0106's lifecycle fence to the product caller after the move
+   onto Boot. Explicit Quit stops new product calls before draining
+   the admitted work. A signature logged durably under the current
+   authority remains the original result. A late reply to a stopped
+   caller cannot admit work or send a site message. If the new
+   eligible product instance makes the same signing request, use
+   the existing repeat rule and current policy. This applies to the
+   product caller and its scope. The signer keeps its existing key
+   and log custody. The gate and forge-sync stay outside Boot.
 7. The owner tool, on the owner's PC: list keys and purposes, page
    through the signature log, add or revoke a key (owner-signed), set
    the record of the highest accepted policy again, and run the
@@ -694,6 +764,17 @@ Rust tests in the tijori crates, with test keys only:
   it resumes; a queued request for the same release and purpose is
   refused once the first is signed, and a request for another release
   with that version is refused.
+- In the wait case of IT-0065-EXACT-RELEASE-BINDING, start with a
+  passing ledger and a release request waiting for its owner head.
+  While it waits, record a later refused attempt for the same C
+  outside the authorised replay, as in IT-0064-REPLAY-CHANGE.
+  Keep the release key, policy and canonical M fixed, with its
+  pending entry inside the admitted window. Supply a valid owner
+  head and mirror counter covering that entry.
+  When the signer resumes, recheck the admitted 0064 reader in the
+  signing-log write step. The stale ledger grants no signature or
+  release count. Keep the exact pending record. In the control
+  with no intervening attempt and current authority, sign once.
 - A release whose ledger signature is not in the core's log is refused;
   a release whose bytes carry another version or manifest digest than
   its typed fields is refused.
@@ -719,6 +800,11 @@ Rust tests in the tijori crates, with test keys only:
   back is reported to the owner.
 - The gate's account gets `gate-run` signatures; other accounts are
   refused them.
+- In 0003's IT-0003-PROJECT-GUARDS-REFUSAL, verify the test signature
+  of an `evidence-bundle` for the exact candidate but the wrong tier.
+  It can pass the purpose and signature check while 0003's candidate
+  verifier refuses it against the protected push plan. Reuse the runner
+  supervisor and gate authority in the fixture.
 - A check with a policy digest that is not the one in force, newer or
   unknown, is refused.
 - Policy N+2 delivered before N+1 is refused until N+1 applies; once
@@ -745,7 +831,7 @@ Rust tests in the tijori crates, with test keys only:
   the service's instances as on Dell, checked against that instance's
   own log.
 - The first release needs no previous GitHub copy.
-- GanitEvolve's account gets `receipt` signatures only, and is refused
+- Ganit Vikas's account gets `receipt` signatures only, and is refused
   `gate-run` and `cache-entry`.
 - A `release-manifest` whose own hash differs from the typed digest is
   refused. A `release-record` whose manifest-digest field differs from
@@ -756,15 +842,58 @@ Rust tests in the tijori crates, with test keys only:
   signature entry and signed.
 - A release retry reuses its `release-pending` entry and signs once any
   confirmed head covers it.
+- In IT-0065-EXACT-RELEASE-BINDING, use a canonical C with an exact
+  I and qualification ledger signed by a fixture key under its ledger
+  purpose. Change only the version field of M. Keep the version in C
+  fixed. Recompute H(M) and use the altered outer version and that
+  digest as the typed fields. The exact H(C), H(I) and H(M) all
+  verify. Refuse the disagreement between the outer version and C
+  without logging a release signature or counting a release. The
+  otherwise identical request with the original outer and typed
+  version passes this equality check.
+- In the same case, lose the reply after the fixture signer commits
+  the original M signature and before any R signature. Keep the
+  exact M, typed version, candidate, catalogue and manifest digest.
+  Offer a later authenticated passing ledger for the same C and
+  catalogue under the proper test purpose. Its ledger digest differs
+  from the one in the committed entry. The repeat index must not
+  credit the logged M result against the replacement ledger. Leave
+  the original signature and its ledger binding intact. Record no
+  new M or R signature, and add no release count. In a separate
+  control, replay the exact original request while its authority
+  and proof remain current and reconcile the original entry once.
 - A repeat whose index points at an entry for other bytes is refused.
 - A `release-manifest` with one artefact hash changed from the
   qualified candidate's is refused.
 - A policy the owner signed for the service's instance does not hold
   Dell heads back.
+  In a separate fixture, leave an owner-signed Dell policy waiting.
+  Give a genuine applied policy of the same or a higher version for
+  the service or owner instance and preserve the older Dell log.
+  The other instance's policy cannot clear Dell's wait. Issue no
+  Dell head confirmation until an accepted Dell log shows the
+  waiting Dell version or a higher one for Dell itself.
 - A GitHub re-copy step bound to the altered entry applies while
   ordinary signing goes on.
-- Restarting after a `policy-applied`, `release-pending` or `recovery`
-  entry does not stop signing.
+- Restarting after a `policy-applied`, `release-pending` or fully
+  applied `recovery` entry keeps ordinary signing available when its
+  other checks pass.
+- `FI-0065-INDEX-RECOVERY`: give a synthetic stopped instance an owner-
+  signed index rebuild for its exact head. Put a `policy-applied` entry at
+  that head after an earlier `signature` entry. The recovery entry must
+  link to the former. The index counters and hashes must verify against
+  the latter. Separately plant matching staged indexes with the recovery
+  entry absent and the original published signing stop verified, and the
+  exact durable recovery entry with either index missing or rolled back.
+  Restart in each state. In both cases keep the signing stop, show the
+  recovery plan and issue no ordinary or repeat signing response. Owner
+  recovery retains its existing authority. Compare the original records
+  and indexes to prove restart wrote no extra recovery entry or signature.
+  In the control, read back both verified indexes and the one durable
+  entry after a lost reply. Permit ordinary signing only under its
+  existing checks and refuse a replay of the applied step. Separately move
+  the head before an uncommitted step can apply and refuse it against the
+  new head.
 - A site-key change whose previous digest is not the last one applied
   is refused, so a held-back revocation cannot be skipped.
 - While a signed policy is held back, no head is confirmed, so no
@@ -784,6 +913,17 @@ Rust tests in the tijori crates, with test keys only:
   refused.
 - A relay that lies about the GitHub copy does not get a confirmation;
   a missing or altered GitHub copy holds the release back.
+  For IT-0065-EXACT-RELEASE-BINDING, use a prior release-key entry
+  whose mirror counter the pending release needs. Offer its exact
+  bytes from the relay account to `receive_github_copy`. Refuse
+  without advancing the verified mirror counter. Separately make
+  those bytes available only at another repository or path in the
+  synthetic mirror. The independently authenticated fetcher uses
+  the exact repository and path in its current protected policy
+  and gives no proof for the substitute. Hold the pending release
+  in both fixtures. In the control the independent fetcher obtains
+  the bytes from the approved source and the owner instance
+  compares them with its own Dell log before confirming coverage.
 - With the record of the highest accepted policy deleted, an older
   signed policy is refused and checks stop until the owner resets it.
 - A clock set back behind the log by more than the bound stops signing
@@ -813,6 +953,22 @@ Rust tests in the tijori crates, with test keys only:
   signature.
 - `qualify`'s ledger signatures are made under its own principal and
   are found in the log by the release guard.
+  In IT-0065-EXACT-RELEASE-BINDING, keep the exact candidate,
+  catalogue, policy and passing scope ledger. First verify the
+  canonical ledger and its fixture signature under the exact
+  `scope-ledger` role. The selected signing core's authoritative log
+  has no corresponding signature entry. The valid signature alone
+  cannot pass the local log check. Refuse a new release signature
+  or count and keep existing entries intact.
+  In a separate case hold a durable pending entry for the same M.
+  After that entry, append the current exact matching ledger
+  signature to the selected core's log. Use current candidate and
+  approval evidence for that ledger. The verified owner head covers
+  the pending entry and satisfies its mirror counter rule, but does
+  not cover the ledger signature. Refuse before a new release
+  signature or count. Keep the exact pending entry available for
+  reconciled retry. Use an otherwise valid owner head at the ledger
+  signature's counter as the control for this custody check.
 - The service's account alone gets `site-message` on the owner's PC.
 - A wait longer than the policy's limit is cut to it; a request past
   the waiting count is refused; `log_since(0)` on a large log returns

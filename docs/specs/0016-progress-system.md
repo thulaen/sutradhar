@@ -7,7 +7,7 @@ message when it ends. Every view reads one shared record per task, so
 they always agree. The record is saved with the task's restart point, so
 a restarted task carries on where it was, and its estimate of time left
 says "estimating" or "unknown" rather than guessing. It lives in karya
-(the jobs part) as `karya::progress`, and is part of Sutradhar Boot,
+(the jobs part) as `karya::progress`, and is part of Behemoth Boot,
 roadmap Phase 3 item 1.
 
 ## What it does
@@ -152,9 +152,9 @@ people watch.
    failed, skipped, final status, average throughput and each stage's
    duration. History seeds estimates, fills the health screen's recent
    runs and feeds the replays of spec 0017.
-4. History keeps the last 30 days and at least the latest 200 runs of
-   each job. Per-post analysis is summarised per day, so history does
-   not grow with site size.
+4. Spec 0099 owns how long history is kept (`jobs.history_days`, and
+   a longer period for failed runs). Per-post analysis is summarised
+   per day, so history does not grow with site size.
 
 ### Cancelling safely
 
@@ -380,10 +380,15 @@ add-on draws from what the service sends:
 
 Section `karya.progress`, applied between jobs:
 `stall_after_seconds` 300; `indeterminate_line_seconds` 60;
-`history_days` 30; `history_min_runs` 200; `failures_kept` 100;
 `cancel_warn_seconds` 600; `notify_min_seconds` 60;
 `live.poll_seconds` 2; `live.hidden_poll_seconds` 30;
 `live.max_streams` 50.
+
+Spec 0099 owns the job history settings (`jobs.history_days` and
+`jobs.failed_history_months`, with their defaults and ranges). This
+section no longer sets a history period or a count of kept failures. The
+100-failure figure in the memory limit below is a sizing assumption for
+records held in memory, not a retention setting.
 
 ## Limits
 
@@ -391,8 +396,8 @@ Section `karya.progress`, applied between jobs:
   estimate windows of 100 tasks at once (each under 64 KB, at most 256
   samples and 100 kept failures) and buffers for 50 streams (each under
   64 KB).
-- Storage: history, one row per run, 30 days and at least 200 runs per
-  job, per-post analysis summarised per day: well under 100 MB.
+- Storage: history, one row per run, kept for the period set by spec
+  0099, per-post analysis summarised per day: well under 100 MB.
 - Removal: history is owned data, so removal offers an export and asks
   keep or delete. Live state is deleted without export.
 - Store writes: at most four a second plus 100 per run per task, plus
@@ -512,9 +517,10 @@ and a recording listener; PHP tests cover the add-on's side.
   events and notices hold no post text, titles or member names.
 - AT-PG37 (PHP): add-on steps run while the service is away show in the
   site's setup display and reach the store on the service's next call.
-- AT-PG38: history keeps 30 days and 200 runs per job, removes nothing
-  newer, and is offered for export at removal; live state is deleted
-  without export.
+- AT-PG38: history is kept for `jobs.history_days` (spec 0099), and
+  failed runs for `jobs.failed_history_months`; nothing newer is
+  removed. History is offered for export at removal; live state is
+  deleted without export.
 - Unit tests also cover status moves, history pruning, span events with
   an in-memory exporter, the log format and both terminal renderers.
 - Performance: benchmarks for `advance()`, the update limit and the
@@ -608,7 +614,7 @@ or delete or replace a record, and the guard cannot catch that.
 - The live stream into the site's admin pages through a web server
   passthrough, with viewer tokens, signature-header stripping and an
   HTTP/2 preflight, is dropped: the site never calls the owner's PC.
-  The stream serves the Dioxus app on the local socket, and site pages
+  The stream serves the desktop app on the local socket, and site pages
   poll the add-on for snapshots the service sends.
 - The PHP reporter records steps in the add-on and the service collects
   them, instead of the add-on sending them.

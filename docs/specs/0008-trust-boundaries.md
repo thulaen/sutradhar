@@ -58,10 +58,11 @@ from signed reports, by an account that never runs candidate code.
    that record type. The gate refuses a `review-result` whose
    fingerprint is not the change being checked, or whose review is not
    the one being counted.
-9. **Coding agent.** Edits code and pushes through the door. It holds no
-   key of the accounts above. Separate agent accounts are preferred.
-   While agents share one, independence checks rely on runner signals
-   and runner-made reviews, never on agent names.
+9. **Coding agent.** Edits code and pushes through the door. Managed
+   agents use the locked account and harness under AGENTS.md section 11.
+   Service-account keys follow the custody rules above. For shared
+   sessions permitted by section 11, establish product independence
+   solely from runner signals and runner-made reviews.
 
 ### Each checker checks for itself
 
@@ -81,8 +82,16 @@ from signed reports, by an account that never runs candidate code.
    door, sync, release step, the `tijori` program and `tijori-verify`
    (spec 0065): their source, the modules they use, their settings, the
    benchmark map, lock files and workflows, plus the rules, roadmap and
-   specifications, and the files AGENTS.md section 7.2 names. A change
-   to any of them needs the owner's signature.
+   specifications, and the files AGENTS.md section 7.2 names.
+   Classify the change using the protected base policy. Apply
+   [AGENTS.md section 7.2](../../AGENTS.md#72-waivers) to
+   waivers and the protected changes it names. The separate
+   owner-signature requirements for policy and trust changes
+   follow [AGENTS.md section 8.1](../../AGENTS.md#81-releases).
+   The owner-signed policy and its activation and verification
+   follow [0065](0065-tijori.md#the-signer-registry). A runner
+   or gate cutover follows the signed record under
+   [0003](0003-toolchain-and-check-runner.md#cutover-and-dependency-evidence).
 3. These tools are installed only by their own service account, only
    from an accepted `main` tree whose identifier is in a publication
    receipt. The installed bytes are hashed again before each use. A
@@ -90,21 +99,31 @@ from signed reports, by an account that never runs candidate code.
 
 ### Administrator access on Dell
 
-AGENTS.md section 11 gives agents sudo. So the account walls above
-protect against mistakes and ordinary faults, not against a hostile
-agent with administrator rights. What stays unforgeable is the owner's
-signature: the owner's signing key never lives on Dell
-([AGENTS.md section 7.2](../../AGENTS.md#72-waivers)). The checksum
-guard also watches Forgejo's hooks and settings, the protected gate
-files and the GitHub CI files, and raises an urgent task and a GitHub
-alert issue when they change any other way.
+[AGENTS.md section 11](../../AGENTS.md#11-the-shared-computer-dell)
+defines managed accounts and the permitted shared sessions. A managed
+agent uses a locked account without sudo, Docker or LXD group membership
+or a token. It reaches Forgejo, the mailbox and git through the harness.
+The owner keeps root. The shared sudo account serves the owner's work
+and recovery. Until locked accounts are ready, the owner-started
+sessions and helpers that section 11 permits use that account as
+unmanaged sessions.
+
+The account walls protect against mistakes and ordinary faults. Dell
+administrator access sits outside that protection. The owner's signing
+key stays off Dell under
+[AGENTS.md section 7.2](../../AGENTS.md#72-waivers). The checksum guard
+also watches Forgejo's hooks and settings, the protected gate files
+and the GitHub CI files, and raises an urgent task and a GitHub alert
+issue when they change outside the required route.
 
 ### Owner approval
 
-1. Approval is a signature made with the owner's key over a short
-   statement naming the candidate tree, the commit identifiers and the
-   SHA-256 of each protected file. The gate checks it against
-   `gate/owner-key.pub`. No agent can make that signature.
+1. A required owner approval for a protected source change is
+   a signature made with the owner's key over the candidate
+   tree, the commit identifiers and the SHA-256 of each
+   protected file. The gate checks it against `gate/owner-key.pub`.
+   No agent can make that signature. Owner-signed policy and
+   other records use their owning encodings.
 2. The owner reads the statement on the owner's own PC before signing.
 3. Owner decisions that the quota and the task lifecycle need
    (deferrals, recovery records, charge cancellations, duplicate and hot
@@ -159,9 +178,9 @@ Rust tests in the runner, gate and door crates, with planted faults:
   containers, as the runner (0003) uses.
 - The publisher, attester and approval verifier accounts with their
   GitHub Apps are replaced by the door, the sync and the release step.
-- The rule that the agent account has no sudo is dropped, since
-  AGENTS.md section 11 gives agents sudo; the trade-off the owner chose
-  earlier (account walls guard mistakes, not hostility) now always holds.
+- Managed coding accounts and permitted unmanaged shared sessions
+  follow AGENTS.md section 11. Dell administrator access remains
+  outside the account protection.
 - Approval by GitHub comment and the hardware-key choice are replaced
   by the owner's signing key of AGENTS.md section 7.2.
 - Owner notices go through Forgejo tasks, not GitHub issues.

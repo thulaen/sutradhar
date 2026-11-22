@@ -107,14 +107,17 @@ part must not weaken that.
 
 ### Settings
 
-Every setting has a safe bottom and top, set by research. Shipped on.
+Every value below is a readiness blocker owned by the audit-proof research
+record. The feature cannot build or ship until that record supplies each
+value, safe bottom and top, cryptographic and operational evidence and
+approval. There is no usable default.
 
 | Setting | Meaning | Value |
 | --- | --- | --- |
-| Block size | Events per checkpoint | by research |
-| Longest gap | Time before a checkpoint is forced | by research |
-| Key period | How long one forward-secure key lasts | by research |
-| Overdue alert | Checkpoint late, raise an alert | by research |
+| Block size | Events per checkpoint | blocked: no admitted value |
+| Longest gap | Time before a checkpoint is forced | blocked: no admitted value |
+| Key period | How long one forward-secure key lasts | blocked: no admitted value |
+| Overdue alert | Checkpoint late, raise an alert | blocked: no admitted value |
 
 No setting turns signing off while the audit is on. No hard-coded value.
 
@@ -123,9 +126,9 @@ No setting turns signing off while the audit is on. No hard-coded value.
 The checkpoint table, the "Prove this event" button, a checkpoint-age
 gauge, a late-checkpoint alert and one new error code.
 
-### Research first
+### Build-blocking research
 
-Before any build, research answers:
+Before any build, the audit-proof research record must answer:
 
 1. Does the threat justify it? The advice of 4 November 2026, which
    the owner told agents to follow, was not to build this for
@@ -192,7 +195,7 @@ fails" and "an old period's key cannot sign".
 
 - Tree building, proof checking, key-period rules and the verifier are
   rewritten as Rust, proved with Kani, Verus or Creusot.
-- The button and alert are in the Dioxus app.
+- The button and alert are in the desktop app.
 - The checkpoint folder is on the owner's PC, where Sutradhar runs, not
   on a site server.
 - tijori holds the key on the owner's PC, not on Dell.

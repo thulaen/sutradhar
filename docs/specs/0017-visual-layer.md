@@ -1,15 +1,17 @@
 # 0017: Visual layer on real data
 
-The visual layer adds charts, maps and live drawings that show what
-Sutradhar is really doing. Every one draws only genuine system records:
-nothing is made up to look busy. Each has a plain text or table form,
-respects people who ask for less motion, and builds its heavy drawing
-only when needed. Text written by members appears only on staff
-screens. It has 58 items, built on SDS components in the Dioxus app,
-with a few in prepared form on the site's pages. It is roadmap Phase 3
-items 1 and 3: the shared foundation is part of Sutradhar Boot and its
-drawing parts are SDS components; each item is built when its data
-exists.
+The visual layer adds charts, maps and live drawings that show what Sutradhar
+is really doing. Every one draws only genuine system records: nothing is made
+up to look busy. Each has a plain text or table form, respects people who ask
+for less motion, and builds its heavy drawing only when needed. Text written
+by members appears only on staff screens. It has 58 items, built with Angular
+Material and SDS in the Tauri app, with a few in prepared form on the site's
+pages. It is roadmap Phase 3 items 1 and 3: the shared foundation is part of
+Behemoth Boot and its drawing parts are SDS components; each item is built
+when its data exists.
+
+[Spec 0135](0135-ai-fetches-referrals-and-ranking.md) adds the
+native SDS admin layout and owner inspection coverage.
 
 ## What it does
 
@@ -413,14 +415,16 @@ grows the graph. Still: stepping without growth. Text: per-date threads,
 links and orphans. Test AT-VL124: a date holds exactly the links added
 before it and not removed by then; it works by keys and buttons.
 
-**25. Promotion rings.** Data: each module's accept rate over its latest
-200 decisions and its approved promotion threshold (spec 0015). Shows: a
-ring filled to the rate, a threshold mark only when one is approved;
-"auto" drawn locked and labelled "not available in version 1". Still:
-no fill animation. Text: "module X: 74% accepted over the last 200
-decisions; no approved threshold; auto not available in version 1".
-Test AT-VL125: rate is accepted / decided over 200; no mark without a
-threshold; auto shown locked; no control can start automatic insertion.
+**25. Module-stage rings.** Data: each module's accept rate over its
+latest 200 decisions and the stage admitted by the current spec 0077
+champion, limited by the ceiling in spec 0015. Shows: a ring filled to the
+rate and separate text naming the champion-admitted stage; "auto" drawn
+locked and labelled "not available in version 1". Still: no fill
+animation. Text: "module X: 74% accepted over the last 200 decisions;
+champion stage: shadow; auto not available in version 1". Test AT-VL125:
+rate is accepted / decided over 200; the stage equals the verified champion
+receipt; auto is shown locked; no control can promote, activate or start
+automatic insertion.
 
 **26. Health constellation.** Dashboard and Operations. Data: the
 registered health checks: database, models, the site link, the index,
@@ -576,16 +580,14 @@ speed. Still: static; the replay steps. Text: stage, start, end,
 duration, status, handled and total. Test AT-VL143: stage times equal
 history; live bars equal the records; the replay uses recorded times.
 
-**44. Resource gauges.** Data: processor and memory use of the systemd
-slice and of the app window, each against its cap from AGENTS.md
-section 5.6 for this PC's size, and disk use and free
-space of the data folder's file system, each with its budget. Shows:
-arcs with budget marks; the metrics store and trace collector are shown
-within the slice. Still: no needle movement. Text, on a PC under 16 GB:
-"memory 2.1 GB of the 4.5 GB slice; window 300 MB of 0.5 GB; disk
-40 GB free". Test AT-VL144:
-memory within 1% of the control group's figure; disk equals the file
-system's; marks sit at the configured caps.
+**44. Resource gauges.** Data: processor and memory use of the
+supervised process group and the app window, with the current spec
+0078 budgets, plus disk use and free space. Include the metrics
+store and trace collector in the group. Show budget marks and a
+static text equivalent. Test AT-VL144: compare with the admitted
+Linux and Windows accounting source. Memory is within 1% of its
+reference, disk matches the file system, and marks use current caps.
+Missing accounting shows "not measured".
 
 **45. Job graph.** Data: the job registry's dependencies and progress
 records. Shows: jobs in dependency layers, each with a progress ring.
@@ -615,7 +617,7 @@ equal history; no module shows at auto.
 (spec 0030), reported as steps through spec 0016. Shows: each check
 lights when it really ends, passed or failed, in order; a failure shows
 its reason and manual link. Checks include item 3's server-based job
-runner and room in the systemd slice. Still: words change, no light.
+runner and room in the admitted process budget. Still: words change, no light.
 Text: a checklist. Test AT-VL149: each light matches a recorded result;
 none shows passed before its result; a failing check shows its reason.
 
@@ -776,8 +778,9 @@ All run in ganit, each after method admission (specs 0055, 0056).
   guest-visible threads; neither carries post text, member names or
   numbers, IP addresses or error details beyond codes.
 - Analytics (items 16 and 17): only measured totals from spec 0034,
-  following its consent, retention (detailed events 90 days, totals two
-  years) and source rules. No visitor identifier reaches any visual.
+  following its consent, retention (detailed events 395 days, as owned
+  by spec 0034; totals two years) and source rules. No visitor
+  identifier reaches any visual.
   Daily counts below 10 show as "fewer than 10". Gaps are shown, never
   filled.
 - The playground's typed text is used for one search and not stored,
@@ -845,18 +848,18 @@ the memory limits in AGENTS.md section 5.6.
 ## How it is tested
 
 Each item starts from its failing test, named with the item above, run
-on the synthetic fixture site. Rust tests cover data builders, SDS
-components and the service; PHP tests cover the add-on's side; a
-headless browser checks the site pages.
+on the synthetic fixture site. Rust tests cover data builders and
+the service. Run Angular and SDS component tests, Tauri window tests
+and PHP adapter tests. Use browser tests for the native site pages.
 
 - Unit: each data builder, with property tests for invariants (shares
   between 0 and 1; treemap areas that sum to the whole); the grouping
   functions; the outgoing allow-list; the code that turns data into
   drawings and text equivalents.
-- Integration on Dell: the service, a test site, the app; site pages in
-  a headless browser on three engines; runs without GPU drawing;
-  reduced motion; light and dark themes. No Safari support is claimed
-  and no real-Safari check is made.
+- Integration: Dell runs the service and site fixtures. Check the
+  real Tauri window on Ubuntu, Debian and Windows. Check native site
+  pages on the three admitted browser engines. Cover CPU drawing, reduced
+  motion, themes, keyboard use and text equivalents.
 - Accessibility: automated checks on every screen and page; a keyboard
   script per interactive item; contrast and target-size checks; a
   recorded manual screen-reader pass.
@@ -915,21 +918,19 @@ headless browser checks the site pages.
 
 ## Changes from the source
 
-- Admin-page visuals become Dioxus app screens built from SDS
-  components; outside drawing libraries and their page-weight budgets
-  are dropped.
+- Owner visuals use Tauri and Angular Material with SDS. The native
+  site pages keep their own approved visual and footprint contracts.
 - Site pages (the admin review page and item 56) get service-prepared
   markup, CSS and SVG with no hand-written page scripts; keyboard
   shortcuts and animated feedback (item 15) are in the app.
 - The live channel into site pages is dropped; the app uses the local
-  socket stream of spec 0016.
+  spec 0016 event stream over spec 0020's protected local link.
 - Item 3's liveness event is recorded by the add-on and read by the
   service, since the site never calls the PC.
 - The add-on's spans and errors (items 42 and 57) come back in signed
   replies instead of being sent to the PC.
-- Item 44 reads the systemd slice and the window cap, not a container's
-  control group; the metrics store and collector count inside the
-  slice.
+- Item 44 reads the app-managed process budget and window cap.
+  The metrics store and collector count towards the process budget.
 - Item 49 drops the passthrough, HTTP/2 and compose checks.
 - Item 53 badges the app window, not a browser tab.
 - Item 55 uses its own revocable read-only permission in the app.

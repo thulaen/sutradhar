@@ -127,9 +127,14 @@ pub trait Scrubber: Send + Sync {
       per-person results such as jobs 154 and 155 on moderators,
       removed and recomputed at the next run); and audit details. ganit
       never receives post text.
-   3. Backups: an erasure list is kept and applied to any restore before
-      the restored data is used. Backups are never rewritten; they
-      expire by their retention.
+   3. Backups: keep the current erasure history outside restored
+      data under 0030. Apply it to any restore before the restored
+      data is used. Backups expire by their retention and remain
+      unchanged. A previous payload returning through 0031 must
+      enforce the same current erasure history before reading or
+      delivering affected data. Hold the fallback when its current
+      history format or enforcement proof is unproved. Keep the
+      erasure history and its existing target receipts.
    4. Receipt: per target, one of erased, nothing found, waiting (with
       the reason) or failed. No personal data in the receipt.
 3. Approved links in posts stay; they are the forum's content.
@@ -159,9 +164,10 @@ pub trait Scrubber: Send + Sync {
    first and last times, not one per occurrence. They show in the app
    and as XenForo staff alerts, sent through the add-on so XenForo
    writes them. Snooze and resolve are actions.
-3. Alert thresholds start from fixed defaults and are later tuned from
-   history by ganit (job 246), shadow-tested before use. Every
-   activation and rollback of a ganit output is an audit event.
+3. Alert thresholds start from fixed defaults. Ganit (job 246) may propose
+   tuned candidates from history, but spec 0077 alone shadow-evaluates,
+   promotes, activates and rolls them back. Every such transition is an
+   audit event; a rejected or failed candidate leaves the champion unchanged.
 4. A faulty method is isolated and reported, not the whole engine; its
    results are withheld and the screen says why.
 5. `sutra doctor` and the Diagnostics screen run every registered check
@@ -175,14 +181,50 @@ pub trait Scrubber: Send + Sync {
 1. Collect: versions and digests, settings without secrets, error codes
    with counts, check results, recent warnings and errors, resource use,
    recent job outcomes, and the versions of ganit's active parameters
-   (identifiers and numbers only).
-2. Scrub: secrets never serialise (secrecy types); addresses, emails,
-   member names and the forum's domain and paths become placeholders;
-   post text is never collected.
-3. Preview: the owner sees every line that will be in the file and can
-   remove any item.
+   (identifiers and numbers only). Include bounded recent log records
+   from one admitted 0030 manifest generation. Read sealed entries only.
+   Use the same verified file beneath the owner-only root. Verify path,
+   identity, compressed length and sealed hash before using decoded
+   output. Refuse linked, replaced, open or unlisted input and unsafe
+   prune or rotation races.
+
+   For setting values, use the current typed Settings projection in
+   spec 0014 under the requester's site scope and read permission.
+   Collect only fields already admitted for support bundles and
+   visible in that projection. If the projection or permission
+   cannot be verified, omit the setting values. Do not read backup
+   files, isolated restore data, settings history, raw configuration
+   or secret storage to populate the bundle.
+2. Decode allowed typed fields within time, count, compressed and
+   expanded bounds. Refuse the unchecked log set on failure, corruption
+   or excess. Apply spec 0112 masking and the same export scrubber.
+   Post text is never collected. No raw log is attached. Summarise
+   omitted items without including their values.
+3. Freeze the canonical scrubbed JSON for preview and item removal.
+   Approval binds its content hash, owner, site scope and expiry.
+   Recheck grant and erasure immediately before the common export
+   route delivers it. For frozen setting fields, recheck the
+   requester's read scope and any restore fence that affects those
+   fields. A change requires a fresh preview. A rotation cannot add
+   records to a frozen candidate. Give the final compressed
+   file its own byte hash.
 4. Export: one `bundle.json.zst` file with its blake3 hash, downloaded
    by the owner. Sutradhar never sends it anywhere itself.
+   Register any managed prepared bundle file in the 0030 ledger under
+   its exact export and scoped identity. Keep the approval bound to
+   the frozen preview. On an erasure that affects the bundle, block
+   further delivery of those bytes through the existing download
+   action, including a link already issued. The link's expiry or
+   invalidation supplies no deletion proof.
+
+   Apply the erasure target to the exact affected managed file and
+   its approved storage identity. When removal is interrupted or its
+   reply is lost, reconcile that recorded effect before retry. Only
+   verified removal of the selected managed copy closes its receipt.
+   An unreachable or unverified copy stays waiting. Report a proved
+   deletion failure through the existing failed outcome. A file
+   already delivered to the owner's custody follows the recipient
+   boundary below. This action has no authority over that copy.
 
 ### Safe exports
 
@@ -220,7 +262,7 @@ All in PostgreSQL, every table with forced RLS:
 
 ### Error codes
 
-The range SUT-840 to SUT-849 is checked as free in the central list.
+Spec 0032 owns SUT-840 to SUT-849 in the central catalogue.
 
 | Code | Meaning |
 | --- | --- |
@@ -321,12 +363,15 @@ only in the site's admin pages.
 
 ## How it is tested
 
-Rust coverage is 100% of lines, branches and MC/DC, with every mutant
-killed. Rule-critical code (the event shape, the hash chain, the
-erasure job's "each item once" and the scrubber) also has property
-tests and Kani proofs where tractable, such as "an event built from any
-input holds no field of a personal kind" and "the chain check fails for
-any single changed event". Screens have Dioxus component tests.
+Coverage and mutation obligations follow ADR-0020. Only components
+explicitly admitted to its strict core require 100% line, branch and MC/DC
+coverage and every killable mutant killed; equivalent mutants require
+proof and independent review. Other code follows the owning risk matrix.
+Rule-critical code (the event shape, the hash chain, the erasure job's
+"each item once" and the scrubber) also has property tests and Kani proofs
+where tractable, such as "an event built from any input holds no field of
+a personal kind" and "the chain check fails for any single changed event".
+Screens have Angular component tests.
 
 - AU-01, no personal data in events: for every action with random
   inputs, the event holds no name, address, email or post text. Lekha
@@ -350,20 +395,73 @@ any single changed event". Screens have Dioxus component tests.
   job ends with each item erased once. Chaos test.
 - AU-08, restore applies erasures: a backup made before an erasure is
   restored with the erased data removed before the service uses it.
+  In the joined 0030 test 25, advance current erasure history after
+  an isolated restore passes and before live publication. The old
+  stage stays held. Restore uses the newer verified fences before
+  publishing an eligible stage. This hold preserves the lawful
+  erasure and uses the restore reason. AU-16 separately checks a
+  failed audit write.
+  Use the IP-30 history-format branch for a newer authenticated
+  checkpoint the selected restore reader cannot enforce. Keep its
+  committed fence and existing waiting outside-target receipt.
+  The held restore or a later isolated success gives no completion
+  proof for that target.
+  [QR-250](../registers/questions.md) defines the decision and proof
+  for a durable authorised request whose protected restore fence
+  is unconfirmed. Exercise that state separately from preview,
+  uncertain commit and a committed fence with a waiting target.
 - AU-09, grouped alerts: the same fault 1,000 times in a minute shows
   one alert with a count of 1,000 in the app and as one XenForo staff
-  alert. Drishti unit test and Dioxus component test.
+  alert. Drishti unit test and Angular component test.
 - AU-10, every error explained: a gate test reads the registry; each
   code has a plain message, a fix and a manual page. An error shown to a
-  person without a code or manual page fails the gate.
+  person without a code or manual page fails the gate. For the
+  [0133][coach-errors] and [0136][matomo-errors] error tables, match
+  each emitted code to its owner, the outcome in the existing
+  synthetic acceptance check and a reachable next step in the
+  same release's manual. A reserved but unused slot supplies
+  no error outcome. Hold missing, conflicting or unsafe mappings.
+  The message and help must preserve the owning route's scope,
+  authority, retry and recovery fences. The registry check uses
+  the existing fixtures and changes no provider access.
 - AU-11, doctor names the fault: with each dependency broken in turn
   (database, forum connection, disk, model file), that check fails with
   its fix and the others pass. Unit and chaos test.
+- AU-12L, log bundle: simulate rotation, a manifest mismatch, an
+  replacement, linked or open entry, malformed fields and expansion
+  above the cap. Refuse unsafe prune. Race expiry, revoke and erasure
+  with delivery. Require a new preview and never include raw logs or
+  records from a later rotation.
 - AU-12, scrubbed bundle: planted secrets, emails, addresses, member
   names, the forum's domain and post text never appear in a bundle.
-  Property test.
+  Property test. Separately, stage an isolated restore and plant
+  distinct synthetic non-secret values in the current Settings
+  projection, the staging store and another site. Check the collector
+  reads only the requester's admitted projection. Read no raw backup
+  or staged value, even if the current Settings projection is
+  unavailable. Repeat with the joined AU-08 restore held because its
+  erasure history advanced after verification. The support collector
+  may use the current authorised projection only. It cannot replace
+  withheld settings with values from the staged restore. Repeat
+  after verified activation. Only allowlisted and currently visible
+  values are eligible.
 - AU-13, preview is the file: after the owner removes an item and
-  exports, the file holds exactly the remaining preview.
+  exports, the file holds exactly the remaining preview. Revoke
+  settings read permission or invalidate the restore fence after
+  preview and before delivery in separate cases. Hold the frozen
+  bundle and require a fresh eligible preview. No file is delivered.
+  In the existing export race, stage an approved bundle for a
+  synthetic subject and lose the managed-file deletion reply after
+  erasure. Exercise its already-issued download link. Block delivery
+  of the old bytes and leave the affected file's erasure receipt
+  unverified. Recover with exact removal proof and record that
+  outcome once. In a separate run replace its managed file identity
+  before replay. Leave the substitute untouched and withhold
+  verified erasure. Join 0030 test 21 for a lost deletion result
+  with the selected managed volume detached. An empty view of its
+  old path cannot close the erasure receipt. The prior link stays
+  fenced while current storage proof is missing. An earlier owner
+  download is outside this proof.
 - AU-14, safe CSV: cells starting with `=`, `+`, `-` or `@` open as text
   in a spreadsheet. Unit and property test.
 - AU-15, exports respect permission: a moderator's audit export leaves
@@ -385,6 +483,9 @@ any single changed event". Screens have Dioxus component tests.
 - AU-21, proofs and mutants: Kani proofs for the event shape, chain,
   erasure job and scrubber hold, and `cargo mutants` leaves no survivor.
 
+[coach-errors]: 0133-dataforseo-live-coach-evidence.md#failure-codes
+[matomo-errors]: 0136-matomo-timeline-connector.md#failure-codes
+
 Test-first order: event shape and chain (AU-01, AU-03), grants and RLS
 (AU-02, AU-19) and their proofs (AU-21); subjects and details (AU-04);
 the target registry and gate test (AU-06), with each module's target
@@ -394,15 +495,17 @@ alerts (AU-09); doctor checks (AU-11); scrubber and bundle (AU-12,
 AU-13); exports (AU-14, AU-15) and audit failure (AU-16); screens, load
 and chaos (AU-17, AU-18).
 
-Facts to check while building: how a XenForo 2.3 member deletion or
-anonymisation shows to the add-on, on Dell's test forum; the XenForo
-staff-alert route open to the add-on and its limits; which spreadsheet
-programs still run formulas from CSV, for the export guard's test list.
+Build-blocking evidence: the audit integration record must establish how
+XenForo 2.3 member deletion or anonymisation reaches the add-on on Dell's test
+forum, the available staff-alert route and its limits, and which spreadsheet
+programs execute formulas from CSV. Dependent erasure, alert and export-guard
+implementations remain blocked until official-version evidence and isolated
+fixtures are admitted.
 
 ## Changes from the source
 
-- The live screens become the Dioxus app built from SDS, tested with
-  Dioxus component tests.
+- The live screens become the desktop app built from SDS, tested with
+  Angular component tests.
 - Numeric work and its snapshots move to ganit, the Rust numerical
   engine.
 - Member deletions reach Sutradhar through the add-on over the signed
@@ -410,7 +513,8 @@ programs still run formulas from CSV, for the export guard's test list.
 - Speed targets use the 5% median rule, replacing the 5% ratchet.
 - Memory follows the limits in AGENTS.md section 5.6, replacing
   "all containers".
-- Coverage adds MC/DC and 100% killed mutants (AGENTS.md 6.4).
+- Coverage and mutation follow ADR-0020; its MC/DC and zero-surviving-
+  killable-mutant requirements apply only to admitted strict-core members.
 - Mutation runs use `cargo mutants`.
 - "Dashboard" becomes the desktop app; bundles stay on the owner's PC.
 

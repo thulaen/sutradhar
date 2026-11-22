@@ -1,6 +1,6 @@
-# 0012: GanitEvolve
+# 0012: Ganit Vikas
 
-GanitEvolve searches for better code the way DeepMind's AlphaEvolve
+Ganit Vikas searches for better code the way DeepMind's AlphaEvolve
 does: a language model proposes changes to marked parts of a program,
 automatic evaluators score each change, and an archive of good, varied
 programs supplies the parents and examples for the next proposals. It
@@ -17,7 +17,7 @@ standard it shares with the lab is in 0013.
 
 1. **The driving agent** (Codex, Claude or Gemini) reads each task
    packet, proposes a change and submits it, inside its own chat and on
-   its own usage. Its tokens are the only model cost. GanitEvolve never
+   its own usage. Its tokens are the only model cost. Ganit Vikas never
    calls a model and holds no key. Nothing runs unless an agent drives.
 2. **`ganit-evolve`**, a developer tool written in Rust, keeps the run,
    builds task packets, checks each submission, runs the evaluators in
@@ -54,7 +54,7 @@ So a challenger, judge or reviewer is another product.
 3. The agent writes its change as SEARCH/REPLACE blocks, only inside
    EVOLVE-BLOCK regions, saves it there and runs
    `ganit-evolve submit <run> <file>`.
-4. GanitEvolve refuses a change that touches anything outside the
+4. Ganit Vikas refuses a change that touches anything outside the
    blocks, breaks the format or repeats an earlier candidate. Otherwise
    it queues the evaluation steps below.
 5. `ganit-evolve wait <run>` returns the scores. The agent may submit up
@@ -204,9 +204,11 @@ failure, and the failure becomes feedback in the next packet.
    launch. A candidate cannot select, replace or widen its safety profile;
    a missing or stale acceptance is refused. Both profiles keep the sealed
    container and every language, privilege and privacy check. No
-   candidate's code may start a shell or run Python: AGENTS.md section 4
-   bans programs of ours starting a shell, and Python is not an allowed
-   language. A kept shell file is evolved only once its own safety parse
+   candidate's code may start a shell or introduce first-party Python:
+   AGENTS.md section 4 bans candidate-generated operational shell and all
+   first-party Python production code. Approved pinned packages run only
+   through their admitted interfaces, never as candidate-supplied source.
+   A kept shell file is evolved only once its own safety parse
    exists ("A receipt for every source change", item 6). No declaration
    can authorise what those checks or the problem's forbidden list forbid.
 3. **Correctness.** Public tests, then hidden tests the agent never sees,
@@ -220,7 +222,7 @@ failure, and the failure becomes feedback in the next packet.
    case: the candidate's own output, errors and panic text from a hidden
    case never reach the feedback. The same holds for step 4's runs on
    generated inputs.
-4. **Measuring.** For a `speed` problem, GanitEvolve times an optimised
+4. **Measuring.** For a `speed` problem, Ganit Vikas times an optimised
    build, outside the candidate, three times, keeping the median. The two
    times are taken by pinned timing code the candidate cannot change: for
    an EVOLVE-BLOCK problem, the fixed part of the program, which reads the
@@ -485,7 +487,7 @@ receipt. These records go in the archive, within its cache budgets.
 
 1. `ganit-evolve judge` records one agent's score (0 to 10) and reason
    for one candidate against the problem's pinned `checklist.toml`:
-   stable, simple, in the style of Sutradhar Boot (AGENTS.md section
+   stable, simple, in the style of Behemoth Boot (AGENTS.md section
    5.1), new, and its risks.
 2. It refuses any agent whose product drove the run.
 3. Judgements show in later packets beside the candidate, and their
@@ -541,7 +543,7 @@ receipt. These records go in the archive, within its cache budgets.
 
 ### A problem definition
 
-Each problem lives in its own folder under the GanitEvolve crate:
+Each problem lives in its own folder under the Ganit Vikas crate:
 
 1. `problem.toml`: name, language, the one source file (its `target.path`)
    and its EVOLVE-BLOCK regions, the hashes of the evaluator's tests, the
@@ -632,7 +634,7 @@ Each problem lives in its own folder under the GanitEvolve crate:
 ### A receipt for every source change
 
 1. Every new or changed source file in a commit must be the
-   exact program a GanitEvolve run proved. The proof is a receipt in
+   exact program a Ganit Vikas run proved. The proof is a receipt in
    `receipts/` whose `target` is the file and whose `tested` is the
    SHA-256 of its new bytes.
 2. A source file is any file of a kind AGENTS.md section 6 rule 9
@@ -651,7 +653,7 @@ Each problem lives in its own folder under the GanitEvolve crate:
    `ganit-evolve gate`, blocks at the commit, push and release tiers.
    The door runs it on the receiving side, so skipping local hooks
    cannot avoid it.
-5. Each change needs a King Solomon research card (0013, "Research
+5. Each change needs a Nyaya research card (0013, "Research
    first"), a run sized by that card, a review by an agent of another
    product and a matching receipt that names the card by hash. The run
    takes the speed measures of AGENTS.md section 6 rule 8 for every hot
@@ -672,13 +674,34 @@ Each problem lives in its own folder under the GanitEvolve crate:
    entry, drop a tier it runs at, or lower its severity from `block`.
    Adding checks or tiers is allowed. Only an owner-signed change under
    AGENTS.md section 7.2 can loosen it.
-2. `ganit.every-change` covers GanitEvolve's own source too, so weakening it
+2. `ganit.every-change` covers Ganit Vikas's own source too, so weakening it
    needs a proved, reviewed receipt.
 3. The same wiring protects the forced-speed checks of AGENTS.md
    section 6 rule 8: no commit may remove them, take them off a tier
    they run at, or lower them from `block`. This is the guard. chaukidar
    (0058), which already watches the door's program on Dell, is a
    second line: a change to it made outside git raises an urgent task.
+
+### Delivery handoff
+
+DES-0012-DELIVERY-HANDOFF links the command design to the
+documentation plan in Forgejo issue #593. This document specifies
+the Rust command and its existing operating contracts. The
+downstream jobs use their owning contracts and design their tests
+before changing code.
+
+| Job | Owned outcome and source |
+|---|---|
+| #594 | Sealed evaluators through the heavy-job queue. Use Evaluation steps, The effect contract and Limits. Keep the owning 0003 sealed-run evidence and the existing interrupted-trial case. |
+| #595 | Source receipts the door checks. Use A receipt for every source change, Hard to skip and the existing exact-source receipt case. Use the activation rule in AGENTS.md section 7.3. |
+| #596 | Research rules and memory. Use [0013](0013-research-rules.md), Research first, The receipt and The research memory. Preserve the separate checks on card scope and signed acceptance. |
+| #597 | The recorded double-precision symmetric rank-k update run. Use The loop, The first problem: ganit's matrix kernels and How it is tested, with the pinned reference and proof in 0013. |
+
+FX-0012-DELIVERY-HANDOFF checks that the non-executable plan has
+each of these four job bindings and links it to its existing
+owner and test design. An omitted or misassigned job fails
+the trace inspection. Use the existing 0003 documentation
+profile and reviews on the exact candidate.
 
 ### Build order
 
@@ -690,7 +713,7 @@ Each problem lives in its own folder under the GanitEvolve crate:
    accept `fixture_callable`, with an aegis test that the field is
    accepted and a missing one means false. Problems with grants run only
    from that commit. The first fixture adapters land with it as
-   GanitEvolve's own Rust source, before `ganit.every-change` is turned
+   Ganit Vikas's own Rust source, before `ganit.every-change` is turned
    on (AGENTS.md section 7.3), so they have no receipt yet; since a
    receipt for an adapter needs a problem with grants, they are admitted
    once, by a product other than their writer, pinned by hash in the
@@ -703,6 +726,51 @@ Each problem lives in its own folder under the GanitEvolve crate:
 4. Guards; then hints; then parallel checks.
 5. Safety parses for TypeScript, CSS, PHP, SQL, shell, Cedar and Rego.
 6. A first architecture problem, once the architecture checks exist.
+
+### Early gate handoff
+
+The [Phase 2 roadmap](../roadmap.md#phase-2-the-gate-at-100)
+puts build steps 1 and 2 before the numbered Phase 2 work. The
+[task catalogue](../planning/implementation-catalogue.md#phase-2-gate-slices)
+and [trace cases][early-gate-cases]
+use these owning design identities.
+
+For the step 2 build task, resolve step 1's checker source and
+UT-0012-CHECK-EXACT-SOURCE result under the existing bootstrap
+evidence rules in AGENTS.md section 7.3. Bind the accepted checker
+actually carried by the step 2 base. A later base can reuse that
+evidence when it carries the same checker and the protected
+verification still applies. Hold
+readiness, claim and candidate acceptance for missing or mismatched
+step 1 evidence. This prerequisite establishes the checker build.
+The separate receipt-enforcement and signed Phase 2 exit rules apply
+at their existing boundaries.
+
+| Requirement and design | Applicable case and evidence |
+|---|---|
+| REQ-0012-CHECK-BUILD and DES-0012-CHECK-BUILD | Build step 1 prepares and exercises the source receipt checker test first. UT-0012-CHECK-EXACT-SOURCE uses FX-0012-RECEIPT-CANDIDATE to compare exact and altered source, missing receipt and a documentation-only control. Record the expected baseline failure and later exact result under the protected check profile. |
+| REQ-0012-RUST-SAFETY and DES-0012-RUST-SAFETY | Build step 2 adds the Rust whole-file safety parse and effect validator. IT-0012-BOOTSTRAP-RUST-GRANTS uses FX-0012-RUST-FIXTURE-GRANT to check both safety profiles, the matching pinned fixture action, and the aegis flag read in the same change. Check missing and false flags, a modified adapter and the outside-grant refusal. |
+| REQ-0012-RECEIPT-ENABLE and DES-0012-RECEIPT-ENABLE | AGENTS.md section 7.3 governs the threshold for enabling mandatory Rust source receipts. IT-0012-BOOTSTRAP-ENABLE uses FX-0012-RUST-ENABLE to distinguish exact Rust receipt and card capability from a checker build or a single trial. Once enabled, compare matching and altered source under TASK-0012-SOURCE-RECEIPT. |
+
+| Existing variant | Scope and verification |
+|---|---|
+| VAR-0012-BOOTSTRAP-CHECK | Build and test the checker before enforcement begins under AGENTS.md section 7.3. Use UT-0012-CHECK-EXACT-SOURCE. The test profile does not change the protected entry points. |
+| VAR-0012-RUST-NUMERICAL | An accepted numerical plan has no fixture grants. IT-0012-BOOTSTRAP-RUST-GRANTS verifies refusal of the same effect that the scoped operations fixture exercises. |
+| VAR-0012-RUST-OPERATIONS | An accepted operations plan uses only its finite declared grants. IT-0012-BOOTSTRAP-RUST-GRANTS checks the exact pinned fixture, independently admitted unchanged adapter and absent-as-false flag. |
+| VAR-0012-RECEIPT-ENFORCEMENT | After the existing activation threshold, the protected check requires exact evidence for changed Rust source. IT-0012-BOOTSTRAP-ENABLE verifies the transition and refusal conditions. Other languages follow their own safety-parse gates. |
+
+Record the source, previous policy, permitted Rust and gate-reader
+paths, pinned tools, fixture inputs, expected failure, independent
+review and actual authorised evidence in each derived task. Use
+0013 for any accepted card, 0003 for the protected runner and
+sealed attempt, and 0065 for signing where required. AGENTS.md
+section 7.3's committed review or phase evidence has its stated
+scope. The full signed Phase 2 exit follows 0010 and the roadmap.
+TASK-0012-SEALED-TRIAL verifies trial and retry behaviour within
+the owned sealed route. It supplies its own attempt evidence.
+
+[early-gate-cases]:
+  ../planning/test-and-traceability.md#phase-2-early-gate-handoff
 
 ## Limits
 
@@ -727,7 +795,7 @@ This part adds nothing to public pages.
 
 ## How it is tested
 
-Rust tests in the GanitEvolve crate and in ganit:
+Rust tests in the Ganit Vikas crate and in ganit:
 
 - A run started from Claude: `next` gives a packet with the parent, two
   to four examples, feedback, the rules and the answer format, and the
@@ -1133,7 +1201,7 @@ Rust tests in the GanitEvolve crate and in ganit:
 - The safety step's forbidden list is restated for Rust, with `unsafe`
   added, as AGENTS.md section 6 rule 6 asks.
 - The compiler choice for the old kernels is dropped.
-- The run screen and briefing come from the Dioxus app.
+- The run screen and briefing come from the desktop app.
 - Receipts live in `receipts/`, and source files are the kinds AGENTS.md
   section 6 rule 9 lists; safety parses are needed for those kinds.
 - The owner's instruction of 8 November 2026 ("wire ganitevolve into
@@ -1146,7 +1214,7 @@ Rust tests in the GanitEvolve crate and in ganit:
 - The heavy-job limit follows AGENTS.md section 11, not one job of
   3.5 GB.
 - Speed follows the 5% median rule; the 20x goal is kept (spec 0007).
-- Spring Boot-style checks become Sutradhar Boot's rules.
+- Spring Boot-style checks become Behemoth Boot's rules.
 - `gate-wiring` may be loosened only by an owner-signed change.
 - The door runs the gate on the receiving side.
 - The safety step has two profiles. The owner approved this on 11 November

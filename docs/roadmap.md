@@ -10,6 +10,18 @@ Phases run in order. A phase starts when the one before it is closed.
 "Every allowed language" below means every allowed language that is
 switched on, as in [AGENTS.md section 7](../AGENTS.md#7-the-gate).
 
+Before any implementation resumes, every Version 1 feature, declared
+variant, interface, operational procedure and test design must satisfy
+[spec 0076](specs/0076-specification-completeness.md). Every feature must
+have one owner in the [feature register](specs/feature-register.md).
+A range task cannot supply design detail during implementation. Documentation
+completion does not authorise coding by itself: the phase order and all
+other gates still apply.
+
+The [implementation catalogue](planning/implementation-catalogue.md)
+and [test traceability](planning/test-and-traceability.md) map phases
+to scoped work and evidence.
+
 ## Phase 0: Save and settle
 
 Forgejo milestone: `Phase 0: Save and settle`.
@@ -38,8 +50,9 @@ Forgejo milestone: `Phase 1: Forgejo home`.
 6. Create the milestones for every phase and for "Later", and the
    `status/ready`, `status/working`, `status/blocked` and
    `status/urgent` labels.
-7. The heavy-job queue with its systemd limits, with tests that a third
-   job waits and that a timed benchmark holds both places.
+7. The [Dell heavy-job queue](specs/0059-pankti.md) with its resource
+   limits, with tests that a third job waits and that a timed
+   benchmark holds both places.
 8. Carry over earlier work:
    1. Rewrite every earlier task and idea as a task in this repository.
       Each is placed as
@@ -63,7 +76,7 @@ GitHub matches Forgejo; and the required reviews of the phase pass.
 
 Forgejo milestone: `Phase 2: The gate`.
 
-First, before the numbered items: build GanitEvolve's build steps 1
+First, before the numbered items: build Ganit Vikas's build steps 1
 and 2 from spec 0012 (part of item 6), so later work can get receipts
 (owner, 11 November 2026).
 
@@ -74,8 +87,11 @@ and 2 from spec 0012 (part of item 6), so later work can get receipts
 3. Pin every tool in `gate/tools.toml`.
 4. Write the Google-style guides and the rule matrix in
    `docs/standards/`.
-5. Build the MC/DC tool for Rust and prove it on hand-worked cases.
-6. Build GanitEvolve and its receipts, from its specification.
+5. Build the MC/DC and mutation-analysis tools needed by the strict core
+   in ADR-0020 and the risk-appropriate coverage checks for other
+   components. Prove each on hand-worked and planted cases, including
+   equivalent-mutant review evidence.
+6. Build Ganit Vikas and its receipts, from its specification.
 7. Build the benchmark runner, its baselines and the slowdown check.
 8. Build the signing core of tijori, used by review records, waivers,
    signed runs and the site link.
@@ -84,7 +100,7 @@ and 2 from spec 0012 (part of item 6), so later work can get receipts
    - one rule file and one roadmap;
    - no status statements in docs;
    - the commit message form;
-   - GanitEvolve receipts;
+   - Ganit Vikas receipts;
    - the required review records;
    - waivers signed only with the owner's key;
    - the backlog limits.
@@ -97,34 +113,61 @@ and 2 from spec 0012 (part of item 6), so later work can get receipts
 Finished when: items 1 to 12 are met; a signed full run shows every
 check that exists refusing its planted fault and passing clean code, in
 every allowed language, at every tier (the release tier on planted faults
-only, since its long tests come in Phase 5); GitHub CI gives the same
+only, since framework long tests come in Phase 3B and product long
+tests in Phase 5); GitHub CI gives the same
 results; and the required reviews of the phase pass.
 
-## Phase 3: First slice
+## Phase 3: Foundation and first product slice
 
-A slice is a thin piece of the product that works from start to end.
+Forgejo milestone: `Phase 3: First slice`. Close stages A, B and C
+in order. The milestone closes after stage C. Follow
+[ADR-0025](adr/0025-refactor-and-boot-first.md) and
+[spec 0139](specs/0139-full-foundation-refactor.md).
 
-Forgejo milestone: `Phase 3: First slice`.
+### 3A. Full foundation refactor
 
-1. Sutradhar Boot: composition root, typed settings and profiles,
-   lifecycle, health, one error shape, logs, metrics and audit.
-2. The database starter: PostgreSQL, migrations, the forced RLS check
-   and the app role.
+After Phase 2, inventory the exact existing foundation. Complete each
+approved refactor or migration and verify compatibility and recovery.
+Accept the refactor only when the complete 0139 inventory, gate and
+review evidence passes. This exit admits framework implementation.
+
+### 3B. Build and qualify all of Behemoth Boot
+
+Implement the complete verified scope in
+[spec 0081](specs/0081-behemoth-boot-parity.md) and its framework groups.
+Use framework fixtures. Close this stage only with signed evidence for
+the exact complete parity ledger, platform matrix and Boot artefacts.
+Partial parity leaves product implementation held.
+
+### 3C. First product slice
+
+Start downstream Sutradhar implementation after 3B. The item numbers
+below are the existing Phase 3 item references in the owning specs.
+
+1. Wire the qualified Behemoth Boot components into the first product
+   service: composition root, typed settings and profiles, lifecycle,
+   health, one error shape, logs, metrics and audit.
+2. Wire the qualified database starter into the product. Check
+   PostgreSQL, migrations, forced RLS and the app role.
 3. SDS: the first accessible components, tokens and the component
    catalogue.
-4. The Dioxus desktop window.
-5. The management API on the local socket, with Cedar permissions.
-6. The background service under systemd, in one systemd slice with
-   PostgreSQL and the memory cap, with durable jobs and the outbox.
+4. The Tauri desktop window with Angular and SDS.
+5. The Cedar-checked management API on the owner-only Unix socket
+   or Windows named pipe.
+6. The supervisor starts the background service in an admitted
+   resource profile. Spec 0019 owns the PostgreSQL queue, Rust
+   scheduler and transactional outbox. Each job class has one
+   durable execution path.
 7. Tests for start-up, wiring failures, bad settings, crashes, restarts,
    unfinished jobs and closing the window.
-8. Move the signing core of tijori onto Sutradhar Boot. The gate and
+8. Move the signing core of tijori onto Behemoth Boot. The gate and
    `forge-sync` are operations tools written in Rust under ADR-0019
    (AGENTS.md section 4) and stay off Boot.
 
-Finished when: items 1 to 8 are met, the slice passes every gate, a
-recorded demonstration shows it working, and the required reviews of the
-phase pass.
+Finished when: 3A and 3B have their exact signed exit evidence,
+3C items 1 to 8 are met, the product slice passes every gate, a
+recorded demonstration shows it working, and the required reviews
+of the phase pass.
 
 ## Phase 4: XenForo, then WordPress
 
@@ -147,26 +190,31 @@ required reviews of the phase pass.
 Forgejo milestone: `Phase 5: Core`.
 
 1. Install, update, repair, backup, restore and removal from the app, and
-   the `.deb`, with tests for interrupted updates.
+   the Linux and Windows packages in spec 0030, with tests for
+   interrupted updates.
 2. Self-healing and recovery.
 3. Retention.
 4. ganit, darshak, hisaab and the rest of tijori.
 5. The `sutra` command and the MCP server.
 6. Cloud helpers on the owner's own accounts.
 7. The manual, built into the app.
-8. Two pinned test machines that match both sizes of the owner's PC:
-   one under 16 GB, and one with 16 GB or more.
-9. The release-tier peak memory, load and soak tests on those machines.
+8. Pinned test machines for every declared supported owner-PC profile,
+   with exact hardware, operating-system and resource identities recorded.
+9. Release-tier peak memory, p95 latency, load and soak tests on those
+   machines, proving the admitted total and workload limits under
+   AGENTS.md section 5.6 and spec 0078.
 
 Finished when: items 1 to 9 are met and pass every gate, each has a
 beginner guide in the manual, and the required reviews of the phase pass.
 
 ## Phase 6: Feature waves
 
-Forgejo milestone: `Phase 6: Features`.
+Forgejo milestone: `Phase 6: Feature waves`.
 
-Build the expanded scope in spec 0064 and every feature in
-`docs/specs/features.md`. Keep the four feature ranges in this order:
+Build spec 0064's version 1 scope and the features assigned to it in
+the [feature register](specs/feature-register.md). Excluded and deferred
+features follow their owning decisions. Keep the existing feature
+range order below.
 
 1. The first range in the feature list.
 2. The second range.
@@ -176,12 +224,16 @@ Build the expanded scope in spec 0064 and every feature in
 Within each range, build the features in four kinds, in this order:
 insight-only features (they only show information), then review-page
 changes, then drafts (changes prepared for a moderator to approve), then
-public-page features.
+public-page features. A feature cannot become a ready build task until its
+complete spec 0076 readiness record exists. The range order never
+authorises an implementer to invent missing behaviour, variants, errors or
+tests.
 
 Finished when: every feature in the list and the expanded scope in
-spec 0064 are built and pass every gate. Recorded demonstrations show
-each feature on both test sites, and the required reviews of the phase
-pass.
+spec 0064 has feature-specific unit, BDD, integration, end-to-end,
+edge-case and operational evidence and passes every applicable gate on
+both test sites. Recorded demonstrations show each declared supported
+variant, and the required reviews of the phase pass.
 
 ## Phase 7: Version 1
 
@@ -194,8 +246,8 @@ Forgejo milestone: `Phase 7: Version 1`.
 3. Signed release artefacts.
 
 Finished when: items 1 to 3 are met, the required reviews of the phase pass,
-the owner approves, and `v1.0.0` is tagged in Forgejo with the same tag on
-GitHub.
+the release approval under AGENTS.md section 3 is recorded, and
+`v1.0.0` is tagged in Forgejo and mirrored to GitHub.
 
 ## Later
 

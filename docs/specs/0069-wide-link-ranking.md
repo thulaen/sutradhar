@@ -1,5 +1,10 @@
 # 0069: Wide link ranking shape
 
+> ADR-0021 superseded this specification on 19 November 2026.
+> This page records the former design. See spec
+> [0057](0057-quality-judging.md) for release quality assessment and
+> spec [0079](0079-ranking-method-catalogue.md) for the ranking-method floor.
+
 This spec adds one chain shape of spec 0067 for the scope area "Link
 ranking and protection" of spec 0064, marked as ranking. Spec 0067
 freezes an admitted shape, so spec 0068's link ranking shape is never
@@ -277,10 +282,11 @@ linear, non-linear or unsupervised.
 - Every graph step (slot 5) reads a stored ganit output (spec 0049);
   a randomly started embedding takes its seed from its ganit job.
 - Job 33's calibration (spec 0027) is one of the slot 13 procedures,
-  and its catalogue entry is that row's entry. The live service keeps
-  serving job 33's active calibration (spec 0027); changing which slot
-  13 procedure job 33 serves live needs an amendment to spec 0027,
-  never a setting.
+  and its catalogue entry is that row's entry. The live service uses only
+  the calibration in the current spec 0077 champion. Job 33 can propose
+  another slot 13 procedure only in a sealed spec 0077 candidate. Activation
+  requires spec 0077 evaluation and promotion, plus any amendment to spec
+  0027 that the behaviour needs, never a direct settings change.
 
 ### Fusion and training
 
@@ -352,10 +358,13 @@ linear, non-linear or unsupervised.
    batch.
 7. A fuser's procedure is its training objective and how it scores;
    two linear fusers that both score by a weighted sum are two steps
-   because they learn by different objectives. Weights a fuser learns,
-   or that are changed by hand, and fitted calibrations are settings,
-   never steps: other weights, same chain. Logistic fusion keeps its
-   trained intercept; renormalising touches only the weights.
+   because they learn by different objectives. Learned weights and fitted
+   calibrations are versioned candidate configuration, never steps. An
+   owner-proposed manual value enters through spec 0077's typed registry as
+   part of a sealed candidate; neither a hand edit nor a training job can
+   alter live settings. Other weights retain the same chain identity but
+   require a different candidate manifest. Logistic fusion keeps its trained
+   intercept; renormalising touches only the weights.
 
 ### What can make chains behave the same
 

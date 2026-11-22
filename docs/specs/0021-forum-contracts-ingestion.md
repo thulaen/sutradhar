@@ -17,6 +17,9 @@ its index, and has suggestions to and from it recalculated and retired,
 with the reason in the audit log. No staff-only text was ever read, and
 the thread's earlier text is purged.
 
+[Spec 0135](0135-ai-fetches-referrals-and-ranking.md) uses the paired
+read direction and protected delivery for AI traffic evidence.
+
 ## What it does
 
 ### Words used here
@@ -145,12 +148,21 @@ The receiver, before any other work:
    changed the body is told apart from a forgery;
 5. checks the signature with the signing library's own verify call,
    never a plain comparison, and refuses a mismatch (SUT-305);
-6. records the nonce for five minutes; a nonce seen in that time is a
-   replay and is refused (SUT-306). Nonces are kept in a database table
-   on each side, so a restart does not forget them;
+6. records each accepted nonce until 300 receiver-clock seconds after
+   first acceptance, inclusive. At equality the nonce still counts as
+   seen and a repeat is refused (SUT-306). Check and record once in the
+   durable nonce table on each side, so a restart does not forget it.
+   Prune only after the expiry second, with the same verified clock
+   as the age check. A refused repeat does not renew the record.
+   Hold restored pairings without current replay-store continuity
+   or a separately authorised fresh pairing under 0118. An unproved
+   clock keeps the existing clock hold;
 7. applies a request ID that changes something only once: the add-on
-   stores each request ID with its answer for 30 days, and a repeat
-   gets the stored answer and changes nothing.
+   keeps the intent digest and answer for the platform's receipt
+   window. XenForo keeps it for 30 days. WordPress uses spec 0031's
+   admitted retention. A repeat may read the same answer. Changed
+   intent under a held ID is refused. Reject an expired edit intent
+   even after its receipt is pruned.
 
 Signed routes refuse compressed request bodies, have a body limit (1
 MiB unless a message says otherwise), are rate-limited and are never
@@ -174,33 +186,168 @@ Service to add-on (every one signed, every reply signed):
   progress reports and its heartbeat.
 - **`CheckGuestView`**: up to 200 content references; the answer is
   XenForo's own guest decision for each.
+- **`ReadAccountRight`**: a signed read of one named account right, on
+  XenForo and WordPress. See "Current site account rights".
 - **`ApplyLinkEdit`**: a typed instruction: post id, exact character
   range, target, and the result fingerprint Sutradhar approved, bound
   to the source version, site, actor and operation, with the source and
-  target references for the guest check and the suggestion id. It
+  target references for the guest check and the suggestion id. Bind
+  both content revisions and the language authority of spec 0018.
+  Both add-ons verify the bound site facts again before a write. It
   carries no markup patch, script or replacement body. The add-on
+  rejects a range inside code, url, img or quote tags, a range across an
+  existing link, and a range inside a surrogate pair. It
   checks, applies it through XenForo's own post editor, and answers
   applied, refused with its code, or rolled back (SUT-416). A result
   whose hash differs is not success. Posts over 2 MB get no links and
   show "skipped: too long to edit safely" (SUT-346), so the 8 MB promise
   holds.
 - **`UndoLinkEdit`**: the same shape, removing the recorded link.
+- **`ReadLinkEffect`**: a signed read of one edit or undo receipt.
+  It uses the existing paired service and signed envelope. Bind
+  the immutable effect request ID, site, operation, actor, target
+  and intent digest. A current paired service can reconcile only
+  the recorded effect. The reply contains no post text and grants
+  no new write authority.
 - **`StaffAlert`**: an alert code, a count and a link to the admin page,
   for XenForo's staff alerts; never content.
 - **`AcknowledgeEvents`**: the outbox id up to which Sutradhar has
-  published events, sent every minute.
+  published events, sent every minute. Validate the exact live 2.0
+  typed body before recording or using the acknowledged cursor. An
+  unsupported field in an authenticated request gives the existing
+  sealed refusal and leaves the cursor and prune boundary in place.
+  The local legacy note reader supplies no live acknowledgement rule.
 - **`ProgressSnapshot`**: progress figures for the add-on's admin pages,
   pushed by the service.
 
+[Spec 0119](0119-cross-site-link-suggestions.md) owns the distinct
+target proof and source-only cross-site apply intents. Admit each
+through the encrypted envelope and native receipt rule below.
+Ordinary `ApplyLinkEdit` remains confined to a same-site target.
+
+### Link effect receipts
+
+Bind the effect deadline to the approved signed intent. It cannot
+outlive the admitted receipt window. An edit and its verified result
+receipt form one native effect under the platform's admitted save
+protocol. Check the intent digest before executing and on repeat.
+A lost response can be reconciled by `ReadLinkEffect` without writing.
+
+Return a committed receipt only for the same effect. A proved
+pre-save failure may permit the exact same request to retry if the
+journal proves no effect is in flight and the approval still holds.
+A terminal refusal remains terminal. A missing, expired or ambiguous
+record is unknown and needs review. A missing record alone never
+proves it is safe to resend. Report an original committed receipt as
+historical evidence if the post changed later. Recreated markup or a
+matching whole-post hash on a later native revision never makes a
+committed undo executable again. The original receipt supplies no
+current link status. Read that separately under current authority.
+
+### Current site account rights
+
+1. `ReadAccountRight` uses the signed envelope, reply binding and key
+   checks above, over the existing service-to-site link. It is a
+   signed POST with a read-only body to keep account ids out of URLs.
+   Only the paired service may call it. Cedar checks the pending
+   action before it can cause the read. Derive the account and target
+   from that action's verified site context. Provide no separate
+   account lookup to the desktop, MCP or the public site.
+2. The request names one site account id, one action from the
+   Account Right Actions list of spec 0101, and one typed site-local
+   target where that action needs one. The reply is bound to that
+   site, request id, account, action, target and contract version.
+   It carries the decision and the time of evaluation. Return a
+   signed deny for a missing, disabled or ineligible account and
+   an unavailable result if the native check cannot be completed.
+   Expose no account profile, group list or permission table.
+3. XenForo uses the effective permission of the named account,
+   including group and user rules, inherited node rules, moderator
+   scope and the native target check for the action. WordPress uses
+   `user_can()` for the named user in the paired site's context, with
+   the object id for an object-specific capability. Use the same
+   native predicate that guards the site's own action entry point.
+   Use a fixed mapping per add-on and contract version. A request
+   cannot supply native permission names. Refuse any action without
+   a mapped predicate, supported account-state check and target
+   fixture. Do not infer a right from a role name or administrator
+   flag. [XenForo permissions][acct-xf], [WordPress checks][acct-wp].
+4. Validate the signed reply, then consume it once, for the matching
+   pending action and generation, within the signed-call deadline and
+   spec 0101's claim age. Stop, cancellation, action replacement or
+   account or pairing revocation invalidates the pending generation.
+   Check that fence at use. An expired or mismatched reply grants no
+   right. Retry with a new request and current native evaluation. A
+   subsequent site write must still pass its own native rights check.
+   Spec 0101 owns the local grant and Cedar checks.
+5. Use the existing signed-route quotas, deadline and message limits.
+   One subject, action and target per request. There is no polling for
+   rights and no extra public-page query, time or bytes. No behaviour
+   is added to ordinary page loads.
+6. The add-on names the supported Account Right Actions version and
+   bound note-claim version in its signed pairing and health replies.
+   Old or unknown versions hold the affected actions unavailable with
+   upgrade guidance. A read is available only for the admitted action
+   mapping of QR-089.
+7. This route uses the platform's native account and action API to
+   calculate a boolean. It makes no direct query to a user table and
+   returns no native account record. The guest-content reader retains
+   its separate table allow-list and cannot call this adapter.
+
+[acct-xf]:
+  https://docs.xenforo.com/manual/access-privileges/permissions
+[acct-wp]:
+  https://developer.wordpress.org/reference/functions/user_can/
+
+**Contract test ACCT-RIGHT.** In each add-on's fixture, verify a native
+allow, deny, removed account and lost target permission. Include a
+XenForo node override and a WordPress capability that depends on the
+post. Refuse a wrong site, account, action or target, a replay, expiry,
+native check failure, unknown action and old add-on. Exercise signed
+fixtures for skew, a delayed allow after cancellation or revocation,
+and concurrent replacements. A retry after loss of a right gives a
+fresh deny. Check that account resolution works through the native
+adapter while guest-content queries cannot reach account data. Check
+that the route performs no site write or public-page work.
+
+### Paired AI observation operations
+
+DR-122 defines these four operation IDs. Only the paired service
+initiates them. Use the fixed 0118 sealed 2.0 route and the
+[0135 exchange](0135-ai-fetches-referrals-and-ranking.md).
+The existing action and native visibility checks govern each scope.
+
+| Operation ID | Role and protected scope |
+|---|---|
+| `ai_observation_pull` | Read only the paired site's bounded native spool by current origin epoch and cursor. Verify exact returned sequence bounds, coverage, verifier generation and current visibility before committing observations. This read gives no acknowledgement effect. |
+| `ai_observation_ack` | Acknowledge only the paired site's exact already-committed sequences in their origin scope under the owning 0135 lifecycle. Use the exact effect identity and current authority before removing acknowledged entries. |
+| `ai_traffic_view_put` | Deliver one exact 0135 sealed site-view receipt for its approved cells, native role audience, generation, coverage and authority epochs. Keep the existing current role, visibility and expiry checks on display. |
+| `ai_verifier_put` | Apply only the owner-enabled 0135 install or revoke intent for its verifier identity and current control and authority fences. Use its atomic native receipt. An exact replay keeps the original freshness. |
+
+Each entry needs the exact admitted typed request and reply for its
+adapter. The paired scope, purpose and 0118 effect fields remain
+required for each effect. A missing profile holds the operation.
+Use 0135 IT-0135-FETCH, IT-0135-SPOOL and E2E-0135-NATIVE with
+0118 IT-0118-LINK. Keep the existing public-page boundary.
+
 ### Versions and upgrades
 
-1. Both sides send their contract version on every message and every
-   note. A different first number is refused (SUT-307); a higher second
-   number is accepted and unknown fields are ignored.
-2. Notes with a newer first number than the service knows are left in
-   place (not acknowledged), and readiness says "the add-on is newer
-   than the service: upgrade Sutradhar". Upgrades update the service
-   first.
+[Spec 0118](0118-end-to-end-encryption-gate.md) owns the encrypted
+2.0 envelope. The 1.0 message descriptions retain their operation
+meaning and define legacy upgrade input only. A paired install cannot
+send protected traffic unless both ends prove the encrypted contract.
+
+1. The live outer envelope must be exactly 2.0 under spec 0118.
+   Refuse any other outer version before opening the body, using
+   0118's fixed unauthenticated refusal. The sealed operation body
+   must match its admitted typed schema. A note version inside the
+   body does not negotiate the envelope or admit new fields.
+2. For authorised legacy upgrade input only, the existing 1.x note
+   reader accepts additional minor-version fields while retaining
+   the known 1.x fields and validation. Leave a newer unsupported
+   major note in place and give the local upgrade reason (SUT-307).
+   Do not send or acknowledge legacy notes over a legacy transport.
+   Upgrades update the service first.
 
 ### The allow-list (XenForo 2.3)
 
@@ -227,7 +374,7 @@ prefixes), `xf_user`, and every user, authentication, conversation,
 draft, profile post, IP, session and log table. Private conversations
 cannot be read under any settings.
 
-The add-on's read routes run only constant queries that are `SELECT`s
+The add-on's guest-content routes run only constant queries that are `SELECT`s
 on the allow-list, in a read-only transaction, with no locking reads
 (`FOR UPDATE`, `LOCK IN SHARE MODE`) and no table locks, so XenForo's
 own writes are never blocked. Each query has a time limit (default 5
@@ -240,7 +387,7 @@ and its code if any fails:
 
 1. Profile safety: under `test` and `dev` the site must be a test site
    on Dell's internal network (SUT-345).
-2. The add-on's read routes answer only allow-listed tables (SUT-331).
+2. The guest-content routes answer only allow-listed tables (SUT-331).
 3. The connection and every allow-listed text column are `utf8mb4`
    (SUT-334).
 4. `xf_addon` says XenForo 2.3; another version gives SUT-335.
@@ -278,7 +425,9 @@ rows or 8 MiB of message text, whichever comes first
   differs, the read starts again, with the same restart limit as the
   WordPress ranged fetch (SUT-347).
 - Sections: the tree (id, parent, type, display order).
-- Attachment names, when guests may see attachments.
+- Attachment names, when guests may see attachments. A name or title is
+  capped at 255 characters (proposed), has control and bidi characters
+  stripped, and never puts a newline into a log line.
 - Resources, updates and categories when Resource Manager is present,
   each with its change counter read in the same statement.
 - The forum profile: custom tags with their options, smilie codes and
@@ -315,7 +464,13 @@ values already include what each section inherits:
   redirect is followed to its target, which must pass on its own).
 - Post: its thread passes and `message_state` is `visible`.
 - Attachment names: the post passes and guests may view attachments in
-  that section; otherwise names are not read.
+  that section; otherwise names are not read. Bind each result to its
+  exact parent and current attachment permission decision. Recheck
+  both before consuming a delayed result. A post can stay visible
+  while attachment names become ineligible. Hold queued names and
+  notify the existing reader and index cleanup for affected extras,
+  even when the post's text, hash and change counter stay the same.
+  The same length cap, character stripping and log-line rule apply.
 - Resource, update and category: Resource Manager's equivalents; not
   read when it is absent.
 - Everything else is not on the allow-list and cannot be read.
@@ -378,7 +533,24 @@ to the forum, the decision is taken again.
 4. A save that took an id earlier may commit later. sampark remembers
    each missing id below its newest one for 120 seconds and asks again;
    after that the id is taken as a rolled-back save. Reconciliation
-   catches anything missed.
+   catches anything missed. A present saved record with an unsupported
+   type or format never uses the missing-ID timeout. An adapter that
+   detects it refuses the read under the existing signed contract.
+   It leaves the row intact without offering the readable tail as
+   if the row were absent. If a reply fails
+   the admitted typed schema under the encrypted 2.0 envelope, refuse
+   that reply and preserve the last proved acknowledgement. Record a
+   safe reason and incomplete coverage. Publish no event from the
+   refused reply and advance no acknowledgement or pruning boundary
+   through the unsupported record. Restart, a later readable record or
+   a delay cannot clear the hold. Keep current scope, withdrawal and
+   erasure fences independent of delivery. For a proved unsupported
+   saved format show the authorised owner “This release cannot
+   read a saved site change. Change history is incomplete.” Keep
+   the reason distinct from a missing-record gap. Include no raw
+   record. An admitted compatible reader can reconcile the
+   original records once within the current fences. Commit
+   accepted events before acknowledging them.
 5. The add-on deletes notes at or below the acknowledged cursor once
    they are an hour old. If Sutradhar is away, notes are kept up to
    `sampark.outbox.max_rows` (default 5 million, about 1 GB); beyond
@@ -454,8 +626,16 @@ to the forum, the decision is taken again.
    over every one of them, in the backfill lane; a weekly pass also
    compares each message's SHA-256. Differences become ordinary events.
 4. No heartbeat for 5 minutes: health says "the forum add-on is not
-   reporting; changes may be missed" (SUT-340), an alert is raised, and
-   a reconciliation runs when it returns.
+   reporting; changes may be missed" (SUT-340), and raises an alert.
+   For XenForo a fresh signed poll can update the last contact while
+   repeating the same saved heartbeat. Match the heartbeat under the
+   current paired site and its original outbox ID. Preserve its first
+   verified observation time across repeat replies and restart. A
+   fresh envelope carrying that heartbeat or an older outbox ID
+   neither renews its age nor clears SUT-340. A new eligible heartbeat
+   must advance the current accepted heartbeat ID. It ends the outage
+   and starts the existing reconciliation once for that return.
+   Report reconciliation and coverage from their own verified results.
 
 ### Handling each event
 
@@ -500,8 +680,8 @@ In the forum's database, owned by the add-on (times as Unix integers):
 - `xf_sutradhar_board_profile`: `option_key`, `option_value`,
   `updated_date`, for the mirrored options only.
 - `xf_sutradhar_nonce`: `key_id`, `nonce`, `expires_date`.
-- `xf_sutradhar_applied`: `request_id`, `post_id`, `result` (JSON),
-  `applied_date`.
+- `xf_sutradhar_applied`: site, request id, intent digest, actor,
+  operation, target, deadline, outcome, result hash and time.
 - `xf_sutradhar_ack`: one row, the acknowledged outbox id.
 - `xf_sutradhar_key`: the add-on's encrypted private key, its key id,
   and the service's public keys.
@@ -518,7 +698,8 @@ In Sutradhar's PostgreSQL, schemas `sampark` and `dwarpal`, every row
 carrying its site:
 
 - `forum_cursor`: the outbox cursor, the missing ids with first-seen
-  times, the last heartbeat seen.
+  times, and the last accepted XenForo heartbeat's exact outbox ID
+  and first verified observation time for the site.
 - `forum_delivery_counter`: per site, the counter epoch and the delivery
   sequence counter (outbox item 6). The epoch is a fresh random value
   written when the row is first created, so a missing row means a new
@@ -694,11 +875,21 @@ each fetched in slices of at most 1 MiB (spec 0022). Nothing is cut.
   post from the database in 1 MiB chunks, and keeps them with that
   version until the post changes. It never holds the whole post in
   memory, so PHP's 8 MB limit holds for any size of post.
-- Checks in the service: each slice's checksum on arrival; the part's
-  checksum once its slices are joined, before the part is parsed; the
+- Check each authenticated reply against its outstanding request. The
+  actual start is an absolute byte offset within the post. It must
+  equal the requested start and the expected assembly position
+  within the admitted part. Correct checksums cannot substitute for the
+  byte range. Refuse a wrong start with SUT-308 before it supplies any
+  bytes or advances assembly. The signed actual length must match
+  the decoded length and fit the requested slice and part limits.
+  When bytes remain, allow a positive shorter slice only where the
+  existing UTF-8 boundary rule shortens the requested end.
+  Continue from the actual start plus actual length.
+- Checks in the service: each admitted slice's checksum on arrival;
+  the part's checksum once its slices are joined, before it is parsed; the
   whole post's checksum over all parts, before any piece is served; and
-  that every part reports the same change counter. A failed check, or a
-  content version that changes, restarts the read from part 0 (SUT-347).
+  that every part reports the same change counter. A failed checksum
+  or changed version or counter restarts the read from part 0 (SUT-347).
   After three restarts the post is marked failed (SUT-338), never read
   in part.
 - Limits: a slice at most 1 MiB of text; the reply body at most
@@ -706,6 +897,48 @@ each fetched in slices of at most 1 MiB (spec 0022). Nothing is cut.
   base64 slice; a part at most 16 MiB; one post read in parts at a
   time per role; the plugin's extra memory at most 8 MB per request;
   the same rate limit as other signed routes; never cached.
+
+### WordPress shop sales read
+
+`ReadShopSalesDay` is a signed POST on the paired WordPress route.
+It fetches a privacy-checked aggregate for one completed shop day
+(spec 0103). Use the same signed envelope, nonce checks, site and
+reply binding as the other routes. Pairing and health name the sales
+contract version. The add-on must be able to check active sales
+approval separately from the public product reader in spec 0047.
+XenForo and unsupported versions refuse the read.
+
+A separate signed `SetShopSalesGrant` command installs or revokes the
+current grant generation. Install needs the owner's live approval in
+spec 0103. It binds site, pairing, scope and expiry. The service may
+renew a short work lease only within the same live grant and scope.
+The add-on records the newest grant and revoke generations and signs
+an acknowledgement. Repeating a command does not extend a lease.
+Old pairings and generations cannot activate sales. Signed health
+carries the current grant and sales withdrawal generation.
+
+The request binds the site, one calendar day and the approved sales
+contract generation. The reply echoes them and carries a release
+version, cutoff, coverage state and the fixed list of rows. Each row
+holds only day, public landing group id, origin class, order count,
+total in integer minor units and currency. No cursor for orders,
+filter by customer, arbitrary group or supplied SQL is accepted.
+No row carries an order id, address, cookie or source URL. A
+malformed or extra field, mismatched approval or unverifiable
+coverage refuses the entire reply (spec 0103). Check the row count
+cap, unique group, origin and currency keys, the approved floor and
+currency set, checked integer bounds and the reserved Other pair.
+Other occurs at most once per currency. A complete release with no
+disclosed rows uses the same state for no orders and all suppressed.
+Codes and metadata carry no totals for undisclosed groups.
+
+The enabled route serves only an immutable day release produced in
+the shop reader's approved off-peak work. A repeat reads that same
+release, or a refusal if it has expired or been withdrawn. An HTTP
+request never starts or resumes a sales scan. No ordinary public
+page runs any sales work. Spec 0103 sets admission and retention.
+Test wrong site, wrong day, bad signature, retries, superseded
+approval and caps in IT-SH-03 and IT-SH-04.
 
 ### Observability
 
@@ -780,10 +1013,14 @@ service is unreachable, slow or wrong.
 Rust tests in the dwarpal and sampark crates, failure and load tests in
 the workspace tests, PHP tests in the add-on's tests folder, and SQL
 tests for policies. "Test forum" means Dell's XenForo 2.3 test site with
-made-up content. Coverage is 100% of lines, branches and MC/DC in Rust;
-the guest rules, signature checks and allow-list check need every mutant
-killed. The PHP checker and outbox code are covered by PHP tests, with
-PHPStan at its strictest and a taint check.
+made-up content. Coverage follows ADR-0020: only components explicitly
+assigned to its strict core require 100% line, branch and MC/DC coverage
+and 100% of killable mutants, with equivalent mutants proved and
+independently reviewed. Other Rust components use the owning risk
+matrix's required coverage and mutation analysis. Guest rules, signature
+checks and the allow-list retain their named property and negative
+tests. The PHP checker and site-side outbox code are covered by PHP
+tests, with PHPStan at its strictest and a taint check.
 
 Signing:
 
@@ -792,10 +1029,27 @@ Signing:
 2. Property: changing any byte of method, path, query, a signed header,
    the request ID or the body after signing makes checking fail with
    the matching code.
-3. A message accepted once is refused with SUT-306 when the same bytes
-   arrive within 300 s, even after a restart.
-4. Messages 299 and 301 s old: the first passes, the second gets
-   SUT-303; one dated in the future gets SUT-303.
+3. Accept a fresh message at its signed time. At 300 s after that
+   first acceptance, restart the receiver and run its normal prune
+   step. An exact repeat is refused with SUT-306 and performs no
+   second operation. At 301 s the time check refuses the same message
+   with SUT-303 even if its nonce row was pruned. Run this on each
+   receiver. Under 0118 v2 the add-on returns fixed empty HTTP 400
+   for a refused request. The PC refuses a bad reply locally and
+   emits no response. Both refuse before opening the body or
+   changing any cursor or product effect. Keep codes in safe local
+   diagnostics.
+   In the [paired restore case][paired-restore-test], restore a
+   synthetic receiver replay store without current continuity proof.
+   Keep the fixture's clock, signed message and paired keys otherwise
+   eligible. Hold before opening or changing any effect. Verify both
+   receiver outcomes above. A control with verified current continuity
+   still refuses the previously accepted message and can admit an
+   otherwise eligible fresh one. In a separate control use the existing
+   approved fresh pairing and its own current proof. Only its fresh
+   eligible message can proceed, with no reinstated older pairing.
+4. Otherwise eligible fresh messages 299 and 300 s old pass the
+   age check. At 301 s, or with a future time, refuse with SUT-303.
 5. A body re-compressed by a proxy gives SUT-304, not SUT-305.
 6. A source scan shows signatures checked only through the library's
    verify call, in Rust and PHP.
@@ -807,17 +1061,45 @@ Signing:
    (SUT-308).
 10. A change sent twice with one request ID edits once; the second
     answer equals the first (PHP).
+    In the paired-restore case under 0031 IP-31, commit one native
+    effect and lose its reply. Restore a service journal still
+    waiting for that result on the same installation and site.
+    Verify current replay-store continuity under test 3. Rotate
+    through the existing 0118 route and revoke the old link key.
+    Keep the same pairing and the receipt's admitted storage reader
+    and current key-floor proof eligible.
+    An otherwise matching old reply under that key cannot settle
+    the restored journal. Under the current pair and read grant,
+    use a fresh `ReadLinkEffect`. The reply binds the current read
+    message and returns only the original effect's exact receipt.
+    Match the original request ID, site, operation, actor, target
+    and intent digest. Record one historical result with no native
+    replay, no new effect receipt and no current link-status claim.
+    In a separate run withhold the native receipt. The restored
+    local journal cannot prove either execution or no effect.
+    Keep the original action unknown and require review without
+    sending it again.
+
+[paired-restore-test]:
+  ../planning/test-and-traceability.md#bdd-0021-refused-envelope
 
 Reading:
 
 11. Every constant query is a `SELECT` naming only allow-listed tables
     (Rust and PHP scans).
-12. A read route that reaches `xf_user` or a write stops start-up with
-    SUT-331.
+12. A guest-content route that reaches `xf_user` or a write stops
+    start-up with SUT-331. The rights adapter is native-API only.
 13. A forced `INSERT` through a read route is refused by the read-only
     transaction.
 14. Release-blocking conformance on the test forum: sampark matches
-    XenForo's `canView()` as a guest for every fixture item.
+    XenForo's `canView()` as a guest for every fixture item. In the
+    existing attachment fixture, keep the parent post guest-visible
+    with the same body hash and counter. Buffer one eligible name,
+    then revoke only the native guest attachment permission. Try a
+    new read and deliver the delayed result. No new name is read and
+    no delayed name reaches the consumer. Route the affected extra
+    through 0022's existing cleanup. Keep the eligible parent text.
+    A fresh current parent and attachment check is the control.
 15. The fake add-on answering "not visible" for one item quarantines
     that section with SUT-341, holds its suggestions, raises an alert and
     leaves other sections alone.
@@ -849,16 +1131,53 @@ Noticing changes:
     recalculated at once and retired with the reason.
 28. An edit whose note was lost is found by the 5-minute pass.
 29. No heartbeat for 5 minutes: health shows SUT-340 and an alert.
+    For XenForo, accept H once, stop the producing cron and continue
+    valid current paired 2.0 polls carrying only the same saved H.
+    Use new valid attempts, with the original heartbeat ID and time.
+    Compare uninterrupted operation with a restart using the same
+    elapsed fixture times just before and at the five-minute boundary.
+    Last contact can advance in both. Heartbeat age and SUT-340 agree
+    at the same elapsed time, and reconnecting with H leaves the alert
+    active. Return a new eligible heartbeat H2. One reconciliation is
+    requested for that return. Repeat H2 without starting another one.
+    Prior gaps remain until verified reconciliation covers them.
 30. Notes acknowledged up to 500, then Sutradhar away for days: nothing
     above 500 is pruned, and the outbox survives a PHP restart. The
     same holds for WordPress change events in `sutradhar_event`.
+    Separately, on each native fixture keep acknowledgement at 500.
+    Present a committed saved note or event 501 with an unsupported
+    type between the acknowledged prefix and otherwise eligible 502.
+    Authenticate the current 2.0 envelope. Reject its unsupported
+    typed reply using SUT-308. Run the ordinary missing-ID deadline,
+    a reconnect and pruning. Keep 501 and 502, record incomplete
+    coverage and publish or acknowledge neither record from that
+    reply. Separately detect the unsupported row in the native
+    encoder and give a safe read refusal with the same held cursor.
+    Compare the existing missing-ID case separately. With an
+    admitted reader for the exact saved format, reconcile the original
+    records once, checking current guest visibility and tombstones.
+    Advance acknowledgement only after the accepted events commit.
 
 Edits, versions and limits:
 
 31. A target made staff-only after the suggestion: the add-on's check
     refuses with SUT-343; the post is unchanged (test forum).
-32. A note with contract 2.0 is not acknowledged and readiness asks for
-    an upgrade; 1.3 is handled with unknown fields ignored.
+32. Accept an exact 2.0 envelope with a known typed operation. Refuse
+    2.1 and 1.x envelopes before opening, without acknowledging an
+    operation. In the authorised legacy upgrade reader only, ignore
+    additional fields in a valid 1.3 note and keep an unsupported
+    major note in place with the local upgrade reason. On both the
+    XenForo and WordPress fixtures, select an exact eligible next
+    acknowledgement for already committed events and keep the current
+    site, pairing, outer 2.0 and known `AcknowledgeEvents` operation
+    valid. In a fresh authenticated attempt add one inert unsupported
+    field of the kind ignored in the separate local 1.3 note fixture.
+    Expect the existing sealed HTTP 200 refusal. The transport reply
+    binds the attempt, with no event acknowledgement. Leave the cursor
+    in place. When the records are old enough for the normal prune
+    check, retain those above the unchanged cursor. In a separate fresh
+    control without the extra field, verify the normal acknowledgement
+    through the existing typed operation and current checks.
 33. No free text or member name in any message schema, note, event,
     log, metric or span of a captured run.
 34. Each route and a post save, add-on on and off: extra peak memory at
@@ -887,7 +1206,15 @@ Edits, versions and limits:
     SUT-338. A stale time, a reused nonce and a bad signature are
     refused with their usual codes. No reply body passes 1.5 MiB. A
     part that reports a different change counter from part 0 gives
-    SUT-347 and a restart from part 0.
+    SUT-347 and a restart from part 0. In an independent synthetic
+    run, make two slices in one part byte-for-byte equal. Request the
+    second offset. Send a signed reply for that exact attempt, post,
+    version and part, with the same bytes and correct hashes but the
+    first offset. SUT-308 refuses it before copying or advancing.
+    No part, post or index update follows from the refused reply.
+    In a control, return the requested start and a valid shorter
+    slice ending before a split UTF-8 character. Continue from the
+    actual end and verify the complete post before release.
 43. Change counter and order (PHP, test forum): a save raises the
     item's change counter by one in its transaction and a rolled-back
     save leaves it unchanged; a XenForo read whose slices report
@@ -927,9 +1254,37 @@ Edits, versions and limits:
     of the author between the save and its delivery leaves the recorded
     id, never the new one (PHP, test forum).
 
+Named tests for `ApplyLinkEdit` ranges and attachment names (PHP, test
+forum, and Rust for the shared vectors). Each is designed, not run:
+
+49. `UT-0021-LINKEDIT-CODE`, `UT-0021-LINKEDIT-URL`,
+    `UT-0021-LINKEDIT-IMG`, `UT-0021-LINKEDIT-QUOTE`: a range inside
+    a code, url, img or quote tag, including a range that starts at the
+    tag's first character and one that ends at its last, is refused
+    with its code; the post is unchanged and nothing reaches the post
+    editor. Nested tags (a quote holding a code tag) are refused too.
+50. `UT-0021-LINKEDIT-EXISTING`: a range across part of an existing
+    link, one that starts inside it and one that ends inside it, is
+    refused; a range directly beside a link, touching but not
+    crossing, is accepted.
+51. `UT-0021-LINKEDIT-SURROGATE`: a range that starts or ends between
+    the two halves of a surrogate pair (an emoji, a rare script
+    character) is refused; a range on whole pairs is accepted. The
+    same vectors give the same answer in PHP and Rust.
+52. `UT-0021-ATTACH-LEN`: a name of 255 characters (proposed limit)
+    passes whole; one of 256 is cut to 255 on a character boundary,
+    not inside a multi-byte character; an empty name after stripping
+    becomes a fixed placeholder.
+53. `UT-0021-ATTACH-BIDI`: a name holding bidi controls (embeddings,
+    overrides, isolates and the marks) comes out with every one
+    removed, so a name made to read backwards cannot.
+54. `UT-0021-ATTACH-CTRL`: a name holding control characters (null,
+    tab, carriage return, line feed, escape, the C1 range) comes out
+    with them removed; a log line made from it is still one line.
+
 Release tier for every add-on release: fault injection, defect and
 security checks, resource, memory and storage checks, profiling, load
-and failure tests, including tests 10, 22, 30, 31, 34 and 39; forum
+and failure tests, including tests 10, 22, 30, 31, 34, 39 and 49 to 54; forum
 pages loading as without the add-on, within 8 MB, when the service is
 unreachable, slow or wrong; and the add-on upgraded before or after the
 service with pages working throughout and mismatches shown. A release

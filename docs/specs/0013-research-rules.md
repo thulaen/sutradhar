@@ -2,7 +2,7 @@
 
 These rules answer one question: how do we know an idea is true before
 it ships? They set the research card that every idea starts with, one
-proof standard shared by GanitEvolve (0012) and the lab, the research
+proof standard shared by Ganit Vikas (0012) and the lab, the research
 memory, rival methods, sealed model bundles, safe twins for fast code,
 and queue maths as a second opinion. It is roadmap Phase 2 item 6.
 
@@ -10,26 +10,29 @@ and queue maths as a second opinion. It is roadmap Phase 2 item 6.
 
 ### Research first
 
-These rules carry the old project's King Solomon research framework
-(the owner asked for it by name, and for it to live inside GanitEvolve).
-The research card below is "King Solomon's card" in the owner's words.
+These rules carry the old project's Nyaya research framework
+(the owner asked for it by name, and for it to live inside Ganit Vikas).
+The research card below is "Nyaya's card" in the owner's words.
 
 1. Every algorithm question and every feature idea starts with a
    research card. It is not a second route; it is the front of the
-   GanitEvolve and lab routes.
+   Ganit Vikas and lab routes.
 2. A card holds: the wish in plain words; how it works now; what must not
    break; the nearest thing already known (memory, method catalogue,
    feature list); the budget; and one test that would show the idea wrong;
    and its scope, the exact paths it covers, with no wildcards. It is kept
    in the repository, and a receipt names it by its hash. A card is
    accepted by a record in `reviews/` that names its hash and the agent of
-   another product who accepted it; for a GanitEvolve problem the record
+   another product who accepted it; for a Ganit Vikas problem the record
    also names every hash that 0012's paragraph on the card's acceptance
    record lists, and the accepting product follows the stricter rule in
-   0012, "The effect contract". Any edit to the card, or for a GanitEvolve
+   0012, "The effect contract". Any edit to the card, or for a Ganit Vikas
    problem to anything whose hash the record names, makes that record
-   stale, so it is a draft again. It never makes up a number. A needed
-   value is written "to research".
+   stale, so it is a draft again. It never makes up a number. Every
+   missing value is a named readiness blocker with its owning research
+   question, required evidence and the exact behaviour it blocks. A card
+   with an open blocker cannot be accepted for implementation of that
+   behaviour; only an admitted result with its receipt closes it.
 3. A gate check refuses a feature specification or change with no card.
    For source files this is `ganit.every-change` (0012): every receipt
    names its card, and agents must start each change from one (owner,
@@ -38,7 +41,7 @@ The research card below is "King Solomon's card" in the owner's words.
    who wants it:
    - **Small:** uses admitted methods and researched values, adds no
      number, ranks nothing. The card, a search of the memory and the
-     method catalogue, and one small GanitEvolve run on made-up data
+     method catalogue, and one small Ganit Vikas run on made-up data
      that tries the failing case.
    - **Measure:** needs a value not yet researched (a limit, window or
      weight). The card plus a run sized to find that value.
@@ -56,7 +59,7 @@ The research card below is "King Solomon's card" in the owner's words.
 
 ### The one proof standard
 
-This section is the standard's only home. The lab and GanitEvolve name
+This section is the standard's only home. The lab and Ganit Vikas name
 it and copy none of it. A result counts only if every step holds.
 
 1. **Freeze first.** The claim, the unit of observation (page, site,
@@ -100,8 +103,11 @@ superseded. A revoked claim returns only with new evidence.
 
 Before an evaluator's scores count, a receipt must show each of these
 exactly once, all passing, for the same evaluator version. Six copies
-of one check, a missing check or an unknown extra kind fails. The value
-for each is "to research".
+of one check, a missing check or an unknown extra kind fails. Every
+check's expected result, measurement tolerance and fixtures are
+readiness blockers owned by the evaluator qualification protocol. Until
+that protocol and its independent receipt admit them, the evaluator is
+unqualified and its scores cannot support admission or promotion.
 
 1. The same code under two labels scores the same.
 2. A version broken on purpose is caught.
@@ -120,12 +126,15 @@ arithmetic range or of checks means "unresolved", never "different".
 ### Combined ideas and attempts
 
 1. Two mechanisms together are kept only if they beat the best one alone
-   by a margin, shown with an interval, not one number. The margin is
-   "to research".
+   by a margin, shown with an interval, not one number. The margin is a
+   readiness blocker owned by the frozen combined-ideas protocol. Until
+   the protocol supplies an admitted margin and interval before scoring,
+   the comparison is unresolved and the combination cannot be kept or
+   promoted.
 2. Every attempt at one question, failed and abandoned ones too, is
    counted and fed to false-discovery control (ganit job 130), so the
    best of many tries is never shown as a single try. The same count
-   reaches it from the lab and GanitEvolve alike.
+   reaches it from the lab and Ganit Vikas alike.
 
 ### Independent route and reviewer
 
@@ -165,7 +174,7 @@ arithmetic range or of checks means "unresolved", never "different".
    | Faults found by checks | autoissues |
    | Owner answers and rulings | The owner's records |
    | Why a catalogue method was rejected | The catalogue's `exclusion` |
-   | Numbers of a run | Lab results; the GanitEvolve archive |
+   | Numbers of a run | Lab results; the Ganit Vikas archive |
    | Agent chat and handovers | The agent mailbox |
    | What was learnt, what failed, why | The research memory |
 
@@ -258,7 +267,7 @@ arithmetic range or of checks means "unresolved", never "different".
 ### Where the memory lives
 
 1. Records are files in the research folder on Dell, beside the
-   GanitEvolve archive, under the data SSD rules. No database is used, so
+   Ganit Vikas archive, under the data SSD rules. No database is used, so
    the row-level security rule does not arise. A small index is derived
    and can be deleted and rebuilt.
 2. Every command uses the one durable store. A round trip keeps cited
@@ -266,66 +275,80 @@ arithmetic range or of checks means "unresolved", never "different".
    there is no fallback and no store name in code.
 3. `research.memory.disk_cap` stops new writes with a message. It never
    deletes anything.
-4. Whether files are enough at the real volume is "to research"; if
-   recall becomes slow, the owner is asked.
+4. Real-volume file-store capacity and recall latency are readiness
+   blockers owned by the research-memory performance card. It must
+   supply representative volume, distributions, resource measurements
+   and admitted caps before real-volume use. Until then the memory is
+   limited to the admitted development volume and shows "real-volume
+   operation blocked". Slow recall never silently changes the store.
 
-### Rival methods: winner on, others selectable
+### Rival methods: sealed candidates, one promotion route
 
 1. A rival answers the same job as another method (for example a
    learned adapter against whitening for job 273). Signals blended into
    one score are not rivals.
-2. The lab runs rivals under the proof standard. The winner is on for
-   every site from the start, with researched values. Every rival that
-   passes the whole standard stays selectable; one that fails is kept as
-   a memory record, not shipped. Each selectable rival stays tested on
-   every release, and that time is reported.
-3. The choice is one setting per site, `method.<job>.choice`. Site
-   admins may switch it, and agency staff may for their own client
-   sites. No site's choice reaches another site or install.
-4. The settings screen marks the winner. For each rival it shows, from
-   the released evidence and in plain words: how it did against the
-   winner with its range, its speed, its memory, and what it is better
-   at, if anything. It never shows one score alone.
-5. A switch goes through the shadow test and canary on that site's own
-   data, with one-step undo that shows the old value first.
-6. Only the chosen method is loaded. A switch that would not fit in the
-   memory limits of AGENTS.md section 5.6 is refused, with the reason.
-7. A release that changes the winner leaves each site's choice alone and
-   says a different winner now exists.
-8. Being selectable adds no count. A rival counts toward the methods bar
-   only if it is itself distinct and qualified.
-9. If a chosen rival loses its qualification, the site goes back to the
-   winner through the normal rollback, with a notice. This is a stated
-   exception to the rule against fallbacks.
-10. "Every method must run" applies to the job's chosen method only.
-    Rivals stay idle until chosen.
+2. The lab runs rivals under the proof standard. A passing rival is a
+   sealed candidate with immutable evidence; a failing one is retained
+   only as a research-memory record. Neither result activates a method,
+   creates a per-site alternative or makes a second production route.
+3. Spec 0077 is the only optimisation, evaluation, promotion,
+   activation and rollback route. It compares a complete challenger
+   with the verified champion on protected evidence. Its `PROMOTE`
+   receipt is required before any candidate becomes active; otherwise
+   the champion remains. There is no `method.<job>.choice` production
+   override.
+4. The evidence screen shows the champion and each sealed candidate,
+   with the released comparison, interval, speed, memory and subgroup
+   results in plain words. It never shows one score alone or offers an
+   independent activation action.
+5. Every admitted candidate stays regression-tested on each release,
+   and that cost is reported. Only the complete active champion is
+   loaded for serving. A candidate that would exceed the memory limits
+   in AGENTS.md section 5.6 cannot be promoted.
+6. Sealing a candidate does not itself admit a method or satisfy a
+   numerical method quota. Catalogue admission requires a distinct,
+   qualified method and its own provenance and held-out evidence under
+   ADR-0020.
+7. Loss of qualification, a failed protected gate or a verified critical
+   regression follows spec 0077's `KEEP_CHAMPION`, `ROLL_BACK` or
+   `BLOCK_FOR_DATA_QUALITY` outcome. No feature performs its own fallback.
+8. "Every method must run" applies to the method in the active complete
+   champion only. Sealed rivals remain idle.
 
 ### Sealed model bundles
 
 1. Every trained model leaves the lab as one sealed bundle, and the
-   engine refuses anything else. A bundle holds:
-   - the weights, in a data-only format (safetensors);
+   admitted packaged application refuses anything else. A bundle holds:
+   - the weights, in the packaged application's admitted data-only
+     format;
    - a SHA-256 for the bundle and for each file;
-   - the version and the job it serves;
+   - the exact package and artefact versions and the job served;
    - the training data's identity: a snapshot digest, never text;
    - the feature contract: inputs in order, units, the missing-value
      rule;
    - test results, including fixed inputs with expected outputs and the
-     tolerance for the Rust parity test;
-   - the seed, tool versions and environment fingerprint;
+     tolerance for the packaged-serving compatibility test;
+   - the seed, dependency hashes and environment fingerprint;
    - the receipt for this exact bundle hash, with its result kind;
    - measured size and peak memory, and the rights note.
-2. At load, the engine checks every field and hash, that the receipt
-   names this hash, that the feature contract matches, that the parity
-   test passes and that it fits in memory. Any failure refuses the
-   bundle, and the bundle in use keeps running.
-3. Training happens only in the lab, in ganit. Serving is a Rust
-   decision. A generated test set is an input to a judgement, never the
+2. Before candidate use, typed Rust integration checks every field and
+   hash, that the receipt names this hash, that the feature contract
+   matches, that the packaged-serving compatibility test passes and that
+   the complete resource profile fits. Any failure refuses the candidate
+   and leaves the verified champion unchanged. Spec 0077 alone can
+   activate an admitted bundle.
+3. Training happens only in the lab through spec 0056's admitted
+   packaged training application and declarative configuration. Rust
+   owns integration and the decision boundary; Sutradhar writes no
+   training or serving adapter and no first-party Python production
+   code. A generated test set is an input to a judgement, never the
    judgement.
 4. A bundle trained on one install's data never goes to another install.
-5. Whether weights can reveal training text is "to research". Until it
-   is answered, only bundles trained on made-up data ship; those trained
-   on a private tier stay on Dell.
+5. Training-text extraction and membership-inference risk are readiness
+   blockers owned by the bundle's privacy and security research record.
+   Until that record supplies a threat model, attack results, residual
+   risk and independent approval, only bundles trained on made-up data
+   can ship; those trained on a private tier stay on Dell.
 
 ### Fast routines keep a slower safe twin
 
@@ -364,36 +387,43 @@ arithmetic range or of checks means "unresolved", never "different".
 5. Finite buffers, abandonment, priority queues, estimation and
    simulation methods are left out; a job that needs one asks through a
    card.
-6. To research: how far formula and measurement may differ on bursty
-   forum traffic before the tip misleads.
+6. The disagreement margin is a readiness blocker owned by the queue
+   research card. That card must measure bursty forum traffic, false
+   and missed warnings and sample variability, then admit the margin
+   before the tip can ship. Until then the screen shows the two values
+   without a tip.
 
 ### Settings
 
 | Setting | Default | Allowed range |
 | --- | --- | --- |
-| `research.memory.recall_chars` | to research | above zero, safe top |
-| `research.memory.disk_cap` | to research | above zero, safe top |
-| `research.memory.map_depth` | to research | 1 to safe top |
-| `research.attempts.review_after` | to research | 1 to safe top |
-| `research.twin.selftest_cases` | to research | safe bottom to safe top |
-| `research.queue.disagree_margin` | to research | above zero, safe top |
-| `method.<job>.choice` | the winner | the job's selectable list |
+| `research.memory.recall_chars` | blocked: no admitted value | above zero, safe top |
+| `research.memory.disk_cap` | blocked: no admitted value | above zero, safe top |
+| `research.memory.map_depth` | blocked: no admitted value | 1 to safe top |
+| `research.attempts.review_after` | blocked: no admitted value | 1 to safe top |
+| `research.twin.selftest_cases` | blocked: no admitted value | safe bottom to safe top |
+| `research.queue.disagree_margin` | blocked: no admitted value | above zero, safe top |
 
-Researched values replace "to research" before the build is approved.
-The rules start on. No value is zero, and none can be set past its safe
-top. Every value goes through GanitEvolve research first. The agent
-limit is the agent mailbox's own.
+Each "blocked" value is a readiness blocker, not a usable default. The
+owning research card must name the missing value, the experiment and the
+behaviour it blocks; its Ganit Vikas receipt must supply the value, safe
+bounds and approval before that behaviour can build or run. There is no
+`method.<job>.choice` production setting. The research rules are on, no
+value is zero or above its admitted safe top, and the agent limit belongs
+to the agent mailbox.
 
 ## Limits
 
 - The memory runs on Dell only and ships to no site. It loads on demand,
   as one heavy job within AGENTS.md section 11. Only made-up data, ids
   and counts go in; nothing is shared between installs.
-- A rival switch must fit within the memory limits in AGENTS.md section 5.6;
-  only the chosen method is loaded.
+- A candidate must fit within the memory limits in AGENTS.md section 5.6
+  before spec 0077 can promote it; only the complete active champion is
+  loaded.
 - A bundle is refused if it does not fit in memory.
-- Recall size and disk use are capped by the settings above; the disk
-  cap stops writes and never deletes.
+- Recall size and disk use are capped by the settings above once their
+  blockers close; the disk cap stops writes and never deletes. Until the
+  cap is admitted, new memory writes stop.
 - A fixture-only run is labelled as such and counts for nothing.
 
 ## Footprint budget
@@ -414,7 +444,7 @@ with the deciding rules proved by Kani where they fit:
 - A double kill reads "unresolved" and is never a pass.
 - The driving agent cannot also be reviewer or challenger.
 - The same attempt count reaches false-discovery control from the lab
-  and GanitEvolve alike.
+  and Ganit Vikas alike.
 - A lab result passes only if it also meets the one standard.
 - The same statement written twice leaves one record and two pointers.
 - A write holding a task, assignee, status or fault is refused.
@@ -425,28 +455,30 @@ with the deciding rules proved by Kani where they fit:
 - Every state reaches every reader; only "valid" returns as fact.
 - Two opposite valid records show "in conflict", not as facts.
 - A refuted idea shows first on a new card, with its reconsider rule.
-- A recall over its budget says how many records it left out.
+- A recall over its admitted budget says how many records it left out;
+  with no admitted cap, new writes stop.
 - Recording again with fresh evidence makes a stale record valid.
 - No command deletes a record; a full disk refuses new ones.
 - An edge written twice stays one; a typed weight is refused; the map
   rebuilt from records matches the stored map.
-- A rival that passes shows beside the winner; one that fails does not.
-- A site with no choice runs the winner.
-- A switch is shadow-tested, and undo shows the old value first.
-- A switch that would not fit in memory is refused with its reason.
+- A passing rival appears beside the champion as a sealed candidate; a
+  failing one does not. No per-site method-choice setting or activation
+  action exists.
+- A lab verdict without a spec 0077 `PROMOTE` receipt leaves the champion
+  unchanged; an over-budget candidate cannot be promoted.
 - A bundle with a missing field, bad hash or wrong receipt is refused,
-  and the active model keeps running.
+  and the verified active champion keeps running.
 - No bundle holds post text, a real name or a secret.
-- Rust output that differs from the lab's fixed outputs by more than the
-  tolerance gets the bundle refused.
+- Packaged-serving output that differs from the exported fixed outputs
+  by more than the tolerance gets the candidate bundle refused.
 - A failed known-answer set holds the job and tells the admin.
 - A twin that shares code with its fast routine fails review.
 - With the fast path off in a test build, answers are still right.
 - Arrivals at or above capacity give "no steady state", never a wait.
 - A missing queue input shows "not measured"; a tip changes no setting.
 - Finite buffers, abandonment and priority queues are not present.
-- Attempts past `review_after` open a question and stop; they never
-  loop.
+- Attempts past the admitted `review_after` open a question and stop;
+  until that value is admitted, no repeated attempt campaign starts.
 
 ## Changes from the source
 
@@ -456,15 +488,17 @@ with the deciding rules proved by Kani where they fit:
   Kani, Verus or Creusot where they fit.
 - Statistics, ranking of evidence strength and the queue formulas are
   rewritten as Rust in ganit.
-- Screens, including the method choice and the lab results list, are in
-  the Dioxus app.
+- Screens, including candidate evidence and the lab results list, are in
+  the desktop app; they expose no independent method activation.
 - Fast routines and their twins are Rust; the old kernel language and
   its validation page are dropped.
 - The old research department and memory programs are not carried; only
   their rules come across, under plain names.
 - The 400-line file rule of the old code gives way to the limits of
   AGENTS.md section 6 rule 11.
-- The bundle parity test is the Rust parity test, with pure-Rust models.
+- The bundle compatibility test invokes the admitted packaged serving
+  application through typed Rust integration; Sutradhar implements no
+  bespoke model forward pass or first-party Python production adapter.
 
 Source: `docs/specifications/ganit-evolve/research-rules.md`,
 `docs/specifications/ganit-evolve/research-rules-2.md`,

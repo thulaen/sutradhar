@@ -32,7 +32,7 @@ questions ([0041](0041-editorial-coach.md),
 safe running ([0033](0033-safe-running.md)), durable jobs
 ([0019](0019-events-jobs-recovery.md)), the one progress system
 ([0016](0016-progress-system.md)), ganit's intervals and comparisons,
-GanitEvolve and the lab on made-up sites ([0012](0012-ganit-evolve.md),
+Ganit Vikas and the lab on made-up sites ([0012](0012-ganit-evolve.md),
 [0056](0056-method-lab.md)), row-level security, model admission
 ([0024](0024-models.md)) and the list of approved metric sources.
 
@@ -93,9 +93,13 @@ the scorer and failure classes, traces, and the seven test families.
   passages, how it treats canonical addresses, and its time and memory
   limits.
 - Program readers follow fixed rules and use no model. Model readers use
-  a small local pure-Rust model that has passed model admission. Until
-  one is admitted, model readers show "unavailable". Program readers
-  come first.
+  an exact-pinned packaged model application behind a typed Rust-owned
+  interface admitted under spec 0024. Sutradhar writes no model runtime,
+  custom model component or first-party Python production code. The
+  exact package, model artefact, dependency hashes, quality evidence and
+  measured resource profile are readiness blockers: until all are
+  admitted, model readers show "unavailable". Program readers come
+  first.
 - Several profiles run on each task, so one reader's habit is not taken
   for the site's fault. The size of a defensible population is set by
   research.
@@ -188,7 +192,10 @@ escaped and never read as instructions.
   Coach's AI readability rubric, for example "answer sits under a vague
   heading. Tested: 3 of 10 readers failed." With no matching item it
   shows "observed, no rubric item" and the trace. The rubric is not
-  extended here; a gap goes to research.
+  extended here. The unmatched observation remains visible but its
+  rubric mapping is "blocked: no admitted rubric item" until the owning
+  spec 0042 research record supplies an admitted mapping; no tested line
+  is invented and that mapping cannot ship.
 - The Coach's helper test (one passage sent to the staff member's own
   helper) is a different instrument. Its results and the room's are never
   merged, and each names its instrument.
@@ -207,7 +214,7 @@ escaped and never read as instructions.
 ### The seven test families
 
 Narrow experiments find why a reader failed, without a second checker or
-score. Each family passes GanitEvolve research before it ships, after the
+score. Each family passes Ganit Vikas research before it ships, after the
 core room. Old labels (sc-geo numbers) are kept so nothing is lost.
 
 - A. Find the obstacle (001 to 005): shrink a failing page; hand the
@@ -274,30 +281,36 @@ families at once; feeding results to a release gate that decides.
 | --- | --- | --- |
 | `mirror.enabled` | on | on or off |
 | `mirror.scope` | staff pages and guides | page types; threads off |
-| `mirror.memory_share` | set by research | share of the slice, safe floor and top |
-| `mirror.cpu_share` | set by research | above zero, safe top |
-| `mirror.disk_max_bytes` | set by research | above zero, per site |
-| `mirror.frozen_keep_days` | set by research | at least 1, safe top |
-| `mirror.readers_at_once` | set by research | 1 up, safe top |
-| `mirror.reader_seconds` | set by research | above zero, safe top |
-| `mirror.run_seconds` | set by research | above zero, safe top |
-| `mirror.models` | none until one is admitted | admitted models only |
-| `mirror.repeats` | set by research | at least 1, safe top |
-| `mirror.tolerance` | set by research | above zero, safe top |
-| `mirror.min_tasks` | set by research | at least 1, safe top |
-| `mirror.tasks_max` | set by research | above zero, safe top |
-| `mirror.depth_max` | set by research | 0 up, safe top |
-| `mirror.context_max` | set by research | above zero, safe top |
-| `mirror.families` | each on once its research passes | per family |
-| `mirror.variants_max` | set by research | above zero, safe top |
-| `mirror.search_steps_max` | set by research | above zero, safe top |
+| `mirror.memory_share` | blocked: no admitted value | share of the slice, safe floor and top |
+| `mirror.cpu_share` | blocked: no admitted value | above zero, safe top |
+| `mirror.disk_max_bytes` | blocked: no admitted value | above zero, per site |
+| `mirror.frozen_keep_days` | blocked: no admitted value | at least 1, safe top |
+| `mirror.readers_at_once` | blocked: no admitted value | 1 up, safe top |
+| `mirror.reader_seconds` | blocked: no admitted value | above zero, safe top |
+| `mirror.run_seconds` | blocked: no admitted value | above zero, safe top |
+| `mirror.models` | unavailable: no admitted package and model | admitted packages and models only |
+| `mirror.repeats` | blocked: no admitted value | at least 1, safe top |
+| `mirror.tolerance` | blocked: no admitted value | above zero, safe top |
+| `mirror.min_tasks` | blocked: no admitted value | at least 1, safe top |
+| `mirror.tasks_max` | blocked: no admitted value | above zero, safe top |
+| `mirror.depth_max` | blocked: no admitted value | 0 up, safe top |
+| `mirror.context_max` | blocked: no admitted value | above zero, safe top |
+| `mirror.families` | off: no admitted family evidence | per family |
+| `mirror.variants_max` | blocked: no admitted value | above zero, safe top |
+| `mirror.search_steps_max` | blocked: no admitted value | above zero, safe top |
 
-"On" means the room is available; it never runs by itself. Researched
-values replace "set by research" before the build.
+"On" means the room is available; it never runs by itself. Every
+"blocked" setting is a readiness blocker owned by the Ganit Vikas
+research record below. Until that record supplies the value, its bounds,
+evidence and approval, the test-room build and every run are refused;
+there is no implicit default. A family stays off until its own admitted
+record exists. Every `mirror.*` setting that is a number, size or time
+needs a numeric ceiling in that record before the room can be enabled;
+a setting without a ceiling stays blocked.
 
-### Research before the build
+### Build-blocking research
 
-GanitEvolve, on made-up sites with known answers and planted faults:
+Ganit Vikas, on made-up sites with known answers and planted faults:
 population size, repeats and tolerance; the fewest tasks and readers for
 a rate; which value types can be keyed reliably; whether program reader
 failures line up with Coach rubric items (one study shared with
@@ -409,9 +422,11 @@ are proved with Kani where the state space allows.
 
 - Decision code, maths and adapters are all rewritten as Rust; maths
   uses ganit.
-- Admin pages become screens in the Dioxus app built from SDS.
+- Admin pages become screens in the desktop app built from SDS.
 - The high-assurance decision code becomes Rust proved with Kani.
-- Model readers use pure-Rust models only.
+- Model readers use an admitted packaged model application behind typed
+  Rust integration; Sutradhar implements no model runtime or first-party
+  Python production adapter.
 - The memory rule follows AGENTS.md section 5.6: the room fits inside
   the service slice, not a flat 8 GB with 15% headroom.
 

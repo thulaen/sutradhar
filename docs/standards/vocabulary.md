@@ -126,7 +126,7 @@ Three words replace earlier ones, to avoid near-collisions:
 | pratilipi | प्रतिलिपि | copy | noun | pra-ti-li-pi |
 | sankalan | संकलन | compilation | noun | san-ka-lan |
 | saar | सार | summary | noun | saar |
-| anukramanika | अनुक्रमणिका | contents index | noun", |
+| anukramanika | अनुक्रमणिका | contents index | noun | a-nu-kra-ma-ni-kaa |
 | upayogkarta | उपयोगकर्ता | user | noun | up-yog-kar-taa |
 | atithi | अतिथि | guest | noun | a-ti-thi |
 | rachanakar | रचनाकार | author | noun | rach-naa-kaar |

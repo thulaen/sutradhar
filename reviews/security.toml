@@ -1,9 +1,9 @@
 skill = "security"
-change = "sha256:a390528ad6f6f97eaca5e09583a82ead225c116ced48ff625b9f37540bbf2716"
+change = "sha256:e5903784ac2150fce301af6be53342d6b1336d5d8fcc5ecda4b68f12119d34a4"
 verdict = "pass"
-agent = "claude subagent"
-summary = "Re-read the loop guard section of spec 0016: per-task lock and own part-file close the two-writer finding, now tested across processes; path from task number only, typed settings, byte caps fit 4 MB, plain-file-only reads, wall condition stated."
+agent = "claude subagent round six"
+summary = "Round six scanned the staged diff for secrets and private data and found none: no keys, tokens, passwords, personal addresses or private hosts, and no waiver, key or reviews files staged except the records. The simplified waiver rule keeps owner-only signing, the pinned owner key and the protected-file list intact. A rename, split or merge removes a check id and already needs the owner's signature under AGENTS.md 7.2, which is accurate. The 0135 spool rules, directory owned by the web server user mode 0700, file 0600, descriptor checks, inode re-check and atomic rotation, and the 24 hour Retry-After clamp in 0137 are sound. No blocking finding. Minor notes left open: define signed history; the 5 minute skew bound is proposed. Round six was read at fingerprint 144bb425. The only changes after that read are two link definitions re-wrapped for the line-length check, one catalogue row reworded, and fixed names and identifiers added to the spelling allow-list in _typos.toml. Later addition, reviewed in two further rounds: a planted test the_version_one_names_are_not_spelling_checked_as_english, the Organization and Dueling patterns narrowed to exact phrases and one dead pattern removed; the test fails without the allow-list and passes with it."
 
 [[finding]]
-what = "docs/specs/0016-progress-system.md, Records: two saves at once could lose an attempt or expose a mixed record; now a per-task lock file and an own part-file per save."
+what = "Round five found the alias entry had no stated signer. The alias design was removed; a rename, split or merge is already owner-signed under the protected-file rule."
 fixed = true

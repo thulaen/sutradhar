@@ -10,9 +10,12 @@ thread with the full repair guide, on those exact words.
 ## How it is built
 
 - Rust for the app and the background service, on our own framework,
-  Sutradhar Boot; Rust also for operations and developer tools
+  Behemoth Boot; Rust also for operations and developer tools
   ([ADR-0019](docs/adr/0019-rust-for-tools.md)).
-- A Dioxus desktop app with our own accessible design system.
+- Leviathan sits beside Behemoth Boot as set out in
+  [ADR-0022](docs/adr/0022-behemoth-boot-and-leviathan.md).
+- A Tauri desktop app with Angular 22 screens and our own accessible
+  design system.
 - Thin PHP add-ons for XenForo and WordPress that work on shared
   hosting.
 - PostgreSQL with row-level security.
@@ -28,6 +31,6 @@ thread with the full repair guide, on those exact words.
 
 ## Licence
 
-The app is under the GNU Affero General Public License, version 3 or
-later ([LICENSE](LICENSE)). The XenForo add-on and WordPress plugin are
-under the GNU General Public License, version 2 or later.
+The app is under the Apache License, version 2.0. The XenForo add-on and
+WordPress plugin are under the GNU General Public License, version 2 or
+later. The name Sutradhar is covered by a trademark policy.

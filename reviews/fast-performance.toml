@@ -1,5 +1,9 @@
 skill = "fast-performance"
-change = "sha256:a390528ad6f6f97eaca5e09583a82ead225c116ced48ff625b9f37540bbf2716"
+change = "sha256:e5903784ac2150fce301af6be53342d6b1336d5d8fcc5ecda4b68f12119d34a4"
 verdict = "pass"
-agent = "claude subagent"
-summary = "Re-read the loop guard section of spec 0016: byte limits with no control characters keep an attempt under 3 KB, so 1,000 fit under 4 MB; a full record refuses new attempts; size checked before reading; locked whole-file rewrite with two flushes is fine at hook rate."
+agent = "claude subagent round six"
+summary = "Round six re-checked the arithmetic and consistency of the budgets in specs 0134, 0135, 0146 and 0147. The 0135 spool figures now agree: the 4 MiB cap covers the rotated and the current file together, rotation at 1.5 MiB, overshoot 8 workers times 50 appends a second times 512 bytes is 200 KiB, and two files plus overshoot stay under the cap. The 0134 pair arithmetic, the 0146 row and memory figures and the 0147 cluster state all add up. No blocking finding. Minor notes left open: the 3.4 MiB total could say it counts overshoot per file, about 3.2 MiB if once; the 0146 note on the 1.5 GiB request should say the extra half gigabyte is for the Python script. Round six was read at fingerprint 144bb425. The only changes after that read are two link definitions re-wrapped for the line-length check, one catalogue row reworded, and fixed names and identifiers added to the spelling allow-list in _typos.toml. Later addition, reviewed in two further rounds: a planted test the_version_one_names_are_not_spelling_checked_as_english, the Organization and Dueling patterns narrowed to exact phrases and one dead pattern removed; the test fails without the allow-list and passes with it."
+
+[[finding]]
+what = "Round five found the rotated file plus the current file could reach about 7.5 MiB against a 4 MiB retained bound. The cap now covers both files and rotation is at 1.5 MiB with a drop-and-count rule."
+fixed = true
