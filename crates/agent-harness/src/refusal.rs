@@ -2,6 +2,9 @@
 //! text. A refusal names the rule it broke and never repeats the input
 //! (spec 0155, "Requests").
 
+/// Only types of this crate may be a log outcome (see `log_chain`).
+pub trait Sealed {}
+
 /// Defines a refusal enum and its [`std::fmt::Display`], one fixed text
 /// for each variant.
 macro_rules! refusals {
@@ -16,6 +19,10 @@ macro_rules! refusals {
         pub enum $name {
             $($(#[$vmeta])* $variant,)+
         }
+
+        impl $crate::refusal::Sealed for $name {}
+
+        impl $crate::log_chain::Outcome for $name {}
 
         impl ::std::fmt::Display for $name {
             fn fmt(

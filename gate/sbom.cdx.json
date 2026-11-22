@@ -969,7 +969,8 @@
     {
       "dependsOn": [
         "cargo:serde@1.0.229",
-        "cargo:serde_json@1.0.154"
+        "cargo:serde_json@1.0.154",
+        "cargo:sha2@0.11.1"
       ],
       "ref": "cargo:agent-harness@0.1.0"
     },

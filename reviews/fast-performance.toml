@@ -1,9 +1,9 @@
 skill = "fast-performance"
-change = "sha256:17c5e989330815d5fd18cd594f6fc139dfb4ee7a0ea594a525e95a90d3bb1d99"
+change = "sha256:7f3fd8cb6e8189b24fac452f9f597b7a45d531173097e11789caaa2f36e35eaa"
 verdict = "pass"
-agent = "claude subagent locked accounts"
-summary = "The change records DR-167, the locked agent accounts the owner told agents to make (agent-claude and agent-codex, plus the harness account sutradhar-harness, homes under /var/lib/sutradhar-agents, a root-written map readable only by root and the harness), with a spec 0155 sentence and a catalogue row edit. Every claim was checked on Dell: the accounts are locked with no sudo, Docker or LXD, an agent writes its own clone and cannot read the map, the other agent's home or the token file, and the harness reads but cannot write a clone. Documentation only. One review round found that the first homes sat under a folder the agents could not reach and that the map file was world-readable; both were fixed on Dell and in the text after that read, and re-tested from each account."
+agent = "claude subagent harness log"
+summary = "The change adds slice four of the agent harness: the tamper-evident log chain (SEQ PREV HASH ENTRY lines, sha256, verify and a check against the owner's copy of the newest line), the hourly rate limits and connection counts, and the once-a-minute refusal summary, on plain data, with a sha2 dependency the workspace already uses, the SBOM and the catalogue row. Tests were written first. Each window queue is bounded by its hourly rate and the maps are keyed by the few agents in the owner's map. One review round found medium gaps (free text could enter a log line through a public append and a free outcome string, a line number written as 01 or +1 verified as line 1, an empty append broke the log, agent names were unchecked keys); all were fixed after that read: entries are built only from a validated agent name, a kind and a sealed outcome type, the line number must be in plain form, names come only from the owner's map, and the monotonic-clock, timer and owner-copy duties are documented. All 73 tests pass and clippy is clean. After the review the gate asked for files of at most 300 lines, so the entry types moved into their own file; behaviour is unchanged."
 
 [[finding]]
-what = "Homes under a folder the agents could not reach, and a world-readable account map. Both fixed on Dell, re-tested and recorded."
+what = "Medium gaps in the first log design: free text through append and outcome, sequence malleability, an empty append, unchecked agent names. All fixed with types and tests."
 fixed = true
